@@ -1,0 +1,4 @@
+# Generated files at default location
+/public/
+/resources/_gen
+.hugo_build.lock

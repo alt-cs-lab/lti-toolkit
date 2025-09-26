@@ -1,0 +1,902 @@
+/**
+ * @file LTI Controller
+ * @author Russell Feldhausen <russfeld@ksu.edu>
+ * @exports LTIController an LTI Controller instance
+ */
+
+// Import libraries
+import { nanoid } from "nanoid";
+import xml2js from "xml2js";
+import crypto from "crypto";
+import ky from "ky";
+
+class LTIToolkitController {
+  /**
+   * LTI Controller
+   *
+   * @param {*} handleLaunch LTI controller launch handler
+   * @param {*} postProviderGrade Student controller postProviderGrade handler
+   * @param {*} models LTI toolkit models
+   * @param {*} logger Logger instance
+   */
+  constructor(
+    handleLaunch,
+    postProviderGrade,
+    models,
+    logger,
+    lti10,
+    lti13,
+    vars,
+  ) {
+    this.handleLaunch = handleLaunch;
+    this.postProviderGrade = postProviderGrade;
+    this.models = models;
+    this.logger = logger;
+    this.lti10 = lti10;
+    this.lti13 = lti13;
+    this.vars = vars;
+  }
+  /**
+   * Handle an LTI 1.0 Launch Request
+   *
+   * @param {Object} req - Express request object
+   * @return `false` if it is invalid, else ??
+   */
+  async launch10(req) {
+    this.logger.lti("LTI 1.0 Launch Request Received");
+    this.logger.debug(JSON.stringify(req.body, null, 2));
+    const launchResult = await this.lti10.validate10(req);
+    if (launchResult === false) {
+      this.logger.lti("Launch invalid!");
+      return false;
+    } else {
+      this.logger.lti("Launch valid!");
+      const customItems = Object.keys(launchResult)
+        .filter((key) => key.startsWith("custom_lpp_"))
+        .reduce((obj, key) => {
+          obj[key.substring(11)] = launchResult[key];
+          return obj;
+        }, {});
+      const launchData = {
+        launch_type: "lti1.0",
+        tool_consumer_key: launchResult.oauth_consumer_key,
+        tool_consumer_product:
+          launchResult.tool_consumer_info_product_family_code,
+        tool_consumer_guid: launchResult.tool_consumer_instance_guid,
+        tool_consumer_name: launchResult.tool_consumer_instance_name,
+        tool_consumer_version: launchResult.tool_consumer_info_version,
+        course_id: launchResult.context_id,
+        course_label: launchResult.context_label,
+        course_name: launchResult.context_title,
+        assignment_id: launchResult.resource_link_id,
+        assignment_lti_id: launchResult.ext_lti_assignment_id,
+        assignment_name: launchResult.resource_link_title,
+        return_url: launchResult.launch_presentation_return_url,
+        outcome_url: launchResult.lis_outcome_service_url,
+        outcome_id: launchResult.lis_result_sourcedid,
+        outcome_ags: null,
+        user_lis_id: launchResult.user_id,
+        user_lis13_id: null,
+        user_email: launchResult.lis_person_contact_email_primary,
+        user_name: launchResult.lis_person_name_full,
+        user_given_name: launchResult.lis_person_name_given,
+        user_family_name: launchResult.lis_person_name_family,
+        user_image: launchResult.user_image,
+        user_roles: launchResult.roles,
+        custom: customItems,
+      };
+      return await this.handleLaunch(launchData, req);
+    }
+  }
+
+  /**
+   * Handle an LTI 1.3 Login Request
+   *
+   * @param {String} key - the unique key for the tool consumer
+   * @param {Object} req - Express request object
+   * @return `false` if it is invalid, else return an authRequest form
+   */
+  async login13(key, req) {
+    this.logger.lti("LTI 1.3 Login Received for key: " + key);
+    this.logger.silly("Query: " + JSON.stringify(req.query, null, 2));
+    this.logger.silly("Body: " + JSON.stringify(req.body, null, 2));
+    const authRequestResult = await this.lti13.authRequest(key, req);
+    if (authRequestResult === false) {
+      this.logger.lti("Login invalid!");
+      return false;
+    } else {
+      this.logger.lti("Login valid!");
+      return authRequestResult;
+    }
+  }
+
+  /**
+   * Handle an LTI 1.3 Redirect Request
+   *
+   * @param {Object} req - Express request object
+   * @return `false` if it is invalid, else ??
+   */
+  async redirect13(req) {
+    this.logger.lti("LTI 1.3 Redirect Request Received");
+    this.logger.silly("Body: " + JSON.stringify(req.body, null, 2));
+    const launchResult = await this.lti13.redirectRequest(req);
+    if (launchResult === false) {
+      this.logger.lti("Redirect invalid!");
+      return false;
+    } else {
+      this.logger.lti("Redirect valid!");
+      const baseUrl = "https://purl.imsglobal.org/spec/lti/claim/";
+      const agsUrl = "https://purl.imsglobal.org/spec/lti-ags/claim/";
+      const launchData = {
+        launch_type: "lti1.3",
+        tool_consumer_key: launchResult.key,
+        tool_consumer_product:
+          launchResult[baseUrl + "tool_platform"].product_family_code,
+        tool_consumer_guid: launchResult[baseUrl + "tool_platform"].guid,
+        tool_consumer_name: launchResult[baseUrl + "tool_platform"].name,
+        tool_consumer_version: launchResult[baseUrl + "tool_platform"].version,
+        course_id: launchResult[baseUrl + "context"].id,
+        course_label: launchResult[baseUrl + "context"].label,
+        course_name: launchResult[baseUrl + "context"].title,
+        assignment_id: launchResult[baseUrl + "lti1p1"].resource_link_id,
+        assignment_lti_id: launchResult[baseUrl + "resource_link"].id,
+        assignment_name: launchResult[baseUrl + "resource_link"].title,
+        return_url: launchResult[baseUrl + "launch_presentation"].return_url,
+        outcome_url: launchResult[agsUrl + "endpoint"].lineitem,
+        outcome_id: null,
+        outcome_ags: JSON.stringify(launchResult[agsUrl + "endpoint"]),
+        user_lis_id: launchResult[baseUrl + "lti1p1"].user_id,
+        user_lis13_id: launchResult.sub,
+        user_email: launchResult.email,
+        user_name: launchResult.name,
+        user_given_name: launchResult.given_name,
+        user_family_name: launchResult.family_name,
+        user_image: launchResult.picture,
+        user_roles: launchResult[baseUrl + "roles"],
+        custom: launchResult[baseUrl + "custom"],
+      };
+      return await this.handleLaunch(launchData, req);
+    }
+  }
+
+  /**
+   * Generate LTI 1.0 Launch Form Data
+   *
+   * @param {string} key - the consumer key for the LTI tool
+   * @param {string} secret - the consumer secret for the LTI tool
+   * @param {string} url - the URL to launch the LTI tool
+   * @param {string} ret_url - the return URL for the LTI tool
+   * @param {Object} context - the context for the LTI launch (course)
+   * @param {Object} lesson - the lesson for the LTI launch
+   * @param {Object} user - the user launching the LTI tool
+   * @param {boolean} manager - true if the user is a course manager, else false
+   * @param {Object} assignment - the assignment for the LTI launch
+   * @return {Object} an object containing the form fields and action URL for the LTI launch
+   */
+  generateLTI10FormData(
+    key,
+    secret,
+    url,
+    ret_url,
+    context,
+    lesson,
+    user,
+    manager,
+    assignment,
+  ) {
+    // TODO: Add custom data
+    const launch = {
+      oauth_consumer_key: key,
+      oauth_signature_method: "HMAC-SHA1",
+      oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+      oauth_nonce: nanoid(),
+      oauth_version: "1.0",
+      context_id: context.key,
+      context_label: context.label,
+      context_title: context.name,
+      launch_presentation_document_target: "iframe",
+      launch_presentation_locale: "en",
+      launch_presentation_return_url: ret_url,
+      lis_outcome_service_url: new URL(
+        "/lti/consumer/grade_passback",
+        this.vars.domain_name,
+      ).href,
+      lis_result_sourcedid: `${context.key}:${lesson.key}:${user.key}:${assignment.key}`,
+      lis_person_contact_email_primary: user.email,
+      lis_person_name_family: user.family_name,
+      lis_person_name_full: user.name,
+      lis_person_name_given: user.given_name,
+      lti_message_type: "basic-lti-launch-request",
+      lti_version: "LTI-1p0",
+      oauth_callback: "about:blank",
+      resource_link_id: lesson.key,
+      resource_link_title: lesson.name,
+      roles: manager ? "Instructor" : "Learner",
+      tool_consumer_info_product_family_code: "learningpathplatform",
+      tool_consumer_info_version: "cloud",
+      tool_consumer_instance_contact_email: this.vars.admin_email,
+      tool_consumer_instance_guid: this.vars.deployment_id,
+      tool_consumer_instance_name: this.vars.deployment_name,
+      user_id: user.key,
+      user_image: user.image,
+    };
+    const signature = this.lti10.oauth_sign(
+      "HMAC-SHA1",
+      "POST",
+      url,
+      launch,
+      secret,
+    );
+    launch["oauth_signature"] = signature;
+    return {
+      fields: launch,
+      action: url,
+    };
+  }
+
+  /**
+   * Basic Outcomes Handler
+   *
+   * @param req - Express request object
+   * @returns {Object} - XML response body
+   * @see https://www.imsglobal.org/spec/lti-bo/v1p1
+   * @see https://www.imsglobal.org/gws/gwsv1p0/imsgws_wsdlBindv1p0.html
+   */
+  async basicOutcomesHandler(req) {
+    this.logger.lti("LTI Basic Outcomes Request Received");
+    this.logger.silly(JSON.stringify(req.body, null, 2));
+    this.logger.silly(req.headers["authorization"]);
+    this.logger.silly(req.headers["content-type"]);
+
+    // Validate the request
+    const providerKey = await this.lti10.validateOauthBody(req);
+    if (!providerKey) {
+      this.logger.lti("Invalid OAuth Signature");
+      return this.failureResponse({
+        code: "failure",
+        severity: "invalidtargetdatafail",
+        description: "Invalid OAuth Signature",
+      });
+    }
+
+    // Check Envelope
+    if (
+      !req.body["imsx_poxenveloperequest"] ||
+      req.body["imsx_poxenveloperequest"]["$"]["xmlns"] !=
+        "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0"
+    ) {
+      this.logger.lti("Invalid Envelope Request");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Invalid Envelope Request",
+        },
+        providerKey,
+        req.originalUrl,
+      );
+    }
+    // Get Envelope
+    const envelope = req.body["imsx_poxenveloperequest"];
+
+    // Check Header
+    if (!envelope["imsx_poxheader"]) {
+      this.logger.lti("Missing Envelope Header");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Invalid Envelope Header",
+        },
+        providerKey,
+        req.originalUrl,
+      );
+    }
+    const header = envelope["imsx_poxheader"];
+    if (!header["imsx_poxrequestheaderinfo"]) {
+      this.logger.lti("Missing Envelope Header Info");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Invalid Envelope Header Info",
+        },
+        providerKey,
+        req.originalUrl,
+      );
+    }
+    const headerinfo = header["imsx_poxrequestheaderinfo"];
+    if (!headerinfo["imsx_version"] || headerinfo["imsx_version"] !== "V1.0") {
+      this.logger.lti("Invalid Envelope Version");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Invalid Envelope Version",
+        },
+        providerKey,
+        req.originalUrl,
+      );
+    }
+    if (
+      !headerinfo["imsx_messageidentifier"] ||
+      headerinfo["imsx_messageidentifier"].length === 0
+    ) {
+      this.logger.lti("Missing Envelope Message Identifier");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Missing Envelope Message Identifier",
+        },
+        providerKey,
+        req.originalUrl,
+      );
+    }
+    // Get Message Identifier
+    const message_id = headerinfo["imsx_messageidentifier"];
+
+    // Check Body
+    if (!envelope["imsx_poxbody"]) {
+      this.logger.lti("Missing Envelope Body");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Invalid Envelope Body",
+        },
+        providerKey,
+        req.originalUrl,
+        message_id,
+      );
+    }
+    const body = envelope["imsx_poxbody"];
+
+    if (body["replaceresultrequest"]) {
+      return await this.replaceResultRequest(
+        body["replaceresultrequest"],
+        providerKey,
+        req.originalUrl,
+        message_id,
+      );
+    } else {
+      // TODO handle readResult or deleteResult?
+      let operation = Object.keys(body);
+      if (operation.endsWith("request")) {
+        operation = operation.slice(0, -7); // Remove "request" suffix
+      }
+      this.logger.lti("Unsupported Operation: " + operation);
+      // Return Unsupported Operation Response
+      const message = `The operation ${operation} is not supported by this LTI Tool Consumer`;
+      return this.failureResponse(
+        { code: "unsupported", severity: "status", description: message },
+        providerKey,
+        req.originalUrl,
+        message_id,
+        operation,
+      );
+    }
+  }
+
+  /**
+   * Handle a Replace Result Request
+   *
+   * @param {Object} request - the request object from the body
+   * @param {Object} providerKey - the key and secret for the provider
+   * @param {string} message_id - the message identifier from the header
+   * @returns {boolean} - true if the request is valid, else false
+   */
+  async replaceResultRequest(request, providerKey, url, message_id) {
+    this.logger.lti("Handling Replace Result Request");
+
+    // Parse Message
+    if (!request["resultrecord"]) {
+      this.logger.lti("Missing Result Record");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Missing Result Record",
+        },
+        providerKey,
+        url,
+        message_id,
+        "replaceResult",
+      );
+    }
+    const resultRecord = request["resultrecord"];
+    if (!resultRecord["result"]) {
+      this.logger.lti("Missing Result");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Missing Result",
+        },
+        providerKey,
+        url,
+        message_id,
+        "replaceResult",
+      );
+    }
+    const result = resultRecord["result"];
+
+    // Check Result
+    if (!result["resultscore"]) {
+      this.logger.lti("Missing Result Score");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Missing Result Score",
+        },
+        providerKey,
+        url,
+        message_id,
+        "replaceResult",
+      );
+    }
+    if (
+      !result["resultscore"]["textstring"] ||
+      result["resultscore"]["textstring"].length === 0
+    ) {
+      this.logger.lti("Missing Result Score Value");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Missing Result Score Value",
+        },
+        providerKey,
+        url,
+        message_id,
+        "replaceResult",
+      );
+    }
+    const score = result["resultscore"]["textstring"];
+    if (isNaN(score)) {
+      this.logger.lti("Invalid Result Score Value: " + score);
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Invalid Result Score Value",
+        },
+        providerKey,
+        url,
+        message_id,
+        "replaceResult",
+      );
+    }
+
+    // Check Source ID
+    if (!resultRecord["sourcedguid"]) {
+      this.logger.lti("Missing Result Source ID");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Missing Result Source ID",
+        },
+        providerKey,
+        url,
+        message_id,
+        "replaceResult",
+      );
+    }
+    const sourcedId = resultRecord["sourcedguid"];
+    if (!sourcedId["sourcedid"] || sourcedId["sourcedid"].length === 0) {
+      this.logger.lti("Missing Result Source ID Value");
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalidtargetdatafail",
+          description: "Missing Result Source ID Value",
+        },
+        providerKey,
+        url,
+        message_id,
+        "replaceResult",
+      );
+    }
+    const sourcedIdValue = sourcedId["sourcedid"];
+
+    // Parse Source ID
+    const sourceValues = sourcedIdValue.split(":");
+    if (sourceValues.length != 4) {
+      this.logger.lti(
+        "Invalid Source ID " + sourcedIdValue + " - expected 4 parts",
+      );
+      return this.failureResponse(
+        {
+          code: "failure",
+          severity: "invalididfail",
+          description:
+            "Invalid Source ID " + sourcedIdValue + " - expected 4 parts",
+        },
+        providerKey,
+        url,
+        message_id,
+        "replaceResult",
+      );
+    }
+    const [sectionKey, lessonKey, userKey, assignmentKey] = sourceValues;
+
+    // await StudentController.postProviderGrade(
+    //   sectionKey,
+    //   lessonKey,
+    //   userKey,
+    //   assignmentKey,
+    //   score,
+    // );
+
+    await this.postProviderGrade(
+      sectionKey,
+      lessonKey,
+      userKey,
+      assignmentKey,
+      score,
+    );
+
+    // TODO update assignment grade and send to tool consumer
+
+    /**
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <imsx_POXEnvelopeResponse xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">
+     * <imsx_POXHeader>
+     *   <imsx_POXResponseHeaderInfo>
+     *     <imsx_version>V1.0</imsx_version>
+     *     <imsx_messageIdentifier>4560</imsx_messageIdentifier>
+     *     <imsx_statusInfo>
+     *       <imsx_codeMajor>success</imsx_codeMajor>
+     *       <imsx_severity>status</imsx_severity>
+     *       <imsx_description>Score for 3124567 is now 0.92</imsx_description>
+     *       <imsx_messageRefIdentifier>999999123</imsx_messageRefIdentifier>
+     *       <imsx_operationRefIdentifier>replaceResult</imsx_operationRefIdentifier>
+     *     </imsx_statusInfo>
+     *   </imsx_POXResponseHeaderInfo>
+     * </imsx_POXHeader>
+     * <imsx_POXBody>
+     *   <replaceResultResponse />
+     * </imsx_POXBody>
+     * </imsx_POXEnvelopeResponse>
+     */
+    const reply = {
+      imsx_POXEnvelopeResponse: {
+        $: {
+          xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0",
+        },
+        imsx_POXHeader: {
+          imsx_POXResponseHeaderInfo: {
+            imsx_version: "V1.0",
+            imsx_messageIdentifier: nanoid(),
+            imsx_statusInfo: {
+              imsx_codeMajor: "success",
+              imsx_severity: "status",
+              imsx_description: `Score for ${sourcedIdValue} is now ${score}`,
+              imsx_messageRefIdentifier: message_id || "unknown",
+              imsx_operationRefIdentifier: "replaceResult",
+            },
+          },
+        },
+        imsx_POXBody: {
+          replaceResultResponse: {},
+        },
+      },
+    };
+    const builder = new xml2js.Builder();
+    const content = builder.buildObject(reply);
+    let headers = null;
+    if (providerKey && url) {
+      headers = await this.lti10.signOauthBody(
+        content,
+        providerKey.key,
+        providerKey.secret,
+        url,
+      );
+    }
+    return {
+      content: content,
+      headers: headers,
+    };
+  }
+
+  /**
+   * Handle a failure response
+   *
+   * @param {Object} error - the error
+   * @param {Object} providerKey - the key and secret for the provider
+   * @param {string} message_id - the message ID if available
+   * @param {string} operation - the failed operation
+   * @returns {Object} the response message
+   */
+  static async failureResponse(
+    error,
+    providerKey = null,
+    url = null,
+    message_id = null,
+    operation = null,
+  ) {
+    /**
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <imsx_POXEnvelopeResponse xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">
+     * <imsx_POXHeader>
+     *   <imsx_POXResponseHeaderInfo>
+     *     <imsx_version>V1.0</imsx_version>
+     *     <imsx_messageIdentifier>4560</imsx_messageIdentifier>
+     *     <imsx_statusInfo>
+     *       <imsx_codeMajor>unsupported</imsx_codeMajor>
+     *       <imsx_severity>status</imsx_severity>
+     *       <imsx_description>readPerson is not supported</imsx_description>
+     *       <imsx_messageRefIdentifier>999999123</imsx_messageRefIdentifier>
+     *       <imsx_operationRefIdentifier>readPerson</imsx_operationRefIdentifier>
+     *     </imsx_statusInfo>
+     *   </imsx_POXResponseHeaderInfo>
+     * </imsx_POXHeader>
+     * <imsx_POXBody/>
+     * </imsx_POXEnvelopeResponse>
+     */
+    const result = {
+      imsx_POXEnvelopeResponse: {
+        $: {
+          xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0",
+        },
+        imsx_POXHeader: {
+          imsx_POXResponseHeaderInfo: {
+            imsx_version: "V1.0",
+            imsx_messageIdentifier: nanoid(),
+            imsx_statusInfo: {
+              imsx_codeMajor: error.code,
+              imsx_severity: error.severity,
+              imsx_description: error.description,
+              imsx_messageRefIdentifier: message_id || "unknown",
+              imsx_operationRefIdentifier: operation || "unknown",
+            },
+          },
+        },
+        imsx_POXBody: {},
+      },
+    };
+    const builder = new xml2js.Builder();
+    const content = builder.buildObject(result);
+    let headers = null;
+    if (providerKey && url) {
+      headers = await this.lti10.signOauthBody(
+        content,
+        providerKey.key,
+        providerKey.secret,
+        url,
+      );
+    }
+    return {
+      content: content,
+      headers: headers,
+    };
+  }
+
+  /**
+   * Post a grade to a consumer
+   *
+   * @param {Grade} grade - the grade to post
+   */
+  static async postGrade(grade, assignment, consumer_user) {
+    this.logger.lti(
+      "Posting grade for user " +
+        grade.user_id +
+        " to assignment " +
+        grade.assignment_id,
+    );
+    if (!assignment || !consumer_user) {
+      this.logger.error(
+        "Cannot find assignment or consumer user for grade post",
+      );
+      return false;
+    }
+    const consumer = await this.models.Consumer.findByPk(
+      assignment.course.consumer_id,
+    );
+    if (!consumer) {
+      this.logger.error(
+        "Cannot find consumer for ID: " + assignment.course.consumer_id,
+      );
+      return false;
+    }
+    if (!assignment.grade_url) {
+      this.logger.error("Assignment does not have a grade URL");
+      return false;
+    }
+    // Switch between LTI 1.0 and LTI 1.3
+    if (grade.lms_grade_id) {
+      // Has Grade ID, expecting Basic Outcomes
+      /**
+       * <?xml version="1.0" encoding="UTF-8"?>
+       * <imsx_POXEnvelopeRequest xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">
+       * <imsx_POXHeader>
+       *   <imsx_POXRequestHeaderInfo>
+       *     <imsx_version>V1.0</imsx_version>
+       *     <imsx_messageIdentifier>999999123</imsx_messageIdentifier>
+       *   </imsx_POXRequestHeaderInfo>
+       * </imsx_POXHeader>
+       * <imsx_POXBody>
+       *   <replaceResultRequest>
+       *     <resultRecord>
+       *       <sourcedGUID>
+       *         <sourcedId>3124567</sourcedId>
+       *       </sourcedGUID>
+       *       <result>
+       *         <resultScore>
+       *           <language>en</language>
+       *           <textString>0.92</textString>
+       *         </resultScore>
+       *       </result>
+       *     </resultRecord>
+       *   </replaceResultRequest>
+       * </imsx_POXBody>
+       * </imsx_POXEnvelopeRequest>
+       */
+      const envelope = {
+        imsx_POXEnvelopeRequest: {
+          $: {
+            xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0",
+          },
+          imsx_POXHeader: {
+            imsx_POXRequestHeaderInfo: {
+              imsx_version: "V1.0",
+              imsx_messageIdentifier: nanoid(),
+            },
+          },
+          imsx_POXBody: {
+            replaceResultRequest: {
+              resultRecord: {
+                sourcedGUID: {
+                  sourcedId: grade.lms_grade_id,
+                },
+                result: {
+                  resultScore: {
+                    language: "en",
+                    textString: grade.score,
+                  },
+                },
+              },
+            },
+          },
+        },
+      };
+      const builder = new xml2js.Builder();
+      const content = builder.buildObject(envelope);
+      let headers = null;
+      const providerKey = await this.models.ConsumerKey.findOne({
+        where: { key: consumer.key },
+        attributes: ["key", "secret"],
+      });
+      const url = assignment.grade_url;
+      if (!providerKey) {
+        this.logger.error(
+          "Cannot find provider key for consumer " + consumer.key,
+        );
+        return false;
+      }
+      if (providerKey && url) {
+        headers = await this.lti10.signOauthBody(
+          content,
+          providerKey.key,
+          providerKey.secret,
+          url,
+        );
+      }
+      this.logger.silly("Posting grade to " + assignment.grade_url);
+      this.logger.silly("Headers: " + headers);
+      this.logger.silly("Content: " + content);
+      try {
+        const response = await ky.post(assignment.grade_url, {
+          headers: {
+            Authorization: headers,
+            "Content-Type": "application/xml",
+          },
+          body: content,
+        });
+        // parse response.text to xml
+        const responseText = await response.text();
+        const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+        const responseXml = await parser.parseStringPromise(responseText);
+        this.logger.silly(
+          "Response XML: " + JSON.stringify(responseXml, null, 2),
+        );
+        if (response && response.status === 200) {
+          if (
+            responseXml.imsx_POXEnvelopeResponse.imsx_POXHeader
+              .imsx_POXResponseHeaderInfo.imsx_statusInfo.imsx_codeMajor ===
+            "success"
+          ) {
+            this.logger.lti(
+              "Grade posted successfully for user " + grade.user_id,
+            );
+            return true;
+          } else {
+            this.logger.lti("Failed to post grade for user " + grade.user_id);
+            this.logger.debug(
+              "Response: " + JSON.stringify(responseXml, null, 2),
+            );
+            return false;
+          }
+        } else {
+          this.logger.lti("Failed to post grade for user " + grade.user_id);
+          this.logger.debug(
+            "Response: " + JSON.stringify(responseXml, null, 2),
+          );
+          return false;
+        }
+      } catch (error) {
+        this.logger.error("Error posting grade: " + error.message);
+        return false;
+      }
+    } else {
+      // Does not have Grade ID, expecting AGS
+      if (!consumer.lti13) {
+        this.logger.error(
+          "Assignment does not have LMS grade ID but Consumer does not support LTI 1.3",
+        );
+        return false;
+      }
+      const token = await this.lti13.getAccessToken(
+        assignment.course.consumer.id,
+        "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+      );
+      // TODO Handle completed vs. incomplete grades here
+      const lineitem = {
+        timestamp: new Date(Date.now()).toISOString(),
+        scoreGiven: parseFloat(grade.score),
+        scoreMaximum: 1.0,
+        activityProgress: "Submitted",
+        gradingProgress: "FullyGraded",
+        userId: consumer_user.lms13_user_id,
+      };
+      this.logger.silly(JSON.stringify(lineitem, null, 2));
+      try {
+        const response = await ky.post(assignment.grade_url + "/scores", {
+          json: lineitem,
+          headers: {
+            Authorization: `${token.token_type} ${token.access_token}`,
+            "Content-Type": "application/vnd.ims.lis.v1.score+json",
+          },
+        });
+        if (response && response.status === 200) {
+          this.logger.lti(
+            "Grade posted successfully for user " + grade.user_id,
+          );
+          return true;
+        } else {
+          this.logger.lti("Failed to post grade for user " + grade.user_id);
+          this.logger.lti("Response: " + JSON.stringify(response, null, 2));
+          return false;
+        }
+      } catch (error) {
+        this.logger.error("Error posting grade: " + error.message);
+        return false;
+      }
+    }
+  }
+
+  /**
+   * Generate the JWKS for tool consumers
+   *
+   *
+   */
+  async generateConsumerJWKS() {
+    const keys = await this.models.ConsumerKey.findAll();
+    const output = [];
+    keys.forEach((k) => {
+      if (k.public) {
+        const publicKey = crypto.createPublicKey(k.public);
+        const jwk = publicKey.export({ format: "jwk" });
+        jwk.kid = k.key;
+        jwk.alg = "RS256";
+        jwk.use = "sig";
+        output.push(jwk);
+      }
+    });
+    return output;
+  }
+}
+
+export default LTIToolkitController;

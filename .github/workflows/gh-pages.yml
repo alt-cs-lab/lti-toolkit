@@ -1,0 +1,71 @@
+name: GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Branch to deploy from
+  pull_request:
+
+jobs:
+  deploy:
+    # https://github.com/actions/runner-images
+    runs-on: ubuntu-latest
+
+    env:
+      ########################
+      # CHANGE ME HERE       #
+      # Hugo Version         #
+      HUGO_VERSION: 0.148.1
+      ########################
+
+      # https://github.com/peaceiris/actions-hugo?tab=readme-ov-file#%EF%B8%8F-caching-hugo-modules
+      HUGO_CACHEDIR: /tmp/hugo_cache # Hugo cache directory
+
+    # https://docs.github.com/en/actions/using-jobs/using-concurrency
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      # https://github.com/actions/checkout
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history to populate last modified information
+
+      # https://github.com/peaceiris/actions-hugo
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ env.HUGO_VERSION }}
+          # extended: true
+
+      # https://github.com/peaceiris/actions-hugo?tab=readme-ov-file#%EF%B8%8F-caching-hugo-modules
+      # https://github.com/actions/cache
+      - name: Read Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.HUGO_CACHEDIR }}
+          key: ${{ runner.os }}-hugomod-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-hugomod-
+
+      # Build Options Here
+      # https://gohugo.io/commands/hugo/
+      - name: Build Hugo Site
+        run: hugo
+        working-directory: ./docs
+
+      # https://github.com/peaceiris/actions-gh-pages
+      - name: Deploy to GH Pages
+        uses: peaceiris/actions-gh-pages@v4
+        # only publish on push to main branch
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/public
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: ${{ github.event.head_commit.message }}
+          # only for root website, not subdirectories
+          # cname: alt.cs.ksu.edu

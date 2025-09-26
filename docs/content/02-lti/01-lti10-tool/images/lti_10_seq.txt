@@ -1,0 +1,33 @@
+title LTI 1.0 Launch
+
+actor User
+participant "LTI Tool Consumer\n(Canvas)" as TC
+participant Browser
+entryspacing 0.3
+participantgroup #lightgrey Server
+rparticipant LTI Router
+rparticipant LTI Controller
+rparticipant LTI Utility
+database Database
+end
+
+TC->Browser: Display LTI Launch Page
+User->Browser:           Click LTI Launch
+Browser->LTI Router: <align:center>POST   \n/lti/provider/launch10   \n<LTI 1.0 Launch Data>   
+activate LTI Router
+LTI Router->LTI Controller: launch10(req)
+activate LTI Controller
+LTI Controller->LTI Utility: validate10(req)
+activate LTI Utility
+note over LTI Utility: <align:center>Validate Body\nValidate LTI Params\nValidate OAuth Params\nCheck OAuth Timestamp\nCheck OAuth Nonce
+LTI Utility->Database: Find Secret for Consumer Key
+activate Database
+Database->LTI Utility: LTI Secret
+deactivate Database
+note over LTI Utility: <align:center>Compute OAuth Signature\nValidate OAuth Signature
+LTI Utility->LTI Controller: LTI Payload
+==more work here==
+deactivate LTI Utility
+LTI Controller->LTI Router: //redirect action?//
+LTI Router->Browser: //redirect?//
+deactivate LTI Controller
