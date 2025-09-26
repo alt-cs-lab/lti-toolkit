@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+
+<html lang="en-us" dir="ltr" itemscope itemtype="http://schema.org/Article" data-r-output-format="print">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.148.1">
+    <meta name="generator" content="Relearn 8.0.0">
+    <meta name="description" content="References https://github.com/instructure/canvas-lms/wiki/Quick-Start https://github.com/instructure/canvas-lms/blob/master/doc/docker/developing_with_docker.md Requirements This was configured for my local development machine. It has the following already installed/configured:
+Ubuntu 24.04 LTS Docker: https://docs.docker.com/engine/install/ubuntu/ The local user account was already added to the docker group A working Traefik proxy configured for home.russfeld.me with Let’s Encrypt SSL certificates enabled: https://traefik.io/traefik/ A world-routable DNS name home.russfeld.me directed to the IP address of the system Since this is running at home, it is port-forwarded through my local router and I use a Dynamic DNS system to keep this up to date A world-routable DNS name is required when testing some external LTI tools - localhost will not work Other options might be ngrok or another VPN There may have been other tools installed earlier that I did not account for here.">
+    <meta name="author" content="K-State ALT&#43;CS Lab">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <meta name="twitter:title" content="Installing Canvas :: LTI Toolkit">
+    <meta name="twitter:description" content="References https://github.com/instructure/canvas-lms/wiki/Quick-Start https://github.com/instructure/canvas-lms/blob/master/doc/docker/developing_with_docker.md Requirements This was configured for my local development machine. It has the following already installed/configured:
+Ubuntu 24.04 LTS Docker: https://docs.docker.com/engine/install/ubuntu/ The local user account was already added to the docker group A working Traefik proxy configured for home.russfeld.me with Let’s Encrypt SSL certificates enabled: https://traefik.io/traefik/ A world-routable DNS name home.russfeld.me directed to the IP address of the system Since this is running at home, it is port-forwarded through my local router and I use a Dynamic DNS system to keep this up to date A world-routable DNS name is required when testing some external LTI tools - localhost will not work Other options might be ngrok or another VPN There may have been other tools installed earlier that I did not account for here.">
+    <meta property="og:url" content="https://alt.cs.ksu.edu/lti-toolkit/01-setup/01-canvas/index.html">
+    <meta property="og:site_name" content="LTI Toolkit">
+    <meta property="og:title" content="Installing Canvas :: LTI Toolkit">
+    <meta property="og:description" content="References https://github.com/instructure/canvas-lms/wiki/Quick-Start https://github.com/instructure/canvas-lms/blob/master/doc/docker/developing_with_docker.md Requirements This was configured for my local development machine. It has the following already installed/configured:
+Ubuntu 24.04 LTS Docker: https://docs.docker.com/engine/install/ubuntu/ The local user account was already added to the docker group A working Traefik proxy configured for home.russfeld.me with Let’s Encrypt SSL certificates enabled: https://traefik.io/traefik/ A world-routable DNS name home.russfeld.me directed to the IP address of the system Since this is running at home, it is port-forwarded through my local router and I use a Dynamic DNS system to keep this up to date A world-routable DNS name is required when testing some external LTI tools - localhost will not work Other options might be ngrok or another VPN There may have been other tools installed earlier that I did not account for here.">
+    <meta property="og:locale" content="en_us">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Setup">
+    <meta property="article:modified_time" content="2025-09-26T19:04:14+00:00">
+    <meta property="og:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <meta itemprop="name" content="Installing Canvas :: LTI Toolkit">
+    <meta itemprop="description" content="References https://github.com/instructure/canvas-lms/wiki/Quick-Start https://github.com/instructure/canvas-lms/blob/master/doc/docker/developing_with_docker.md Requirements This was configured for my local development machine. It has the following already installed/configured:
+Ubuntu 24.04 LTS Docker: https://docs.docker.com/engine/install/ubuntu/ The local user account was already added to the docker group A working Traefik proxy configured for home.russfeld.me with Let’s Encrypt SSL certificates enabled: https://traefik.io/traefik/ A world-routable DNS name home.russfeld.me directed to the IP address of the system Since this is running at home, it is port-forwarded through my local router and I use a Dynamic DNS system to keep this up to date A world-routable DNS name is required when testing some external LTI tools - localhost will not work Other options might be ngrok or another VPN There may have been other tools installed earlier that I did not account for here.">
+    <meta itemprop="dateModified" content="2025-09-26T19:04:14+00:00">
+    <meta itemprop="wordCount" content="863">
+    <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <title>Installing Canvas :: LTI Toolkit</title>
+    <link href="https://alt.cs.ksu.edu/lti-toolkit/01-setup/01-canvas/index.html" rel="canonical" type="text/html" title="Installing Canvas :: LTI Toolkit">
+    <link href="/lti-toolkit/01-setup/01-canvas/index.xml" rel="alternate" type="application/rss+xml" title="Installing Canvas :: LTI Toolkit">
+    <link href="/lti-toolkit/01-setup/01-canvas/tele.html" rel="alternate" type="text/html" title="Installing Canvas :: LTI Toolkit">
+    <link href="/lti-toolkit/01-setup/01-canvas/embed.html" rel="alternate" type="text/html" title="Installing Canvas :: LTI Toolkit">
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1758913506" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1758913506" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1758913506" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1758913506" defer></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1758913506";
+    </script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1758913506" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1758913506" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1758913506" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1758913506" defer></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.contentLangs=['en'];
+    </script>
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1758913506" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1758913506" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1758913506" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1758913506" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-print.min.css?1758913506" rel="stylesheet" id="R-format-style">
+    <script>
+      window.relearn = window.relearn || {};
+      // configuration
+      window.relearn.min = `.min`;
+      window.relearn.path='\/01-setup\/01-canvas\/index.html';
+      window.relearn.relBasePath='..\/..';
+      window.relearn.relBaseUri='..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/alt.cs.ksu.edu\/lti-toolkit';
+      window.relearn.disableAnchorCopy=false;
+      window.relearn.disableAnchorScrolling=false;
+      window.relearn.disableInlineCopyToClipboard=true;
+      window.relearn.enableBlockCodeWrap=false;
+      // legal
+      window.relearn.getItem = (s,n) => {return s.getItem(n)};
+      window.relearn.setItem = (s,n,v) => {return s.setItem(n,v)};
+      window.relearn.removeItem = (s,n) => {return s.removeItem(n)};
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+      // variant stuff
+      window.relearn.themevariants = [ 'light-theme' ];
+      window.relearn.customvariantname = "my-custom-variant";
+      // [x] russfeld
+      window.relearn.writeVariant=false;
+      window.relearn.changeVariant = function(variant) {
+        var oldVariant = document.documentElement.dataset.rThemeVariant;
+        window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
+        document.documentElement.dataset.rThemeVariant = variant;
+        if (oldVariant != variant) {
+          document.dispatchEvent( new CustomEvent('themeVariantLoaded', { detail: { variant, oldVariant } }) );
+          window.relearn.markVariant();
+        }
+      }
+      window.relearn.markVariant = function() {
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant");
+        document.querySelectorAll(".R-variantswitcher select").forEach((select) => {select.value = variant;});
+      }
+      window.relearn.initVariant = function() {
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant") ?? "";
+        if( variant == window.relearn.customvariantname ){
+        }else if( !variant || !window.relearn.themevariants.includes(variant) ){
+          variant = window.relearn.themevariants[0];
+          
+          if (window.relearn.writeVariant) {
+            window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
+          }
+        }
+        document.documentElement.dataset.rThemeVariant = variant;
+      }
+      window.relearn.initVariant();
+      window.relearn.markVariant();
+    </script>
+    <link href="/lti-toolkit/css/custom.css?1758913506" rel="stylesheet">
+  </head>
+  <body class="mobile-support print" data-url="/lti-toolkit/01-setup/01-canvas/index.html">
+    
+    <div id="tele" class="tele mirror">
+    
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      
+      
+      
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable 01-setup" tabindex="-1">
+        <div class="flex-block-wrapper">
+<article class="default">
+  <header class="headline">
+  </header>
+
+<h1 id="installing-canvas">Installing Canvas</h1>
+
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://github.com/instructure/canvas-lms/wiki/Quick-Start" rel="external" target="_blank">https://github.com/instructure/canvas-lms/wiki/Quick-Start</a></li>
+<li><a href="https://github.com/instructure/canvas-lms/blob/master/doc/docker/developing_with_docker.md" rel="external" target="_blank">https://github.com/instructure/canvas-lms/blob/master/doc/docker/developing_with_docker.md</a></li>
+</ul>
+<h2 id="requirements">Requirements</h2>
+<p>This was configured for my local development machine. It has the following already installed/configured:</p>
+<ul>
+<li>Ubuntu 24.04 LTS</li>
+<li>Docker: <a href="https://docs.docker.com/engine/install/ubuntu/" rel="external" target="_blank">https://docs.docker.com/engine/install/ubuntu/</a>
+<ul>
+<li>The local user account was already added to the <code>docker</code> group</li>
+</ul>
+</li>
+<li>A working Traefik proxy configured for <code>home.russfeld.me</code> with Let&rsquo;s Encrypt SSL certificates enabled: <a href="https://traefik.io/traefik/" rel="external" target="_blank">https://traefik.io/traefik/</a></li>
+<li>A world-routable DNS name <code>home.russfeld.me</code> directed to the IP address of the system
+<ul>
+<li>Since this is running at home, it is port-forwarded through my local router and I use a Dynamic DNS system to keep this up to date</li>
+<li>A world-routable DNS name is required when testing some external LTI tools - <code>localhost</code> <strong>will not</strong> work</li>
+<li>Other options might be <a href="https://ngrok.com/" rel="external" target="_blank">ngrok</a> or another VPN</li>
+</ul>
+</li>
+</ul>
+<p>There may have been other tools installed earlier that I did not account for here.</p>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>Clone Repository</li>
+</ol>
+<div class="tab-panel" data-tab-group="5804fb49d93c519bb1fa3820184f0b50">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('5804fb49d93c519bb1fa3820184f0b50','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git clone git@github.com:instructure/canvas-lms.git</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><ol start="2">
+<li>Modify Setup Script</li>
+</ol>
+<p>The setup script insists that Docker Compose be installed separately; it is now part of the default Docker installation on Ubuntu and does not appear as a separate item on my system. So, it can be removed from the setup script.</p>
+<div class="tab-panel" data-tab-group="fb867d7af5e52f35d8132e28c23c7496">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="scriptcommonoslinuxdev_setupsh"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('fb867d7af5e52f35d8132e28c23c7496','scriptcommonoslinuxdev_setupsh')"
+    >
+      <span class="tab-nav-text">script/common/os/linux/dev_setup.sh</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="scriptcommonoslinuxdev_setupsh"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span>#!/bin/bash
+</span></span><span style="display:flex;"><span>source script/common/utils/common.sh
+</span></span><span style="display:flex;"><span>source script/common/os/linux/impl.sh
+</span></span><span style="display:flex;"><span>source script/common/utils/dory_setup.sh
+</span></span><span style="display:flex;"><span><span style="color:#f92672">- dependencies=&#39;docker,docker-compose 1.20.0&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+ dependencies=&#39;docker&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span>DOCKER_COMMAND=&#34;docker compose&#34;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>message &#34;It looks like you&#39;re using Linux. Let&#39;s set that up.&#34;
+</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><ol start="3">
+<li>Export Environment Settings</li>
+</ol>
+<p>My development environment seems to require these settings:</p>
+<div class="tab-panel" data-tab-group="52b73a1fd200552d83bcc2ebbb495add">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('52b73a1fd200552d83bcc2ebbb495add','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ export DOCKER_BUILDKIT<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>$ export COMPOSE_DOCKER_CLI_BUILD<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span></span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><ol start="4">
+<li>Set Gemfile Permissions</li>
+</ol>
+<p>There are several file permission errors that will crop up during the build. The best fix is to give Canvas user permission to all files in the build folder via <code>setfacl</code>:</p>
+<div class="tab-panel" data-tab-group="99907b694b4995d3f3ee2777e04e0e72">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('99907b694b4995d3f3ee2777e04e0e72','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ setfacl -Rm u:9999:rwX,g:9999:rwX .
+</span></span><span style="display:flex;"><span>$ setfacl -dRm u:9999:rwX,g:9999:rwX .</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p><strong>Discussion:</strong></p>
+<ul>
+<li><a href="https://github.com/instructure/canvas-lms/issues/1221" rel="external" target="_blank">https://github.com/instructure/canvas-lms/issues/1221</a></li>
+<li><a href="https://github.com/instructure/canvas-lms/issues/1649" rel="external" target="_blank">https://github.com/instructure/canvas-lms/issues/1649</a> <em>(I used this solution)</em></li>
+<li><a href="https://github.com/instructure/canvas-lms/issues/2199" rel="external" target="_blank">https://github.com/instructure/canvas-lms/issues/2199</a></li>
+</ul>
+<ol start="5">
+<li>Run Setup Script</li>
+</ol>
+<div class="tab-panel" data-tab-group="098adbd2bfa15712e86acafa09d599b2">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('098adbd2bfa15712e86acafa09d599b2','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ ./script/docker_dev_setup.sh</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>Setup options:</p>
+<ul>
+<li>Would you like to skip dory? <strong>yes</strong> <em>(we will use Traefik)</em></li>
+<li>OK to run &lsquo;cp docker-compose/config/*.yml config/&rsquo;? <strong>yes</strong> <em>(you may not want to do this a second time if you&rsquo;ve made edits)</em></li>
+<li>Do you want to drop and create new or migrate existing? <strong>drop</strong> <em>(you may want to use <strong>migrate</strong> on future runs)</em></li>
+<li>What email address will the site administrator account use? <strong><a href="mailto:canvasadmin@russfeld.me" rel="external" target="_blank">canvasadmin@russfeld.me</a></strong></li>
+<li>What password will the site administrator use? <strong>[random password here]</strong></li>
+<li>What do you want users to see as the account name? This should probably be the name of your organization. <strong>ALT+CS Lab</strong></li>
+<li>To help our developers better serve you, Instructure would like to collect some usage data about your Canvas installation. You can change this setting at any time. <strong>3. Opt out completely</strong></li>
+</ul>
+<ol start="6">
+<li>Notes from the end of the installation process:</li>
+</ol>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>  Running Canvas:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    docker compose up -d
+</span></span><span style="display:flex;"><span>    open http://canvas.docker
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  Running the tests:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    docker compose run --rm web bundle exec rspec
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   Running Selenium tests:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    add docker-compose/selenium.override.yml in the .env file
+</span></span><span style="display:flex;"><span>      echo &#39;:docker-compose/selenium.override.yml&#39; &gt;&gt; .env
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    build the selenium container
+</span></span><span style="display:flex;"><span>      docker compose up -d selenium-hub
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    run selenium
+</span></span><span style="display:flex;"><span>      docker compose run --rm web bundle exec rspec spec/selenium
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Virtual network remote desktop sharing to selenium container
+</span></span><span style="display:flex;"><span>      for Firefox:
+</span></span><span style="display:flex;"><span>        $ open vnc://secret:secret@seleniumff.docker
+</span></span><span style="display:flex;"><span>      for chrome:
+</span></span><span style="display:flex;"><span>        $ open vnc://secret:secret@seleniumch.docker:5901
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  I&#39;m stuck. Where can I go for help?
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    FAQ:           https://github.com/instructure/canvas-lms/wiki/FAQ
+</span></span><span style="display:flex;"><span>    Dev &amp; Friends: http://instructure.github.io/
+</span></span><span style="display:flex;"><span>    Canvas Guides: https://guides.instructure.com/
+</span></span><span style="display:flex;"><span>    Vimeo channel: https://vimeo.com/canvaslms
+</span></span><span style="display:flex;"><span>    API docs:      https://canvas.instructure.com/doc/api/index.html
+</span></span><span style="display:flex;"><span>    Mailing list:  http://groups.google.com/group/canvas-lms-users
+</span></span><span style="display:flex;"><span>    IRC:           https://web.libera.chat/#canvas-lms
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Please do not open a GitHub issue until you have tried asking for help on
+</span></span><span style="display:flex;"><span>    the mailing list or IRC - GitHub issues are for verified bugs only.
+</span></span><span style="display:flex;"><span>    Thanks and good luck!
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  \o/ Success!</span></span></code></pre></div>
+<ol start="7">
+<li>Edit Configuration Files</li>
+</ol>
+<p><strong>Domain Configuration</strong></p>
+<div class="tab-panel" data-tab-group="df65dd605fe80436e2ea31ea42a81fc9">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="configdomainyml"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('df65dd605fe80436e2ea31ea42a81fc9','configdomainyml')"
+    >
+      <span class="tab-nav-text">config/domain.yml</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="configdomainyml"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">production</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">domain</span>: <span style="color:#e6db74">&#34;canvas.home.russfeld.me&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">domain</span>: <span style="color:#ae81ff">localhost</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">development</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">domain</span>: <span style="color:#e6db74">&#34;canvas.home.russfeld.me&#34;</span></span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p><strong>Email Configuration</strong></p>
+<div class="tab-panel" data-tab-group="87f8e790a6e7e53f98d519f1b0078b45">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="configoutgoing_mailyml"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('87f8e790a6e7e53f98d519f1b0078b45','configoutgoing_mailyml')"
+    >
+      <span class="tab-nav-text">config/outgoing_mail.yml</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="configoutgoing_mailyml"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">production</span>: <span style="color:#75715e">&amp;production</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">address</span>: <span style="color:#ae81ff">mailcatcher</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">port</span>: <span style="color:#ae81ff">1025</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">domain</span>: <span style="color:#ae81ff">canvas.home.russfeld.me</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">outgoing_address</span>: <span style="color:#ae81ff">canvas@russfeld.me</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">default_name</span>: <span style="color:#ae81ff">ALT+CS Lab Canvas</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">development</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*production</span></span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p><strong>Security Configuration</strong></p>
+<div class="tab-panel" data-tab-group="e61553360193c058033f8486be891bca">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="configsecurityyml"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('e61553360193c058033f8486be891bca','configsecurityyml')"
+    >
+      <span class="tab-nav-text">config/security.yml</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="configsecurityyml"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">production</span>: <span style="color:#75715e">&amp;default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">encryption_key</span>: <span style="color:#ae81ff">&lt;%= ENV[&#34;ENCRYPTION_KEY&#34;] %&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">lti_iss</span>: <span style="color:#e6db74">&#39;https://canvas.home.russfeld.me&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">development</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*default</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*default</span></span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><ol start="8">
+<li>Enable Mailcatcher</li>
+</ol>
+<p>Enable the Mailcatcher service by adding it to the .env file:</p>
+<div class="tab-panel" data-tab-group="948634bff26d0d43b8cca1b3d5cfbc0e">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="env"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('948634bff26d0d43b8cca1b3d5cfbc0e','env')"
+    >
+      <span class="tab-nav-text">.env</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="env"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-env" data-lang="env"><span style="display:flex;"><span>COMPOSE_FILE<span style="color:#f92672">=</span>docker-compose.yml:docker-compose.override.yml:docker-compose/mailcatcher.override.yml</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p><strong>Discussion</strong></p>
+<ul>
+<li><a href="https://github.com/instructure/canvas-lms/blob/master/doc/docker/developing_with_docker.md#mail-catcher" rel="external" target="_blank">https://github.com/instructure/canvas-lms/blob/master/doc/docker/developing_with_docker.md#mail-catcher</a></li>
+</ul>
+<ol start="9">
+<li>Update Docker Compose Files</li>
+</ol>
+<p>This will set the Traefik tags for each container and other options.</p>
+<p><strong>Main Docker Compose</strong></p>
+<div class="tab-panel" data-tab-group="870abd01a44116e21bcb06aefe2f3331">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="docker-composeoverrideyml"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('870abd01a44116e21bcb06aefe2f3331','docker-composeoverrideyml')"
+    >
+      <span class="tab-nav-text">docker-compose.override.yml</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="docker-composeoverrideyml"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span>web:
+</span></span><span style="display:flex;"><span>    &lt;&lt;: *BASE
+</span></span><span style="display:flex;"><span>    environment:
+</span></span><span style="display:flex;"><span>      &lt;&lt;: *BASE-ENV
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-     VIRTUAL_HOST: .canvas.docker
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+     VIRTUAL_HOST: .canvas.home.russfeld.me
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span>      HTTPS_METHOD: noredirect
+</span></span><span style="display:flex;"><span>      # AR_QUERY_TRACE: &#39;true&#39;
+</span></span><span style="display:flex;"><span>      # AR_QUERY_TRACE_TYPE: &#39;all&#39; # &#39;all&#39;, &#39;write&#39;, or &#39;read&#39;
+</span></span><span style="display:flex;"><span>      # AR_QUERY_TRACE_LINES: 10
+</span></span><span style="display:flex;"><span>      # DISABLE_N_PLUS_ONE_DETECTION: &#39;false&#39;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">+   # @russfeld
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+   networks:
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - traefik
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - default
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+   labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # Traefik Labels - see https://doc.traefik.io/traefik/routing/providers/docker/
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # Traefik Enable
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - &#34;traefik.enable=true&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # Docker Network
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - &#34;traefik.docker.network=traefik&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # Routing Rule
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - &#34;traefik.http.routers.canvas.rule=Host(`canvas.home.russfeld.me`)&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # Enable TLS
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - &#34;traefik.http.routers.canvas.tls=true&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # TLS Certificate Resolver
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - &#34;traefik.http.routers.canvas.tls.certresolver=letsencrypt&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">+#Bottom of the file
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+networks:
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+ traefik:
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+   external: true
+</span></span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p><strong>Mailcatcher Docker Compose</strong></p>
+<div class="tab-panel" data-tab-group="f46c30acdc02ebf4842bfcaf171937f5">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="docker-composemailcatcheroverrideyml"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('f46c30acdc02ebf4842bfcaf171937f5','docker-composemailcatcheroverrideyml')"
+    >
+      <span class="tab-nav-text">docker-compose/mailcatcher.override.yml</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="docker-composemailcatcheroverrideyml"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span>services:
+</span></span><span style="display:flex;"><span>  web:
+</span></span><span style="display:flex;"><span>    links:
+</span></span><span style="display:flex;"><span>      - mailcatcher
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  mailcatcher:
+</span></span><span style="display:flex;"><span>    image: instructure/mailcatcher
+</span></span><span style="display:flex;"><span>    environment:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-     VIRTUAL_HOST: mail.canvas.docker
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+     VIRTUAL_HOST: mail.home.russfeld.me
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span>      VIRTUAL_PORT: 8080
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">+   # @russfeld
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+   networks:
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - traefik
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - default
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+   labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # Traefik Labels - see https://doc.traefik.io/traefik/routing/providers/docker/
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # Traefik Enable
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - &#34;traefik.enable=true&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # Docker Network
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - &#34;traefik.docker.network=traefik&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # Routing Rule
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - &#34;traefik.http.routers.mailcatcher.rule=Host(`mail.home.russfeld.me`)&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # Change Port
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - &#34;traefik.http.services.mailcatcher.loadbalancer.server.port=8080&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # Enable TLS
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - &#34;traefik.http.routers.mailcatcher.tls=true&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # TLS Certificate Resolver
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     - &#34;traefik.http.routers.mailcatcher.tls.certresolver=letsencrypt&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+     # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">+#Bottom of the file
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+networks:
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+ traefik:
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+   external: true
+</span></span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><ol start="10">
+<li>Start the Server</li>
+</ol>
+<div class="tab-panel" data-tab-group="a2506b357a9eafc7663e0d7d17dc07ba">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('a2506b357a9eafc7663e0d7d17dc07ba','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ docker compose up -d</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div>
+  <footer class="footline">
+  </footer>
+</article>
+        </div>
+      </main>
+      
+      
+      
+    </div>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1758913506" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1758913506" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1758913506" defer></script>
+      
+      
+      
+    </div> 
+  <script src="/lti-toolkit/js/tele-scroll.min.js?1758913506" defer></script>
+  </body>
+</html>

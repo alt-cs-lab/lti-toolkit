@@ -1,0 +1,67 @@
+title LTI 1.3 Launch
+
+actor User
+participant "LTI Tool Consumer\n(Canvas)" as TC
+participant Browser
+entryspacing 0.3
+participantgroup #lightgrey Server
+rparticipant LTI Router
+rparticipant LTI Controller
+rparticipant LTI Utility
+database Database
+end
+
+TC->Browser: Display LTI Launch Page
+User->Browser:           Click LTI Launch
+Browser->LTI Router: <align:center>POST   \n/lti/provider/login13/:key   \n<LTI 1.3 Login Data>   
+activate LTI Router
+LTI Router->LTI Controller: login13(key, req)
+activate LTI Controller
+LTI Controller->LTI Utility: authRequest(key, req)
+activate LTI Utility
+note over LTI Utility: <align:center>Lookup Key
+LTI Utility->Database: Find Consumer for Key
+activate Database
+Database->LTI Utility: Consumer
+deactivate Database
+note over LTI Utility: <align:center>Verify Issuer\nVerify Hint\nVerify Client ID\nVerify Deployment ID\nVerify Target Link URI\nGenerate State & Nonce
+LTI Utility->Database: Save ConsumerLogin State
+activate Database
+Database->LTI Utility: //saved//
+deactivate Database
+note over LTI Utility: <align:center>Generate Form
+LTI Utility->LTI Controller: formData
+deactivate LTI Utility
+LTI Controller->LTI Router: formData
+deactivate LTI Controller
+linear
+LTI Router->Browser: <align:center>HTML Form\n//automatically submits//
+Browser->TC:<align:center>POST <auth_url>\n<LTI 1.3 Auth Request>
+deactivate LTI Router
+TC->Browser: <align:center>HTML Form\n//automatically submits//
+Browser->LTI Router: <align:center>POST   \n/lti/provider/redirect13   \n<LTI 1.3 Token>
+linear off
+activate LTI Router
+LTI Router->LTI Controller: redirect13(req)
+activate LTI Controller
+LTI Controller->LTI Utility: redirectRequest(req)
+activate LTI Utility
+note over LTI Utility: <align:center>Check State\nCheck Token\nLookup State
+LTI Utility->Database: Find State
+activate Database
+Database->LTI Utility: ConsumerLogin
+deactivate Database
+note over LTI Utility: <align:center>Request Keys
+LTI Utility->TC: GET <keyset_url>                                                 
+TC->LTI Utility: <Keyset>                                                
+note over LTI Utility: <align:center>Validate JWT\nDestroy State
+LTI Utility->Database: Destroy ConsumerLogin
+activate Database
+Database->LTI Utility: //destroyed//
+deactivate Database
+LTI Utility->LTI Controller: LTI Payload
+==more work here==
+deactivate LTI Utility
+LTI Controller->LTI Router: //redirect action?//
+LTI Router->Browser: //redirect?//
+deactivate LTI Controller

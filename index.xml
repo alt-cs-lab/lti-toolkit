@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Learning Path Platform Documentation :: LTI Toolkit</title>
+    <link>https://alt.cs.ksu.edu/lti-toolkit/index.html</link>
+    <description>Documentation for the Learning Path Platform.</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="https://alt.cs.ksu.edu/lti-toolkit/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>General</title>
+      <link>https://alt.cs.ksu.edu/lti-toolkit/00-general/index.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://alt.cs.ksu.edu/lti-toolkit/00-general/index.html</guid>
+      <description>General Documentation</description>
+    </item>
+    <item>
+      <title>Setup</title>
+      <link>https://alt.cs.ksu.edu/lti-toolkit/01-setup/index.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://alt.cs.ksu.edu/lti-toolkit/01-setup/index.html</guid>
+      <description>Development Environment Setup</description>
+    </item>
+    <item>
+      <title>LTI Docs</title>
+      <link>https://alt.cs.ksu.edu/lti-toolkit/02-lti/index.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://alt.cs.ksu.edu/lti-toolkit/02-lti/index.html</guid>
+      <description>LTI Protocol Notes &amp; Documentation</description>
+    </item>
+  </channel>
+</rss>
