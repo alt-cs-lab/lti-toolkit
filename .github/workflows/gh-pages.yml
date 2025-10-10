@@ -2,8 +2,6 @@ name: GitHub Pages
 
 on:
   push:
-    branches:
-      - main # Branch to deploy from
     tags:
       - 'v*.*.*' # Deploy when a tag starting with 'v' is pushed
 
