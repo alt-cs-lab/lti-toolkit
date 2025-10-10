@@ -13,7 +13,10 @@
     "format": "npx prettier . --write",
     "test": "mocha --require test/hooks.js --recursive --parallel --timeout 10000 --exit",
     "cov": "c8 --reporter=html --reporter=text --report-dir ./docs/static/coverage mocha --require test/hooks.js --recursive --parallel --timeout 10000 --exit",
-    "doc": "jsdoc -c .jsdoc.json"
+    "doc": "jsdoc -c .jsdoc.json",
+    "preversion": "npm cov && npm run lint && npm run format && npm run doc",
+    "version": "git add -A docs/static/coverage docs/static/api",
+    "postversion": "git push && git push --tags"
   },
   "author": "K-State ALT+CS Lab",
   "license": "MIT",
