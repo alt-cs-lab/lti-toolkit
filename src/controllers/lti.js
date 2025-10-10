@@ -85,7 +85,7 @@ class LTIToolkitController {
         user_roles: launchResult.roles,
         custom: customItems,
       };
-      return await this.handleLaunch(launchData, req);
+      return await this.#launch(launchData, req);
     }
   }
 
@@ -155,7 +155,76 @@ class LTIToolkitController {
         user_roles: launchResult[baseUrl + "roles"],
         custom: launchResult[baseUrl + "custom"],
       };
-      return await this.handleLaunch(launchData, req);
+      return await this.#launch(launchData, req);
+    }
+  }
+
+  /**
+   * Handle an LTI Launch Request
+   *
+   */
+  async #launch(launchData, req) {
+    this.logger.lti("Handling LTI Launch");
+    this.logger.silly("Launch Data: " + JSON.stringify(launchData, null, 2));
+
+    try {
+      // TODO Handle Anonymous Requests
+      // TODO Handle "Test Student" Requests
+
+      // Tool Consumers
+      const consumer = await this.models.Consumer.findOne({
+        where: { key: launchData.tool_consumer_key },
+      });
+      if (!consumer) {
+        this.logger.lti(
+          "Cannot find LTI Consumer for key: " + launchData.tool_consumer_key,
+        );
+        return false;
+      }
+
+      // Check for changes in Tool Consumer
+      // HACK Are changes to these values a problem?
+      let changed = false;
+      const prior = {};
+      const updated = {};
+      if (consumer.tc_product != launchData.tool_consumer_product) {
+        changed = true;
+        prior.tc_product = consumer.tc_product;
+        updated.tc_product = launchData.tool_consumer_product;
+      }
+      if (consumer.tc_version != launchData.tool_consumer_version) {
+        changed = true;
+        prior.tc_version = consumer.tc_version;
+        updated.tc_version = launchData.tool_consumer_version;
+      }
+      if (consumer.tc_guid != launchData.tool_consumer_guid) {
+        changed = true;
+        prior.tc_guid = consumer.tc_guid;
+        updated.tc_guid = launchData.tool_consumer_guid;
+      }
+      if (consumer.tc_name != launchData.tool_consumer_name) {
+        changed = true;
+        prior.tc_name = consumer.tc_name;
+        updated.tc_name = launchData.tool_consumer_name;
+      }
+      if (changed) {
+        this.logger.warn("Tool Consumer Data Changed!");
+        this.logger.warn("Old: " + JSON.stringify(prior, null, 2));
+        this.logger.warn("New: " + JSON.stringify(updated, null, 2));
+        consumer.set(updated);
+        await consumer.save();
+      }
+
+      delete launchData.tool_consumer_name;
+      delete launchData.tool_consumer_guid;
+      delete launchData.tool_consumer_product;
+      delete launchData.tool_consumer_version;
+
+      return await this.handleLaunch(launchData, consumer, req);
+    } catch (error) {
+      this.logger.error("Error handling LTI Launch!");
+      this.logger.error(error);
+      return false;
     }
   }
 

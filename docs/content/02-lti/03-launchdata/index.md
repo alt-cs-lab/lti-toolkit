@@ -15,18 +15,6 @@ The LTI controller constructs a `launchData` object from each LTI launch that co
 * `tool_consumer_key` - the locally-generated key used to identify the tool consumer (either the OAuth Key for LTI 1.0 or the provided Key in the Login URL for LTI 1.3)
   * LTI 1.0: `thisisasupersecretkey`
   * LTI 1.3: `thisisasupersecretkey`
-* `tool_consumer_product` - the tool consumer product name (e.g. `"canvas"`)
-  * LTI 1.0: `tool_consumer_info_product_family_code`
-  * LTI 1.3: `[baseUrl + "tool_platform"].product_family_code`
-* `tool_consumer_guid` - the unique GUID of the tool consumer instance
-  * LTI 1.0: `tool_consumer_instance_guid`
-  * LTI 1.3: `[baseUrl + "tool_platform"].guid`
-* `tool_consumer_name` - the name of the tool consumer instance (e.g. `"ALT+CS Canvas"`)
-  * LTI 1.0: `tool_consumer_instance_name`
-  * LTI 1.3: `[baseUrl + "tool_platform"].name`
-* `tool_consumer_version` - the version of the tool consumer instance
-  * LTI 1.0: `tool_consumer_info_version`
-  * LTI 1.3: `[baseUrl + "tool_platform"].version`
 * `course_id` - the unique ID of the course
   * LTI 1.0: `context_id`
   * LTI 1.3: `[baseUrl + "context"].id`
@@ -84,17 +72,29 @@ The LTI controller constructs a `launchData` object from each LTI launch that co
 * `custom` - any custom parameters provided to the system (in LTI 1.0, they **MUST** be prefixed with `lpp` to be detected)
   * LTI 1.0: search for any attributes prefixed with `lpp_`
   * LTI 1.3: `[baseUrl + "custom"]`
- 
+
+4 Additional items are stored in the `consumer` data structure by the library itself, but aren't passed to the user's `handleLaunch` function:
+
+* `tool_consumer_product` - the tool consumer product name (e.g. `"canvas"`)
+  * LTI 1.0: `tool_consumer_info_product_family_code`
+  * LTI 1.3: `[baseUrl + "tool_platform"].product_family_code`
+* `tool_consumer_guid` - the unique GUID of the tool consumer instance
+  * LTI 1.0: `tool_consumer_instance_guid`
+  * LTI 1.3: `[baseUrl + "tool_platform"].guid`
+* `tool_consumer_name` - the name of the tool consumer instance (e.g. `"ALT+CS Canvas"`)
+  * LTI 1.0: `tool_consumer_instance_name`
+  * LTI 1.3: `[baseUrl + "tool_platform"].name`
+* `tool_consumer_version` - the version of the tool consumer instance
+  * LTI 1.0: `tool_consumer_info_version`
+  * LTI 1.3: `[baseUrl + "tool_platform"].version`
+
+
 **LTI 1.0 Example**
 
 ```js
 {
   launch_type: 'lti1.0',
   tool_consumer_key: 'thisisasupersecretkey',
-  tool_consumer_product: 'canvas',
-  tool_consumer_guid: 'zOUAtkfS3gI8nh5IskzlgAro1oCx3rx6SGGahiLL:canvas-lms',
-  tool_consumer_name: 'ALT+CS Lab',
-  tool_consumer_version: 'cloud',
   course_id: '4dde05e8ca1973bcca9bffc13e1548820eee93a3',
   course_label: 'LTI10',
   course_name: 'LTI 1.0 Test Course',
@@ -114,6 +114,13 @@ The LTI controller constructs a `launchData` object from each LTI launch that co
   user_roles: 'Learner',
   custom: { custom_1: 'value_1', custom_2: 'value_2' }
 }
+
+{
+  tool_consumer_product: 'canvas',
+  tool_consumer_guid: 'zOUAtkfS3gI8nh5IskzlgAro1oCx3rx6SGGahiLL:canvas-lms',
+  tool_consumer_name: 'ALT+CS Lab',
+  tool_consumer_version: 'cloud',
+}
 ```
 
 **LTI 1.3 Example**
@@ -121,10 +128,6 @@ The LTI controller constructs a `launchData` object from each LTI launch that co
 ```js
 {
   launch_type: 'lti1.3',
-  tool_consumer_product: 'canvas',
-  tool_consumer_guid: 'zOUAtkfS3gI8nh5IskzlgAro1oCx3rx6SGGahiLL:canvas-lms',
-  tool_consumer_name: 'ALT+CS Lab',
-  tool_consumer_version: 'cloud',
   course_id: 'd3a2504bba5184799a38f141e8df2335cfa8206d',
   course_label: 'LTI13',
   course_name: 'LTI 1.3 Test Course',
@@ -148,10 +151,17 @@ The LTI controller constructs a `launchData` object from each LTI launch that co
   ],
   custom: { custom1: 'value1', custom2: 'value2' }
 }
+
+{
+  tool_consumer_product: 'canvas',
+  tool_consumer_guid: 'zOUAtkfS3gI8nh5IskzlgAro1oCx3rx6SGGahiLL:canvas-lms',
+  tool_consumer_name: 'ALT+CS Lab',
+  tool_consumer_version: 'cloud',
+}
 ```
 
 Documentation:
 
 * LTI 1.0: https://www.imsglobal.org/specs/ltiv1p1/implementation-guide
 * LTI 1.3: https://www.imsglobal.org/spec/lti/v1p3#required-message-claims 
-* Roles: 
+* Roles: https://www.imsglobal.org/spec/lti/v1p3#role-vocabularies 

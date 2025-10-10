@@ -1,0 +1,33 @@
+name: Publish Node Package
+
+on:
+  push:
+    branches:
+      - main # Branch to deploy from
+    tags:
+      - 'v*.*.*' # Deploy when a tag starting with 'v' is pushed
+
+jobs:
+  deploy:
+    # https://github.com/actions/runner-images
+    runs-on: ubuntu-latest
+
+    # Job Steps
+    steps:
+      # Step 1 - Checkout the Repository
+      # https://github.com/actions/checkout
+      - name: 1 - Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2 - Update NPM Package Version
+      # https://github.com/technote-space/package-version-check-action
+      - name: 2 - Bump Version and Tag
+        uses: technote-space/package-version-check-action@v1
+
+      # Step 3 - Make Release on GitHub
+      # https://github.com/softprops/action-gh-release
+      - name: 3 - Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          generate_release_notes: true

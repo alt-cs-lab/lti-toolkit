@@ -4,7 +4,7 @@ pre: "1. "
 weight: 10
 ---
 
-**Sample LTI 1.0 Launch**
+**Sample LTI 1.0 Launch from Canvas - Admin**
 
 ```json
 {
@@ -61,7 +61,7 @@ weight: 10
 }
 ```
 
-**Teacher**
+**Sample LTI 1.0 Launch from Canvas - Teacher**
 
 ```json
 {
@@ -121,7 +121,7 @@ weight: 10
 }
 ```
 
-**Student**
+**Sample LTI 1.0 Launch from Canvas - Student**
 
 ```json
 {

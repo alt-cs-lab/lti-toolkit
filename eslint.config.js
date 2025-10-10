@@ -16,7 +16,7 @@ export default [
     },
   },
   {
-    ignores: ["public/*"],
+    ignores: ["public/*", "docs/*", "node_modules/*"],
   },
   pluginJs.configs.recommended,
 ];

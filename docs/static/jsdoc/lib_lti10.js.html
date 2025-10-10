@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: lib/lti10.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: lib/lti10.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file LTI 1.0 Utilities
+ * @author Russell Feldhausen &lt;russfeld@ksu.edu>
+ * @exports validate10 Validate LTI 1.0 Connection
+ * @exports oauth_sign Generate OAuth 1.0 Signature
+ */
+
+// Import libraries
+import crypto from "crypto";
+
+class LTI10Utils {
+  /**
+   * Constructor for LTI 1.0 Utilities
+   *
+   * @param {Object} models the database models
+   * @param {Object} logger the logger instance
+   */
+  constructor(models, logger, vars) {
+    this.models = models;
+    this.logger = logger;
+    this.vars = vars;
+  }
+
+  /**
+   * Validate an LTI 1.0 Launch Request
+   *
+   * @param {Object} req - Express request object
+   */
+  async validate10(req) {
+    const body = req.body;
+    try {
+      // Hostname must be set
+      if (!this.vars.domain_name) {
+        this.logger.warn("domain_name variable must be set for LTI to work");
+        return false;
+      }
+
+      // Body must not be empty
+      if (!body) {
+        this.logger.lti("Empty LTI Body");
+        return false;
+      }
+
+      // #######################
+      // LTI SPECIFIC THINGS
+      // #######################
+      // Body must include lti_message_type
+      if (
+        !body.lti_message_type ||
+        body.lti_message_type !== "basic-lti-launch-request"
+      ) {
+        this.logger.lti("Invalid LTI Message Type: " + body.lti_message_type);
+        return false;
+      }
+      // Body must include lti_version
+      if (!body.lti_version || body.lti_version !== "LTI-1p0") {
+        this.logger.lti("Invalid LTI Version: " + body.lti_version);
+        return false;
+      }
+
+      // #######################
+      // OAUTH SPECIFIC THINGS
+      // #######################
+      // Body must include oauth_version
+      if (!body.oauth_version || body.oauth_version !== "1.0") {
+        this.logger.lti("Invalid OAuth Version: " + body.oauth_version);
+        return false;
+      }
+      // Body must include oauth_signature_method
+      if (
+        !body.oauth_signature_method ||
+        body.oauth_signature_method !== "HMAC-SHA1"
+      ) {
+        this.logger.lti(
+          "Invalid OAuth Signature Method: " + body.oauth_signature_method,
+        );
+        return false;
+      }
+      // Body must include oauth_consumer_key
+      if (!body.oauth_consumer_key) {
+        this.logger.lti("OAuth Consumer Key Missing");
+        return false;
+      }
+      // Body must include oauth_signature
+      if (!body.oauth_signature) {
+        this.logger.lti("OAuth Signature Missing");
+        return false;
+      }
+      // Body must include oauth_callback
+      if (!body.oauth_callback || body.oauth_callback !== "about:blank") {
+        this.logger.lti("Invalid OAuth Callback: " + body.oauth_callback);
+        return false;
+      }
+      // Body must include oauth_timestamp
+      if (!body.oauth_timestamp) {
+        this.logger.lti("OAuth Timestamp Missing");
+        return false;
+      }
+      // Timestamp must be recent (allow 1 minute into future and 10 minutes into past)
+      const currentTime = Math.floor(Date.now() / 1000);
+      const requestTime = parseInt(body.oauth_timestamp);
+      if (currentTime + 60 &lt; requestTime || currentTime > requestTime + 600) {
+        this.logger.lti(
+          "OAuth Timestamp Invalid! Timestamp: " +
+            requestTime +
+            " | Current: " +
+            currentTime,
+        );
+        return false;
+      }
+      // Body must include oauth_nonce
+      if (!body.oauth_nonce) {
+        this.logger.lti("OAuth Nonce Missing");
+        return false;
+      }
+      // Nonce must be unique
+      const nonceLookup = await this.models.OauthNonce.findOne({
+        where: {
+          key: body.oauth_consumer_key,
+          nonce: body.oauth_nonce,
+        },
+      });
+      if (nonceLookup) {
+        this.logger.lti("Duplicate OAuth Nonce Detected " + body.oauth_nonce);
+        return false;
+      }
+
+      // #######################
+      // VALIDATE OAUTH SIGNATURE
+      // #######################
+      const consumerKey = await this.models.ConsumerKey.findByPk(
+        body.oauth_consumer_key,
+      );
+      if (!consumerKey) {
+        this.logger.lti(
+          "Unable to find secret for consumer key: " + body.oauth_consumer_key,
+        );
+        return false;
+      }
+      // Extract signature from body
+      const { oauth_signature, ...signedParams } = req.body;
+      // Compute signature
+      const computedSignature = this.oauth_sign(
+        body.oauth_signature_method,
+        req.method,
+        req.originalUrl,
+        signedParams,
+        consumerKey.secret,
+      );
+      // Compare extracted signature to computed
+      if (computedSignature !== oauth_signature) {
+        this.logger.lti(
+          "Invalid OAuth Signature!: Computed: " +
+            computedSignature +
+            " | Provided: " +
+            oauth_signature,
+        );
+        return false;
+      }
+
+      // Store Nonce
+      const nonceCreated = await this.models.OauthNonce.create({
+        key: body.oauth_consumer_key,
+        nonce: body.oauth_nonce,
+      });
+      if (!nonceCreated || nonceCreated.nonce != body.oauth_nonce) {
+        this.logger.lti("Unable to save OAuth Nonce - Aborting!");
+        return false;
+      }
+
+      // Return validated payload to controller
+      return signedParams;
+    } catch (error) {
+      this.logger.error("Exception while parsing LTI 1.0 Launch!");
+      this.logger.error(error);
+      return false;
+    }
+  }
+
+  /**
+   * Much of the code below is based on a reference implementation found online
+   *
+   * https://github.com/request/oauth-sign/blob/master/index.js
+   */
+
+  /**
+   * Generate OAuth 1.0 Signature
+   *
+   * @param {string} method - OAuth Signing Method (must be HMAC-SHA1)
+   * @param {*} http_method - http method (get or post)
+   * @param {*} base_uri - base URI for the request
+   * @param {*} params - parameters in the body
+   * @param {*} secret - signing secret
+   */
+  oauth_sign(method, http_method, base_uri, params, secret) {
+    // Currently only HMAC-SHA1 signature supported
+    if (method !== "HMAC-SHA1") {
+      this.logger.lti("Only HMAC-SHA1 Supported");
+      return null;
+    }
+
+    // Compute OAuth Signature
+    // Part 1 - HTTP method in uppercase
+    const part1 = LTI10Utils.#rfc3986(http_method.toUpperCase());
+    // Part 2 - Base String URI
+    // TODO update this to read domain name from headers?
+    const part2 = LTI10Utils.#rfc3986(
+      new URL(base_uri, this.vars.domain_name).href,
+    );
+    // Part 3 - Parameters
+    const part3 = LTI10Utils.#rfc3986(LTI10Utils.#normalizeParams(params));
+
+    const base = [part1, part2, part3].join("&amp;");
+    const secretKey = secret + "&amp;";
+
+    return crypto.createHmac("sha1", secretKey).update(base).digest("base64");
+  }
+
+  /**
+   * Convert string according to RFC3986
+   * https://datatracker.ietf.org/doc/html/rfc3986
+   * Original Source: https://github.com/request/oauth-sign/blob/master/index.js
+   *
+   * @param {string} str - string to convert
+   * @returns converted string
+   */
+  static #rfc3986(str) {
+    return encodeURIComponent(str)
+      .replace(/!/g, "%21")
+      .replace(/\*/g, "%2A")
+      .replace(/\(/g, "%28")
+      .replace(/\)/g, "%29")
+      .replace(/'/g, "%27");
+  }
+
+  /**
+   * Normalize parameters
+   * Adapted from: https://github.com/request/oauth-sign/blob/master/index.js
+   *
+   * @param {Object} params - the body of parameters
+   * @returns a string of normalized parameters
+   */
+  static #normalizeParams(params) {
+    // Parameter normalization
+    // http://tools.ietf.org/html/rfc5849#section-3.4.1.3.2
+    const normalized = Object.entries(params)
+      // 1.  First, the name and value of each parameter are encoded
+      .map(function (key) {
+        return [LTI10Utils.#rfc3986(key[0]), LTI10Utils.#rfc3986(key[1] || "")];
+      })
+      // 2.  The parameters are sorted by name, using ascending byte value
+      //     ordering.  If two or more parameters share the same name, they
+      //     are sorted by their value.
+      .sort(function (a, b) {
+        return (
+          LTI10Utils.#compare(a[0], b[0]) || LTI10Utils.#compare(a[1], b[1])
+        );
+      })
+      // 3.  The name of each parameter is concatenated to its corresponding
+      //     value using an "=" character (ASCII code 61) as a separator, even
+      //     if the value is empty.
+      .map(function (p) {
+        return p.join("=");
+      })
+      // 4.  The sorted name/value pairs are concatenated together into a
+      //     single string by using an "&amp;" character (ASCII code 38) as
+      //     separator.
+      .join("&amp;");
+
+    return normalized;
+  }
+
+  /**
+   * Compare function for sort
+   * Original Source: https://github.com/request/oauth-sign/blob/master/index.js
+   *
+   * @param {*} a
+   * @param {*} b
+   * @returns {number} the sort order
+   */
+  static #compare(a, b) {
+    return a > b ? 1 : a &lt; b ? -1 : 0;
+  }
+
+  /**
+   * Validate OAuth body signed message
+   *
+   * @param {Object} req - Express request object
+   * @returns {Object} the validated key and secret, or false if validation fails
+   */
+  async validateOauthBody(req) {
+    // OAuth Headers
+    const authHeader = req.headers["authorization"];
+    if (!authHeader || !authHeader.startsWith("OAuth ")) {
+      this.logger.lti("Missing or invalid OAuth header");
+      return false;
+    }
+
+    // Trim leading "OAuth " and split headers by comma
+    const authHeaders = authHeader.substring(6).split(",");
+
+    // Reformat to Javascript Object
+    const oauthHeaders = {};
+    for (let i = 0; i &lt; authHeaders.length; i++) {
+      const [key, value] = authHeaders[i].split("=");
+      if (key &amp;&amp; value) {
+        oauthHeaders[key.trim()] = decodeURIComponent(
+          value.trim().replace(/"/g, ""),
+        );
+      }
+    }
+
+    // Check required OAuth headers
+    if (!oauthHeaders["oauth_consumer_key"]) {
+      this.logger.lti("Missing OAuth Consumer Key");
+      return false;
+    }
+    if (
+      !oauthHeaders["oauth_version"] ||
+      oauthHeaders["oauth_version"] !== "1.0"
+    ) {
+      this.logger.lti(
+        "Invalid OAuth Version: " + oauthHeaders["oauth_version"],
+      );
+      return false;
+    }
+    if (!oauthHeaders["oauth_signature_method"]) {
+      this.logger.lti("Missing OAuth Signature Method");
+      return false;
+    }
+    if (!oauthHeaders["oauth_signature"]) {
+      this.logger.lti("Missing OAuth Signature");
+      return false;
+    }
+
+    // Check Timestamp
+    if (!oauthHeaders["oauth_timestamp"]) {
+      this.logger.lti("Missing OAuth Timestamp");
+      return false;
+    }
+    // Timestamp must be recent (allow 1 minute into future and 10 minutes into past)
+    const currentTime = Math.floor(Date.now() / 1000);
+    const requestTime = parseInt(oauthHeaders["oauth_timestamp"]);
+    if (currentTime + 60 &lt; requestTime || currentTime > requestTime + 600) {
+      this.logger.lti(
+        "OAuth Timestamp Invalid! Timestamp: " +
+          requestTime +
+          " | Current: " +
+          currentTime,
+      );
+      return false;
+    }
+
+    // Check Nonce
+    if (!oauthHeaders["oauth_nonce"]) {
+      this.logger.lti("Missing OAuth Nonce");
+      return false;
+    }
+    // Nonce must be unique
+    const nonceLookup = await this.models.OauthNonce.findOne({
+      where: {
+        key: oauthHeaders["oauth_consumer_key"],
+        nonce: oauthHeaders["oauth_nonce"],
+      },
+    });
+    if (nonceLookup) {
+      this.logger.lti(
+        "Duplicate OAuth Nonce Detected " + oauthHeaders["oauth_nonce"],
+      );
+      return false;
+    }
+
+    // Extract and validate hash
+    if (!oauthHeaders["oauth_body_hash"]) {
+      this.logger.lti("Missing OAuth Body Hash");
+      return false;
+    }
+    if (
+      oauthHeaders["oauth_body_hash"] !==
+      crypto.createHash("sha1").update(req.rawBody).digest("base64")
+    ) {
+      this.logger.lti("Invalid OAuth Body Hash");
+      return false;
+    }
+
+    // Find secret for key
+    const providerKey = await this.models.ProviderKey.findOne({
+      where: { key: oauthHeaders["oauth_consumer_key"] },
+    });
+    if (!providerKey) {
+      return false;
+    }
+
+    // Check signature using headers
+    const headersNoSignature = { ...oauthHeaders };
+    delete headersNoSignature["oauth_signature"];
+    const signature = this.oauth_sign(
+      headersNoSignature["oauth_signature_method"],
+      "POST",
+      req.originalUrl,
+      headersNoSignature,
+      providerKey.secret,
+    );
+    if (signature !== oauthHeaders["oauth_signature"]) {
+      this.logger.lti("Invalid OAuth Signature");
+      return false;
+    }
+
+    // Store Nonce
+    const nonceCreated = await this.models.OauthNonce.create({
+      key: oauthHeaders["oauth_consumer_key"],
+      nonce: oauthHeaders["oauth_nonce"],
+    });
+    if (!nonceCreated || nonceCreated.nonce != oauthHeaders["oauth_nonce"]) {
+      this.logger.lti("Unable to save OAuth Nonce - Aborting!");
+      return false;
+    }
+    return {
+      key: providerKey.key,
+      secret: providerKey.secret,
+    };
+  }
+
+  /**
+   * Sign OAuth Body
+   *
+   * @param {String} body - the body to sign
+   * @param {String} key - the key for signing
+   * @param {String} secret - the secret for signing
+   * @param {String} url - the URL for the request
+   * @returns {String} the OAuth headers
+   */
+  async signOauthBody(body, key, secret, url) {
+    const bodyHash = crypto.createHash("sha1").update(body).digest("base64");
+    const oauthHeaders = {
+      oauth_consumer_key: key,
+      oauth_signature_method: "HMAC-SHA1",
+      oauth_version: "1.0",
+      oauth_body_hash: bodyHash,
+      oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+      oauth_nonce: crypto.randomBytes(16).toString("hex"),
+    };
+    const signature = this.oauth_sign(
+      "HMAC-SHA1",
+      "POST",
+      url,
+      oauthHeaders,
+      secret,
+    );
+    oauthHeaders["oauth_signature"] = signature;
+    const headerString =
+      "OAuth " +
+      Object.keys(oauthHeaders)
+        .map((key) => {
+          return `${key}="${encodeURIComponent(oauthHeaders[key])}"`;
+        })
+        .join(",");
+    return headerString;
+  }
+}
+
+export default LTI10Utils;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti.module_js.html">controllers/lti.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti.module_js-LTIToolkitController.html">LTIToolkitController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Fri Oct 10 2025 16:08:37 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -52,7 +52,7 @@ Sample LTI 1.3 Launch:
 }
 ```
 
-**Decoded JWT from Tool Consumer**
+**Decoded JWT from Tool Consumer - Admin**
 
 ```json
 {
@@ -157,7 +157,7 @@ Sample LTI 1.3 Launch:
 }
 ```
 
-**Teacher JWT**
+**Decoded JWT from Tool Consumer - Teacher**
 
 ```json
 {
@@ -264,7 +264,7 @@ Sample LTI 1.3 Launch:
 }
 ```
 
-**Student JWT**
+**Decoded JWT from Tool Consumer - Student**
 
 ```json
 {
@@ -371,7 +371,7 @@ Sample LTI 1.3 Launch:
 }
 ```
 
-**Student JWT (All LTI Advantage Disabled)**
+**Decoded JWT from Tool Consumer - Student (All LTI Advatage Features Disabled)**
 
 ```json
 {

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/consumer.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/consumer.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file Consumer Controller
+ * @author Russell Feldhausen &lt;russfeld@ksu.edu>
+ * @exports ConsumerController a consumer controller
+ */
+
+// Import libraries
+import { nanoid } from "nanoid";
+import crypto from "crypto";
+
+class ConsumerController {
+  /**
+   * Consumer Controller
+   *
+   * @param {Object} models the database models
+   * @param {Object} logger the logger instance
+   * @param {Object} database the database instance
+   */
+  constructor(models, logger, database) {
+    this.models = models;
+    this.logger = logger;
+    this.database = database;
+  }
+
+  /**
+   * Get all consumers
+   *
+   * @return {Consumer[]} all consumers in the database
+   */
+  async getAll() {
+    const consumers = await this.models.Consumer.findAll();
+    return consumers;
+  }
+
+  /**
+   * Create a new consumer
+   *
+   * @param {Object} data the consumer data to create
+   * @returns {Consumer} the created consumer
+   */
+  async createConsumer(data) {
+    let consumer = null;
+    await this.database.transaction(async (t) => {
+      consumer = await this.models.Consumer.create(
+        {
+          name: data.name,
+          lti13: data.lti13,
+          client_id: data.client_id,
+          platform_id: data.platform_id,
+          deployment_id: data.deployment_id,
+          keyset_url: data.keyset_url,
+          token_url: data.token_url,
+          auth_url: data.auth_url,
+        },
+        { transaction: t },
+      );
+      let publicKey = null;
+      let privateKey = null;
+      if (consumer.lti13) {
+        // Generate keys for the consumer
+        ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+          modulusLength: 4096,
+          publicKeyEncoding: {
+            type: "spki",
+            format: "pem",
+          },
+          privateKeyEncoding: {
+            type: "pkcs1",
+            format: "pem",
+          },
+        }));
+      }
+      await this.models.ConsumerKey.create(
+        {
+          key: consumer.key,
+          secret: nanoid(),
+          public: publicKey,
+          private: privateKey,
+        },
+        { transaction: t },
+      );
+    });
+    return consumer;
+  }
+
+  /**
+   * Update an existing consumer
+   *
+   * @param {number} id the ID of the consumer to update
+   * @param {Object} data the consumer data to update
+   * @returns {Consumer} the updated consumer
+   */
+  async updateConsumer(id, data) {
+    const consumer = await this.models.Consumer.findByPk(id);
+    if (!consumer) {
+      return null;
+    }
+    await consumer.update({
+      name: data.name,
+      lti13: data.lti13,
+      client_id: data.client_id,
+      platform_id: data.platform_id,
+      deployment_id: data.deployment_id,
+      keyset_url: data.keyset_url,
+      token_url: data.token_url,
+      auth_url: data.auth_url,
+    });
+    return consumer;
+  }
+
+  /**
+   * Delete a consumer
+   *
+   * @param {number} id the ID of the consumer to delete
+   * @returns {boolean} true if the consumer was deleted, false otherwise
+   */
+  async deleteConsumer(id) {
+    const consumer = await this.models.Consumer.findByPk(id);
+    if (!consumer) {
+      return null;
+    }
+    await this.database.transaction(async (t) => {
+      // Delete the consumer key
+      await this.models.ConsumerKey.destroy({
+        where: {
+          key: consumer.key,
+        },
+        transaction: t,
+      });
+      // Delete the consumer
+      await consumer.destroy({ transaction: t });
+    });
+    return true;
+  }
+
+  /**
+   * Get the secret for an LTI consumer
+   *
+   * @param {number} id the ID of the consumer
+   * @return {ConsumerKey} the updated consumer key
+   */
+  async getSecret(id) {
+    const consumer = await this.models.Consumer.findByPk(id);
+    if (!consumer) {
+      return null;
+    }
+    const consumerkey = await this.models.ConsumerKey.findOne({
+      attributes: ["key", "secret"],
+      where: {
+        key: consumer.key,
+      },
+    });
+    if (!consumerkey) {
+      return null;
+    }
+    return consumerkey;
+  }
+
+  /**
+   * Update the secret for an LTI consumer
+   *
+   * @param {number} id the ID of the consumer
+   * @return {ConsumerKey} the updated consumer key
+   */
+  async updateSecret(id) {
+    const consumer = await this.models.Consumer.findByPk(id);
+    if (!consumer) {
+      return null;
+    }
+    // Generate new keys
+    const newKey = nanoid();
+    const newSecret = nanoid();
+    // TODO update public and private keys if lti13
+
+    await this.models.ConsumerKey.destroy({
+      where: {
+        key: consumer.key,
+      },
+    });
+
+    consumer.key = newKey;
+    await consumer.save();
+
+    const consumerkey = await this.models.ConsumerKey.create({
+      key: newKey,
+      secret: newSecret,
+    });
+
+    return consumerkey;
+  }
+}
+
+export default ConsumerController;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti.module_js.html">controllers/lti.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti.module_js-LTIToolkitController.html">LTIToolkitController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Fri Oct 10 2025 16:08:37 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
