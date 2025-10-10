@@ -1,6 +1,6 @@
 {
   "name": "lti-toolkit",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "description": "LTI Toolkit for ALT+CS Web Applications",
   "repository": {
@@ -15,7 +15,7 @@
     "cov": "c8 --reporter=html --reporter=text --report-dir ./docs/static/coverage mocha --require test/hooks.js --recursive --parallel --timeout 10000 --exit",
     "doc": "jsdoc -c .jsdoc.json",
     "preversion": "npm run cov && npm run lint && npm run format && npm run doc",
-    "version": "git add -A docs/static/coverage docs/static/api",
+    "version": "git add -A docs/static/coverage docs/static/jsdoc",
     "postversion": "git push && git push --tags"
   },
   "author": "K-State ALT+CS Lab",

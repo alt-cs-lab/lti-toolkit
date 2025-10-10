@@ -9,4 +9,3 @@ Limitations
 - LTI 1.3 is not implemented for LTI Tool Providers
 - LTI 1.0 connections to LTI Tool Providers don't currently support custom variables
 - Does not support anonymous students or test students in LTI Launch Requests
-

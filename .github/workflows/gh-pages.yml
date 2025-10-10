@@ -3,7 +3,7 @@ name: GitHub Pages
 on:
   push:
     tags:
-      - 'v*.*.*' # Deploy when a tag starting with 'v' is pushed
+      - "v*.*.*" # Deploy when a tag starting with 'v' is pushed
 
 jobs:
   deploy:
