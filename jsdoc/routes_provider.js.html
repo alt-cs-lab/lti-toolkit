@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: routes/provider.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: routes/provider.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file LTI Tool Provider Router
+ * @author Russell Feldhausen &lt;russfeld@ksu.edu>
+ * @exports router an Express router
+ *
+ * @swagger
+ * tags:
+ *   name: lti-provider
+ *   description: LTI Tool Provider Routes
+ */
+
+// Import libraries
+import express from "express";
+import nunjucks from "nunjucks";
+
+export default async function setupProviderRoutes(
+  LTIToolkitController,
+  logger,
+) {
+  // Create Express router
+  const router = express.Router();
+
+  /**
+   * LTI 1.0 Launch Target
+   *
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   *
+   * @swagger
+   * /lti/provider/launch10:
+   *   post:
+   *     summary: LTI 1.0 Launch
+   *     description: LTI 1.0 Launch Target
+   *     tags: [lti-provider]
+   */
+  router.post("/launch10", async function (req, res, next) {
+    const result = await LTIToolkitController.launch10(req);
+    if (result) {
+      res.redirect(result);
+    } else {
+      res.status(400).send("Invalid Request");
+    }
+  });
+
+  /**
+   * LTI 1.3 Launch Target
+   *
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   *
+   * @swagger
+   * /lti/provider/launch13:
+   *   post:
+   *     summary: LTI 1.3 Launch
+   *     description: LTI 1.3 Launch Target
+   *     tags: [lti-provider]
+   */
+  router.post("/launch13", async function (req, res, next) {
+    logger.lti("Launch 1.3 Request Received");
+    logger.lti(JSON.stringify(req.params));
+    logger.lti(JSON.stringify(req.body));
+    res.status(200).send("Launch 1.3");
+  });
+
+  /**
+   * LTI 1.3 Redirect
+   *
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   *
+   * @swagger
+   * /lti/provider/redirect13:
+   *   post:
+   *     summary: LTI 1.3 Redirect
+   *     description: LTI 1.3 Redirect Target
+   *     tags: [lti-provider]
+   */
+  router.post("/redirect13", async function (req, res, next) {
+    const result = await LTIToolkitController.redirect13(req);
+    if (result) {
+      res.redirect(result);
+    } else {
+      res.status(400).send("Invalid Request");
+    }
+  });
+
+  /**
+   * LTI 1.3 Login
+   *
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   *
+   * @swagger
+   * /lti/provider/login13:
+   *   post:
+   *     summary: LTI 1.3 Login
+   *     description: LTI 1.3 Login Target
+   *     tags: [lti-provider]
+   *
+   * @swagger
+   * /lti/provider/login13:
+   *   get:
+   *     summary: LTI 1.3 Login
+   *     description: LTI 1.3 Login Target
+   *     tags: [lti-provider]
+   */
+  router.get("/login13/:key", handleLogin);
+  router.post("/login13/:key", handleLogin);
+  async function handleLogin(req, res, next) {
+    const authResult = await LTIToolkitController.login13(req.params.key, req);
+    if (authResult === false) {
+      res.status(400).send("Invalid Request");
+    } else {
+      res.header("Content-Type", "text/html");
+      res.header("Content-Security-Policy", "form-action " + authResult.url);
+      nunjucks.configure({ autoescape: true });
+      const output = nunjucks.renderString(
+        '&lt;!doctype html>\
+&lt;head>\
+  &lt;title>LTI Autoform&lt;/title>\
+&lt;/head>\
+&lt;body onload="document.forms[0].submit()">\
+  &lt;form method="POST" action="{{ url }}">\
+    {% for attr, value in form %}\
+    &lt;input type="hidden" id="{{ attr }}" name="{{ attr }}" value="{{ value }}" />\
+    {% endfor %}\
+  &lt;/form>\
+&lt;/body>',
+        authResult,
+      );
+      res.status(200).send(output);
+    }
+  }
+
+  /**
+   * LTI 1.3 Keyset URL
+   *
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   *
+   * @swagger
+   * /lti/provider/key13:
+   *   get:
+   *     summary: LTI 1.3 Keyset URL
+   *     description: LTI 1.3 Keyset URL
+   *     tags: [lti-provider]
+   */
+  router.get("/key13", async function (req, res, next) {
+    logger.lti("Key 1.3 Request Received");
+    const keys = await LTIToolkitController.generateConsumerJWKS();
+    res.json(keys);
+  });
+
+  /**
+   * LTI 1.3 Deep Linking
+   *
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   *
+   * @swagger
+   * /lti/provider/deeplink13:
+   *   post:
+   *     summary: LTI 1.3 Deep Linking URL
+   *     description: LTI 1.3 Deep Linking URL
+   *     tags: [lti-provider]
+   */
+  router.post("/deeplink13", async function (req, res, next) {
+    logger.lti("Deep Link 1.3 Request Received");
+    logger.lti(JSON.stringify(req.params));
+    logger.lti(JSON.stringify(req.body));
+    res.status(200).send("Deep Link 1.3");
+  });
+
+  /**
+   * LTI 1.3 Editor Button
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   *
+   * @swagger
+   * /lti/provider/editor13:
+   *   post:
+   *     summary: LTI 1.3 Editor URL
+   *     description: LTI 1.3 Editor URL
+   *     tags: [lti-provider]
+   */
+  router.post("/editor13", async function (req, res, next) {
+    logger.lti("Editor 1.3 Request Received");
+    logger.lti(JSON.stringify(req.params));
+    logger.lti(JSON.stringify(req.body));
+    res.status(200).send("Editor 1.3");
+  });
+
+  /**
+   * LTI 1.3 Course Navigation Button
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   *
+   * @swagger
+   * /lti/provider/navigate13:
+   *   post:
+   *     summary: LTI 1.3 Course Navigation URL
+   *     description: LTI 1.3 Course Navigation URL
+   *     tags: [lti-provider]
+   */
+  router.post("/navigate13", async function (req, res, next) {
+    logger.lti("Navigation 1.3 Request Received");
+    logger.lti(JSON.stringify(req.params));
+    logger.lti(JSON.stringify(req.body));
+    res.status(200).send("Navigation 1.3");
+  });
+
+  return router;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti.module_js.html">controllers/lti.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti.module_js-LTIToolkitController.html">LTIToolkitController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Fri Oct 10 2025 16:08:37 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

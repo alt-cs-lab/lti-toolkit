@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/models.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/models.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file Database models for LTI toolkit
+ * @author Russell Feldhausen &lt;russfeld@ksu.edu>
+ */
+
+// Import Library
+import { Op } from "sequelize";
+import { nanoid } from "nanoid";
+
+// Import Schemas
+import {
+  ConsumerSchema,
+  ConsumerKeySchema,
+  ConsumerLoginSchema,
+  OauthNonceSchema,
+  ProviderSchema,
+  ProviderKeySchema,
+} from "./schemas.js";
+
+export default function configureModels(database, logger) {
+  // Create OauthNonce Model
+  const OauthNonce = database.define(
+    // Model Name
+    "OauthNonce",
+    // Schema
+    OauthNonceSchema,
+    // Other options
+    {
+      tableName: "lti_oauth_nonces",
+    },
+  );
+
+  // Create Consumer Model
+  const Consumer = database.define(
+    // Model Name
+    "Consumer",
+    // Schema
+    ConsumerSchema,
+    // Other options
+    {
+      tableName: "lti_consumers",
+    },
+  );
+
+  // Create Consumer Key Model
+  const ConsumerKey = database.define(
+    // Model Name
+    "ConsumerKey",
+    // Schema
+    ConsumerKeySchema,
+    // Other options
+    {
+      tableName: "lti_consumer_keys",
+      timestamps: false,
+    },
+  );
+
+  // Create Consumer Login Model
+  const ConsumerLogin = database.define(
+    // Model Name
+    "ConsumerLogin",
+    // Schema
+    ConsumerLoginSchema,
+    // Other options
+    {
+      tableName: "lti_consumer_logins",
+    },
+  );
+
+  // Create Provider Model
+  const Provider = database.define(
+    // Model Name
+    "Provider",
+    // Schema
+    ProviderSchema,
+    // Other options
+    {
+      tableName: "lti_providers",
+    },
+  );
+
+  // Create ProviderKey Model
+  const ProviderKey = database.define(
+    // Model Name
+    "ProviderKey",
+    // Schema
+    ProviderKeySchema,
+    // Other options
+    {
+      tableName: "lti_provider_keys",
+      timestamps: false,
+      underscored: true,
+    },
+  );
+
+  Consumer.beforeValidate((consumer) => {
+    // Generate a unique key for the consumer
+    if (consumer.isNewRecord) {
+      consumer.setDataValue("key", nanoid());
+    }
+  });
+
+  // Expiration Interval
+  const expireAfter = 15 * 60 * 1000; // 15 minutes
+  const checkExpire = 5 * 60 * 1000; // 5 minutess
+
+  function clearExpired() {
+    try {
+      OauthNonce.destroy({
+        where: { createdAt: { [Op.lte]: new Date(Date.now() - expireAfter) } },
+      }).then((count) => {
+        logger.lti("Removed " + count + " Expired OAuth Nonces");
+      });
+      ConsumerLogin.destroy({
+        where: { createdAt: { [Op.lte]: new Date(Date.now() - expireAfter) } },
+      }).then((count) => {
+        logger.lti("Removed " + count + " Expired Consumer Logins");
+      });
+      /* c8 ignore next 4 */
+    } catch (error) {
+      logger.error("Error Expiring Old OAuth Nonces &amp; Login Sessions");
+      logger.error(error);
+    }
+  }
+
+  function initializeExpiration() {
+    logger.info("LTI Session Expiration Enabled!");
+    const expirationInterval = setInterval(clearExpired, checkExpire);
+    // allow to terminate the node process even if this interval is still running
+    expirationInterval.unref();
+  }
+
+  return {
+    models: {
+      OauthNonce,
+      Consumer,
+      ConsumerKey,
+      ConsumerLogin,
+      Provider,
+      ProviderKey,
+    },
+    initializeExpiration,
+  };
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti.module_js.html">controllers/lti.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti.module_js-LTIToolkitController.html">LTIToolkitController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Fri Oct 10 2025 16:08:37 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

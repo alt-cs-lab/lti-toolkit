@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/provider.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/provider.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file Provider Controller
+ * @author Russell Feldhausen &lt;russfeld@ksu.edu>
+ * @exports ProviderController a provider controller
+ */
+
+class ProviderController {
+  /**
+   * Provider Controller
+   * @param {Object} models the database models
+   * @param {Object} logger the logger instance
+   * @param {Object} database the database instance
+   */
+  constructor(models, logger, database) {
+    this.models = models;
+    this.logger = logger;
+    this.database = database;
+  }
+
+  /**
+   * Get all providers
+   *
+   * @return {Provider[]} all providers in the database
+   */
+  async getAll() {
+    const providers = await this.models.Provider.findAll({
+      attributes: { exclude: ["section_id"] },
+    });
+    return providers;
+  }
+
+  /**
+   * Get the secret for an LTI provider
+   *
+   * @param {number} id the ID of the provider
+   * @return {ProviderKey} the updated provider key
+   */
+  async getSecret(id) {
+    const provider = await this.models.Provider.findByPk(id);
+    if (!provider) {
+      return null;
+    }
+    const providerkey = await this.models.ProviderKey.findOne({
+      where: {
+        key: provider.key,
+      },
+    });
+    if (!providerkey) {
+      return null;
+    }
+    return providerkey;
+  }
+
+  /**
+   * Update an existing provider
+   *
+   * @param {number} id the ID of the provider to update
+   * @param {Object} data the provider data to update
+   * @returns {Provider} the updated provider
+   */
+  async updateProvider(id, data) {
+    let provider = null;
+    await this.database.transaction(async (t) => {
+      provider = await this.models.Provider.findByPk(id);
+      if (!provider) {
+        return null;
+      }
+      const oldKey = provider.key;
+      await provider.update(
+        {
+          name: data.name,
+          lti13: data.lti13 || false,
+          key: data.key,
+          launch_url: data.launch_url,
+          domain: data.domain,
+          custom: data.custom,
+          use_section: data.use_section || false,
+        },
+        { transaction: t },
+      );
+      // If the key has changed, update the provider key and secret
+      if (oldKey !== data.key) {
+        await this.models.ProviderKey.update(
+          {
+            key: data.key,
+            secret: data.secret,
+          },
+          {
+            where: {
+              key: oldKey,
+            },
+            transaction: t,
+          },
+        );
+      }
+    });
+    return provider;
+  }
+
+  /**
+   * Create a new provider
+   *
+   * @param {Object} data the provider data to create
+   * @returns {Provider} the created provider
+   */
+  async createProvider(data) {
+    const provider = await this.models.Provider.create({
+      name: data.name,
+      lti13: data.lti13 || false,
+      key: data.key,
+      launch_url: data.launch_url,
+      domain: data.domain,
+      custom: data.custom,
+      use_section: data.use_section || false,
+    });
+    // Generate keys for the provider
+    await this.models.ProviderKey.create({
+      key: provider.key,
+      secret: data.secret,
+    });
+    return provider;
+  }
+
+  /**
+   * Delete a provider
+   *
+   * @param {number} id the ID of the provider to delete
+   * @returns {boolean} true if the provider was deleted, false otherwise
+   */
+  async deleteProvider(id) {
+    const provider = await this.models.Provider.findByPk(id);
+    if (!provider) {
+      return null;
+    }
+    await this.database.transaction(async (t) => {
+      // Delete the provider key
+      await this.models.ProviderKey.destroy({
+        where: {
+          key: provider.key,
+        },
+        transaction: t,
+      });
+      // Delete the provider
+      await provider.destroy({ transaction: t });
+    });
+    return true;
+  }
+}
+
+export default ProviderController;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti.module_js.html">controllers/lti.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti.module_js-LTIToolkitController.html">LTIToolkitController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Fri Oct 10 2025 16:08:37 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -60,8 +60,27 @@ activate Database
 Database->LTI Utility: //destroyed//
 deactivate Database
 LTI Utility->LTI Controller: LTI Payload
-==more work here==
 deactivate LTI Utility
-LTI Controller->LTI Router: //redirect action?//
-LTI Router->Browser: //redirect?//
+note over LTI Controller: Assemble Launch Data
+LTI Controller->LTI Controller: #launch(launchData, req)
 deactivate LTI Controller
+activate LTI Controller
+LTI Controller->Database: Find Consumer
+activate Database
+Database->LTI Controller: Consumer
+deactivate Database
+group if needed
+LTI Controller->Database: Update Consumer
+activate Database
+Database->LTI Controller: //saved//
+deactivate Database
+end
+LTI Controller->User Code: handleLaunch(launchData, consumer, req)
+activate User Code
+==User Code Work==
+User Code->LTI Controller: Redirect URL
+deactivate User Code
+LTI Controller->LTI Router: Redirect URL
+deactivate LTI Controller
+LTI Router->Browser: Redirect URL
+deactivate LTI Router
