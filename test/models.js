@@ -13,10 +13,12 @@ should();
 // Import Library
 import LTIToolkit from "../index.js";
 const lti = await LTIToolkit({
-  handleLaunch: async function () {},
-  postProviderGrade: async function () {},
-  vars: {
-    domain_name: "http://localhost:3000",
+  domain_name: "http://localhost:3000",
+  provider: {
+    handleLaunch: async function () {},
+  },
+  consumer: {
+    postProviderGrade: async function () {},
     admin_email: "admin@localhost.local",
     deployment_name: "LTI Toolkit Dev",
     deployment_id: "test-deployment-id",

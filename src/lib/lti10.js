@@ -15,10 +15,10 @@ class LTI10Utils {
    * @param {Object} models the database models
    * @param {Object} logger the logger instance
    */
-  constructor(models, logger, vars) {
+  constructor(models, logger, domain_name) {
     this.models = models;
     this.logger = logger;
-    this.vars = vars;
+    this.domain_name = domain_name;
   }
 
   /**
@@ -30,7 +30,7 @@ class LTI10Utils {
     const body = req.body;
     try {
       // Hostname must be set
-      if (!this.vars.domain_name) {
+      if (!this.domain_name) {
         this.logger.warn("domain_name variable must be set for LTI to work");
         return false;
       }
@@ -204,9 +204,7 @@ class LTI10Utils {
     const part1 = LTI10Utils.#rfc3986(http_method.toUpperCase());
     // Part 2 - Base String URI
     // TODO update this to read domain name from headers?
-    const part2 = LTI10Utils.#rfc3986(
-      new URL(base_uri, this.vars.domain_name).href,
-    );
+    const part2 = LTI10Utils.#rfc3986(new URL(base_uri, this.domain_name).href);
     // Part 3 - Parameters
     const part3 = LTI10Utils.#rfc3986(LTI10Utils.#normalizeParams(params));
 

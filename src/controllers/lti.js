@@ -14,27 +14,22 @@ class LTIToolkitController {
   /**
    * LTI Controller
    *
-   * @param {*} handleLaunch LTI controller launch handler
-   * @param {*} postProviderGrade Student controller postProviderGrade handler
+   * @param {*} provider LTI provider configuration
+   * @param {*} consumer LTI consumer configuration
    * @param {*} models LTI toolkit models
    * @param {*} logger Logger instance
+   * @param {*} lti10 LTI 1.0 Utilities instance
+   * @param {*} lti13 LTI 1.3 Utilities instance
+   * @param {string} domain_name Domain name of the application (e.g., "example.com")
    */
-  constructor(
-    handleLaunch,
-    postProviderGrade,
-    models,
-    logger,
-    lti10,
-    lti13,
-    vars,
-  ) {
-    this.handleLaunch = handleLaunch;
-    this.postProviderGrade = postProviderGrade;
+  constructor(provider, consumer, models, logger, lti10, lti13, domain_name) {
+    this.provider = provider;
+    this.consumer = consumer;
     this.models = models;
     this.logger = logger;
     this.lti10 = lti10;
     this.lti13 = lti13;
-    this.vars = vars;
+    this.domain_name = domain_name;
   }
   /**
    * Handle an LTI 1.0 Launch Request
@@ -220,7 +215,13 @@ class LTIToolkitController {
       delete launchData.tool_consumer_product;
       delete launchData.tool_consumer_version;
 
-      return await this.handleLaunch(launchData, consumer, req);
+      if (!this.provider || typeof this.provider.handleLaunch !== "function") {
+        return await this.provider.handleLaunch(launchData, consumer, req);
+      } else {
+        this.logger.error(
+          "Successful LTI Launch Received but no provider.handleLaunch function defined!",
+        );
+      }
     } catch (error) {
       this.logger.error("Error handling LTI Launch!");
       this.logger.error(error);
@@ -253,6 +254,11 @@ class LTIToolkitController {
     manager,
     assignment,
   ) {
+    if (!this.consumer) {
+      this.logger.error("LTI Consumer not found");
+      return null;
+    }
+    this.logger.lti("Generating LTI 1.0 Launch Form Data");
     // TODO: Add custom data
     const launch = {
       oauth_consumer_key: key,
@@ -268,7 +274,7 @@ class LTIToolkitController {
       launch_presentation_return_url: ret_url,
       lis_outcome_service_url: new URL(
         "/lti/consumer/grade_passback",
-        this.vars.domain_name,
+        this.domain_name,
       ).href,
       lis_result_sourcedid: `${context.key}:${lesson.key}:${user.key}:${assignment.key}`,
       lis_person_contact_email_primary: user.email,
@@ -283,9 +289,9 @@ class LTIToolkitController {
       roles: manager ? "Instructor" : "Learner",
       tool_consumer_info_product_family_code: "learningpathplatform",
       tool_consumer_info_version: "cloud",
-      tool_consumer_instance_contact_email: this.vars.admin_email,
-      tool_consumer_instance_guid: this.vars.deployment_id,
-      tool_consumer_instance_name: this.vars.deployment_name,
+      tool_consumer_instance_contact_email: this.consumer.admin_email,
+      tool_consumer_instance_guid: this.consumer.deployment_id,
+      tool_consumer_instance_name: this.consumer.deployment_name,
       user_id: user.key,
       user_image: user.image,
     };
@@ -746,32 +752,42 @@ class LTIToolkitController {
   /**
    * Post a grade to a consumer
    *
-   * @param {Grade} grade - the grade to post
+   * @param {Object} grade - the grade to post
+   * @param {Integer} [grade.consumer_id] - the consumer ID
+   * @param {String} [grade.grade_url] - the grade post URL
+   * @param {String} [grade.lms_grade_id] - the LMS grade ID (for LTI 1.0 Basic Outcomes)
+   * @param {String} [grade.score] - the score to post (0.0 to 1.0)
+   * @param {String} [grade.user_lis13_id] - the user LTI 1.3 ID (for LTI 1.3)
+   * @param {Object} [grade.debug] - debugging information (optional)
+   * @param {String} [grade.debug.user] - the user (for debugging)
+   * @param {String} [grade.debug.user_id] - the user ID (for debugging)
+   * @param {String} [grade.debug.assignment] - the assignment (for debugging)
+   * @param {String} [grade.debug.assignment_id] - the assignment ID (for debugging)
    */
-  static async postGrade(grade, assignment, consumer_user) {
+  static async postGrade(grade) {
     this.logger.lti(
       "Posting grade for user " +
-        grade.user_id +
-        " to assignment " +
-        grade.assignment_id,
+        grade.debug.user +
+        " (" +
+        grade.debug.user_id +
+        ") to assignment " +
+        grade.debug.assignment +
+        " (" +
+        grade.debug.assignment_id +
+        ")",
     );
-    if (!assignment || !consumer_user) {
-      this.logger.error(
-        "Cannot find assignment or consumer user for grade post",
-      );
+    // TODO: consumer_user only needed for LTI 1.3 - can this be removed?
+    if (!grade.consumer_id) {
+      this.logger.error("Consumer ID not provided for grade posting");
       return false;
     }
-    const consumer = await this.models.Consumer.findByPk(
-      assignment.course.consumer_id,
-    );
+    const consumer = await this.models.Consumer.findByPk(grade.consumer_id);
     if (!consumer) {
-      this.logger.error(
-        "Cannot find consumer for ID: " + assignment.course.consumer_id,
-      );
+      this.logger.error("Cannot find consumer for ID: " + grade.consumer_id);
       return false;
     }
-    if (!assignment.grade_url) {
-      this.logger.error("Assignment does not have a grade URL");
+    if (!grade.grade_url) {
+      this.logger.error("Grade post does not have a grade URL");
       return false;
     }
     // Switch between LTI 1.0 and LTI 1.3
@@ -838,7 +854,7 @@ class LTIToolkitController {
         where: { key: consumer.key },
         attributes: ["key", "secret"],
       });
-      const url = assignment.grade_url;
+      const url = grade.grade_url;
       if (!providerKey) {
         this.logger.error(
           "Cannot find provider key for consumer " + consumer.key,
@@ -853,11 +869,11 @@ class LTIToolkitController {
           url,
         );
       }
-      this.logger.silly("Posting grade to " + assignment.grade_url);
+      this.logger.silly("Posting grade to " + grade.grade_url);
       this.logger.silly("Headers: " + headers);
       this.logger.silly("Content: " + content);
       try {
-        const response = await ky.post(assignment.grade_url, {
+        const response = await ky.post(grade.grade_url, {
           headers: {
             Authorization: headers,
             "Content-Type": "application/xml",
@@ -878,18 +894,34 @@ class LTIToolkitController {
             "success"
           ) {
             this.logger.lti(
-              "Grade posted successfully for user " + grade.user_id,
+              "Grade posted successfully for user " +
+                grade.debug.user +
+                " (" +
+                grade.debug.user_id +
+                ")",
             );
             return true;
           } else {
-            this.logger.lti("Failed to post grade for user " + grade.user_id);
+            this.logger.lti(
+              "Failed to post grade for user " +
+                grade.debug.user +
+                " (" +
+                grade.debug.user_id +
+                ")",
+            );
             this.logger.debug(
               "Response: " + JSON.stringify(responseXml, null, 2),
             );
             return false;
           }
         } else {
-          this.logger.lti("Failed to post grade for user " + grade.user_id);
+          this.logger.lti(
+            "Failed to post grade for user " +
+              grade.debug.user +
+              " (" +
+              grade.debug.user_id +
+              ")",
+          );
           this.logger.debug(
             "Response: " + JSON.stringify(responseXml, null, 2),
           );
@@ -908,7 +940,7 @@ class LTIToolkitController {
         return false;
       }
       const token = await this.lti13.getAccessToken(
-        assignment.course.consumer.id,
+        grade.consumer_id,
         "https://purl.imsglobal.org/spec/lti-ags/scope/score",
       );
       // TODO Handle completed vs. incomplete grades here
@@ -918,11 +950,11 @@ class LTIToolkitController {
         scoreMaximum: 1.0,
         activityProgress: "Submitted",
         gradingProgress: "FullyGraded",
-        userId: consumer_user.lms13_user_id,
+        userId: grade.user_lis13_id,
       };
       this.logger.silly(JSON.stringify(lineitem, null, 2));
       try {
-        const response = await ky.post(assignment.grade_url + "/scores", {
+        const response = await ky.post(grade.grade_url + "/scores", {
           json: lineitem,
           headers: {
             Authorization: `${token.token_type} ${token.access_token}`,
@@ -931,11 +963,21 @@ class LTIToolkitController {
         });
         if (response && response.status === 200) {
           this.logger.lti(
-            "Grade posted successfully for user " + grade.user_id,
+            "Grade posted successfully for user " +
+              grade.debug.user +
+              " (" +
+              grade.debug.user_id +
+              ")",
           );
           return true;
         } else {
-          this.logger.lti("Failed to post grade for user " + grade.user_id);
+          this.logger.lti(
+            "Failed to post grade for user " +
+              grade.debug.user +
+              " (" +
+              grade.debug.user_id +
+              ")",
+          );
           this.logger.lti("Response: " + JSON.stringify(response, null, 2));
           return false;
         }

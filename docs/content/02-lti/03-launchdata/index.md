@@ -6,8 +6,10 @@ weight: 30
 
 The LTI controller constructs a `launchData` object from each LTI launch that contains the following information:
 
-`baseURL` = `"https://purl.imsglobal.org/spec/lti/claim/"`
-`agsURL` = `"https://purl.imsglobal.org/spec/lti-ags/claim/"`
+```js
+baseURL = "https://purl.imsglobal.org/spec/lti/claim/"
+agsURL = "https://purl.imsglobal.org/spec/lti-ags/claim/"
+```
 
 * `launch_type` - the type of LTI launch
   * LTI 1.0: `"lti1.0"`

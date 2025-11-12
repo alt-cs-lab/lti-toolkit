@@ -18,10 +18,10 @@ class LTI13Utils {
    * @param {Object} models the database models
    * @param {Object} logger the logger instance
    */
-  constructor(models, logger, vars) {
+  constructor(models, logger, domain_name) {
     this.models = models;
     this.logger = logger;
-    this.vars = vars;
+    this.domain_name = domain_name;
   }
 
   /**
@@ -32,7 +32,7 @@ class LTI13Utils {
   async authRequest(key, req) {
     try {
       // Hostname must be set
-      if (!this.vars.domain_name) {
+      if (!this.domain_name) {
         this.logger.warn("domain_name variable must be set for LTI to work");
         return false;
       }
@@ -87,7 +87,7 @@ class LTI13Utils {
       if (
         !params.target_link_uri ||
         params.target_link_uri !==
-          new URL("/lti/provider/launch13", this.vars.domain_name).href
+          new URL("/lti/provider/launch13", this.domain_name).href
       ) {
         this.logger.lti(
           "Invalid LTI Target Link URI: " + params.target_link_uri,
@@ -117,7 +117,7 @@ class LTI13Utils {
         scope: "openid",
         response_type: "id_token",
         client_id: consumer.client_id,
-        redirect_uri: new URL("/lti/provider/redirect13", this.vars.domain_name)
+        redirect_uri: new URL("/lti/provider/redirect13", this.domain_name)
           .href,
         login_hint: params.login_hint,
         state: state,
