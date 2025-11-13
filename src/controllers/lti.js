@@ -47,9 +47,9 @@ class LTIToolkitController {
     } else {
       this.logger.lti("Launch valid!");
       const customItems = Object.keys(launchResult)
-        .filter((key) => key.startsWith("custom"))
+        .filter((key) => key.startsWith("custom_"))
         .reduce((obj, key) => {
-          obj[key.substring(6)] = launchResult[key];
+          obj[key.substring(7)] = launchResult[key];
           return obj;
         }, {});
       const launchData = {
