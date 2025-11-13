@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">13.52% </span>
+                <span class="strong">13.47% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>137/1013</span>
+                <span class='fraction'>137/1017</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">13.52% </span>
+                <span class="strong">13.47% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>137/1013</span>
+                <span class='fraction'>137/1017</span>
             </div>
         
             
@@ -1076,7 +1076,11 @@
 <a name='L1011'></a><a href='#L1011'>1011</a>
 <a name='L1012'></a><a href='#L1012'>1012</a>
 <a name='L1013'></a><a href='#L1013'>1013</a>
-<a name='L1014'></a><a href='#L1014'>1014</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<a name='L1014'></a><a href='#L1014'>1014</a>
+<a name='L1015'></a><a href='#L1015'>1015</a>
+<a name='L1016'></a><a href='#L1016'>1016</a>
+<a name='L1017'></a><a href='#L1017'>1017</a>
+<a name='L1018'></a><a href='#L1018'>1018</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -1237,6 +1241,10 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2130,7 +2138,7 @@ class LTIToolkitController {
    */
 <span class="fstat-no" title="function not covered" >  async launch10(req) {</span>
 <span class="cstat-no" title="statement not covered" >    this.logger.lti("LTI 1.0 Launch Request Received");</span>
-<span class="cstat-no" title="statement not covered" >    this.logger.debug(JSON.stringify(req.body, null, 2));</span>
+<span class="cstat-no" title="statement not covered" >    this.logger.silly(JSON.stringify(req.body, null, 2));</span>
 <span class="cstat-no" title="statement not covered" >    const launchResult = await this.lti10.validate10(req);</span>
 <span class="cstat-no" title="statement not covered" >    if (launchResult === false) {</span>
 <span class="cstat-no" title="statement not covered" >      this.logger.lti("Launch invalid!");</span>
@@ -2138,9 +2146,9 @@ class LTIToolkitController {
 <span class="cstat-no" title="statement not covered" >    } else {</span>
 <span class="cstat-no" title="statement not covered" >      this.logger.lti("Launch valid!");</span>
 <span class="cstat-no" title="statement not covered" >      const customItems = Object.keys(launchResult)</span>
-<span class="cstat-no" title="statement not covered" >        .filter((key) =&gt; key.startsWith("custom_lpp_"))</span>
+<span class="cstat-no" title="statement not covered" >        .filter((key) =&gt; key.startsWith("custom"))</span>
 <span class="cstat-no" title="statement not covered" >        .reduce((obj, key) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >          obj[key.substring(11)] = launchResult[key];</span>
+<span class="cstat-no" title="statement not covered" >          obj[key.substring(6)] = launchResult[key];</span>
 <span class="cstat-no" title="statement not covered" >          return obj;</span>
 <span class="cstat-no" title="statement not covered" >        }, {});</span>
 <span class="cstat-no" title="statement not covered" >      const launchData = {</span>
@@ -2306,7 +2314,11 @@ class LTIToolkitController {
 <span class="cstat-no" title="statement not covered" >      delete launchData.tool_consumer_product;</span>
 <span class="cstat-no" title="statement not covered" >      delete launchData.tool_consumer_version;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      if (!this.provider || typeof this.provider.handleLaunch !== "function") {</span>
+<span class="cstat-no" title="statement not covered" >      if (this.provider &amp;&amp; typeof this.provider.handleLaunch === "function") {</span>
+<span class="cstat-no" title="statement not covered" >        this.logger.lti("Calling provider.handleLaunch function");</span>
+<span class="cstat-no" title="statement not covered" >        this.logger.debug(</span>
+<span class="cstat-no" title="statement not covered" >          "Launch Data: " + JSON.stringify(launchData, null, 2),</span>
+<span class="cstat-no" title="statement not covered" >        );</span>
 <span class="cstat-no" title="statement not covered" >        return await this.provider.handleLaunch(launchData, consumer, req);</span>
 <span class="cstat-no" title="statement not covered" >      } else {</span>
 <span class="cstat-no" title="statement not covered" >        this.logger.error(</span>
@@ -3109,7 +3121,7 @@ export default LTIToolkitController;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-12T17:09:58.973Z
+                at 2025-11-13T17:49:02.565Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
