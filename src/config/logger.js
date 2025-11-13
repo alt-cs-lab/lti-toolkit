@@ -68,9 +68,9 @@ const colors = {
   silly: "gray",
 };
 
-winston.addColors(colors);
+export default function configureLogger(level = "info") {
+  winston.addColors(colors);
 
-export default function configureLogger(level = "warn") {
   return winston.createLogger({
     // Default logging level
     level: level,

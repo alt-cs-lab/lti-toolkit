@@ -32,7 +32,7 @@ import ConsumerController from "./src/controllers/consumer.js";
  * @param {*} config - Configuration object
  * @param {string} [config.domain_name] - Domain name of the application (e.g., "example.com")
  * @param {Object|None} [config.logger] - Optional logger object (defaults to built-in logger)
- * @param {string|None} [config.log_level] - Optional log level (defaults to "info", use "error" for production)
+ * @param {string|None} [config.log_level] - Optional log level (defaults to "info", use "warn" or "error" for production)
  * @param {Object|None} [config.database] - Optional Sequelize database instance (defaults to built-in SQLite database)
  * @param {Object|None} [config.provider] - LTI Provider Configuration
  * @param {Function} [config.provider.handleLaunch] - Required function to handle launch requests

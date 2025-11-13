@@ -39,7 +39,7 @@ class LTIToolkitController {
    */
   async launch10(req) {
     this.logger.lti("LTI 1.0 Launch Request Received");
-    this.logger.debug(JSON.stringify(req.body, null, 2));
+    this.logger.silly(JSON.stringify(req.body, null, 2));
     const launchResult = await this.lti10.validate10(req);
     if (launchResult === false) {
       this.logger.lti("Launch invalid!");
@@ -47,9 +47,9 @@ class LTIToolkitController {
     } else {
       this.logger.lti("Launch valid!");
       const customItems = Object.keys(launchResult)
-        .filter((key) => key.startsWith("custom_lpp_"))
+        .filter((key) => key.startsWith("custom"))
         .reduce((obj, key) => {
-          obj[key.substring(11)] = launchResult[key];
+          obj[key.substring(6)] = launchResult[key];
           return obj;
         }, {});
       const launchData = {
@@ -215,7 +215,11 @@ class LTIToolkitController {
       delete launchData.tool_consumer_product;
       delete launchData.tool_consumer_version;
 
-      if (!this.provider || typeof this.provider.handleLaunch !== "function") {
+      if (this.provider && typeof this.provider.handleLaunch === "function") {
+        this.logger.lti("Calling provider.handleLaunch function");
+        this.logger.debug(
+          "Launch Data: " + JSON.stringify(launchData, null, 2),
+        );
         return await this.provider.handleLaunch(launchData, consumer, req);
       } else {
         this.logger.error(
