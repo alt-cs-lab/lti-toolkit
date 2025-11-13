@@ -768,7 +768,7 @@ class LTIToolkitController {
    * @param {String} [grade.debug.assignment] - the assignment (for debugging)
    * @param {String} [grade.debug.assignment_id] - the assignment ID (for debugging)
    */
-  static async postGrade(grade) {
+  async postGrade(grade) {
     this.logger.lti(
       "Posting grade for user " +
         grade.debug.user +
