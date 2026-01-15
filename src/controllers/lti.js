@@ -609,7 +609,7 @@ class LTIToolkitController {
     //   score,
     // );
 
-    await this.postProviderGrade(
+    await this.consumer.postProviderGrade(
       sectionKey,
       lessonKey,
       userKey,
