@@ -34,6 +34,7 @@ import ConsumerController from "./src/controllers/consumer.js";
  * @param {Object|None} [config.logger] - Optional logger object (defaults to built-in logger)
  * @param {string|None} [config.log_level] - Optional log level (defaults to "info", use "warn" or "error" for production)
  * @param {Object|None} [config.database] - Optional Sequelize database instance (defaults to built-in SQLite database)
+ * @param {String|None} [config.db_storage] - Optional storage location for SQLite database (defaults to "lti-toolkit.db")
  * @param {Object|None} [config.provider] - LTI Provider Configuration
  * @param {Function} [config.provider.handleLaunch] - Required function to handle launch requests
  * @param {string|None} [config.provider.key] - LTI 1.0 Key for Single Provider Setup
@@ -118,7 +119,10 @@ export default async function LtiToolkit(config) {
     if (config.test) {
       config.database = configureDatabase(config.logger, ":memory:");
     } else {
-      config.database = configureDatabase(config.logger);
+      if (!config.db_storage || typeof config.db_storage !== "string") {
+        config.db_storage = "lti-toolkit.db";
+      }
+      config.database = configureDatabase(config.logger, config.db_storage);
     }
   }
 

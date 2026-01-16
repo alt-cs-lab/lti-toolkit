@@ -1,10 +1,12 @@
 +++
 archetype = "chapter"
 chapter = true
-title = "General"
+title = "Documentation"
 pre = "<b>0. </b>"
 weight = 1
 ordinal = "0"
 +++
 
-General Documentation
+General Documentation for the LTI Toolkit
+
+{{% children %}}

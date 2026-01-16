@@ -1,0 +1,23 @@
+{
+  "name": "provider",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Example LTI Tool Provider",
+  "main": "bin/www",
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
+  },
+  "author": "Russell Feldhausen <russfeld@ksu.edu>",
+  "license": "MIT",
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.51.4",
+    "express": "^5.2.1",
+    "express-session": "^1.18.2",
+    "lti-toolkit": "github:alt-cs-lab/lti-toolkit",
+    "nunjucks": "^3.2.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}

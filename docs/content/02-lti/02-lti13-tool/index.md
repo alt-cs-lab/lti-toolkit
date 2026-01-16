@@ -4,9 +4,15 @@ pre: "2. "
 weight: 20
 ---
 
-Sample LTI 1.3 Launch:
+This page documents the messages sent from an LMS to this tool acting as an LTI 1.3 Tool Provider. 
 
-**Login from Tool Consumer**
+## Sequence Diagram
+
+![Sequence Diagram](images/lti_13_seq.png)
+
+## Sample LTI Launch Messages
+
+### Login Message from Canvas
 
 ```json
 {
@@ -22,7 +28,7 @@ Sample LTI 1.3 Launch:
 }
 ```
 
-**Auth Request from Tool Provider**
+### Auth Request from LTI Toolkit back to Canvas
 
 ```json
 {
@@ -40,7 +46,7 @@ Sample LTI 1.3 Launch:
 
 ```
 
-**Redirect from Tool Consumer**
+### Redirect Message from Canvas
 
 ```json
 {
@@ -52,7 +58,7 @@ Sample LTI 1.3 Launch:
 }
 ```
 
-**Decoded JWT from Tool Consumer - Admin**
+### Decoded JWT in Redirect Message from Canvas - Admin Account
 
 ```json
 {
@@ -157,7 +163,7 @@ Sample LTI 1.3 Launch:
 }
 ```
 
-**Decoded JWT from Tool Consumer - Teacher**
+### Decoded JWT in Redirect Message from Canvas - Teacher Account
 
 ```json
 {
@@ -264,7 +270,7 @@ Sample LTI 1.3 Launch:
 }
 ```
 
-**Decoded JWT from Tool Consumer - Student**
+### Decoded JWT in Redirect Message from Canvas - Student Account
 
 ```json
 {
@@ -371,7 +377,7 @@ Sample LTI 1.3 Launch:
 }
 ```
 
-**Decoded JWT from Tool Consumer - Student (All LTI Advatage Features Disabled)**
+### Decoded JWT in Redirect Message from Canvas - Student Account (All LTI Advatage Features Disabled)
 
 ```json
 {
@@ -447,12 +453,7 @@ Sample LTI 1.3 Launch:
 }
 ```
 
-Documentation:
-
-![Sequence Diagram](images/lti_13_seq.png)
-
-
-References:
+## Helpful References:
 
 * https://www.imsglobal.org/spec/lti/v1p3
 * https://www.imsglobal.org/spec/security/v1p0/ 

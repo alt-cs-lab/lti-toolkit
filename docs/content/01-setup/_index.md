@@ -1,7 +1,7 @@
 +++
 archetype = "chapter"
 chapter = true
-title = "Setup"
+title = "Dev Setup"
 pre = "<b>1. </b>"
 weight = 2
 ordinal = "1"

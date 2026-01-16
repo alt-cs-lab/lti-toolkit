@@ -4,7 +4,15 @@ pre: "1. "
 weight: 10
 ---
 
-**Sample LTI 1.0 Launch from Canvas - Admin**
+This page documents the messages sent from an LMS to this tool acting as an LTI 1.0 Tool Provider. 
+
+## Sequence Diagram
+
+![Sequence Diagram](images/lti_10_seq.png)
+
+## Sample LTI Launch Messages
+
+### LTI 1.0 Launch from Canvas - Admin Account
 
 ```json
 {
@@ -61,7 +69,7 @@ weight: 10
 }
 ```
 
-**Sample LTI 1.0 Launch from Canvas - Teacher**
+### LTI 1.0 Launch from Canvas - Teacher Account
 
 ```json
 {
@@ -121,7 +129,7 @@ weight: 10
 }
 ```
 
-**Sample LTI 1.0 Launch from Canvas - Student**
+### LTI 1.0 Launch from Canvas - Student Account
 
 ```json
 {
@@ -182,11 +190,7 @@ weight: 10
 }
 ```
 
-Documentation:
-
-![Sequence Diagram](images/lti_10_seq.png)
-
-References:
+## Helpful References:
 
 * https://www.imsglobal.org/specs/ltiv1p1/implementation-guide - super helpful
 * https://datatracker.ietf.org/doc/html/rfc5849 - OAuth 1.0

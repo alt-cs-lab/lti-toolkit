@@ -4,12 +4,14 @@ pre: "3. "
 weight: 30
 ---
 
-The LTI controller constructs a `launchData` object from each LTI launch that contains the following information:
+The LTI Toolkit constructs a `launchData` object from each incoming LTI launch that contains the following information. Each attribute is documented with the original source of that attribute from both an LTI 1.0 and LTI 1.3 launch request. To simplify things, the `baseURL` and `agsURL` in the descriptions below have been replaced with variables that carry these values:
 
 ```js
 baseURL = "https://purl.imsglobal.org/spec/lti/claim/"
 agsURL = "https://purl.imsglobal.org/spec/lti-ags/claim/"
 ```
+
+### LTI Launch Data Object
 
 * `launch_type` - the type of LTI launch
   * LTI 1.0: `"lti1.0"`
@@ -75,7 +77,7 @@ agsURL = "https://purl.imsglobal.org/spec/lti-ags/claim/"
   * LTI 1.0: search for any attributes prefixed with `lpp_`
   * LTI 1.3: `[baseUrl + "custom"]`
 
-4 Additional items are stored in the `consumer` data structure by the library itself, but aren't passed to the user's `handleLaunch` function:
+Four additional items are stored in the `consumer` database by the library itself, but aren't passed to the user's `handleLaunch` function:
 
 * `tool_consumer_product` - the tool consumer product name (e.g. `"canvas"`)
   * LTI 1.0: `tool_consumer_info_product_family_code`
@@ -90,8 +92,11 @@ agsURL = "https://purl.imsglobal.org/spec/lti-ags/claim/"
   * LTI 1.0: `tool_consumer_info_version`
   * LTI 1.3: `[baseUrl + "tool_platform"].version`
 
+## LTI Launch Examples
 
-**LTI 1.0 Example**
+### LTI 1.0 Example
+
+Sent to the `handleLaunch` endpoint:
 
 ```js
 {
@@ -116,7 +121,11 @@ agsURL = "https://purl.imsglobal.org/spec/lti-ags/claim/"
   user_roles: 'Learner',
   custom: { custom_1: 'value_1', custom_2: 'value_2' }
 }
+```
 
+Stored in the database:
+
+```js
 {
   tool_consumer_product: 'canvas',
   tool_consumer_guid: 'zOUAtkfS3gI8nh5IskzlgAro1oCx3rx6SGGahiLL:canvas-lms',
@@ -125,7 +134,9 @@ agsURL = "https://purl.imsglobal.org/spec/lti-ags/claim/"
 }
 ```
 
-**LTI 1.3 Example**
+### LTI 1.0 Example
+
+Sent to the `handleLaunch` endpoint:
 
 ```js
 {
@@ -153,7 +164,11 @@ agsURL = "https://purl.imsglobal.org/spec/lti-ags/claim/"
   ],
   custom: { custom1: 'value1', custom2: 'value2' }
 }
+```
 
+Stored in the database:
+
+```js
 {
   tool_consumer_product: 'canvas',
   tool_consumer_guid: 'zOUAtkfS3gI8nh5IskzlgAro1oCx3rx6SGGahiLL:canvas-lms',
@@ -162,7 +177,7 @@ agsURL = "https://purl.imsglobal.org/spec/lti-ags/claim/"
 }
 ```
 
-Documentation:
+## Helpful References:
 
 * LTI 1.0: https://www.imsglobal.org/specs/ltiv1p1/implementation-guide
 * LTI 1.3: https://www.imsglobal.org/spec/lti/v1p3#required-message-claims 
