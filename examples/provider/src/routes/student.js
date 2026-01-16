@@ -6,7 +6,7 @@
 
 /**
  * Handle LTI Student Launch
- * 
+ *
  * @param {Object} req - the Express request object
  * @param {Object} res - the Express response object
  */
@@ -19,7 +19,7 @@ async function StudentHandler(req, res) {
   res.render("student.njk", {
     title: "LTI Tool Provider - Student View",
     launchData: launchData,
-    consumer: consumer
+    consumer: consumer,
   });
 }
 

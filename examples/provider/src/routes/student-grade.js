@@ -9,7 +9,7 @@ import lti from "../configs/lti.js";
 
 /**
  * Handle LTI Student Grade Postback
- * 
+ *
  * @param {Object} req - the Express request object
  * @param {Object} res - the Express response object
  */
@@ -24,7 +24,7 @@ async function StudentGradeHandler(req, res) {
   // Get grade from form submission
   const grade = parseFloat(req.body.grade);
   if (isNaN(grade) || grade < 0 || grade > 1) {
-    error = "Invalid grade value. Must be between 0 and 1."
+    error = "Invalid grade value. Must be between 0 and 1.";
   } else {
     // Post grade back to the LTI Provider
     // Build Grade Object
@@ -47,12 +47,13 @@ async function StudentGradeHandler(req, res) {
         // Assignment Name
         assignment: launchData.assignment_name,
         // Assignment ID (LTI 1.0 and LTI 1.3)
-        assignment_id: launchData.assignment_id + "(" + launchData.assignment_lti_id  + ")"
-      }
-    }
+        assignment_id:
+          launchData.assignment_id + "(" + launchData.assignment_lti_id + ")",
+      },
+    };
     if (lti.controllers.lti.postGrade(gradeObject)) {
       message = `Successfully posted grade of ${grade} back to the LMS.`;
-      
+
       // Record grade in local data store
       updateDataStoreWithGrade(launchData, grade, req);
     } else {
@@ -66,7 +67,7 @@ async function StudentGradeHandler(req, res) {
     message: message,
     error: error,
     launchData: launchData,
-    consumer: consumer
+    consumer: consumer,
   });
 }
 
@@ -84,7 +85,11 @@ function updateDataStoreWithGrade(launchData, grade, req) {
   const courseId = launchData.course_id;
   const assignmentId = launchData.assignment_id;
   const userId = launchData.user_lis_id;
-  if (courses[courseId] && courses[courseId].assignments[assignmentId] && courses[courseId].assignments[assignmentId].grades[userId]) {
+  if (
+    courses[courseId] &&
+    courses[courseId].assignments[assignmentId] &&
+    courses[courseId].assignments[assignmentId].grades[userId]
+  ) {
     courses[courseId].assignments[assignmentId].grades[userId].score = grade;
   }
 }

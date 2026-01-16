@@ -8,9 +8,9 @@
 
 /**
  * Handle an incoming LTI Launch Request
- * 
+ *
  * @see https://alt.cs.ksu.edu/lti-toolkit//02-lti/03-launchdata/
- * 
+ *
  * @param {Object} launchData - an LTI Launch Data object
  * @param {Object} consumer - the LTI consumer object
  * @param {Object} req - the Express request object
@@ -47,25 +47,25 @@ async function LTILaunch(launchData, consumer, req) {
  */
 function parseRoles(launchData) {
   try {
-      if (launchData.launch_type === "lti1.0") {
-        // See https://www.imsglobal.org/specs/ltiv1p0/implementation-guide#toc-9
-        // LTI 1.0 roles are a long string
-        if (launchData.user_roles.includes("Learner")) {
-          return true;
-        } 
-        return false;
-      } else if (launchData.launch_type === "lti1.3") {
-        // See https://www.imsglobal.org/spec/lti/v1p3#role-vocabularies
-        // LTI 1.3 roles are an array of strings
-        if (launchData.user_roles.some((role) => role.includes("Learner"))) {
-          return true;
-        }
-        return false;
-      } else {
-        // Unknown LTI version
-        console.error("Unknown LTI launch type:", launchData.launch_type);
-        return false;
+    if (launchData.launch_type === "lti1.0") {
+      // See https://www.imsglobal.org/specs/ltiv1p0/implementation-guide#toc-9
+      // LTI 1.0 roles are a long string
+      if (launchData.user_roles.includes("Learner")) {
+        return true;
       }
+      return false;
+    } else if (launchData.launch_type === "lti1.3") {
+      // See https://www.imsglobal.org/spec/lti/v1p3#role-vocabularies
+      // LTI 1.3 roles are an array of strings
+      if (launchData.user_roles.some((role) => role.includes("Learner"))) {
+        return true;
+      }
+      return false;
+    } else {
+      // Unknown LTI version
+      console.error("Unknown LTI launch type:", launchData.launch_type);
+      return false;
+    }
   } catch (error) {
     console.error("Error parsing roles:", error);
     console.error("Roles data:", launchData.user_roles);
@@ -89,7 +89,7 @@ function updateDataStore(launchData, isStudent, req) {
     courses[courseId] = {
       name: launchData.course_name,
       label: launchData.course_label,
-      assignments: {}
+      assignments: {},
     };
   }
   const assignments = courses[courseId].assignments;
@@ -99,7 +99,7 @@ function updateDataStore(launchData, isStudent, req) {
       name: launchData.assignment_name,
       lti_id: launchData.assignment_lti_id,
       grade_url: launchData.outcome_url,
-      grades: {}
+      grades: {},
     };
   }
   if (isStudent) {
@@ -112,7 +112,7 @@ function updateDataStore(launchData, isStudent, req) {
       lis_id: userId,
       lis13_id: userId13,
       outcome_id: outcomeId,
-      score: null
+      score: null,
     };
   }
 }

@@ -6,7 +6,7 @@
 
 /**
  * Middleware to require LTI launch
- * 
+ *
  * @param {Object} req - the Express request object
  * @param {Object} res - the Express response object
  * @param {Function} next - the next middleware function

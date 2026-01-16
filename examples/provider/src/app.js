@@ -34,18 +34,20 @@ var app = express();
 app.use(express.urlencoded({ extended: false }));
 
 // Configure in-memory session store
-app.set('trust proxy', 1) // trust first proxy
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: 'auto' } // Note: Set to true if using HTTPS
-}));
+app.set("trust proxy", 1); // trust first proxy
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: "auto" }, // Note: Set to true if using HTTPS
+  }),
+);
 
 // Configure Nunjucks templating engine
 nunjucks.configure("src/views", {
   autoescape: true,
-  express: app
+  express: app,
 });
 app.set("view engine", "njk");
 

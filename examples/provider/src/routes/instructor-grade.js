@@ -9,7 +9,7 @@ import lti from "../configs/lti.js";
 
 /**
  * Handle LTI Instructor Grade Postback
- * 
+ *
  * @param {Object} req - the Express request object
  * @param {Object} res - the Express response object
  */
@@ -35,7 +35,7 @@ async function InstructorGradeHandler(req, res) {
   const assignments = courses[courseId].assignments;
 
   if (isNaN(grade) || grade < 0 || grade > 1) {
-    error = "Invalid grade value. Must be between 0 and 1."
+    error = "Invalid grade value. Must be between 0 and 1.";
   } else {
     // Post grade back to the LTI Provider
     // Build Grade Object
@@ -54,16 +54,21 @@ async function InstructorGradeHandler(req, res) {
         // User Name
         user: assignments[assignmentId].grades[userId].name,
         // User ID (LTI 1.0 and LTI 1.3)
-        user_id: assignments[assignmentId].grades[userId].lis_id + " (" + assignments[assignmentId].grades[userId].lis13_id + ")",
+        user_id:
+          assignments[assignmentId].grades[userId].lis_id +
+          " (" +
+          assignments[assignmentId].grades[userId].lis13_id +
+          ")",
         // Assignment Name
         assignment: assignments[assignmentId].name,
         // Assignment ID (LTI 1.0 and LTI 1.3)
-        assignment_id: assignmentId + "(" + assignments[assignmentId].lti_id  + ")"
-      }
-    }
+        assignment_id:
+          assignmentId + "(" + assignments[assignmentId].lti_id + ")",
+      },
+    };
     if (lti.controllers.lti.postGrade(gradeObject)) {
       message = `Successfully posted grade of ${grade} back to the LMS.`;
-      
+
       // Record grade in local data store
       assignments[assignmentId].grades[userId].score = grade;
     } else {
@@ -78,7 +83,7 @@ async function InstructorGradeHandler(req, res) {
     error: error,
     courses: req.app.locals.dataStore.courses,
     launchData: launchData,
-    consumer: consumer
+    consumer: consumer,
   });
 }
 

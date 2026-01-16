@@ -6,7 +6,7 @@
 
 /**
  * Handle LTI Student Launch
- * 
+ *
  * @param {Object} req - the Express request object
  * @param {Object} res - the Express response object
  */
@@ -16,7 +16,7 @@ async function IndexHandler(req, res) {
     title: "LTI Tool Provider - Index",
     domain: process.env.DOMAIN_NAME,
     key: process.env.LTI_CONSUMER_KEY,
-    secret: process.env.LTI_CONSUMER_SECRET
+    secret: process.env.LTI_CONSUMER_SECRET,
   });
 }
 

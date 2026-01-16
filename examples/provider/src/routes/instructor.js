@@ -6,7 +6,7 @@
 
 /**
  * Handle LTI Instructor Launch
- * 
+ *
  * @param {Object} req - the Express request object
  * @param {Object} res - the Express response object
  */
@@ -20,7 +20,7 @@ async function InstructorHandler(req, res) {
     title: "LTI Tool Provider - Instructor View",
     courses: req.app.locals.dataStore.courses,
     launchData: launchData,
-    consumer: consumer
+    consumer: consumer,
   });
 }
 

@@ -5,7 +5,7 @@
  */
 
 // Import LTI Toolkit
-import LTIToolkit from "lti-toolkit"
+import LTIToolkit from "lti-toolkit";
 
 // LTI Launch Handler
 import LTILaunch from "../routes/lti-launch.js";
@@ -21,11 +21,11 @@ const lti = await LTIToolkit({
   provider: {
     // Incoming LTI Launch Handler
     handleLaunch: LTILaunch,
-    // LTI 1.0 Consumer Key and Shared Secret 
+    // LTI 1.0 Consumer Key and Shared Secret
     // for single LTI consumer setup
     key: process.env.LTI_CONSUMER_KEY,
-    secret: process.env.LTI_CONSUMER_SECRET
-  }
+    secret: process.env.LTI_CONSUMER_SECRET,
+  },
 });
 
 export default lti;
