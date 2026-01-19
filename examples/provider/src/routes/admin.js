@@ -26,6 +26,8 @@ async function AdminHandler(req, res) {
     title: "LTI Tool Provider - Admin View",
     consumer: consumer,
     lmsDomain: lmsDomain,
+    domain: process.env.DOMAIN_NAME,
+    key: process.env.LTI_CONSUMER_KEY,
   });
 }
 

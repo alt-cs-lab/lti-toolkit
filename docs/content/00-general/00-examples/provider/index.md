@@ -29,11 +29,23 @@ LTI_CONSUMER_SECRET=your_lti_consumer_secret
 LTI_13_LMS_DOMAIN=https://canvas.instructure.com
 ```
 
-## LMS Configuration
+## LMS Configuration - LTI 1.0
 
-The settings above can then be used to configure this application in your learning management system (LMS). An example using Canvas is given below.
+The settings above can then be used to configure this application in your learning management system (LMS) using LTI 1.0. Refer to your LMS documentation for specific details. An example using Canvas is given below.
+
+* **Consumer Key** - `LTI_CONSUMER_KEY` from the app environment
+* **Shared Secret** - `LTI_CONSUMER_SECRET` from the app environment
+* **Launch URL** - `DOMAIN_NAME` from the app environment followed by `/lti/provider/launch10` by default. The URL can be configured in `app.js` as described below.
+* **Domain** - typically the `DOMAIN_NAME` from the app environment without the `https://` at the front
+* **Privacy Level** - must be **Public** (the library does not currently support anonymous students)
 
 ![LTI 1.0 Configuration in Canvas](images/lti10.png)
+
+Once the application has been added to the course, an assignment can be created to direct students to the Launch URL used above.
+
+![LTI 1.0 Assignment Configuration in Canvas](images/lti10assign.png)
+
+To access the rest of the application, students and teachers should use the assignment configured in the learning management system to perform an LTI Launch as described below.
 
 ## LTI Toolkit Configuration
 
@@ -385,3 +397,149 @@ async function InstructorGradeHandler(req, res) {
 ```
 
 In this example, the same data required to build a grade object is read from the shared data structure stored in memory. Again, in practice, this data would be read from a database or another storage mechanism, but this code should be instructive.
+
+## LTI 1.3 Configuration
+
+Configuring an application to use the LTI 1.3 protocol is a bit more complex, and requires several steps in both the learning management system (LMS) as well as this tool. Detailed instructions and configuration information can be found at the `/admin` route in the example application, and also are discussed below.
+
+### Step 1 - Add an LTI 1.3 Application in the LMS
+
+The first step is to add an LTI 1.3 application to the learning management system. In Canvas, this requires administrator access, so you may have to work with your Canvas administrator to accomplish this step. In Canvas, go to the Admin panel for the account used and find the Developer Keys page, then add a new LTI Key.
+
+* **Redirect URIs**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/redirect13` by default.
+* **Target Link URIs**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/launch13` by default.
+* **OpenID Connect Initiation Url**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/login13/` and then the `LTI_CONSUMER_KEY` from the app environment by default.
+* **JWK Method**: Public JWK URL (this library only supports JWKS via URL)
+* **Public JWK URL**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/key13` by default.
+
+The base of these URLs can be configured in `app.js` as discussed above. 
+
+![LTI 1.3 Key Configuration in Canvas](images/lti13admin1.png)
+
+In the LTI Advantage Services configuration, at a minimum the "Can create and update submission results for assignments associated with the tool" must be selected, which will allow this application to send grades back to the learning management system.
+
+![LTI 1.3 Advantage Services in Canvas](images/lti13admin2.png)
+
+At the bottom, the privacy level must be set to **PUBLIC** to get student information (this library does not support anonymous students).
+
+![LTI 1.3 Privacy Configuration in Canvas](images/lti13admin3.png)
+
+Once the LTI Key is created, a Client ID is provided by Canvas. Make a note of this value for later. Also, make sure the LTI Key is enabled here.
+
+![LTI 1.3 Client ID in Canvas](images/lti13admin4.png)
+
+### Step 2 - Add LTI 1.3 Application to a Course
+
+Once the LTI 1.3 Key is created, the application can be added to a course within the learning management system. In Canvas, this can be found on the Settings of a course on the Apps tab. Click the button to add a new application, and enter the Client ID from Step 1 above.
+
+![LTI 1.3 Add App to Course in Canvas](images/lti13course1.png)
+
+Once the application has been added to the course, click the menu next to the application and display the Deployment ID for the application. Save this value for later. 
+
+![LTI 1.3 Deployment ID in Canvas](images/lti13course2.png)
+
+### Step 3 - Configure LTI 1.3 Settings
+
+Back in the LTI Provider Demo application, click the link on the homepage or navigate to the `/admin` page to access the LTI 1.3 configuration. On this page, enter the LTI 1.3 configuration information for your learning management system. Examples below are shown for Canvas using the configuration provided in the steps above.
+
+* **LTI 1.3 Client ID:** From Step 1 Above
+* **LTI 1.3 Platform ID:** This is usually just the URL of the LMS
+* **LTI 1.3 Deployment ID:** From Step 2 Above
+* **LTI 1.3 JWKS Keyset URL:** For Canvas, `/api/lti/security/jwks`
+* **LTI 1.3 Token URL:** For Canvas, `/login/oauth2/token`
+* **LTI 1.3 Auth URL:** For Canvas, `/api/lti/authorize_redirect`
+
+![LTI 1.3 Consumer Configuration](images/lti13app1.png)
+
+### Step 4 - Configure LMS Assignment
+
+In Canvas, configure an assignment that uses an external URL (similar to working with LTI 1.0 Applications as shown below). This time, it will use the Target Link URI configured in Step 1 - typically the `DOMAIN_NAME` from the environment followed by `/lti/provider/launch13`.
+
+![LTI 1.3 Assignment Configuration](images/lti13assign1.png)
+
+From this point onward, students and teachers can access the LTI Demo Application through this Canvas assignment to perform an LTI 1.3 Launch.
+
+## Managing LTI Consumers
+
+Within the sample application, the Admin Configuration handler gives a demonstration for using this library's controllers to manage the LTI Consumers available within the application.
+
+```js {title="src/routes/admin-config.js"}
+/**
+ * Handle LTI Admin Launch
+ *
+ * @param {Object} req - the Express request object
+ * @param {Object} res - the Express response object
+ */
+async function AdminConfigHandler(req, res) {
+  let error = null;
+  let message = null;
+
+  // Get Form Data
+  const data = {
+    lti13: true,
+    client_id: req.body.client_id,
+    platform_id: req.body.platform_id,
+    deployment_id: req.body.deployment_id,
+    keyset_url: req.body.keyset_url,
+    token_url: req.body.token_url,
+    auth_url: req.body.auth_url,
+  };
+
+  // Check if any required fields are missing
+  const requiredFields = [
+    "client_id",
+    "platform_id",
+    "deployment_id",
+    "keyset_url",
+    "token_url",
+    "auth_url",
+  ];
+  const missingFields = requiredFields.filter(
+    (field) => !data[field] || data[field].trim() === ""
+  );
+  if (missingFields.length > 0) {
+    error =
+      "Missing required fields: " + missingFields.join(", ");
+  } else {
+    // Update Consumer
+    try {
+      const returnValue = await lti.controllers.consumer.updateConsumer(1, data);
+      if (!returnValue) {
+        throw new Error("Consumer not found");
+      }
+    } catch (err) {
+      error = "Failed to update consumer: " + err.message;
+    }
+    if (!error) {
+      message = "Successfully updated consumer.";
+    }
+  }
+
+  // Get Updated LTI Consumer
+  const consumers = await lti.controllers.consumer.getAll();
+  const consumer = consumers[0].toJSON();
+
+  // Get LMS Domain
+  const lmsDomain =
+    process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
+
+  res.render("admin.njk", {
+    title: "LTI Tool Provider - Admin Configuration View",
+    consumer: consumer,
+    lmsDomain: lmsDomain,
+    domain: process.env.DOMAIN_NAME,
+    key: process.env.LTI_CONSUMER_KEY,
+    error: error,
+    message: message,
+  });
+}
+```
+
+This handler receives data provided in the LTI 1.3 configuration form, validates that all items are present (more validation could be performed as desired), and then it uses the Consumer controller provided through the library to update the default LTI Consumer (with ID `1`) to include the LTI 1.3 configuration options. The Consumer controller provides additional methods to add and delete additional consumers as desired. 
+
+{{% notice warning %}}
+
+Be aware that, by providing both a `key` and `secret` as part of the `provider` configuration in the LTI Toolkit configuration (see `src/configs/lti.js`), all existing LTI consumers will be removed from the database each time the application is launched. So, those options must be removed and LTI Consumers must be configured directly through the controller if multiple consumers are desired.
+
+{{% /notice %}}
+

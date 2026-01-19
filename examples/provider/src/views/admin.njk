@@ -30,8 +30,8 @@
           <label for="name">LTI 1.3 Platform ID (e.g. "{{ lmsDomain }}")</label><br>
           <input type="url" id="platform_id" name="platform_id" value="{{ consumer.platform_id | d(lmsDomain, true) }}" size="50">
           <br>
-          <label for="name">LTI 1.3 Deployment ID (e.g. "deployment_id")</label><br>
-          <input type="text" id="deployment_id" name="deployment_id" value="{{ consumer.deployment_id | d('deployment_id', true) }}" size="50">
+          <label for="name">LTI 1.3 Deployment ID</label><br>
+          <input type="text" id="deployment_id" name="deployment_id" size="50">
           <br>
           <label for="name">LTI 1.3 JWKS Keyset URL (e.g. "{{ lmsDomain }}/api/lti/security/jwks")</label><br>
           <input type="url" id="keyset_url" name="keyset_url" value="{{ consumer.keyset_url | d(lmsDomain + '/api/lti/security/jwks', true) }}" size="50">
@@ -44,6 +44,48 @@
           <br><br>
           <input type="submit" value="Submit">
         </form>
+        <hr />
+        <h2>LTI 1.3 Configuration Steps</h2>
+
+        <h3>Step 1 - Add LTI Application to Canvas</h3>
+        <p>This requires administrator access in Canvas. Go to the Admin panel for the account used and find the Developer Keys page, then add a new LTI Key.<p>
+        <ul>
+          <li><b>Redirect URIs</b>: {{ domain }}/lti/provider/redirect13</li>
+          <li><b>Target Link URI</b>: {{ domain }}/lti/provider/launch13</li>
+          <li><b>OpenID Connect Initiation Url</b>: {{ domain }}/lti/provider/login13/{{ key }}</li>
+          <li><b>JWK Method</b>: Public JWK URL</li>
+          <li><b>Public JWK URL</b>: {{ domain }}/lti/provider/key13</li>
+        </ul>
+        <img src="/images/lti13admin1.png" style="border:1px solid black" />
+        <p>At a minimum, the "Can create and update submission results for assignments associated with the tool" LTI Advantage Service must be enabled to allow grade passback.</p>
+        <img src="/images/lti13admin2.png" style="border:1px solid black" />
+        <p>Privacy Level must be set to "PUBLIC" to get student information (anonymous students currently not supported)</p>
+        <img src="/images/lti13admin3.png" style="border:1px solid black" />
+        <p>Once the key is created, make sure it is enabled and note the Client ID provided (e.g. "10000000000004")</p>
+        <img src="/images/lti13admin4.png" style="border:1px solid black" />
+        
+        <h3>Step 2 - Add LTI Application in Course</h3>
+        <p>Next, the teacher of the course must add the LTI application to the course. This can be found in the Settings of the course on the Apps tab. Click the button to add a new application, select "By Client ID" and enter the Client ID from the previous step.</p>
+        <img src="/images/lti13course1.png" style="border:1px solid black" />
+        <p>Once added, click the menu next to the application to view the Deployment ID. This will be needed in the next step.</p>
+        <img src="/images/lti13course2.png" style="border:1px solid black" />
+        
+        <h3>Step 3 - Configure LTI 1.3 Settings in LTI Demo Application</h3>
+        <p>On the top of this page in the LTI Demo Application, enter the settings for your LMS using information provided above. Default URLs are shown for the Canvas LMS hosted at the URL provided in the environment file.</p>
+        <ul>
+          <li><b>LTI 1.3 Client ID:</b> From Step 1 (e.g. "10000000000004")</li>
+          <li><b>LTI 1.3 Platform ID:</b> Usually the URL of the LMS</li>
+          <li><b>LTI 1.3 Deployment ID:</b> From Step 2</li>
+          <li><b>LTI 1.3 JWKS Keyset URL:</b> For Canvas, /api/lti/security/jwks</li>
+          <li><b>LTI 1.3 Token URL:</b> For Canvas, /login/oauth2/token</li>
+          <li><b>LTI 1.3 Auth URL:</b> For Canvas, /api/lti/authorize_redirect</li>
+        </ul>
+        <img src="/images/lti13app1.png" style="border:1px solid black" />
+        
+        <h3>Step 4 - Configure Assignment</h3>
+        <p>In Canvas, configure an LTI assignment as usual. Use {{ domain }}/lti/provider/launch13 as the URL and choose to launch in a new tab</p>
+        <img src="/images/lti13assign1.png" style="border:1px solid black" />
+
         <hr />
         <details>
           <summary>LTI Debugging Information</summary>

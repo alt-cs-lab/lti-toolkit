@@ -104,6 +104,7 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // OPTIONAL Single LTI 1.0 Consumer Setup
     // Both key and secret must be provided
     // Will configure a simple LTI 1.0 Consumer on launch
+    // All other consumers will be removed from the database on launch
     // LTI 1.0 Key
     key: "your_lti_key",
     // LTI 1.0 Secret

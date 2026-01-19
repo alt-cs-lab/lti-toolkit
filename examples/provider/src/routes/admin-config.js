@@ -19,7 +19,6 @@ async function AdminConfigHandler(req, res) {
 
   // Get Form Data
   const data = {
-    name: req.body.name,
     lti13: true,
     client_id: req.body.client_id,
     platform_id: req.body.platform_id,
@@ -29,17 +28,34 @@ async function AdminConfigHandler(req, res) {
     auth_url: req.body.auth_url,
   };
 
-  // Update Consumer
-  try {
-    const returnValue = await lti.controllers.consumer.updateConsumer(1, data);
-    if (!returnValue) {
-      throw new Error("Consumer not found");
+  // Check if any required fields are missing
+  const requiredFields = [
+    "client_id",
+    "platform_id",
+    "deployment_id",
+    "keyset_url",
+    "token_url",
+    "auth_url",
+  ];
+  const missingFields = requiredFields.filter(
+    (field) => !data[field] || data[field].trim() === ""
+  );
+  if (missingFields.length > 0) {
+    error =
+      "Missing required fields: " + missingFields.join(", ");
+  } else {
+    // Update Consumer
+    try {
+      const returnValue = await lti.controllers.consumer.updateConsumer(1, data);
+      if (!returnValue) {
+        throw new Error("Consumer not found");
+      }
+    } catch (err) {
+      error = "Failed to update consumer: " + err.message;
     }
-  } catch (err) {
-    error = "Failed to update consumer: " + err.message;
-  }
-  if (!error) {
-    message = "Successfully updated consumer.";
+    if (!error) {
+      message = "Successfully updated consumer.";
+    }
   }
 
   // Get Updated LTI Consumer
@@ -54,6 +70,8 @@ async function AdminConfigHandler(req, res) {
     title: "LTI Tool Provider - Admin Configuration View",
     consumer: consumer,
     lmsDomain: lmsDomain,
+    domain: process.env.DOMAIN_NAME,
+    key: process.env.LTI_CONSUMER_KEY,
     error: error,
     message: message,
   });
