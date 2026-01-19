@@ -24,6 +24,9 @@ DOMAIN_NAME=https://ltidemo.home.russfeld.me
 # LTI Consumer Key and Secret
 LTI_CONSUMER_KEY=your_lti_consumer_key
 LTI_CONSUMER_SECRET=your_lti_consumer_secret
+
+# LTI 1.3 LMS Domain
+LTI_13_LMS_DOMAIN=https://canvas.instructure.com
 ```
 
 ## LMS Configuration

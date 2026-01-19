@@ -56,20 +56,18 @@ class ConsumerController {
       );
       let publicKey = null;
       let privateKey = null;
-      if (consumer.lti13) {
-        // Generate keys for the consumer
-        ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
-          modulusLength: 4096,
-          publicKeyEncoding: {
-            type: "spki",
-            format: "pem",
-          },
-          privateKeyEncoding: {
-            type: "pkcs1",
-            format: "pem",
-          },
-        }));
-      }
+      // Generate keys for the consumer
+      ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+        modulusLength: 4096,
+        publicKeyEncoding: {
+          type: "spki",
+          format: "pem",
+        },
+        privateKeyEncoding: {
+          type: "pkcs1",
+          format: "pem",
+        },
+      }));
       await this.models.ConsumerKey.create(
         {
           key: consumer.key,
@@ -170,7 +168,21 @@ class ConsumerController {
     // Generate new keys
     const newKey = nanoid();
     const newSecret = nanoid();
-    // TODO update public and private keys if lti13
+    
+    let publicKey = null;
+    let privateKey = null;
+    // Generate keys for the consumer
+    ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+      modulusLength: 4096,
+      publicKeyEncoding: {
+        type: "spki",
+        format: "pem",
+      },
+      privateKeyEncoding: {
+        type: "pkcs1",
+        format: "pem",
+      },
+    }));
 
     await this.models.ConsumerKey.destroy({
       where: {
@@ -184,6 +196,8 @@ class ConsumerController {
     const consumerkey = await this.models.ConsumerKey.create({
       key: newKey,
       secret: newSecret,
+      public: publicKey,
+      private: privateKey,
     });
 
     return consumerkey;

@@ -28,9 +28,13 @@ async function AdminConfigHandler(req, res) {
     token_url: req.body.token_url,
     auth_url: req.body.auth_url,
   };
+  
   // Update Consumer
   try {
-    await lti.controllers.consumer.updateConsumer(0, data);
+    const returnValue = await lti.controllers.consumer.updateConsumer(1, data);
+    if (!returnValue) {
+      throw new Error("Consumer not found");
+    }
   } catch (err) {
     error = "Failed to update consumer: " + err.message;
   }
@@ -38,13 +42,17 @@ async function AdminConfigHandler(req, res) {
     message = "Successfully updated consumer.";
   }
 
-  // Get LTI Consumer
+  // Get Updated LTI Consumer
   const consumers = await lti.controllers.consumer.getAll();
   const consumer = consumers[0].toJSON();
 
-  res.render("admin-config.njk", {
+  // Get LMS Domain
+  const lmsDomain = process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
+
+  res.render("admin.njk", {
     title: "LTI Tool Provider - Admin Configuration View",
     consumer: consumer,
+    lmsDomain: lmsDomain,
     error: error,
     message: message,
   });

@@ -14,34 +14,34 @@
         {% endif %}
         <h2>Consumer Configuration</h2>
         <form method="POST" action="/admin/config">
-          <label for="name">Consumer Name</label>
-          <input type="text" id="name" name="name" value="{{ consumer.name }} disabled>
-          
+          <label for="name">Consumer Name</label><br>
+          <input type="text" id="name" name="name" value="{{ consumer.name }}" disabled size="50">
+          <br>
           <label for="lti13">LTI 1.3 Enabled</label>
           {% if consumer.lti13 %}
           <input type="checkbox" id="lti13" name="lti13" value="true" checked disabled>
           {% else %}
           <input type="checkbox" id="lti13" name="lti13" value="true" disabled>
-          {% endif }
-
-          <label for="name">LTI 1.3 Client ID (e.g. "10000000000001")</label>
-          <input type="text" id="client_id" name="client_id" value="{{ consumer.client_id }}>
-
-          <label for="name">LTI 1.3 Platform ID (e.g. "https://canvas.instructure.com")</label>
-          <input type="url" id="platform_id" name="platform_id" value="{{ consumer.platform_id }}>
-
-          <label for="name">LTI 1.3 Deployment ID (e.g. "deployment_id")</label>
-          <input type="text" id="deployment_id" name="deployment_id" value="{{ consumer.deployment_id }}>
-
-          <label for="name">LTI 1.3 JWKS Keyset URL (e.g. "https://canvas.instructure.com/api/lti/security/jwks")</label>
-          <input type="url" id="keyset_url" name="keyset_url" value="{{ consumer.keyset_url }}>
-
-          <label for="name">LTI 1.3 Token URL (e.g. "https://canvas.instructure.com/login/oauth2/token")</label>
-          <input type="url" id="token_url" name="token_url" value="{{ consumer.token_url }}>
-
-          <label for="name">LTI 1.3 Auth URL (e.g. "https://canvas.instructure.com/api/lti/authorize_redirect")</label>
-          <input type="url" id="auth_url" name="auth_url" value="{{ consumer.auth_url }}>
-
+          {% endif %}
+          <hr />
+          <label for="name">LTI 1.3 Client ID (e.g. "10000000000001")</label><br>
+          <input type="text" id="client_id" name="client_id" value="{{ consumer.client_id | d(10000000000001, true) }}" size="50">
+          <br>
+          <label for="name">LTI 1.3 Platform ID (e.g. "{{ lmsDomain }}")</label><br>
+          <input type="url" id="platform_id" name="platform_id" value="{{ consumer.platform_id | d(lmsDomain, true) }}" size="50">
+          <br>
+          <label for="name">LTI 1.3 Deployment ID (e.g. "deployment_id")</label><br>
+          <input type="text" id="deployment_id" name="deployment_id" value="{{ consumer.deployment_id | d('deployment_id', true) }}" size="50">
+          <br>
+          <label for="name">LTI 1.3 JWKS Keyset URL (e.g. "{{ lmsDomain }}/api/lti/security/jwks")</label><br>
+          <input type="url" id="keyset_url" name="keyset_url" value="{{ consumer.keyset_url | d(lmsDomain + '/api/lti/security/jwks', true) }}" size="50">
+          <br>
+          <label for="name">LTI 1.3 Token URL (e.g. "{{ lmsDomain }}/login/oauth2/token")</label><br>
+          <input type="url" id="token_url" name="token_url" value="{{ consumer.token_url | d(lmsDomain + '/login/oauth2/token', true) }}" size="50">
+          <br>
+          <label for="name">LTI 1.3 Auth URL (e.g. "{{ lmsDomain }}/api/lti/authorize_redirect")</label><br>
+          <input type="url" id="auth_url" name="auth_url" value="{{ consumer.auth_url | d(lmsDomain + '/api/lti/authorize_redirect', true) }}" size="50">
+          <br><br>
           <input type="submit" value="Submit">
         </form>
         <hr />
