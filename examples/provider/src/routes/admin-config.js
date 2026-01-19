@@ -27,7 +27,7 @@ async function AdminConfigHandler(req, res) {
     keyset_url: req.body.keyset_url,
     token_url: req.body.token_url,
     auth_url: req.body.auth_url,
-  }
+  };
   // Update Consumer
   try {
     await lti.controllers.consumer.updateConsumer(0, data);

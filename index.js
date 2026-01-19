@@ -219,35 +219,39 @@ export default async function LtiToolkit(config) {
       db: config.database,
       lti10: lti10,
       lti13: lti13,
-    }
-  };
+    };
+  }
 
   // Add Provider and Consumer if configured
   if (config.consumer) {
+    // Provider Controller to add/remove providers
     const ProviderControllerInstance = new ProviderController(
       modelConfig.models,
       config.logger,
       config.database,
     );
     returnObj.controllers.provider = ProviderControllerInstance;
-    const providerRouter = await setupProviderRoutes(
+    // Consumer Routes
+    const consumerRouter = await setupConsumerRoutes(
       LTIControllerInstance,
       config.logger,
     );
-    returnObj.routers.provider = providerRouter;
+    returnObj.routers.consumer = consumerRouter;
   }
   if (config.provider) {
+    // Consumer Controller to add/remove consumers
     const ConsumerControllerInstance = new ConsumerController(
       modelConfig.models,
       config.logger,
       config.database,
     );
     returnObj.controllers.consumer = ConsumerControllerInstance;
-    const consumerRouter = await setupConsumerRoutes(
+    // Provider Routes
+    const providerRouter = await setupProviderRoutes(
       LTIControllerInstance,
       config.logger,
     );
-    returnObj.routers.consumer = consumerRouter;
+    returnObj.routers.provider = providerRouter;
   }
 
   return returnObj;
