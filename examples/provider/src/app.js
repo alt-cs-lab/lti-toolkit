@@ -25,6 +25,8 @@ import StudentHandler from "./routes/student.js";
 import StudentGradeHandler from "./routes/student-grade.js";
 import InstructorHandler from "./routes/instructor.js";
 import InstructorGradeHandler from "./routes/instructor-grade.js";
+import AdminHandler from "./routes/admin.js";
+import AdminConfigHandler from "./routes/admin-config.js";
 
 // Create Express application
 var app = express();
@@ -66,6 +68,8 @@ app.post("/student/grade", requireLTI, StudentGradeHandler);
 app.get("/instructor", requireLTI, InstructorHandler);
 app.post("/instructor/grade", requireLTI, InstructorGradeHandler);
 app.get("/", IndexHandler);
+app.get("/admin", AdminHandler);
+app.post("/admin/config", AdminConfigHandler);
 
 // Use static files
 app.use(express.static(path.join(import.meta.dirname, "../public")));

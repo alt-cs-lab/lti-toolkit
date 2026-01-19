@@ -53,7 +53,6 @@ async function StudentGradeHandler(req, res) {
     };
     if (lti.controllers.lti.postGrade(gradeObject)) {
       message = `Successfully posted grade of ${grade} back to the LMS.`;
-
       // Record grade in local data store
       updateDataStoreWithGrade(launchData, grade, req);
     } else {

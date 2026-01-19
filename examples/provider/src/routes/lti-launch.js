@@ -42,6 +42,7 @@ async function LTILaunch(launchData, consumer, req) {
 
 /**
  * Parse LTI roles to determine user type
+ * 
  * @param {Object} launchData - the LTI Launch Data object
  * @returns {Boolean} 'true' if user is a student, 'false' otherwise
  */
@@ -75,6 +76,7 @@ function parseRoles(launchData) {
 
 /**
  * Update local data store
+ * 
  * @param {Object} launchData - the LTI Launch Data object
  * @param {Boolean} isStudent - 'true' if user is a student, 'false' otherwise
  * @param {Object} req - the Express request object

@@ -40,6 +40,7 @@
                     <form method="POST" action="/instructor/grade">
                       <label for="grade"><b>Update Grade: </b></label>
                       <input type="number" id="grade" name="grade" min="0" max="1" step="0.01">
+                      <input type="hidden" id="course" name="course" value="{{ courseId }}">
                       <input type="hidden" id="assignment" name="assignment" value="{{ assignmentId }}">
                       <input type="hidden" id="user" name="user" value="{{ userId }}">
                       <input type="submit" value="Submit">

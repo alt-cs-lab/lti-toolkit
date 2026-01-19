@@ -145,6 +145,87 @@ The LTI Toolkit library is initialized by providing a configuration options obje
 }
 ```
 
+## Usage
+
+The initialized LTI Toolkit is a complex object containing the following items:
+
+```js
+{
+  // Express routers for handling incoming routes
+  routers: {
+    // LTI Tool Provider router
+    // Returned if provider is configured
+    provider: {
+      "/launch10",
+      "/launch13",
+      "/redirect13",
+      "/login13/:key",
+      "/key13",
+      "/deeplink13",
+      "/editor13",
+      "/navigate13"
+    },
+    // LTI Tool Consumer Router
+    // Returned if consumer is configured
+    consumer: {
+      "/grade_passback"
+    }
+  },
+  // Controller Interfaces
+  controllers: {
+    // LTI Controller Instance
+    lti: {
+      // Generate LTI 1.0 Form Data to connect to
+      // external LTI Tool Provider
+      generateLTI10FormData(),
+      // Post Grade back to LTI Tool Consumer
+      postGrade()
+    },
+    // LTI Provider Controller Instance
+    // Returned if provider is configured
+    provider: {
+      getAll(),
+      getSecret(),
+      updateProvider(),
+      createProvider(),
+      deleteProvider()
+    },
+    // LTI Coonsumer Controller Instance
+    // Returned if consumer is configured
+    consumer: {
+      getAll(),
+      createConsumer(),
+      updateConsumer(),
+      deleteConsumer(),
+      getSecret(),
+      updateSecret()
+    }
+  },
+  // Sequelize Database Models
+  models: {
+    OauthNonce,
+    Consumer,
+    ConsumerKey,
+    ConsumerLogin,
+    Provider,
+    ProviderKey,
+  },
+  // Test Utilities
+  // Returned if test mode is configured
+  test: {
+    // Utility function to initialize expiration of logins and nonces
+    initializeExpiration,
+    // Sequelize Database instsance
+    db,
+    // LTI 1.0 Utilities
+    lti10,
+    // LTI 1.3 Utilities
+    lti13,
+  }
+}
+```
+
+
 ## Dependencies
 
 Care has been taken to minimize the amount of dependencies but balanced against simplifying the code and using reasonable libraries where appropriate. The core dependencies are listed below:

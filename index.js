@@ -209,17 +209,21 @@ export default async function LtiToolkit(config) {
       lti: LTIControllerInstance,
     },
     models: modelConfig.models,
-    test: {
+  };
+
+  // Add Testing Utilities if in test mode
+  if (config.test) {
+    returnObj.test = {
       // Expose for testing
       initializeExpiration: modelConfig.initializeExpiration,
       db: config.database,
       lti10: lti10,
       lti13: lti13,
-    },
+    }
   };
 
   // Add Provider and Consumer if configured
-  if (config.provider) {
+  if (config.consumer) {
     const ProviderControllerInstance = new ProviderController(
       modelConfig.models,
       config.logger,
@@ -232,7 +236,7 @@ export default async function LtiToolkit(config) {
     );
     returnObj.routers.provider = providerRouter;
   }
-  if (config.consumer) {
+  if (config.provider) {
     const ConsumerControllerInstance = new ConsumerController(
       modelConfig.models,
       config.logger,

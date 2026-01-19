@@ -22,6 +22,7 @@ async function InstructorGradeHandler(req, res) {
   let message = null;
 
   // Get form data
+  const courseId = req.body.course;
   const assignmentId = req.body.assignment;
   const userId = req.body.user;
   const grade = parseFloat(req.body.grade);
@@ -31,7 +32,6 @@ async function InstructorGradeHandler(req, res) {
   // In a real application, you would implement logic to store
   // relevant grade data in your database or other storage system
   const courses = req.app.locals.dataStore.courses;
-  const courseId = launchData.course_id;
   const assignments = courses[courseId].assignments;
 
   if (isNaN(grade) || grade < 0 || grade > 1) {
