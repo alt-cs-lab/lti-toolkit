@@ -28,7 +28,7 @@ async function AdminConfigHandler(req, res) {
     token_url: req.body.token_url,
     auth_url: req.body.auth_url,
   };
-  
+
   // Update Consumer
   try {
     const returnValue = await lti.controllers.consumer.updateConsumer(1, data);
@@ -47,7 +47,8 @@ async function AdminConfigHandler(req, res) {
   const consumer = consumers[0].toJSON();
 
   // Get LMS Domain
-  const lmsDomain = process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
+  const lmsDomain =
+    process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
 
   res.render("admin.njk", {
     title: "LTI Tool Provider - Admin Configuration View",

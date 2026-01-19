@@ -168,7 +168,7 @@ class ConsumerController {
     // Generate new keys
     const newKey = nanoid();
     const newSecret = nanoid();
-    
+
     let publicKey = null;
     let privateKey = null;
     // Generate keys for the consumer

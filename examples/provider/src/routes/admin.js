@@ -19,7 +19,8 @@ async function AdminHandler(req, res) {
   const consumer = consumers[0].toJSON();
 
   // Get LMS Domain
-  const lmsDomain = process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
+  const lmsDomain =
+    process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
 
   res.render("admin.njk", {
     title: "LTI Tool Provider - Admin View",

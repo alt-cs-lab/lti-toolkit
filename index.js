@@ -5,6 +5,9 @@
  * @license MIT
  */
 
+// Import libraries
+import crypto from "crypto";
+
 // Import configuration
 import configureLogger from "./src/config/logger.js";
 import configureDatabase from "./src/config/database.js";
@@ -158,9 +161,25 @@ export default async function LtiToolkit(config) {
       updatedAt:
         new Date().toISOString().slice(0, 23).replace("T", " ") + " +00:00",
     };
+    // Generate keys for the consumer
+    let publicKey = null;
+    let privateKey = null;
+    ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+      modulusLength: 4096,
+      publicKeyEncoding: {
+        type: "spki",
+        format: "pem",
+      },
+      privateKeyEncoding: {
+        type: "pkcs1",
+        format: "pem",
+      },
+    }));
     const key = {
       key: config.provider.key,
       secret: config.provider.secret,
+      public: publicKey,
+      private: privateKey,
     };
     await config.database.queryInterface.bulkInsert("lti_consumers", [
       consumer,
