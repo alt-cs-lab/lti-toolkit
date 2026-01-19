@@ -30,7 +30,7 @@ async function AdminConfigHandler(req, res) {
   }
   // Update Consumer
   try {
-    const consumer = await lti.controllers.consumer.updateConsumer(0, data);
+    await lti.controllers.consumer.updateConsumer(0, data);
   } catch (err) {
     error = "Failed to update consumer: " + err.message;
   }
@@ -40,7 +40,7 @@ async function AdminConfigHandler(req, res) {
 
   // Get LTI Consumer
   const consumers = await lti.controllers.consumer.getAll();
-  const consumer = consumer.toJSON();
+  const consumer = consumers[0].toJSON();
 
   res.render("admin-config.njk", {
     title: "LTI Tool Provider - Admin Configuration View",
