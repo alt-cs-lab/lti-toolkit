@@ -118,7 +118,7 @@ async function ProviderLaunchHandler(req, res) {
 
 /**
  * Function to update local data store with launch data
- * 
+ *
  * @param {Object} launchData - the LTI Launch Data object
  * @param {Object} provider - the LTI Tool Provider object
  * @param {Object} req - the Express request object
@@ -165,8 +165,14 @@ function updateDataStoreWithLaunch(launchData, provider, req) {
   }
 
   // Add empty grade record
-  if (!courses[courseId].assignments[assignmentId].users[userId].grades[launchData.gradebook_id]) {
-    courses[courseId].assignments[assignmentId].users[userId].grades[launchData.gradebook_id] = {
+  if (
+    !courses[courseId].assignments[assignmentId].users[userId].grades[
+      launchData.gradebook_id
+    ]
+  ) {
+    courses[courseId].assignments[assignmentId].users[userId].grades[
+      launchData.gradebook_id
+    ] = {
       score: null,
     };
   }

@@ -21,9 +21,9 @@ async function postGradeHandler(
   userKey,
   gradebookKey,
   score,
-  req
+  req,
 ) {
-  
+
   // Store grade in the local data store
   updateLocalDataStoreWithGrade(
     req,
@@ -39,7 +39,7 @@ async function postGradeHandler(
 
 /**
  * Function to update local data store with grade
- * 
+ *
  * @param {Object} req the Express request object
  * @param {string} providerKey the provider key
  * @param {string} contextKey the context (course) key
@@ -86,10 +86,11 @@ function updateLocalDataStoreWithGrade(
   }
 
   // Store grade
-  courses[contextKey].assignments[resourceKey].users[userKey].grades[gradebookKey] = {
+  courses[contextKey].assignments[resourceKey].users[userKey].grades[
+    gradebookKey
+  ] = {
     score: score,
   };
 }
-
 
 export default postGradeHandler;

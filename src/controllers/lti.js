@@ -437,6 +437,7 @@ class LTIToolkitController {
         providerKey,
         req.originalUrl,
         message_id,
+        req,
       );
     } else {
       // TODO handle readResult or deleteResult?
@@ -462,10 +463,12 @@ class LTIToolkitController {
    *
    * @param {Object} request - the request object from the body
    * @param {Object} providerKey - the key and secret for the provider
+   * @param {string} url - the original request URL
    * @param {string} message_id - the message identifier from the header
+   * @param {Object} req - Express request object
    * @returns {boolean} - true if the request is valid, else false
    */
-  async replaceResultRequest(request, providerKey, url, message_id) {
+  async replaceResultRequest(request, providerKey, url, message_id, req) {
     this.logger.lti("Handling Replace Result Request");
 
     // Parse Message
@@ -609,7 +612,7 @@ class LTIToolkitController {
       userKey,
       gradebookKey,
       score,
-      request,
+      req,
     );
 
     // TODO update assignment grade and send to tool consumer

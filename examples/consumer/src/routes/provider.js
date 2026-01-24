@@ -28,7 +28,7 @@ async function ProviderHandler(req, res) {
   // Formatted provider including secret
   const providerData = provider.toJSON();
   providerData.secret = providerSecret.secret;
-  
+
   // Render provider view
   res.render("provider.njk", {
     title: `LTI Tool Consumer - Provider: ${provider.name}`,
