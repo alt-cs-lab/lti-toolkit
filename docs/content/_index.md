@@ -233,6 +233,7 @@ Care has been taken to minimize the amount of dependencies but balanced against 
 
 * [Node.js 22 LTS](https://nodejs.org/en/blog/release/v22.11.0) - developed and tested using Node 22 LTS
 * [express](https://www.npmjs.com/package/express) - core web framework for handling routing and parsing
+* [express-xml-bodyparser](https://www.npmjs.com/package/express-xml-bodyparser) - parse incoming XML bodies (LTI 1.0 grade passback)
 * [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) - used to decode LTI 1.3 authentication tokens
 * [jwks-rsa](https://www.npmjs.com/package/jwks-rsa) - used to request and decode JWKS signing keys for LTI 1.3
 * [ky](https://www.npmjs.com/package/ky) - simple HTTP client for sending requests back to the LTI 1.3 Tool Consumer (LMS)

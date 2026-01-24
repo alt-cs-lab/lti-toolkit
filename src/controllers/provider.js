@@ -29,7 +29,7 @@ class ProviderController {
 
   /**
    * Get a provider by ID
-   * 
+   *
    * @param {number} id the ID of the provider
    * @return {Provider} the provider with the given ID
    */
@@ -40,7 +40,7 @@ class ProviderController {
 
   /**
    * Get a provider by key
-   * 
+   *
    * @param {string} key the key of the provider
    * @return {Provider} the provider with the given key
    */

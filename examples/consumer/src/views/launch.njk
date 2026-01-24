@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <main>
+        <h1>LTI Toolkit Example</h1>
+        <p>Click the button below to perform an LTI 1.0 Launch</p>
+        <form method="POST" action="{{ launch.action }}">
+          {% for attr, value in launch.fields %}
+          <input type="hidden" id="{{ attr }}" name="{{ attr }}" value="{{ value }}" />
+          {% endfor %}
+          <input type="submit" value="LTI Launch">
+        </form>
+        <hr />
+        <details>
+          <summary>LTI Debugging Information</summary>
+          <p><b>LTI Launch</b></p>
+          <pre>
+{{ launch | dump(2) | safe }}
+          </pre>
+        </details>
+    </main>
+  </body>
+</html>

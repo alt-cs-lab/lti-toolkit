@@ -20,6 +20,7 @@ import lti from "./configs/lti.js";
 import IndexHandler from "./routes/index.js";
 import ConfigureProviderHandler from "./routes/configure.js";
 import ProviderHandler from "./routes/provider.js";
+import ProviderLaunchHandler from "./routes/provider-launch.js";
 
 // Create Express application
 var app = express();
@@ -59,6 +60,7 @@ app.use("/lti/consumer", lti.routers.consumer);
 app.get("/", IndexHandler);
 app.post("/configure", ConfigureProviderHandler);
 app.get("/provider/:id", ProviderHandler);
+app.post("/provider/:id/launch", ProviderLaunchHandler);
 
 // Use static files
 app.use(express.static(path.join(import.meta.dirname, "../public")));

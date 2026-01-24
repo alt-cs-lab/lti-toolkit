@@ -26,7 +26,7 @@ const lti = await LTIToolkit({
     admin_email: process.env.ADMIN_EMAIL,
     deployment_name: process.env.DEPLOYMENT_NAME,
     deployment_id: process.env.DEPLOYMENT_ID,
-  }
+  },
 });
 
 export default lti;

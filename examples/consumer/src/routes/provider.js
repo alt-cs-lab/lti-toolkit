@@ -8,7 +8,7 @@
 import lti from "../configs/lti.js";
 
 /**
- * Index Route Handler for LTI Tool Consumer
+ * Provider Handler for LTI Tool Consumer
  *
  * @param {Object} req - the Express request object
  * @param {Object} res - the Express response object

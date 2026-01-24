@@ -11,10 +11,20 @@
 
 // Import libraries
 import express from "express";
+import expressXmlBodyparser from "express-xml-bodyparser";
 
 export default function setupConsumerRoutes(LTIToolkitController, logger) {
   // Create Express router
   const router = express.Router();
+
+  // Parse XML body for grade passback route
+  router.use(
+    expressXmlBodyparser({
+      explicitArray: false,
+      normalize: true,
+      normalizeTags: true,
+    }),
+  );
 
   /**
    * LTI 1.0 Grade Passback Target

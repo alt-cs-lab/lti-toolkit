@@ -57,7 +57,9 @@ async function ProviderConfigHandler(req, res) {
   // Get secrets for each provider and convert to JSON-friendly format
   const providerData = [];
   for (const provider of providers) {
-    const providerSecret = await lti.controllers.provider.getSecret(provider.id);
+    const providerSecret = await lti.controllers.provider.getSecret(
+      provider.id,
+    );
     providerData.push({ ...provider.toJSON(), secret: providerSecret });
   }
 

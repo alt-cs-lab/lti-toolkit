@@ -13,7 +13,14 @@
  * @param {string} gradebookKey the gradebook key
  * @param {number} score the score to post (0.0 - 1.0)
  */
-async function postGradeHandler(providerKey, contextKey, resourceKey, userKey, gradebookKey, score) {
+async function postGradeHandler(
+  providerKey,
+  contextKey,
+  resourceKey,
+  userKey,
+  gradebookKey,
+  score,
+) {
   // For now, just log the grade passback attempt
   // eslint-disable-next-line no-console
   console.log(

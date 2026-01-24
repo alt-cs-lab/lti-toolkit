@@ -291,7 +291,7 @@ class LTIToolkitController {
       resource_link_id: resource.key,
       resource_link_title: resource.name,
       roles: manager ? "Instructor" : "Learner",
-      tool_consumer_info_product_family_code: "learningpathplatform",
+      tool_consumer_info_product_family_code: "lti-toolkit",
       tool_consumer_info_version: "cloud",
       tool_consumer_instance_contact_email: this.consumer.admin_email,
       tool_consumer_instance_guid: this.consumer.deployment_id,
