@@ -106,7 +106,7 @@ var relearn_lti_index = [
   {
     "breadcrumb": "",
     "description": "This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.\nLimitations\nOnly supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted iwthin the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Does not support anonymous students or test students in LTI Launch Requests (requires Public privacy level) Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:",
-    "modified": "2026-01-19T22:19:19+00:00",
+    "modified": "2026-01-24T20:00:36+00:00",
     "tags": [],
     "title": "LTI-Toolkit",
     "uri": "/lti-toolkit/index.html"

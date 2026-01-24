@@ -28,33 +28,33 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
     <meta itemprop="description" content="This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.
 Limitations
 Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted iwthin the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Does not support anonymous students or test students in LTI Launch Requests (requires Public privacy level) Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:">
-    <meta itemprop="dateModified" content="2026-01-19T22:19:19+00:00">
-    <meta itemprop="wordCount" content="1089">
+    <meta itemprop="dateModified" content="2026-01-24T20:00:36+00:00">
+    <meta itemprop="wordCount" content="1099">
     <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <title>LTI-Toolkit :: LTI Toolkit</title>
     <link href="/lti-toolkit/index.xml" rel="alternate" type="application/rss+xml" title="LTI-Toolkit :: LTI Toolkit">
     <link href="/lti-toolkit/index.print.html" rel="alternate" type="text/html" title="LTI-Toolkit :: LTI Toolkit">
     <link href="/lti-toolkit/index.lti.js" rel="alternate" type="text/javascript" title="LTI-Toolkit :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1769278497" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1769278497" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1769278497" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1769278497" defer></script>
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1769284879" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1769284879" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1769284879" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1769284879" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1769278497";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1769284879";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1769278497" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1769278497" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1769278497" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1769284879" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1769284879" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1769284879" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1769284879" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769278497" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769278497" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1769278497" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1769278497" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-html.min.css?1769278497" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769284879" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769284879" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1769284879" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1769284879" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-html.min.css?1769284879" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -113,7 +113,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1769278497" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1769284879" rel="stylesheet">
   </head>
   <body class="mobile-support html" data-url="/lti-toolkit/index.html">
     <div id="R-body" class="default-animation">
@@ -379,6 +379,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <ul>
 <li><a href="https://nodejs.org/en/blog/release/v22.11.0" rel="external" target="_blank">Node.js 22 LTS</a> - developed and tested using Node 22 LTS</li>
 <li><a href="https://www.npmjs.com/package/express" rel="external" target="_blank">express</a> - core web framework for handling routing and parsing</li>
+<li><a href="https://www.npmjs.com/package/express-xml-bodyparser" rel="external" target="_blank">express-xml-bodyparser</a> - parse incoming XML bodies (LTI 1.0 grade passback)</li>
 <li><a href="https://www.npmjs.com/package/jsonwebtoken" rel="external" target="_blank">jsonwebtoken</a> - used to decode LTI 1.3 authentication tokens</li>
 <li><a href="https://www.npmjs.com/package/jwks-rsa" rel="external" target="_blank">jwks-rsa</a> - used to request and decode JWKS signing keys for LTI 1.3</li>
 <li><a href="https://www.npmjs.com/package/ky" rel="external" target="_blank">ky</a> - simple HTTP client for sending requests back to the LTI 1.3 Tool Consumer (LMS)</li>
@@ -409,7 +410,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
   <p class="theme-version-footer">8.0.0</p>
 <p>Last modified by:
               <i class='fa-fw fas fa-user'></i> Russell Feldhausen
-              <i class='fas fa-calendar'></i> <a href="https://github.com/alt-cs-lab/lti-toolkit/commit/06c47a6ef0fe5eba40ec8d0a9292fb136fe873bd">Jan 19, 2026</a>
+              <i class='fas fa-calendar'></i> <a href="https://github.com/alt-cs-lab/lti-toolkit/commit/08d2d0a294c14cd62898355b0ae77c3ee89afa0e">Jan 24, 2026</a>
 </p>
 
 </div>
@@ -500,8 +501,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0; margin: .5rem auto" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.</a></p></div>
       </div>
     </aside>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1769278497" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1769278497" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1769284879" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1769284879" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1769284879" defer></script>
   </body>
 </html>
