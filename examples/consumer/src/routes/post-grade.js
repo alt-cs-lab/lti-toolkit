@@ -15,6 +15,7 @@
  */
 async function postGradeHandler(providerKey, contextKey, resourceKey, userKey, gradebookKey, score) {
   // For now, just log the grade passback attempt
+  // eslint-disable-next-line no-console
   console.log(
     `LTI 1.0 Grade Passback Received: providerKey=${providerKey}, contextKey=${contextKey}, resourceKey=${resourceKey}, userKey=${userKey}, gradebookKey=${gradebookKey}, score=${score}`,
   );
