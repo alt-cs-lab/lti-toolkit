@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <main>
+        <h1>LTI Toolkit Example</h1>
+        {% if message %}
+        <p style="color: green">{{ message }}
+        {% endif %}
+        {% if error %}
+        <p style="color: red">{{ error }}
+        {% endif %}
+        <p>Select or configure an LTI 1.0 Tool Provider to continue</p>
+        <h2>LTI Tool Providers</h2>
+        <ul>
+        {% for provider in providers %}
+          <li><a href="provider/{{ provider.id }}">{{ provider.name }}</a></li>
+        {% endfor %}
+        </ul>
+        <hr />
+        <h2>Add Provider</h2>
+        <form method="POST" action="/configure">
+          <label for="name">Provider Name</label><br>
+          <input type="text" id="name" name="name" size="50">
+          <br>
+          <label for="key">LTI 1.0 Shared Key</label><br>
+          <input type="text" id="key" name="key" size="50">
+          <br>
+          <label for="secret">LTI 1.0 Shared Secret</label><br>
+          <input type="text" id="secret" name="secret" size="50">
+          <br>
+          <label for="launch_url">LTI 1.0 Launch URL</label><br>
+          <input type="url" id="launch_url" name="launch_url" size="50">
+          <br>
+          <label for="domain">LTI 1.0 Tool Provder Domain</label><br>
+          <input type="text" id="domain" name="domain" size="50">
+          <br>
+          <label for="use_section">Use Sections?</label>
+          <input type="checkbox" id="use_section" name="use_section" value="true">
+          <br>
+          <label for="custom">LTI 1.0 Custom Values (e.g. "key1=value1, key2=value2") (Unsupported)</label><br>
+          <input type="text" id="custom" name="custom" size="50" disabled>
+          <br>
+          <label for="lti13">LTI 1.3 Enabled (Unsupported)</label>
+          <input type="checkbox" id="lti13" name="lti13" value="true" disabled>
+          <br><br>
+          <input type="submit" value="Submit">
+        </form>
+    </main>
+  </body>
+</html>

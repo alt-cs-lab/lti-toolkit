@@ -241,10 +241,10 @@ class LTIToolkitController {
    * @param {string} url - the URL to launch the LTI tool
    * @param {string} ret_url - the return URL for the LTI tool
    * @param {Object} context - the context for the LTI launch (course)
-   * @param {Object} lesson - the lesson for the LTI launch
+   * @param {Object} resource - the resource for the LTI launch (assignment or lesson)
    * @param {Object} user - the user launching the LTI tool
    * @param {boolean} manager - true if the user is a course manager, else false
-   * @param {Object} assignment - the assignment for the LTI launch
+   * @param {string} gradebook_key - the gradebook ID for the LTI launch
    * @return {Object} an object containing the form fields and action URL for the LTI launch
    */
   generateLTI10FormData(
@@ -253,10 +253,10 @@ class LTIToolkitController {
     url,
     ret_url,
     context,
-    lesson,
+    resource,
     user,
     manager,
-    assignment,
+    gradebook_key,
   ) {
     if (!this.consumer) {
       this.logger.error("LTI Consumer not found");
@@ -280,7 +280,7 @@ class LTIToolkitController {
         "/lti/consumer/grade_passback",
         this.domain_name,
       ).href,
-      lis_result_sourcedid: `${context.key}:${lesson.key}:${user.key}:${assignment.key}`,
+      lis_result_sourcedid: `${context.key}:${resource.key}:${user.key}:${gradebook_key}`,
       lis_person_contact_email_primary: user.email,
       lis_person_name_family: user.family_name,
       lis_person_name_full: user.name,
@@ -288,8 +288,8 @@ class LTIToolkitController {
       lti_message_type: "basic-lti-launch-request",
       lti_version: "LTI-1p0",
       oauth_callback: "about:blank",
-      resource_link_id: lesson.key,
-      resource_link_title: lesson.name,
+      resource_link_id: resource.key,
+      resource_link_title: resource.name,
       roles: manager ? "Instructor" : "Learner",
       tool_consumer_info_product_family_code: "learningpathplatform",
       tool_consumer_info_version: "cloud",
@@ -599,21 +599,15 @@ class LTIToolkitController {
         "replaceResult",
       );
     }
-    const [sectionKey, lessonKey, userKey, assignmentKey] = sourceValues;
+    const [contextKey, resourceKey, userKey, gradebookKey] = sourceValues;
 
-    // await StudentController.postProviderGrade(
-    //   sectionKey,
-    //   lessonKey,
-    //   userKey,
-    //   assignmentKey,
-    //   score,
-    // );
-
+    // Post Provider Grade to Handler Function
     await this.consumer.postProviderGrade(
-      sectionKey,
-      lessonKey,
+      providerKey,
+      contextKey,
+      resourceKey,
       userKey,
-      assignmentKey,
+      gradebookKey,
       score,
     );
 

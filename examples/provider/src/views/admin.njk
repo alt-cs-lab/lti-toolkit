@@ -24,22 +24,22 @@
           <input type="checkbox" id="lti13" name="lti13" value="true" disabled>
           {% endif %}
           <hr />
-          <label for="name">LTI 1.3 Client ID (e.g. "10000000000001")</label><br>
+          <label for="client_id">LTI 1.3 Client ID (e.g. "10000000000001")</label><br>
           <input type="text" id="client_id" name="client_id" value="{{ consumer.client_id | d(10000000000001, true) }}" size="50">
           <br>
-          <label for="name">LTI 1.3 Platform ID (e.g. "{{ lmsDomain }}")</label><br>
+          <label for="platform_id">LTI 1.3 Platform ID (e.g. "{{ lmsDomain }}")</label><br>
           <input type="url" id="platform_id" name="platform_id" value="{{ consumer.platform_id | d(lmsDomain, true) }}" size="50">
           <br>
-          <label for="name">LTI 1.3 Deployment ID</label><br>
+          <label for="deployment_id">LTI 1.3 Deployment ID</label><br>
           <input type="text" id="deployment_id" name="deployment_id" size="50">
           <br>
-          <label for="name">LTI 1.3 JWKS Keyset URL (e.g. "{{ lmsDomain }}/api/lti/security/jwks")</label><br>
+          <label for="keyset_url">LTI 1.3 JWKS Keyset URL (e.g. "{{ lmsDomain }}/api/lti/security/jwks")</label><br>
           <input type="url" id="keyset_url" name="keyset_url" value="{{ consumer.keyset_url | d(lmsDomain + '/api/lti/security/jwks', true) }}" size="50">
           <br>
-          <label for="name">LTI 1.3 Token URL (e.g. "{{ lmsDomain }}/login/oauth2/token")</label><br>
+          <label for="token_url">LTI 1.3 Token URL (e.g. "{{ lmsDomain }}/login/oauth2/token")</label><br>
           <input type="url" id="token_url" name="token_url" value="{{ consumer.token_url | d(lmsDomain + '/login/oauth2/token', true) }}" size="50">
           <br>
-          <label for="name">LTI 1.3 Auth URL (e.g. "{{ lmsDomain }}/api/lti/authorize_redirect")</label><br>
+          <label for="auth_url">LTI 1.3 Auth URL (e.g. "{{ lmsDomain }}/api/lti/authorize_redirect")</label><br>
           <input type="url" id="auth_url" name="auth_url" value="{{ consumer.auth_url | d(lmsDomain + '/api/lti/authorize_redirect', true) }}" size="50">
           <br><br>
           <input type="submit" value="Submit">

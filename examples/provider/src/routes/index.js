@@ -5,7 +5,7 @@
  */
 
 /**
- * Handle LTI Student Launch
+ * Index Route Handler for LTI Tool Provider
  *
  * @param {Object} req - the Express request object
  * @param {Object} res - the Express response object

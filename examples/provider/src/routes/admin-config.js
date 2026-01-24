@@ -38,15 +38,17 @@ async function AdminConfigHandler(req, res) {
     "auth_url",
   ];
   const missingFields = requiredFields.filter(
-    (field) => !data[field] || data[field].trim() === ""
+    (field) => !data[field] || data[field].trim() === "",
   );
   if (missingFields.length > 0) {
-    error =
-      "Missing required fields: " + missingFields.join(", ");
+    error = "Missing required fields: " + missingFields.join(", ");
   } else {
     // Update Consumer
     try {
-      const returnValue = await lti.controllers.consumer.updateConsumer(1, data);
+      const returnValue = await lti.controllers.consumer.updateConsumer(
+        1,
+        data,
+      );
       if (!returnValue) {
         throw new Error("Consumer not found");
       }

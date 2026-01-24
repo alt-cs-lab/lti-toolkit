@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <main>
+        <h1>LTI Tool Provider</h1>
+        {% if message %}
+        <p style="color: green">{{ message }}
+        {% endif %}
+        {% if error %}
+        <p style="color: red">{{ error }}
+        {% endif %}
+        <h2>{{ provider.name }}</h2>
+        <h3>Settings</h3>
+        <ul>
+          <li><b>Launch URL:</b> {{ provider.launch_url }}</li>
+          <li><b>Key:</b> {{ provider.key }}</li>
+          <li><b>Secret:</b> {{ provider.secret }}</li>
+        </ul>
+        <hr />
+        <h3>Configure Launch</h3>
+        <p>Provide information to configure an LTI 1.0 Launch Request</p>
+        <form method="POST" action="/provider/{{ provider.id }}/launch">
+          <h4>Context (Course)</h4>
+          <label for="context.key">Context Key</label><br>
+          <input type="text" id="context.key" name="context.key" value="contextkey" size="50">
+          <br>
+          <label for="context.label">Context Label</label><br>
+          <input type="text" id="context.label" name="context.label" value="LTI 101" size="50">
+          <br>
+          <label for="context.name">Context Name</label><br>
+          <input type="text" id="context.name" name="context.name" value="LTI Demo Course" size="50">
+          <br>
+          <label for="context_id">Context ID</label><br>
+          <input type="text" id="context_id" name="context_id" value="contextid" size="50">
+          <br>
+          <h4>Resource (Assignment)</h4>
+          <label for="resource.key">Resource Key</label><br>
+          <input type="text" id="resource.key" name="resource.key" value="resourcekey" size="50">
+          <br>
+          <label for="resource.name">Resource Name</label><br>
+          <input type="text" id="resource.label" name="resource.name" value="LTI Demo Resource" size="50">
+          <br>
+          <h4>User</h4>
+          <label for="user.key">User Key</label><br>
+          <input type="text" id="user.key" name="user.key" value="userkey" size="50">
+          <br>
+          <label for="user.email">User Email</label><br>
+          <input type="email" id="user.email" name="user.email" value="user@domain.tld" size="50">
+          <br>
+          <label for="user.name">User Name</label><br>
+          <input type="text" id="user.name" name="user.name" value="GivenName FamilyName" size="50">
+          <br>
+          <label for="user.given_name">User Given Name</label><br>
+          <input type="text" id="user.given_name" name="user.given_name" value="GivenName" size="50">
+          <br>
+          <label for="user.family_name">User Family Name</label><br>
+          <input type="text" id="user.family_name" name="user.family_name" value="FamilyName" size="50">
+          <br>
+          <h4>Launch Type</h4>
+          <label for="manager">Instructor?</label>
+          <input type="checkbox" id="manager" name="manager" value="true">
+          <h4>Gradebook ID</h4>
+          <label for="gradebook_id">Gradebook Key</label>
+          <input type="text" id="gradebook_id" name="gradebook_id" value="gradebookkey" size="50">
+          <br><br>
+          <input type="submit" value="Submit">
+        <hr />
+        <h3>Grades Received</h3>
+        <hr />
+        <details>
+          <summary>LTI Debugging Information</summary>
+          <p><b>LTI Provider</b></p>
+          <pre>
+{{ provider | dump(2) | safe }}
+          </pre>
+        </details>
+    </main>
+  </body>
+</html>

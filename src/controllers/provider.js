@@ -23,10 +23,34 @@ class ProviderController {
    * @return {Provider[]} all providers in the database
    */
   async getAll() {
-    const providers = await this.models.Provider.findAll({
-      attributes: { exclude: ["section_id"] },
-    });
+    const providers = await this.models.Provider.findAll();
     return providers;
+  }
+
+  /**
+   * Get a provider by ID
+   * 
+   * @param {number} id the ID of the provider
+   * @return {Provider} the provider with the given ID
+   */
+  async getById(id) {
+    const provider = await this.models.Provider.findByPk(id);
+    return provider;
+  }
+
+  /**
+   * Get a provider by key
+   * 
+   * @param {string} key the key of the provider
+   * @return {Provider} the provider with the given key
+   */
+  async getByKey(key) {
+    const provider = await this.models.Provider.findOne({
+      where: {
+        key: key,
+      },
+    });
+    return provider;
   }
 
   /**

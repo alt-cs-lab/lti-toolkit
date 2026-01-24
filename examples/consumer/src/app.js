@@ -16,17 +16,10 @@ import session from "express-session";
 // Import LTI configuration
 import lti from "./configs/lti.js";
 
-// Import Middleware
-import { requireLTI } from "./middlewares/require-lti.js";
-
 // Import Handlers
-import AdminConfigHandler from "./routes/admin-config.js";
-import AdminHandler from "./routes/admin.js";
 import IndexHandler from "./routes/index.js";
-import InstructorGradeHandler from "./routes/instructor-grade.js";
-import InstructorHandler from "./routes/instructor.js";
-import StudentGradeHandler from "./routes/student-grade.js";
-import StudentHandler from "./routes/student.js";
+import ConfigureProviderHandler from "./routes/configure.js";
+import ProviderHandler from "./routes/provider.js";
 
 // Create Express application
 var app = express();
@@ -60,16 +53,12 @@ app.locals.dataStore = {
 };
 
 // Add LTI Toolkit Routes
-app.use("/lti/provider", lti.routers.provider);
+app.use("/lti/consumer", lti.routers.consumer);
 
 // Add Handlers
 app.get("/", IndexHandler);
-app.get("/admin", AdminHandler);
-app.post("/admin/config", AdminConfigHandler);
-app.get("/student", requireLTI, StudentHandler);
-app.post("/student/grade", requireLTI, StudentGradeHandler);
-app.get("/instructor", requireLTI, InstructorHandler);
-app.post("/instructor/grade", requireLTI, InstructorGradeHandler);
+app.post("/configure", ConfigureProviderHandler);
+app.get("/provider/:id", ProviderHandler);
 
 // Use static files
 app.use(express.static(path.join(import.meta.dirname, "../public")));
