@@ -29,7 +29,7 @@
 <header>
     
         <h2><span class="attribs"><span class="type-signature"></span></span>
-            <span class="ancestors"><a href="controllers_lti.module_js.html">controllers/lti.js</a>~</span>LTIToolkitController<span class="signature">(handleLaunch, postProviderGrade, models, logger)</span><span class="type-signature"></span></h2>
+            <span class="ancestors"><a href="controllers_lti.module_js.html">controllers/lti.js</a>~</span>LTIToolkitController<span class="signature">(provider, consumer, models, logger, lti10, lti13, domain_name)</span><span class="type-signature"></span></h2>
         
     
 </header>
@@ -42,7 +42,7 @@
     
 
     
-    <h4 class="name" id="LTIToolkitController"><span class="type-signature"></span>new LTIToolkitController<span class="signature">(handleLaunch, postProviderGrade, models, logger)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="LTIToolkitController"><span class="type-signature"></span>new LTIToolkitController<span class="signature">(provider, consumer, models, logger, lti10, lti13, domain_name)</span><span class="type-signature"></span></h4>
     
 
     
@@ -86,7 +86,7 @@
 
         <tr>
             
-                <td class="name"><code>handleLaunch</code></td>
+                <td class="name"><code>provider</code></td>
             
 
             <td class="type">
@@ -102,14 +102,14 @@
 
             
 
-            <td class="description last">LTI controller launch handler</td>
+            <td class="description last">LTI provider configuration</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>postProviderGrade</code></td>
+                <td class="name"><code>consumer</code></td>
             
 
             <td class="type">
@@ -125,7 +125,7 @@
 
             
 
-            <td class="description last">Student controller postProviderGrade handler</td>
+            <td class="description last">LTI consumer configuration</td>
         </tr>
 
     
@@ -175,6 +175,75 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>lti10</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">LTI 1.0 Utilities instance</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lti13</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">LTI 1.3 Utilities instance</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>domain_name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Domain name of the application (e.g., "example.com")</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -212,7 +281,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line22">line 22</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line25">line 25</a>
     </li></ul></dd>
     
 
@@ -320,7 +389,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line166">line 166</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line161">line 161</a>
     </li></ul></dd>
     
 
@@ -452,7 +521,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line314">line 314</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line324">line 324</a>
     </li></ul></dd>
     
 
@@ -571,7 +640,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line954">line 954</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line994">line 994</a>
     </li></ul></dd>
     
 
@@ -607,7 +676,7 @@
     
 
     
-    <h4 class="name" id="generateLTI10FormData"><span class="type-signature"></span>generateLTI10FormData<span class="signature">(key, secret, url, ret_url, context, lesson, user, manager, assignment)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="generateLTI10FormData"><span class="type-signature"></span>generateLTI10FormData<span class="signature">(key, secret, url, ret_url, context, resource, user, manager, gradebook_key)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -766,7 +835,7 @@
 
         <tr>
             
-                <td class="name"><code>lesson</code></td>
+                <td class="name"><code>resource</code></td>
             
 
             <td class="type">
@@ -782,7 +851,7 @@
 
             
 
-            <td class="description last">the lesson for the LTI launch</td>
+            <td class="description last">the resource for the LTI launch (assignment or lesson)</td>
         </tr>
 
     
@@ -835,13 +904,13 @@
 
         <tr>
             
-                <td class="name"><code>assignment</code></td>
+                <td class="name"><code>gradebook_key</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">string</span>
 
 
             
@@ -851,7 +920,7 @@
 
             
 
-            <td class="description last">the assignment for the LTI launch</td>
+            <td class="description last">the gradebook ID for the LTI launch</td>
         </tr>
 
     
@@ -892,7 +961,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line245">line 245</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line250">line 250</a>
     </li></ul></dd>
     
 
@@ -1051,7 +1120,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line45">line 45</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -1221,7 +1290,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line99">line 99</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line94">line 94</a>
     </li></ul></dd>
     
 
@@ -1256,6 +1325,529 @@
 
 
     
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="postGrade"><span class="type-signature">(async) </span>postGrade<span class="signature">(grade)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Post a grade to a consumer
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>grade</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the grade to post
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>consumer_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the consumer ID</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>grade_url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the grade post URL</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lms_grade_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the LMS grade ID (for LTI 1.0 Basic Outcomes)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>score</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the score to post (0.0 to 1.0)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>user_lis13_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the user LTI 1.3 ID (for LTI 1.3)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">debugging information (optional)
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>user</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the user (for debugging)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>user_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the user ID (for debugging)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>assignment</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the assignment (for debugging)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>assignment_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the assignment ID (for debugging)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line765">line 765</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1368,7 +1960,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line119">line 119</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line114">line 114</a>
     </li></ul></dd>
     
 
@@ -1561,7 +2153,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line458">line 458</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line468">line 468</a>
     </li></ul></dd>
     
 
@@ -1813,7 +2405,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line682">line 682</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line686">line 686</a>
     </li></ul></dd>
     
 
@@ -1866,143 +2458,6 @@
 
 
         
-            
-
-    
-
-    
-    <h4 class="name" id=".postGrade"><span class="type-signature">(async, static) </span>postGrade<span class="signature">(grade)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Post a grade to a consumer
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>grade</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Grade</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the grade to post</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line751">line 751</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     
 
     
@@ -2024,7 +2479,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Fri Oct 10 2025 16:08:37 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Jan 24 2026 18:14:38 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

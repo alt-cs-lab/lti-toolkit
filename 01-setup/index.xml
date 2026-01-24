@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Setup :: LTI Toolkit</title>
+    <title>Dev Setup :: LTI Toolkit</title>
     <link>https://alt.cs.ksu.edu/lti-toolkit/01-setup/index.html</link>
     <description>Development Environment Setup</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <atom:link href="https://alt.cs.ksu.edu/lti-toolkit/01-setup/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Developing</title>
+      <link>https://alt.cs.ksu.edu/lti-toolkit/01-setup/00-dev/index.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://alt.cs.ksu.edu/lti-toolkit/01-setup/00-dev/index.html</guid>
+      <description>Development guide coming soon!</description>
+    </item>
     <item>
       <title>Installing Canvas</title>
       <link>https://alt.cs.ksu.edu/lti-toolkit/01-setup/01-canvas/index.html</link>

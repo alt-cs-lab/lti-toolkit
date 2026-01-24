@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>General :: LTI Toolkit</title>
+    <title>Documentation :: LTI Toolkit</title>
     <link>https://alt.cs.ksu.edu/lti-toolkit/00-general/index.html</link>
-    <description>General Documentation</description>
+    <description>General Documentation for the LTI Toolkit&#xA;Examples Database Schema</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <atom:link href="https://alt.cs.ksu.edu/lti-toolkit/00-general/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Examples</title>
+      <link>https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/index.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/index.html</guid>
+      <description>LTI Toolkit Example Project Documentation&#xA;LTI Provider</description>
+    </item>
     <item>
       <title>Database Schema</title>
       <link>https://alt.cs.ksu.edu/lti-toolkit/00-general/01-database/index.html</link>

@@ -5,48 +5,56 @@
     <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <meta name="generator" content="Hugo 0.148.1">
     <meta name="generator" content="Relearn 8.0.0">
-    <meta name="description" content="Documentation for the Learning Path Platform.">
+    <meta name="description" content="This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.
+Limitations
+Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted iwthin the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Does not support anonymous students or test students in LTI Launch Requests (requires Public privacy level) Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:">
     <meta name="author" content="K-State ALT&#43;CS Lab">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
-    <meta name="twitter:title" content="Learning Path Platform Documentation :: LTI Toolkit">
-    <meta name="twitter:description" content="Documentation for the Learning Path Platform.">
+    <meta name="twitter:title" content="LTI-Toolkit :: LTI Toolkit">
+    <meta name="twitter:description" content="This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.
+Limitations
+Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted iwthin the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Does not support anonymous students or test students in LTI Launch Requests (requires Public privacy level) Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:">
     <meta property="og:url" content="https://alt.cs.ksu.edu/lti-toolkit/index.html">
     <meta property="og:site_name" content="LTI Toolkit">
-    <meta property="og:title" content="Learning Path Platform Documentation :: LTI Toolkit">
-    <meta property="og:description" content="Documentation for the Learning Path Platform.">
+    <meta property="og:title" content="LTI-Toolkit :: LTI Toolkit">
+    <meta property="og:description" content="This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.
+Limitations
+Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted iwthin the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Does not support anonymous students or test students in LTI Launch Requests (requires Public privacy level) Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:">
     <meta property="og:locale" content="en_us">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
-    <meta itemprop="name" content="Learning Path Platform Documentation :: LTI Toolkit">
-    <meta itemprop="description" content="Documentation for the Learning Path Platform.">
-    <meta itemprop="dateModified" content="2025-09-26T19:04:14+00:00">
-    <meta itemprop="wordCount" content="6">
+    <meta itemprop="name" content="LTI-Toolkit :: LTI Toolkit">
+    <meta itemprop="description" content="This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.
+Limitations
+Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted iwthin the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Does not support anonymous students or test students in LTI Launch Requests (requires Public privacy level) Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:">
+    <meta itemprop="dateModified" content="2026-01-19T22:19:19+00:00">
+    <meta itemprop="wordCount" content="1089">
     <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
-    <title>Learning Path Platform Documentation :: LTI Toolkit</title>
-    <link href="/lti-toolkit/index.xml" rel="alternate" type="application/rss+xml" title="Learning Path Platform Documentation :: LTI Toolkit">
-    <link href="/lti-toolkit/index.print.html" rel="alternate" type="text/html" title="Learning Path Platform Documentation :: LTI Toolkit">
-    <link href="/lti-toolkit/index.lti.js" rel="alternate" type="text/javascript" title="Learning Path Platform Documentation :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1760113577" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1760113577" defer></script>
+    <title>LTI-Toolkit :: LTI Toolkit</title>
+    <link href="/lti-toolkit/index.xml" rel="alternate" type="application/rss+xml" title="LTI-Toolkit :: LTI Toolkit">
+    <link href="/lti-toolkit/index.print.html" rel="alternate" type="text/html" title="LTI-Toolkit :: LTI Toolkit">
+    <link href="/lti-toolkit/index.lti.js" rel="alternate" type="text/javascript" title="LTI-Toolkit :: LTI Toolkit">
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1769278497" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1769278497" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1760113577";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1769278497";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1760113577" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1769278497" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1760113577" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1760113577" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1760113577" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1760113577" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-html.min.css?1760113577" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769278497" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769278497" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1769278497" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1769278497" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-html.min.css?1769278497" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -105,7 +113,7 @@
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1760113577" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1769278497" rel="stylesheet">
   </head>
   <body class="mobile-support html" data-url="/lti-toolkit/index.html">
     <div id="R-body" class="default-animation">
@@ -118,12 +126,21 @@
             </div>
             <div class="topbar-button topbar-button-toc" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="Table of Contents (CTRL&#43;ALT&#43;t)"><i class="fa-fw fas fa-list-alt"></i></button>
               <div class="topbar-content">
-                <div class="topbar-content-wrapper"> 
+                <div class="topbar-content-wrapper">
+<nav class="TableOfContents">
+  <ul>
+    <li><a href="#getting-started">Getting Started</a></li>
+    <li><a href="#configuration">Configuration</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#dependencies">Dependencies</a></li>
+    <li><a href="#documentation">Documentation</a></li>
+  </ul>
+</nav>
                 </div>
               </div>
             </div>
           </div>
-          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class="a11y-only"><span itemprop="name">Learning Path Platform Documentation</span><meta itemprop="position" content="1"></li>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class="a11y-only"><span itemprop="name">LTI-Toolkit</span><meta itemprop="position" content="1"></li>
           </ol>
           <div class="topbar-area topbar-area-end" data-area="end">
             <div class="topbar-button topbar-button-edit" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="https://github.com/alt-cs-lab/lti-toolkit/edit/main/docs/content/_index.md" rel="external" target="_blank" title="Edit (CTRL+ALT+w)"><i class="fa-fw fas fa-pen"></i></a>
@@ -132,7 +149,7 @@
             </div>
             <div class="topbar-button topbar-button-prev" data-content-empty="disable" data-width-s="show" data-width-m="show" data-width-l="show"><span class="topbar-control"><i class="fa-fw fas fa-chevron-left"></i></span>
             </div>
-            <div class="topbar-button topbar-button-next" data-content-empty="disable" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/lti-toolkit/00-general/index.html" title="General (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            <div class="topbar-button topbar-button-next" data-content-empty="disable" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/lti-toolkit/00-general/index.html" title="Documentation (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
             </div>
             <div class="topbar-button topbar-button-more" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="More"><i class="fa-fw fas fa-ellipsis-v"></i></button>
               <div class="topbar-content">
@@ -152,9 +169,236 @@
   <header class="headline">
   </header>
 
-<h1 id="learning-path-platform-documentation">Learning Path Platform Documentation</h1>
+<h1 id="lti-toolkit">LTI-Toolkit</h1>
 
-<p>Documentation for the Learning Path Platform.</p>
+<p>This project is yet another toolkit for developing <a href="https://www.1edtech.org/standards/lti" rel="external" target="_blank">LTI (Learning Tools Interoperability)</a> applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.</p>
+<p><strong>Limitations</strong></p>
+<ul>
+<li>Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case)</li>
+<li>Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient)</li>
+<li>LTI 1.3 is not implemeneted iwthin the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time)</li>
+<li>LTI 1.0 connections to external LTI Tool Providers don&rsquo;t currently support custom variables</li>
+<li>Does not support anonymous students or test students in LTI Launch Requests (requires Public privacy level)</li>
+<li>Not currently tested or certified against the <a href="https://build.1edtech.org/" rel="external" target="_blank">1EdTech LTI Certification Tool</a></li>
+<li>Not currently tested against LTI Tool Consumers other than <a href="https://www.instructure.com/solutions/learning-management/k12" rel="external" target="_blank">Instructure Canvas</a></li>
+<li>Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted</li>
+</ul>
+<h2 id="getting-started">Getting Started</h2>
+<p>The package is currently not published to NPM but can be installed directly from GitHub:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm install github:alt-cs-lab/lti-toolkit</span></span></code></pre></div>
+<p>See the <a href="/lti-toolkit/00-general/00-examples/index.html">Examples</a> section for detailed example projects using this tool.</p>
+<h2 id="configuration">Configuration</h2>
+<p>A minimal configuration example for LTI 1.0:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// Import LTI Toolkit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">LTIToolkit</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;lti-toolkit&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// LTI Launch Handler Function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">LTILaunch</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;../routes/lti-launch.js&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Initialize LTI Toolkit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">lti</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">LTIToolkit</span>({
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Domain name for this application
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">domain_name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://app.domain.tld&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Logging Level
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// One of error warn info http verbose lti debug sql silly
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">log_level</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;lti&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// LTI Tool Provider Configuration
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">provider</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Incoming LTI Launch Handler Function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">handleLaunch</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">LTILaunch</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI 1.0 Consumer Key and Shared Secret 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// for single LTI consumer setup
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">key</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;your_lti_key&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">secret</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;your_lti_secret&#34;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>});</span></span></code></pre></div>
+<p>The LTI Toolkit library is initialized by providing a configuration options object with the following options:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// REQUIRED
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Domain Name
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// The fully qualified domain name for the application
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Must use HTTPS for most other LTI apps to work
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">domain_name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://app.domain.tld&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// OPTIONAL 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Logging Level for built-in Winston instance
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// One of error warn info http verbose lti debug sql silly
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Default: info (or error in testing)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">log_level</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;info&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// -OR-
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Logger Object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// An external instance of Winston (or similar) for unified logging
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Default: built-in Winston instance
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">logger</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">winston_instance</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// OPTIONAL
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Database Storage Filename
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// A filename for the built-in SQLite database
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Use &#34;:memory:&#34; to create an in-memory database
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Default: lti-toolkit.db
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">db_storage</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;lti-toolkit.db&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// -OR-
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Database Object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// An external instance of Sequelize ORM for a database
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Default: built-in Sequelize instance using SQLite
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">database</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">sequelize_instance</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// REQUIRED
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// One or both of provider or consumer must be configured
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// OPTIONAL
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// LTI Tool Provider Configuration
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">provider</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// REQUIRED
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// LTI Launch Handler
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// User-provided function to handle LTI Launches
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Params: LTI Launch Data, LTI Consumer Sequelize Object, and Express request
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Return: URL string to redirect browser to after successful launch
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">handleLaunch</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">LTILaunchHandler</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// OPTIONAL Single LTI 1.0 Consumer Setup
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Both key and secret must be provided
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Will configure a simple LTI 1.0 Consumer on launch
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// All other consumers will be removed from the database on launch
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// LTI 1.0 Key
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">key</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;your_lti_key&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI 1.0 Secret
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">secret</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;your_lti_secret&#34;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// OPTIONAL
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// LTI Tool Consumer Configuration
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">consumer</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// REQUIRED
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// LTI Grade Handler
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// User-provided async function to receive LTI Grades
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Params: SectionKey, LessonKey, UserKey, AssignmentKey, Score
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Function should resolve when grade is posted 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">postProviderGrade</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">LTIGradeHandler</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// REQUIRED
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// LTI Tool Consumer Admin Email
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Email address for system administrator
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">admin_email</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;administrator@app.domain.tld&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// REQUIRED
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// LTI Tool Consumer Deployment Name
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Name of the LTI deployment
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">deployment_name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;LTI Toolkit Testing Application&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// REQUIRED
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// LTI Tool Consumer Deployment ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Unique ID of the LTI Deployment
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">deployment_id</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;lti-toolkit-testing-app&#34;</span>,
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// OPTIONAL
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Test Mode Flag
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Indicates if the application is running in test mode
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Useful for unit testing only
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Default: false
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">test</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<h2 id="usage">Usage</h2>
+<p>The initialized LTI Toolkit is a complex object containing the following items:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Express routers for handling incoming routes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">routers</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Tool Provider router
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Returned if provider is configured
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">provider</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/launch10&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/launch13&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/redirect13&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/login13/:key&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/key13&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/deeplink13&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/editor13&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/navigate13&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Tool Consumer Router
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Returned if consumer is configured
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">consumer</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/grade_passback&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Controller Interfaces
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">controllers</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Controller Instance
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">lti</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Generate LTI 1.0 Form Data to connect to
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// external LTI Tool Provider
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">generateLTI10FormData</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Post Grade back to LTI Tool Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">postGrade</span>()
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Provider Controller Instance
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Returned if provider is configured
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">provider</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getAll</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getSecret</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">updateProvider</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">createProvider</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">deleteProvider</span>()
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Coonsumer Controller Instance
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Returned if consumer is configured
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">consumer</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getAll</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">createConsumer</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">updateConsumer</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">deleteConsumer</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getSecret</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">updateSecret</span>()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Sequelize Database Models
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">models</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">OauthNonce</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Consumer</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ConsumerKey</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ConsumerLogin</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Provider</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ProviderKey</span>,
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Test Utilities
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Returned if test mode is configured
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">test</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Utility function to initialize expiration of logins and nonces
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">initializeExpiration</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Sequelize Database instsance
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">db</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI 1.0 Utilities
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">lti10</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI 1.3 Utilities
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">lti13</span>,
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<h2 id="dependencies">Dependencies</h2>
+<p>Care has been taken to minimize the amount of dependencies but balanced against simplifying the code and using reasonable libraries where appropriate. The core dependencies are listed below:</p>
+<ul>
+<li><a href="https://nodejs.org/en/blog/release/v22.11.0" rel="external" target="_blank">Node.js 22 LTS</a> - developed and tested using Node 22 LTS</li>
+<li><a href="https://www.npmjs.com/package/express" rel="external" target="_blank">express</a> - core web framework for handling routing and parsing</li>
+<li><a href="https://www.npmjs.com/package/jsonwebtoken" rel="external" target="_blank">jsonwebtoken</a> - used to decode LTI 1.3 authentication tokens</li>
+<li><a href="https://www.npmjs.com/package/jwks-rsa" rel="external" target="_blank">jwks-rsa</a> - used to request and decode JWKS signing keys for LTI 1.3</li>
+<li><a href="https://www.npmjs.com/package/ky" rel="external" target="_blank">ky</a> - simple HTTP client for sending requests back to the LTI 1.3 Tool Consumer (LMS)</li>
+<li><a href="https://www.npmjs.com/package/nanoid" rel="external" target="_blank">nanoid</a> - library used to generate unique string identifiers</li>
+<li><a href="https://www.npmjs.com/package/nunjucks" rel="external" target="_blank">nunjucks</a> - template library used to render forms as part of the LTI 1.3 authentication process</li>
+<li><a href="https://www.npmjs.com/package/sequelize" rel="external" target="_blank">sequelize</a> - object-relational mapper (ORM) for interfacing with databases</li>
+<li><a href="https://www.npmjs.com/package/sqlite3" rel="external" target="_blank">sqlite3</a> - default file-based database engine</li>
+<li><a href="https://www.npmjs.com/package/umzug" rel="external" target="_blank">umzug</a> - database migration and seeding tool</li>
+<li><a href="https://www.npmjs.com/package/winston" rel="external" target="_blank">winston</a> - logging library</li>
+<li><a href="https://www.npmjs.com/package/xml2js" rel="external" target="_blank">xml2js</a> - XML parser for LTI 1.0 connections</li>
+</ul>
+<h2 id="documentation">Documentation</h2>
+<p>This documentation site provides many useful guides for using this tool!</p>
+<ul>
+<li><a href="/lti-toolkit/00-general/00-examples/index.html">Examples</a> - detailed example projects</li>
+<li><a href="/lti-toolkit/00-general/01-database/index.html">Database</a> - detailed database schema</li>
+<li><a href="/lti-toolkit/01-setup/index.html">Dev Setup</a> - setting up a development environment</li>
+<li><a href="/lti-toolkit/01-setup/01-canvas/index.html">Installing Canvas</a> - guide for setting up Canvas in Docker with Traefik</li>
+<li><a href="/lti-toolkit/02-lti/index.html">LTI Docs</a> - detailed LTI protocol examples and diagrams</li>
+</ul>
 
   <footer class="footline">
   </footer>
@@ -165,7 +409,7 @@
   <p class="theme-version-footer">8.0.0</p>
 <p>Last modified by:
               <i class='fa-fw fas fa-user'></i> Russell Feldhausen
-              <i class='fas fa-calendar'></i> <a href="https://github.com/alt-cs-lab/lti-toolkit/commit/7df3e24dbaeca08d7aa84ed1f1c9b275270dd3f1">Sep 26, 2025</a>
+              <i class='fas fa-calendar'></i> <a href="https://github.com/alt-cs-lab/lti-toolkit/commit/06c47a6ef0fe5eba40ec8d0a9292fb136fe873bd">Jan 19, 2026</a>
 </p>
 
 </div>
@@ -174,9 +418,10 @@
       <div id="R-header-topbar" class="default-animation"></div>
       <div id="R-header-wrapper" class="default-animation">
         <div id="R-header" class="default-animation">
-
-LTI Toolkit
-
+          
+          <a id="R-logo" href="/lti-toolkit/index.html">
+            <div class="logo-title">LTI Toolkit Docs</div>
+          </a>
         </div>
         <search><form action="/lti-toolkit/search/index.html" method="get">
           <div class="searchbox default-animation">
@@ -209,9 +454,12 @@ LTI Toolkit
       <div id="R-content-wrapper" class="highlightable">
         <div class="R-sidebarmenu R-shortcutmenu-main">
           <ul class="enlarge morespace collapsible-menu">
-            <li class="" data-nav-id="/lti-toolkit/00-general/index.html"><input type="checkbox" id="R-section-6a1dd0157ea53d1ee8fe3f1c79a860df" aria-controls="R-subsections-6a1dd0157ea53d1ee8fe3f1c79a860df"><label for="R-section-6a1dd0157ea53d1ee8fe3f1c79a860df"><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu General</span></label><a class="padding" href="/lti-toolkit/00-general/index.html"><b>0. </b>General</a><ul id="R-subsections-6a1dd0157ea53d1ee8fe3f1c79a860df" class="collapsible-menu">
+            <li class="" data-nav-id="/lti-toolkit/00-general/index.html"><input type="checkbox" id="R-section-6a1dd0157ea53d1ee8fe3f1c79a860df" aria-controls="R-subsections-6a1dd0157ea53d1ee8fe3f1c79a860df"><label for="R-section-6a1dd0157ea53d1ee8fe3f1c79a860df"><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Documentation</span></label><a class="padding" href="/lti-toolkit/00-general/index.html"><b>0. </b>Documentation</a><ul id="R-subsections-6a1dd0157ea53d1ee8fe3f1c79a860df" class="collapsible-menu">
+            <li class="alwaysopen " data-nav-id="/lti-toolkit/00-general/00-examples/index.html"><input type="checkbox" id="R-section-fbc5aaa2a9d393832d1e5dc00ae2b26f" aria-controls="R-subsections-fbc5aaa2a9d393832d1e5dc00ae2b26f" checked><label for="R-section-fbc5aaa2a9d393832d1e5dc00ae2b26f"><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Examples</span></label><a class="padding" href="/lti-toolkit/00-general/00-examples/index.html">0. Examples</a><ul id="R-subsections-fbc5aaa2a9d393832d1e5dc00ae2b26f" class="collapsible-menu">
+            <li class="" data-nav-id="/lti-toolkit/00-general/00-examples/provider/index.html"><a class="padding" href="/lti-toolkit/00-general/00-examples/provider/index.html">A. LTI Provider</a></li></ul></li>
             <li class="" data-nav-id="/lti-toolkit/00-general/01-database/index.html"><a class="padding" href="/lti-toolkit/00-general/01-database/index.html">1. Database Schema</a></li></ul></li>
-            <li class="" data-nav-id="/lti-toolkit/01-setup/index.html"><input type="checkbox" id="R-section-514b3d0eb7053df90798723a430fabfa" aria-controls="R-subsections-514b3d0eb7053df90798723a430fabfa"><label for="R-section-514b3d0eb7053df90798723a430fabfa"><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Setup</span></label><a class="padding" href="/lti-toolkit/01-setup/index.html"><b>1. </b>Setup</a><ul id="R-subsections-514b3d0eb7053df90798723a430fabfa" class="collapsible-menu">
+            <li class="" data-nav-id="/lti-toolkit/01-setup/index.html"><input type="checkbox" id="R-section-514b3d0eb7053df90798723a430fabfa" aria-controls="R-subsections-514b3d0eb7053df90798723a430fabfa"><label for="R-section-514b3d0eb7053df90798723a430fabfa"><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Dev Setup</span></label><a class="padding" href="/lti-toolkit/01-setup/index.html"><b>1. </b>Dev Setup</a><ul id="R-subsections-514b3d0eb7053df90798723a430fabfa" class="collapsible-menu">
+            <li class="" data-nav-id="/lti-toolkit/01-setup/00-dev/index.html"><a class="padding" href="/lti-toolkit/01-setup/00-dev/index.html">0. Developing</a></li>
             <li class="" data-nav-id="/lti-toolkit/01-setup/01-canvas/index.html"><a class="padding" href="/lti-toolkit/01-setup/01-canvas/index.html">1. Installing Canvas</a></li></ul></li>
             <li class="" data-nav-id="/lti-toolkit/02-lti/index.html"><input type="checkbox" id="R-section-c0d9e0a9e9a0d487c335f77d631e5ce1" aria-controls="R-subsections-c0d9e0a9e9a0d487c335f77d631e5ce1"><label for="R-section-c0d9e0a9e9a0d487c335f77d631e5ce1"><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu LTI Docs</span></label><a class="padding" href="/lti-toolkit/02-lti/index.html"><b>2. </b>LTI Docs</a><ul id="R-subsections-c0d9e0a9e9a0d487c335f77d631e5ce1" class="collapsible-menu">
             <li class="" data-nav-id="/lti-toolkit/02-lti/01-lti10-tool/index.html"><a class="padding" href="/lti-toolkit/02-lti/01-lti10-tool/index.html">1. LTI 1.0 Tool Provider</a></li>
@@ -252,8 +500,8 @@ LTI Toolkit
 <p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0; margin: .5rem auto" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.</a></p></div>
       </div>
     </aside>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1760113577" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1769278497" defer></script>
   </body>
 </html>

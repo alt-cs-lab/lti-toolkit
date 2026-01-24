@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+
+<html lang="en-us" dir="ltr" itemscope itemtype="http://schema.org/Article" data-r-output-format="html">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.148.1">
+    <meta name="generator" content="Relearn 8.0.0">
+    <meta name="description" content="A fully-featured LTI Tool Provider example can be found in /examples/provider. This document will walk through the details of how that application works.
+Environment The application expects the following environment variables (typically loaded from .env):
+​ .env # Express Session Secret SESSION_SECRET=your_session_secret # Log Level # One of error warn info http verbose lti debug sql silly LOG_LEVEL=lti # Application Domain Name DOMAIN_NAME=https://ltidemo.home.russfeld.me # LTI Consumer Key and Secret LTI_CONSUMER_KEY=your_lti_consumer_key LTI_CONSUMER_SECRET=your_lti_consumer_secret # LTI 1.3 LMS Domain LTI_13_LMS_DOMAIN=https://canvas.instructure.com LMS Configuration - LTI 1.0 The settings above can then be used to configure this application in your learning management system (LMS) using LTI 1.0. Refer to your LMS documentation for specific details. An example using Canvas is given below.">
+    <meta name="author" content="K-State ALT&#43;CS Lab">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <meta name="twitter:title" content="LTI Provider :: LTI Toolkit">
+    <meta name="twitter:description" content="A fully-featured LTI Tool Provider example can be found in /examples/provider. This document will walk through the details of how that application works.
+Environment The application expects the following environment variables (typically loaded from .env):
+​ .env # Express Session Secret SESSION_SECRET=your_session_secret # Log Level # One of error warn info http verbose lti debug sql silly LOG_LEVEL=lti # Application Domain Name DOMAIN_NAME=https://ltidemo.home.russfeld.me # LTI Consumer Key and Secret LTI_CONSUMER_KEY=your_lti_consumer_key LTI_CONSUMER_SECRET=your_lti_consumer_secret # LTI 1.3 LMS Domain LTI_13_LMS_DOMAIN=https://canvas.instructure.com LMS Configuration - LTI 1.0 The settings above can then be used to configure this application in your learning management system (LMS) using LTI 1.0. Refer to your LMS documentation for specific details. An example using Canvas is given below.">
+    <meta property="og:url" content="https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/provider/index.html">
+    <meta property="og:site_name" content="LTI Toolkit">
+    <meta property="og:title" content="LTI Provider :: LTI Toolkit">
+    <meta property="og:description" content="A fully-featured LTI Tool Provider example can be found in /examples/provider. This document will walk through the details of how that application works.
+Environment The application expects the following environment variables (typically loaded from .env):
+​ .env # Express Session Secret SESSION_SECRET=your_session_secret # Log Level # One of error warn info http verbose lti debug sql silly LOG_LEVEL=lti # Application Domain Name DOMAIN_NAME=https://ltidemo.home.russfeld.me # LTI Consumer Key and Secret LTI_CONSUMER_KEY=your_lti_consumer_key LTI_CONSUMER_SECRET=your_lti_consumer_secret # LTI 1.3 LMS Domain LTI_13_LMS_DOMAIN=https://canvas.instructure.com LMS Configuration - LTI 1.0 The settings above can then be used to configure this application in your learning management system (LMS) using LTI 1.0. Refer to your LMS documentation for specific details. An example using Canvas is given below.">
+    <meta property="og:locale" content="en_us">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Documentation">
+    <meta property="article:modified_time" content="2026-01-19T22:19:19+00:00">
+    <meta property="og:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <meta itemprop="name" content="LTI Provider :: LTI Toolkit">
+    <meta itemprop="description" content="A fully-featured LTI Tool Provider example can be found in /examples/provider. This document will walk through the details of how that application works.
+Environment The application expects the following environment variables (typically loaded from .env):
+​ .env # Express Session Secret SESSION_SECRET=your_session_secret # Log Level # One of error warn info http verbose lti debug sql silly LOG_LEVEL=lti # Application Domain Name DOMAIN_NAME=https://ltidemo.home.russfeld.me # LTI Consumer Key and Secret LTI_CONSUMER_KEY=your_lti_consumer_key LTI_CONSUMER_SECRET=your_lti_consumer_secret # LTI 1.3 LMS Domain LTI_13_LMS_DOMAIN=https://canvas.instructure.com LMS Configuration - LTI 1.0 The settings above can then be used to configure this application in your learning management system (LMS) using LTI 1.0. Refer to your LMS documentation for specific details. An example using Canvas is given below.">
+    <meta itemprop="dateModified" content="2026-01-19T22:19:19+00:00">
+    <meta itemprop="wordCount" content="2786">
+    <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <title>LTI Provider :: LTI Toolkit</title>
+    <link href="https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/provider/index.html" rel="canonical" type="text/html" title="LTI Provider :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/00-examples/provider/index.xml" rel="alternate" type="application/rss+xml" title="LTI Provider :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/00-examples/provider/index.print.html" rel="alternate" type="text/html" title="LTI Provider :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/00-examples/provider/tele.html" rel="alternate" type="text/html" title="LTI Provider :: LTI Toolkit">
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1769278497" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1769278497" defer></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1769278497";
+    </script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1769278497" defer></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.contentLangs=['en'];
+    </script>
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769278497" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769278497" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1769278497" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1769278497" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-html.min.css?1769278497" rel="stylesheet" id="R-format-style">
+    <script>
+      window.relearn = window.relearn || {};
+      // configuration
+      window.relearn.min = `.min`;
+      window.relearn.path='\/00-general\/00-examples\/provider\/index.html';
+      window.relearn.relBasePath='..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/alt.cs.ksu.edu\/lti-toolkit';
+      window.relearn.disableAnchorCopy=false;
+      window.relearn.disableAnchorScrolling=false;
+      window.relearn.disableInlineCopyToClipboard=true;
+      window.relearn.enableBlockCodeWrap=false;
+      // legal
+      window.relearn.getItem = (s,n) => {return s.getItem(n)};
+      window.relearn.setItem = (s,n,v) => {return s.setItem(n,v)};
+      window.relearn.removeItem = (s,n) => {return s.removeItem(n)};
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+      // variant stuff
+      window.relearn.themevariants = [ 'light-theme' ];
+      window.relearn.customvariantname = "my-custom-variant";
+      // [x] russfeld
+      window.relearn.writeVariant=false;
+      window.relearn.changeVariant = function(variant) {
+        var oldVariant = document.documentElement.dataset.rThemeVariant;
+        window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
+        document.documentElement.dataset.rThemeVariant = variant;
+        if (oldVariant != variant) {
+          document.dispatchEvent( new CustomEvent('themeVariantLoaded', { detail: { variant, oldVariant } }) );
+          window.relearn.markVariant();
+        }
+      }
+      window.relearn.markVariant = function() {
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant");
+        document.querySelectorAll(".R-variantswitcher select").forEach((select) => {select.value = variant;});
+      }
+      window.relearn.initVariant = function() {
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant") ?? "";
+        if( variant == window.relearn.customvariantname ){
+        }else if( !variant || !window.relearn.themevariants.includes(variant) ){
+          variant = window.relearn.themevariants[0];
+          
+          if (window.relearn.writeVariant) {
+            window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
+          }
+        }
+        document.documentElement.dataset.rThemeVariant = variant;
+      }
+      window.relearn.initVariant();
+      window.relearn.markVariant();
+    </script>
+    <link href="/lti-toolkit/css/custom.css?1769278497" rel="stylesheet">
+  </head>
+  <body class="mobile-support embed html" data-url="/lti-toolkit/00-general/00-examples/provider/index.html">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      
+      
+      
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable 00-general" tabindex="-1">
+        <div class="flex-block-wrapper">
+<article class="default">
+  <header class="headline">
+  </header>
+
+<h1 id="lti-provider">LTI Provider</h1>
+
+<p>A fully-featured LTI Tool Provider example can be found in <code>/examples/provider</code>. This document will walk through the details of how that application works.</p>
+<h2 id="environment">Environment</h2>
+<p>The application expects the following environment variables (typically loaded from <code>.env</code>):</p>
+<div class="tab-panel" data-tab-group="df0d09af23171326319db6c9b52f6d9b">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="env"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('df0d09af23171326319db6c9b52f6d9b','env')"
+    >
+      <span class="tab-nav-text">.env</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="env"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-env" data-lang="env"><span style="display:flex;"><span><span style="color:#75715e"># Express Session Secret</span>
+</span></span><span style="display:flex;"><span>SESSION_SECRET<span style="color:#f92672">=</span>your_session_secret
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Log Level</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># One of error warn info http verbose lti debug sql silly</span>
+</span></span><span style="display:flex;"><span>LOG_LEVEL<span style="color:#f92672">=</span>lti
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Application Domain Name</span>
+</span></span><span style="display:flex;"><span>DOMAIN_NAME<span style="color:#f92672">=</span>https://ltidemo.home.russfeld.me
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># LTI Consumer Key and Secret</span>
+</span></span><span style="display:flex;"><span>LTI_CONSUMER_KEY<span style="color:#f92672">=</span>your_lti_consumer_key
+</span></span><span style="display:flex;"><span>LTI_CONSUMER_SECRET<span style="color:#f92672">=</span>your_lti_consumer_secret
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># LTI 1.3 LMS Domain</span>
+</span></span><span style="display:flex;"><span>LTI_13_LMS_DOMAIN<span style="color:#f92672">=</span>https://canvas.instructure.com</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><h2 id="lms-configuration---lti-10">LMS Configuration - LTI 1.0</h2>
+<p>The settings above can then be used to configure this application in your learning management system (LMS) using LTI 1.0. Refer to your LMS documentation for specific details. An example using Canvas is given below.</p>
+<ul>
+<li><strong>Consumer Key</strong> - <code>LTI_CONSUMER_KEY</code> from the app environment</li>
+<li><strong>Shared Secret</strong> - <code>LTI_CONSUMER_SECRET</code> from the app environment</li>
+<li><strong>Launch URL</strong> - <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/launch10</code> by default. The URL can be configured in <code>app.js</code> as described below.</li>
+<li><strong>Domain</strong> - typically the <code>DOMAIN_NAME</code> from the app environment without the <code>https://</code> at the front</li>
+<li><strong>Privacy Level</strong> - must be <strong>Public</strong> (the library does not currently support anonymous students)</li>
+</ul>
+<p><a href="#R-image-8e44863ec16b86f5d01f26852ca09109" class="lightbox-link"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-8e44863ec16b86f5d01f26852ca09109"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png"></a></p>
+<p>Once the application has been added to the course, an assignment can be created to direct students to the Launch URL used above.</p>
+<p><a href="#R-image-22388bad50f7052b3129469ca63f357d" class="lightbox-link"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-22388bad50f7052b3129469ca63f357d"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png"></a></p>
+<p>To access the rest of the application, students and teachers should use the assignment configured in the learning management system to perform an LTI Launch as described below.</p>
+<h2 id="lti-toolkit-configuration">LTI Toolkit Configuration</h2>
+<p>The <code>src/configs/lti.js</code> file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Provider:</p>
+<div class="tab-panel" data-tab-group="65b464b4a94dcc1a464e8650e6a49b6e">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcconfigsltijs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('65b464b4a94dcc1a464e8650e6a49b6e','srcconfigsltijs')"
+    >
+      <span class="tab-nav-text">src/configs/lti.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcconfigsltijs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @file Configuration information for LTI Toolkit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @author Russell Feldhausen &lt;russfeld@ksu.edu&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @exports lti an LTI Toolkit instance configured for this app
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Import LTI Toolkit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">LTIToolkit</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;lti-toolkit&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// LTI Launch Handler
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">LTILaunch</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;../routes/lti-launch.js&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Initialize LTI Toolkit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">lti</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">LTIToolkit</span>({
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Domain name for this application
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">domain_name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DOMAIN_NAME</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Logging Level
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">log_level</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">LOG_LEVEL</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">&#34;silly&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Use In-memory database for testing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">db_storage</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;:memory:&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">provider</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Incoming LTI Launch Handler
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">handleLaunch</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">LTILaunch</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI 1.0 Consumer Key and Shared Secret
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// for single LTI consumer setup
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">key</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">LTI_CONSUMER_KEY</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">secret</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">LTI_CONSUMER_SECRET</span>,
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">lti</span>;</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>It configures a default LTI 1.0 Tool Provider using the domain, key and secret provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library ro the <code>LTILaunch</code> function provided by one of the routes as the handler for incoming LTI Launch Requests.</p>
+<h2 id="integrating-application-routes">Integrating Application Routes</h2>
+<p>The <code>app.js</code> file creates a basic <a href="https://www.npmjs.com/package/express" rel="external" target="_blank">Express</a> application with a minimal set of libraries and configuration.</p>
+<div class="tab-panel" data-tab-group="e6215374620fa74c3d8e952670c7c042">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="appjs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('e6215374620fa74c3d8e952670c7c042','appjs')"
+    >
+      <span class="tab-nav-text">app.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="appjs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// Import LTI configuration
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">lti</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;./configs/lti.js&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Other imports here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Create Express application
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">app</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">express</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Other configuration here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Add LTI Toolkit Routes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">use</span>(<span style="color:#e6db74">&#34;/lti/provider&#34;</span>, <span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">routers</span>.<span style="color:#a6e22e">provider</span>);</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>The details of that file are omitted (<em>read the source, you must</em>), but the notable configuration is shown above. The configured LTI Toolkit is imported, and then the LTI Provider Router is connected to the application at the <code>/lti/provider</code> path. So, any incoming requests sent to that URL will be passed to the LTI Toolkit for handling. This matches the route used when configuring the tool in Canvas as shown above.</p>
+<h2 id="lti-launch-handler">LTI Launch Handler</h2>
+<p>The LTI Launch Handler function will receive three parameters:</p>
+<ul>
+<li><code>launchData</code> - an instance of the <a href="/lti-toolkit/02-lti/03-launchdata/index.html">LTI Launch Data</a></li>
+<li><code>consumer</code> - a Sequelize instance of an <a href="/lti-toolkit/00-general/01-database/index.html#lti-consumers">LTI Consumer</a> from the database</li>
+<li><code>req</code> - the incoming Express request object</li>
+</ul>
+<p>In the example project, we use the following LTI Launch Handler:</p>
+<div class="tab-panel" data-tab-group="bdf3ae2f4342c4db6742946461bc0398">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcrouteslti-launchjs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('bdf3ae2f4342c4db6742946461bc0398','srcrouteslti-launchjs')"
+    >
+      <span class="tab-nav-text">src/routes/lti-launch.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcrouteslti-launchjs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Handle an incoming LTI Launch Request
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} launchData - an LTI Launch Data object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} consumer - the LTI consumer object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} req - the Express request object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @returns {String} a URL to redirect the user to after launch
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">LTILaunch</span>(<span style="color:#a6e22e">launchData</span>, <span style="color:#a6e22e">consumer</span>, <span style="color:#a6e22e">req</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// We will store the LTI Launch Data and Consumer in the session for later use
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">ltiLaunchData</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">launchData</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">ltiConsumer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">consumer</span>.<span style="color:#a6e22e">toJSON</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Determine if the user is a teacher or student
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">isStudent</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">parseRoles</span>(<span style="color:#a6e22e">launchData</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Record data in local data store
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">updateDataStore</span>(<span style="color:#a6e22e">launchData</span>, <span style="color:#a6e22e">isStudent</span>, <span style="color:#a6e22e">req</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Redirect user based on role
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">isStudent</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;/student&#34;</span>;
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;/instructor&#34;</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>Notice that we serialize the <code>consumer</code> parameter to JSON since it is provided as a Sequelize object instance.</p>
+<p>This handler users two helper functions. The first will parse the incoming roles in the <code>launchData</code> object:</p>
+<div class="tab-panel" data-tab-group="d06b94b24bc5886c9210c224dae9ac4e">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcrouteslti-launchjs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('d06b94b24bc5886c9210c224dae9ac4e','srcrouteslti-launchjs')"
+    >
+      <span class="tab-nav-text">src/routes/lti-launch.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcrouteslti-launchjs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Parse LTI roles to determine user type
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} launchData - the LTI Launch Data object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @returns {Boolean} &#39;true&#39; if user is a student, &#39;false&#39; otherwise
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">parseRoles</span>(<span style="color:#a6e22e">launchData</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">launch_type</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;lti1.0&#34;</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// See https://www.imsglobal.org/specs/ltiv1p0/implementation-guide#toc-9
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// LTI 1.0 roles are a long string
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">user_roles</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#e6db74">&#34;Learner&#34;</span>)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">launch_type</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;lti1.3&#34;</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// See https://www.imsglobal.org/spec/lti/v1p3#role-vocabularies
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// LTI 1.3 roles are an array of strings
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">user_roles</span>.<span style="color:#a6e22e">some</span>((<span style="color:#a6e22e">role</span>) =&gt; <span style="color:#a6e22e">role</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#e6db74">&#34;Learner&#34;</span>))) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Unknown LTI version
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;Unknown LTI launch type:&#34;</span>, <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">launch_type</span>);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;Error parsing roles:&#34;</span>, <span style="color:#a6e22e">error</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;Roles data:&#34;</span>, <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">user_roles</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>It will simply return <code>true</code> if the role is a student, otherwise it will treat the role as an instructor. This may or may not be desired behavior for a production application.</p>
+<p>Finally, it also stores data about the incoming <code>launchData</code> in a shared data structure that is only stored in memory.</p>
+<div class="tab-panel" data-tab-group="f8fb6e2e7fbe22d5af61e2b513d2a266">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcrouteslti-launchjs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('f8fb6e2e7fbe22d5af61e2b513d2a266','srcrouteslti-launchjs')"
+    >
+      <span class="tab-nav-text">src/routes/lti-launch.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcrouteslti-launchjs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Update local data store
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} launchData - the LTI Launch Data object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Boolean} isStudent - &#39;true&#39; if user is a student, &#39;false&#39; otherwise
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} req - the Express request object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">updateDataStore</span>(<span style="color:#a6e22e">launchData</span>, <span style="color:#a6e22e">isStudent</span>, <span style="color:#a6e22e">req</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// This is a placeholder function for updating a local data store
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// In a real application, you would implement logic to store
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// relevant launch data in your database or other storage system
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">courses</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">locals</span>.<span style="color:#a6e22e">dataStore</span>.<span style="color:#a6e22e">courses</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">courseId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">course_id</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">courses</span>[<span style="color:#a6e22e">courseId</span>]) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">courses</span>[<span style="color:#a6e22e">courseId</span>] <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">course_name</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">label</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">course_label</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">assignments</span><span style="color:#f92672">:</span> {},
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">assignments</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">courses</span>[<span style="color:#a6e22e">courseId</span>].<span style="color:#a6e22e">assignments</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">assignmentId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">assignment_id</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>]) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>] <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">assignment_name</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">lti_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">assignment_lti_id</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">grade_url</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">outcome_url</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">grades</span><span style="color:#f92672">:</span> {},
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">isStudent</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">userName</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">user_name</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">userId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">user_lis_id</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">userId13</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">user_lis13_id</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">outcomeId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">outcome_id</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>].<span style="color:#a6e22e">grades</span>[<span style="color:#a6e22e">userId</span>] <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">userName</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">lis_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">userId</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">lis13_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">userId13</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">outcome_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">outcomeId</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">score</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>In practice, this would be replaced with appropriate code and logic to store this data in a database or other storage mechanism for the application. However, this data structure is instructive as it shows a minimal set of data that could be stored in order to track courses, assignments, students, and grades.</p>
+<h2 id="student-grade-passback">Student Grade Passback</h2>
+<p>Once a student&rsquo;s grade has been determined, it can be passed back to the learning management system (LMS) using the LTI Controller&rsquo;s <code>postGrade</code> method:</p>
+<div class="tab-panel" data-tab-group="a6f25886f63b02135307d1981a3db2cc">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcroutesstudent-gradejs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('a6f25886f63b02135307d1981a3db2cc','srcroutesstudent-gradejs')"
+    >
+      <span class="tab-nav-text">src/routes/student-grade.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcroutesstudent-gradejs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Handle LTI Student Grade Postback
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} req - the Express request object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} res - the Express response object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">StudentGradeHandler</span>(<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">res</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get LTI Launch Data and Consumer from session
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">launchData</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">ltiLaunchData</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">consumer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">ltiConsumer</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get grade from form submission
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">grade</span> <span style="color:#f92672">=</span> parseFloat(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">grade</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (isNaN(<span style="color:#a6e22e">grade</span>) <span style="color:#f92672">||</span> <span style="color:#a6e22e">grade</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">grade</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Invalid grade value. Must be between 0 and 1.&#34;</span>;
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Post grade back to the LTI Provider
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Build Grade Object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">gradeObject</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI Consumer ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">consumer_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">consumer</span>.<span style="color:#a6e22e">id</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI 1.0 Outcome Information
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">grade_url</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">outcome_url</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">lms_grade_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">outcome_id</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Grade value between 0.0 and 1.0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">score</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">grade</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI 1.3 User ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">user_lis13_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">user_lis13_id</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Helpful Debugging Information
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">debug</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// User Name
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">user</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">user_name</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// User ID (LTI 1.0 and LTI 1.3)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">user_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">user_lis_id</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; (&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">user_lis13_id</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;)&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Assignment Name
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">assignment</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">assignment_name</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Assignment ID (LTI 1.0 and LTI 1.3)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">assignment_id</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">assignment_id</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;(&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">launchData</span>.<span style="color:#a6e22e">assignment_lti_id</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;)&#34;</span>,
+</span></span><span style="display:flex;"><span>      },
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">controllers</span>.<span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">postGrade</span>(<span style="color:#a6e22e">gradeObject</span>)) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`Successfully posted grade of </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">grade</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> back to the LMS.`</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Record grade in local data store
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">updateDataStoreWithGrade</span>(<span style="color:#a6e22e">launchData</span>, <span style="color:#a6e22e">grade</span>, <span style="color:#a6e22e">req</span>);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Failed to post grade back to the LMS.&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Render student view with LTI Launch Data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">render</span>(<span style="color:#e6db74">&#34;student.njk&#34;</span>, {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;LTI Tool Provider - Student View&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">message</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">message</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">error</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">error</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">launchData</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">consumer</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">consumer</span>,
+</span></span><span style="display:flex;"><span>  });
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>This method constructs the grade object required by the <code>postGrade</code> method using data from the LTI Launch Data and the LTI Consumer originally provided to the LTI Launch Handler. In this example, those values are read directly from the user&rsquo;s session.</p>
+<h2 id="instructor-grade-passback">Instructor Grade Passback</h2>
+<p>A more advanced example of submitting grades could involve the instructor providing grades after a student has completed an assignment:</p>
+<div class="tab-panel" data-tab-group="92c28d6be741641c39a011b7aa499efc">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcroutesinstructor-gradejs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('92c28d6be741641c39a011b7aa499efc','srcroutesinstructor-gradejs')"
+    >
+      <span class="tab-nav-text">src/routes/instructor-grade.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcroutesinstructor-gradejs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Handle LTI Instructor Grade Postback
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} req - the Express request object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} res - the Express response object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">InstructorGradeHandler</span>(<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">res</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get LTI Launch Data and Consumer from session
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">launchData</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">ltiLaunchData</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">consumer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">ltiConsumer</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get form data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">courseId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">course</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">assignmentId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">assignment</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">userId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">user</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">grade</span> <span style="color:#f92672">=</span> parseFloat(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">grade</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get assignment and user info from local data store
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// This is a placeholder function for updating a local data store
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// In a real application, you would implement logic to store
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// relevant grade data in your database or other storage system
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">courses</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">locals</span>.<span style="color:#a6e22e">dataStore</span>.<span style="color:#a6e22e">courses</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">assignments</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">courses</span>[<span style="color:#a6e22e">courseId</span>].<span style="color:#a6e22e">assignments</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (isNaN(<span style="color:#a6e22e">grade</span>) <span style="color:#f92672">||</span> <span style="color:#a6e22e">grade</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">grade</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Invalid grade value. Must be between 0 and 1.&#34;</span>;
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Post grade back to the LTI Provider
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Build Grade Object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">gradeObject</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI Consumer ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">consumer_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">consumer</span>.<span style="color:#a6e22e">id</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI 1.0 Outcome Information
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">grade_url</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>].<span style="color:#a6e22e">grade_url</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">lms_grade_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>].<span style="color:#a6e22e">grades</span>[<span style="color:#a6e22e">userId</span>].<span style="color:#a6e22e">outcome_id</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Grade value between 0.0 and 1.0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">score</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">grade</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI 1.3 User ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">user_lis13_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>].<span style="color:#a6e22e">grades</span>[<span style="color:#a6e22e">userId</span>].<span style="color:#a6e22e">lis13_id</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Helpful Debugging Information
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">debug</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// User Name
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">user</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>].<span style="color:#a6e22e">grades</span>[<span style="color:#a6e22e">userId</span>].<span style="color:#a6e22e">name</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// User ID (LTI 1.0 and LTI 1.3)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">user_id</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>].<span style="color:#a6e22e">grades</span>[<span style="color:#a6e22e">userId</span>].<span style="color:#a6e22e">lis_id</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34; (&#34;</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>].<span style="color:#a6e22e">grades</span>[<span style="color:#a6e22e">userId</span>].<span style="color:#a6e22e">lis13_id</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;)&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Assignment Name
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">assignment</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>].<span style="color:#a6e22e">name</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Assignment ID (LTI 1.0 and LTI 1.3)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">assignment_id</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">assignmentId</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;(&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>].<span style="color:#a6e22e">lti_id</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;)&#34;</span>,
+</span></span><span style="display:flex;"><span>      },
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">controllers</span>.<span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">postGrade</span>(<span style="color:#a6e22e">gradeObject</span>)) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`Successfully posted grade of </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">grade</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> back to the LMS.`</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Record grade in local data store
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">assignments</span>[<span style="color:#a6e22e">assignmentId</span>].<span style="color:#a6e22e">grades</span>[<span style="color:#a6e22e">userId</span>].<span style="color:#a6e22e">score</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">grade</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Failed to post grade back to the LMS.&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Render instructor view with LTI Launch Data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">render</span>(<span style="color:#e6db74">&#34;instructor.njk&#34;</span>, {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;LTI Tool Provider - Instructor View&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">message</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">message</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">error</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">error</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">courses</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">locals</span>.<span style="color:#a6e22e">dataStore</span>.<span style="color:#a6e22e">courses</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">launchData</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">launchData</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">consumer</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">consumer</span>,
+</span></span><span style="display:flex;"><span>  });
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>In this example, the same data required to build a grade object is read from the shared data structure stored in memory. Again, in practice, this data would be read from a database or another storage mechanism, but this code should be instructive.</p>
+<h2 id="lti-13-configuration">LTI 1.3 Configuration</h2>
+<p>Configuring an application to use the LTI 1.3 protocol is a bit more complex, and requires several steps in both the learning management system (LMS) as well as this tool. Detailed instructions and configuration information can be found at the <code>/admin</code> route in the example application, and also are discussed below.</p>
+<h3 id="step-1---add-an-lti-13-application-in-the-lms">Step 1 - Add an LTI 1.3 Application in the LMS</h3>
+<p>The first step is to add an LTI 1.3 application to the learning management system. In Canvas, this requires administrator access, so you may have to work with your Canvas administrator to accomplish this step. In Canvas, go to the Admin panel for the account used and find the Developer Keys page, then add a new LTI Key.</p>
+<ul>
+<li><strong>Redirect URIs</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/redirect13</code> by default.</li>
+<li><strong>Target Link URIs</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/launch13</code> by default.</li>
+<li><strong>OpenID Connect Initiation Url</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/login13/</code> and then the <code>LTI_CONSUMER_KEY</code> from the app environment by default.</li>
+<li><strong>JWK Method</strong>: Public JWK URL (this library only supports JWKS via URL)</li>
+<li><strong>Public JWK URL</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/key13</code> by default.</li>
+</ul>
+<p>The base of these URLs can be configured in <code>app.js</code> as discussed above.</p>
+<p><a href="#R-image-ec6a050c24218e87a9143430529367c5" class="lightbox-link"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ec6a050c24218e87a9143430529367c5"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png"></a></p>
+<p>In the LTI Advantage Services configuration, at a minimum the &ldquo;Can create and update submission results for assignments associated with the tool&rdquo; must be selected, which will allow this application to send grades back to the learning management system.</p>
+<p><a href="#R-image-04e8d4ea0226540c7c30422a007d2366" class="lightbox-link"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-04e8d4ea0226540c7c30422a007d2366"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png"></a></p>
+<p>At the bottom, the privacy level must be set to <strong>PUBLIC</strong> to get student information (this library does not support anonymous students).</p>
+<p><a href="#R-image-34a2ab4cb517cab9cad122415e592c9b" class="lightbox-link"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-34a2ab4cb517cab9cad122415e592c9b"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png"></a></p>
+<p>Once the LTI Key is created, a Client ID is provided by Canvas. Make a note of this value for later. Also, make sure the LTI Key is enabled here.</p>
+<p><a href="#R-image-4559bfed5e85d1fd1ab04cc814d78814" class="lightbox-link"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-4559bfed5e85d1fd1ab04cc814d78814"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png"></a></p>
+<h3 id="step-2---add-lti-13-application-to-a-course">Step 2 - Add LTI 1.3 Application to a Course</h3>
+<p>Once the LTI 1.3 Key is created, the application can be added to a course within the learning management system. In Canvas, this can be found on the Settings of a course on the Apps tab. Click the button to add a new application, and enter the Client ID from Step 1 above.</p>
+<p><a href="#R-image-f32d97c1d003eb31abbc189c65bdeac3" class="lightbox-link"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f32d97c1d003eb31abbc189c65bdeac3"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png"></a></p>
+<p>Once the application has been added to the course, click the menu next to the application and display the Deployment ID for the application. Save this value for later.</p>
+<p><a href="#R-image-d41e841b61db7032f7f2277f800ee435" class="lightbox-link"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-d41e841b61db7032f7f2277f800ee435"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png"></a></p>
+<h3 id="step-3---configure-lti-13-settings">Step 3 - Configure LTI 1.3 Settings</h3>
+<p>Back in the LTI Provider Demo application, click the link on the homepage or navigate to the <code>/admin</code> page to access the LTI 1.3 configuration. On this page, enter the LTI 1.3 configuration information for your learning management system. Examples below are shown for Canvas using the configuration provided in the steps above.</p>
+<ul>
+<li><strong>LTI 1.3 Client ID:</strong> From Step 1 Above</li>
+<li><strong>LTI 1.3 Platform ID:</strong> This is usually just the URL of the LMS</li>
+<li><strong>LTI 1.3 Deployment ID:</strong> From Step 2 Above</li>
+<li><strong>LTI 1.3 JWKS Keyset URL:</strong> For Canvas, <code>/api/lti/security/jwks</code></li>
+<li><strong>LTI 1.3 Token URL:</strong> For Canvas, <code>/login/oauth2/token</code></li>
+<li><strong>LTI 1.3 Auth URL:</strong> For Canvas, <code>/api/lti/authorize_redirect</code></li>
+</ul>
+<p><a href="#R-image-6566a6a1e339768afc71c87109c20da5" class="lightbox-link"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-6566a6a1e339768afc71c87109c20da5"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png"></a></p>
+<h3 id="step-4---configure-lms-assignment">Step 4 - Configure LMS Assignment</h3>
+<p>In Canvas, configure an assignment that uses an external URL (similar to working with LTI 1.0 Applications as shown below). This time, it will use the Target Link URI configured in Step 1 - typically the <code>DOMAIN_NAME</code> from the environment followed by <code>/lti/provider/launch13</code>.</p>
+<p><a href="#R-image-62d6edea50b56fb10a163cfdc7a3aec1" class="lightbox-link"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-62d6edea50b56fb10a163cfdc7a3aec1"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png"></a></p>
+<p>From this point onward, students and teachers can access the LTI Demo Application through this Canvas assignment to perform an LTI 1.3 Launch.</p>
+<h2 id="managing-lti-consumers">Managing LTI Consumers</h2>
+<p>Within the sample application, the Admin Configuration handler gives a demonstration for using this library&rsquo;s controllers to manage the LTI Consumers available within the application.</p>
+<div class="tab-panel" data-tab-group="3a3810b054f3b7321013b057c7115761">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcroutesadmin-configjs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('3a3810b054f3b7321013b057c7115761','srcroutesadmin-configjs')"
+    >
+      <span class="tab-nav-text">src/routes/admin-config.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcroutesadmin-configjs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Handle LTI Admin Launch
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} req - the Express request object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} res - the Express response object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">AdminConfigHandler</span>(<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">res</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get Form Data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">lti13</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">client_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">client_id</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">platform_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">platform_id</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">deployment_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">deployment_id</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">keyset_url</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">keyset_url</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">token_url</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">token_url</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">auth_url</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">auth_url</span>,
+</span></span><span style="display:flex;"><span>  };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Check if any required fields are missing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">requiredFields</span> <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;client_id&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;platform_id&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;deployment_id&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;keyset_url&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;token_url&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;auth_url&#34;</span>,
+</span></span><span style="display:flex;"><span>  ];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">missingFields</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">requiredFields</span>.<span style="color:#a6e22e">filter</span>(
+</span></span><span style="display:flex;"><span>    (<span style="color:#a6e22e">field</span>) =&gt; <span style="color:#f92672">!</span><span style="color:#a6e22e">data</span>[<span style="color:#a6e22e">field</span>] <span style="color:#f92672">||</span> <span style="color:#a6e22e">data</span>[<span style="color:#a6e22e">field</span>].<span style="color:#a6e22e">trim</span>() <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>  );
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">missingFields</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Missing required fields: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">missingFields</span>.<span style="color:#a6e22e">join</span>(<span style="color:#e6db74">&#34;, &#34;</span>);
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Update Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">returnValue</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">controllers</span>.<span style="color:#a6e22e">consumer</span>.<span style="color:#a6e22e">updateConsumer</span>(<span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">returnValue</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Error(<span style="color:#e6db74">&#34;Consumer not found&#34;</span>);
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">err</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Failed to update consumer: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">message</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Successfully updated consumer.&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get Updated LTI Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">consumers</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">controllers</span>.<span style="color:#a6e22e">consumer</span>.<span style="color:#a6e22e">getAll</span>();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">consumer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">consumers</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">toJSON</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get LMS Domain
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">lmsDomain</span> <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">LTI_13_LMS_DOMAIN</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">&#34;https://canvas.instructure.com&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">render</span>(<span style="color:#e6db74">&#34;admin.njk&#34;</span>, {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;LTI Tool Provider - Admin Configuration View&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">consumer</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">consumer</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">lmsDomain</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">lmsDomain</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">domain</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DOMAIN_NAME</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">key</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">LTI_CONSUMER_KEY</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">error</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">error</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">message</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">message</span>,
+</span></span><span style="display:flex;"><span>  });
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>This handler receives data provided in the LTI 1.3 configuration form, validates that all items are present (more validation could be performed as desired), and then it uses the Consumer controller provided through the library to update the default LTI Consumer (with ID <code>1</code>) to include the LTI 1.3 configuration options. The Consumer controller provides additional methods to add and delete additional consumers as desired.</p>
+
+<details open class=" box cstyle notices warning">
+  <summary class="box-label" tabindex="-1">
+    <i class="fa-fw fas fa-exclamation-triangle"></i> 
+    Warning
+  </summary>
+  <div class="box-content">
+<p>Be aware that, by providing both a <code>key</code> and <code>secret</code> as part of the <code>provider</code> configuration in the LTI Toolkit configuration (see <code>src/configs/lti.js</code>), all existing LTI consumers will be removed from the database each time the application is launched. So, those options must be removed and LTI Consumers must be configured directly through the controller if multiple consumers are desired.</p>
+  </div>
+</details>
+
+  <footer class="footline">
+  </footer>
+</article>
+        </div>
+      </main>
+      
+      
+      
+    </div>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1769278497" defer></script>
+  <script src="/lti-toolkit/js/embed-iframe.min.js?1769278497" defer></script>
+  </body>
+</html>

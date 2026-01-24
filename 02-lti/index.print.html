@@ -6,49 +6,57 @@
     <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <meta name="generator" content="Hugo 0.148.1">
     <meta name="generator" content="Relearn 8.0.0">
-    <meta name="description" content="LTI Protocol Notes &amp; Documentation">
+    <meta name="description" content="LTI Protocol Notes &amp; Documentation
+When developing this project, I couldn’t find any good detailed examples for what these messages actually looked like in practice, especially the ones coming from Instructure Canvas. So, as I worked on this project, I carefully stored and documented these protocol messages. They can also be mostly exposed from this tool by enabling the silly logging level.
+LTI 1.0 Tool Provider LTI 1.3 Tool Provider LTI Launch Data LTI 1.0 Tool Consumer">
     <meta name="author" content="K-State ALT&#43;CS Lab">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <meta name="twitter:title" content="LTI Docs :: LTI Toolkit">
-    <meta name="twitter:description" content="LTI Protocol Notes &amp; Documentation">
+    <meta name="twitter:description" content="LTI Protocol Notes &amp; Documentation
+When developing this project, I couldn’t find any good detailed examples for what these messages actually looked like in practice, especially the ones coming from Instructure Canvas. So, as I worked on this project, I carefully stored and documented these protocol messages. They can also be mostly exposed from this tool by enabling the silly logging level.
+LTI 1.0 Tool Provider LTI 1.3 Tool Provider LTI Launch Data LTI 1.0 Tool Consumer">
     <meta property="og:url" content="https://alt.cs.ksu.edu/lti-toolkit/02-lti/index.html">
     <meta property="og:site_name" content="LTI Toolkit">
     <meta property="og:title" content="LTI Docs :: LTI Toolkit">
-    <meta property="og:description" content="LTI Protocol Notes &amp; Documentation">
+    <meta property="og:description" content="LTI Protocol Notes &amp; Documentation
+When developing this project, I couldn’t find any good detailed examples for what these messages actually looked like in practice, especially the ones coming from Instructure Canvas. So, as I worked on this project, I carefully stored and documented these protocol messages. They can also be mostly exposed from this tool by enabling the silly logging level.
+LTI 1.0 Tool Provider LTI 1.3 Tool Provider LTI Launch Data LTI 1.0 Tool Consumer">
     <meta property="og:locale" content="en_us">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <meta itemprop="name" content="LTI Docs :: LTI Toolkit">
-    <meta itemprop="description" content="LTI Protocol Notes &amp; Documentation">
-    <meta itemprop="dateModified" content="2025-09-26T19:04:14+00:00">
-    <meta itemprop="wordCount" content="5">
+    <meta itemprop="description" content="LTI Protocol Notes &amp; Documentation
+When developing this project, I couldn’t find any good detailed examples for what these messages actually looked like in practice, especially the ones coming from Instructure Canvas. So, as I worked on this project, I carefully stored and documented these protocol messages. They can also be mostly exposed from this tool by enabling the silly logging level.
+LTI 1.0 Tool Provider LTI 1.3 Tool Provider LTI Launch Data LTI 1.0 Tool Consumer">
+    <meta itemprop="dateModified" content="2026-01-16T23:33:46+00:00">
+    <meta itemprop="wordCount" content="77">
     <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <title>LTI Docs :: LTI Toolkit</title>
     <link href="https://alt.cs.ksu.edu/lti-toolkit/02-lti/index.html" rel="canonical" type="text/html" title="LTI Docs :: LTI Toolkit">
     <link href="/lti-toolkit/02-lti/index.xml" rel="alternate" type="application/rss+xml" title="LTI Docs :: LTI Toolkit">
     <link href="/lti-toolkit/02-lti/tele.html" rel="alternate" type="text/html" title="LTI Docs :: LTI Toolkit">
     <link href="/lti-toolkit/02-lti/embed.html" rel="alternate" type="text/html" title="LTI Docs :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1760113577" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1760113577" defer></script>
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1769278497" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1769278497" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1760113577";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1769278497";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1760113577" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1769278497" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1760113577" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1760113577" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1760113577" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1760113577" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-print.min.css?1760113577" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769278497" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769278497" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1769278497" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1769278497" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-print.min.css?1769278497" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -107,9 +115,12 @@
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1760113577" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1769278497" rel="stylesheet">
   </head>
-  <body class="mobile-support embed print" data-url="/lti-toolkit/02-lti/index.html">
+  <body class="mobile-support print" data-url="/lti-toolkit/02-lti/index.html">
+    
+    <div id="tele" class="tele mirror">
+    
     <div id="R-body" class="default-animation">
       <div id="R-body-overlay"></div>
       
@@ -125,6 +136,13 @@
 <h1 id="lti-docs">LTI Docs</h1>
 
 <p>LTI Protocol Notes &amp; Documentation</p>
+<p>When developing this project, I couldn&rsquo;t find any good detailed examples for what these messages actually looked like in practice, especially the ones coming from <a href="https://www.instructure.com/solutions/learning-management/k12" rel="external" target="_blank">Instructure Canvas</a>. So, as I worked on this project, I carefully stored and documented these protocol messages. They can also be mostly exposed from this tool by enabling the <code>silly</code> logging level.</p>
+<ul class="children children-li children-sort-">
+  <li class="children-title"><a href="/lti-toolkit/02-lti/01-lti10-tool/index.html">LTI 1.0 Tool Provider</a></li>
+  <li class="children-title"><a href="/lti-toolkit/02-lti/02-lti13-tool/index.html">LTI 1.3 Tool Provider</a></li>
+  <li class="children-title"><a href="/lti-toolkit/02-lti/03-launchdata/index.html">LTI Launch Data</a></li>
+  <li class="children-title"><a href="/lti-toolkit/02-lti/04-lti10-consumer/index.html">LTI 1.0 Tool Consumer</a></li>
+</ul>
 
   <footer class="footline">
   </footer>
@@ -137,7 +155,12 @@
 
 <h1 id="lti-10-tool-provider">LTI 1.0 Tool Provider</h1>
 
-<p><strong>Sample LTI 1.0 Launch from Canvas - Admin</strong></p>
+<p>This page documents the messages sent from an LMS to this tool acting as an LTI 1.0 Tool Provider.</p>
+<h2 id="sequence-diagram">Sequence Diagram</h2>
+<p><a href="#R-image-2189a8296af23f45edfa50d6fb28b1a5" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-2189a8296af23f45edfa50d6fb28b1a5"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png"></a></p>
+<h2 id="sample-lti-launch-messages">Sample LTI Launch Messages</h2>
+<h3 id="lti-10-launch-from-canvas---admin-account">LTI 1.0 Launch from Canvas - Admin Account</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_consumer_key&#34;</span>: <span style="color:#e6db74">&#34;thisisasupersecretkey&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_signature_method&#34;</span>: <span style="color:#e6db74">&#34;HMAC-SHA1&#34;</span>,
@@ -190,7 +213,7 @@
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;user_image&#34;</span>: <span style="color:#e6db74">&#34;http://canvas.instructure.com/images/messages/avatar-50.png&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_signature&#34;</span>: <span style="color:#e6db74">&#34;lrWfY8y049li0gJBEM//4hwgUy8=&#34;</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p><strong>Sample LTI 1.0 Launch from Canvas - Teacher</strong></p>
+<h3 id="lti-10-launch-from-canvas---teacher-account">LTI 1.0 Launch from Canvas - Teacher Account</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_consumer_key&#34;</span>: <span style="color:#e6db74">&#34;thisisasupersecretkey&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_signature_method&#34;</span>: <span style="color:#e6db74">&#34;HMAC-SHA1&#34;</span>,
@@ -246,7 +269,7 @@
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;user_image&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/images/thumbnails/2/GJhBgjcBm2BG6aFOlLDZpjEMDRzB5jgUBJYuVqJu&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_signature&#34;</span>: <span style="color:#e6db74">&#34;99TXj++LWMqCjKfHcCE7KFt9aZk=&#34;</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p><strong>Sample LTI 1.0 Launch from Canvas - Student</strong></p>
+<h3 id="lti-10-launch-from-canvas---student-account">LTI 1.0 Launch from Canvas - Student Account</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_consumer_key&#34;</span>: <span style="color:#e6db74">&#34;thisisasupersecretkey&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_signature_method&#34;</span>: <span style="color:#e6db74">&#34;HMAC-SHA1&#34;</span>,
@@ -303,10 +326,7 @@
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;user_image&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/images/thumbnails/3/fnQIzMRWPAny4JOWMUvz8FiHsvP5Tyk4CRBKmMhm&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_signature&#34;</span>: <span style="color:#e6db74">&#34;eXuQHonpd554T34k8Ro22+lhI+c=&#34;</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p>Documentation:</p>
-<p><a href="#R-image-5a3bed8d8b561181931304748dc59630" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-5a3bed8d8b561181931304748dc59630"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png"></a></p>
-<p>References:</p>
+<h2 id="helpful-references">Helpful References:</h2>
 <ul>
 <li><a href="https://www.imsglobal.org/specs/ltiv1p1/implementation-guide" rel="external" target="_blank">https://www.imsglobal.org/specs/ltiv1p1/implementation-guide</a> - super helpful</li>
 <li><a href="https://datatracker.ietf.org/doc/html/rfc5849" rel="external" target="_blank">https://datatracker.ietf.org/doc/html/rfc5849</a> - OAuth 1.0</li>
@@ -323,8 +343,12 @@
 
 <h1 id="lti-13-tool-provider">LTI 1.3 Tool Provider</h1>
 
-<p>Sample LTI 1.3 Launch:</p>
-<p><strong>Login from Tool Consumer</strong></p>
+<p>This page documents the messages sent from an LMS to this tool acting as an LTI 1.3 Tool Provider.</p>
+<h2 id="sequence-diagram">Sequence Diagram</h2>
+<p><a href="#R-image-0ad6a26c75995599d27779436ab11253" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-0ad6a26c75995599d27779436ab11253"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png"></a></p>
+<h2 id="sample-lti-launch-messages">Sample LTI Launch Messages</h2>
+<h3 id="login-message-from-canvas">Login Message from Canvas</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;iss&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;login_hint&#34;</span>: <span style="color:#e6db74">&#34;535fa085f22b4655f48cd5a36a9215f64c062838&#34;</span>,
@@ -336,7 +360,7 @@
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;canvas_region&#34;</span>: <span style="color:#e6db74">&#34;not_configured&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lti_storage_target&#34;</span>: <span style="color:#e6db74">&#34;post_message_forwarding&#34;</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p><strong>Auth Request from Tool Provider</strong></p>
+<h3 id="auth-request-from-lti-toolkit-back-to-canvas">Auth Request from LTI Toolkit back to Canvas</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;scope&#34;</span>: <span style="color:#e6db74">&#34;openid&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;response_type&#34;</span>: <span style="color:#e6db74">&#34;id_token&#34;</span>,
@@ -349,7 +373,7 @@
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;prompt&#34;</span>: <span style="color:#e6db74">&#34;pSESxuF1KbfCqvRl5u9HW&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lti_message_hint&#34;</span>: <span style="color:#e6db74">&#34;eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2ZXJpZmllciI6IjBlNGYxMTZhZWZjNWZiYTEyMzI1MWI2MjhhMDM5MDM5NDZjYjYxOGYzNTYzMTI5OGIwMzlkMGVlOTM3ZGQxMGU3ZGVlOTkzNDc0Y2FiZGU0OGNiYjFlZjNhOWY5NGI3OGM3YWZkOTI5ZjZlZjU5MzZkMDIyNjMyMTcyZDllYTY5IiwiY2FudmFzX2RvbWFpbiI6ImNhbnZhcy5ob21lLnJ1c3NmZWxkLm1lIiwiY29udGV4dF90eXBlIjoiQ291cnNlIiwiY29udGV4dF9pZCI6MTAwMDAwMDAwMDAwMDMsImNhbnZhc19sb2NhbGUiOiJlbiIsImluY2x1ZGVfc3RvcmFnZV90YXJnZXQiOnRydWUsImV4cCI6MTc0OTY2MjgwOH0.HyNhJe1cNlkA29tJy9oBxNsUD3jWZdUb_VwZinfVjvc&#34;</span>,
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p><strong>Redirect from Tool Consumer</strong></p>
+<h3 id="redirect-message-from-canvas">Redirect Message from Canvas</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;utf8&#34;</span>: <span style="color:#e6db74">&#34;✓&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;authenticity_token&#34;</span>: <span style="color:#e6db74">&#34;0tT0C8svDcwBdK19trVo7sVrcT+lSkf6g7Vw8YjJel6W599ypx19/jM75w7+5QKHnTpGVdEOFsvahx+ixpsMbA==&#34;</span>,
@@ -357,7 +381,7 @@
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;state&#34;</span>: <span style="color:#e6db74">&#34;Zp22IH6qgj7YIPgXIkOf_&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lti_storage_target&#34;</span>: <span style="color:#e6db74">&#34;post_message_forwarding&#34;</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p><strong>Decoded JWT from Tool Consumer - Admin</strong></p>
+<h3 id="decoded-jwt-in-redirect-message-from-canvas---admin-account">Decoded JWT in Redirect Message from Canvas - Admin Account</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://purl.imsglobal.org/spec/lti/claim/message_type&#34;</span>: <span style="color:#e6db74">&#34;LtiResourceLinkRequest&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://purl.imsglobal.org/spec/lti/claim/version&#34;</span>: <span style="color:#e6db74">&#34;1.3.0&#34;</span>,
@@ -458,7 +482,7 @@
 </span></span><span style="display:flex;"><span>  },
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://www.instructure.com/placement&#34;</span>: <span style="color:#66d9ef">null</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p><strong>Decoded JWT from Tool Consumer - Teacher</strong></p>
+<h3 id="decoded-jwt-in-redirect-message-from-canvas---teacher-account">Decoded JWT in Redirect Message from Canvas - Teacher Account</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://purl.imsglobal.org/spec/lti/claim/message_type&#34;</span>: <span style="color:#e6db74">&#34;LtiResourceLinkRequest&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://purl.imsglobal.org/spec/lti/claim/version&#34;</span>: <span style="color:#e6db74">&#34;1.3.0&#34;</span>,
@@ -561,7 +585,7 @@
 </span></span><span style="display:flex;"><span>  },
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://www.instructure.com/placement&#34;</span>: <span style="color:#66d9ef">null</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p><strong>Decoded JWT from Tool Consumer - Student</strong></p>
+<h3 id="decoded-jwt-in-redirect-message-from-canvas---student-account">Decoded JWT in Redirect Message from Canvas - Student Account</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://purl.imsglobal.org/spec/lti/claim/message_type&#34;</span>: <span style="color:#e6db74">&#34;LtiResourceLinkRequest&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://purl.imsglobal.org/spec/lti/claim/version&#34;</span>: <span style="color:#e6db74">&#34;1.3.0&#34;</span>,
@@ -664,7 +688,7 @@
 </span></span><span style="display:flex;"><span>  },
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://www.instructure.com/placement&#34;</span>: <span style="color:#66d9ef">null</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p><strong>Decoded JWT from Tool Consumer - Student (All LTI Advatage Features Disabled)</strong></p>
+<h3 id="decoded-jwt-in-redirect-message-from-canvas---student-account-all-lti-advatage-features-disabled">Decoded JWT in Redirect Message from Canvas - Student Account (All LTI Advatage Features Disabled)</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://purl.imsglobal.org/spec/lti/claim/message_type&#34;</span>: <span style="color:#e6db74">&#34;LtiResourceLinkRequest&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://purl.imsglobal.org/spec/lti/claim/version&#34;</span>: <span style="color:#e6db74">&#34;1.3.0&#34;</span>,
@@ -736,10 +760,7 @@
 </span></span><span style="display:flex;"><span>  },
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://www.instructure.com/placement&#34;</span>: <span style="color:#66d9ef">null</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p>Documentation:</p>
-<p><a href="#R-image-dde755a25cf028151c1066fec2adbc0d" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-dde755a25cf028151c1066fec2adbc0d"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png"></a></p>
-<p>References:</p>
+<h2 id="helpful-references">Helpful References:</h2>
 <ul>
 <li><a href="https://www.imsglobal.org/spec/lti/v1p3" rel="external" target="_blank">https://www.imsglobal.org/spec/lti/v1p3</a></li>
 <li><a href="https://www.imsglobal.org/spec/security/v1p0/" rel="external" target="_blank">https://www.imsglobal.org/spec/security/v1p0/</a></li>
@@ -756,9 +777,10 @@
 
 <h1 id="lti-launch-data">LTI Launch Data</h1>
 
-<p>The LTI controller constructs a <code>launchData</code> object from each LTI launch that contains the following information:</p>
-<p><code>baseURL</code> = <code>&quot;https://purl.imsglobal.org/spec/lti/claim/&quot;</code>
-<code>agsURL</code> = <code>&quot;https://purl.imsglobal.org/spec/lti-ags/claim/&quot;</code></p>
+<p>The LTI Toolkit constructs a <code>launchData</code> object from each incoming LTI launch that contains the following information. Each attribute is documented with the original source of that attribute from both an LTI 1.0 and LTI 1.3 launch request. To simplify things, the <code>baseURL</code> and <code>agsURL</code> in the descriptions below have been replaced with variables that carry these values:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">baseURL</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti/claim/&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">agsURL</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti-ags/claim/&#34;</span></span></span></code></pre></div>
+<h3 id="lti-launch-data-object">LTI Launch Data Object</h3>
 <ul>
 <li><code>launch_type</code> - the type of LTI launch
 <ul>
@@ -887,7 +909,7 @@
 </ul>
 </li>
 </ul>
-<p>4 Additional items are stored in the <code>consumer</code> data structure by the library itself, but aren&rsquo;t passed to the user&rsquo;s <code>handleLaunch</code> function:</p>
+<p>Four additional items are stored in the <code>consumer</code> database by the library itself, but aren&rsquo;t passed to the user&rsquo;s <code>handleLaunch</code> function:</p>
 <ul>
 <li><code>tool_consumer_product</code> - the tool consumer product name (e.g. <code>&quot;canvas&quot;</code>)
 <ul>
@@ -914,7 +936,9 @@
 </ul>
 </li>
 </ul>
-<p><strong>LTI 1.0 Example</strong></p>
+<h2 id="lti-launch-examples">LTI Launch Examples</h2>
+<h3 id="lti-10-example">LTI 1.0 Example</h3>
+<p>Sent to the <code>handleLaunch</code> endpoint:</p>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">launch_type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;lti1.0&#39;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tool_consumer_key</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;thisisasupersecretkey&#39;</span>,
@@ -936,15 +960,16 @@
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">user_image</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;https://canvas.home.russfeld.me/images/thumbnails/3/fnQIzMRWPAny4JOWMUvz8FiHsvP5Tyk4CRBKmMhm&#39;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">user_roles</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Learner&#39;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">custom</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">custom_1</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;value_1&#39;</span>, <span style="color:#a6e22e">custom_2</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;value_2&#39;</span> }
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<p>Stored in the database:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tool_consumer_product</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;canvas&#39;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tool_consumer_guid</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;zOUAtkfS3gI8nh5IskzlgAro1oCx3rx6SGGahiLL:canvas-lms&#39;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tool_consumer_name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;ALT+CS Lab&#39;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tool_consumer_version</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;cloud&#39;</span>,
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p><strong>LTI 1.3 Example</strong></p>
+<h3 id="lti-10-example-1">LTI 1.0 Example</h3>
+<p>Sent to the <code>handleLaunch</code> endpoint:</p>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">launch_type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;lti1.3&#39;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">course_id</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;d3a2504bba5184799a38f141e8df2335cfa8206d&#39;</span>,
@@ -969,15 +994,15 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;http://purl.imsglobal.org/vocab/lis/v2/system/person#User&#39;</span>
 </span></span><span style="display:flex;"><span>  ],
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">custom</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">custom1</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;value1&#39;</span>, <span style="color:#a6e22e">custom2</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;value2&#39;</span> }
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<p>Stored in the database:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tool_consumer_product</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;canvas&#39;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tool_consumer_guid</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;zOUAtkfS3gI8nh5IskzlgAro1oCx3rx6SGGahiLL:canvas-lms&#39;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tool_consumer_name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;ALT+CS Lab&#39;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tool_consumer_version</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;cloud&#39;</span>,
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
-<p>Documentation:</p>
+<h2 id="helpful-references">Helpful References:</h2>
 <ul>
 <li>LTI 1.0: <a href="https://www.imsglobal.org/specs/ltiv1p1/implementation-guide" rel="external" target="_blank">https://www.imsglobal.org/specs/ltiv1p1/implementation-guide</a></li>
 <li>LTI 1.3: <a href="https://www.imsglobal.org/spec/lti/v1p3#required-message-claims" rel="external" target="_blank">https://www.imsglobal.org/spec/lti/v1p3#required-message-claims</a></li>
@@ -993,58 +1018,40 @@
 
 <h1 id="lti-10-tool-consumer">LTI 1.0 Tool Consumer</h1>
 
-<p><strong>Sample LTI 1.0 Tool Launch</strong></p>
+<p>When using the LTI Toolkit as an LTI Tool Consumer (LMS), it will send LTI Launch Requests using this format.</p>
+<h2 id="sample-lti-10-tool-launch">Sample LTI 1.0 Tool Launch</h2>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_consumer_key&#34;</span>: <span style="color:#e6db74">&#34;thisisasupersecretkey&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_consumer_key&#34;</span>: <span style="color:#e6db74">&#34;Kyfb4eihmljr2ehgq&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_signature_method&#34;</span>: <span style="color:#e6db74">&#34;HMAC-SHA1&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_timestamp&#34;</span>: <span style="color:#e6db74">&#34;1749754327&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_nonce&#34;</span>: <span style="color:#e6db74">&#34;JUcK2ZIwc5I9SJsDDwAeODA76PgtBHMYyHgPQ8YvEEw&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_timestamp&#34;</span>: <span style="color:#e6db74">&#34;1768590571&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_nonce&#34;</span>: <span style="color:#e6db74">&#34;_yX_tiCIcAV-pGE3Lq0PS&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_version&#34;</span>: <span style="color:#e6db74">&#34;1.0&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;context_id&#34;</span>: <span style="color:#e6db74">&#34;d3a2504bba5184799a38f141e8df2335cfa8206d&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;context_label&#34;</span>: <span style="color:#e6db74">&#34;LTI13&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;context_title&#34;</span>: <span style="color:#e6db74">&#34;LTI 1.3 Test Course&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;custom_canvas_api_domain&#34;</span>: <span style="color:#e6db74">&#34;canvas.home.russfeld.me&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;custom_canvas_assignment_id&#34;</span>: <span style="color:#e6db74">&#34;2&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;custom_canvas_assignment_points_possible&#34;</span>: <span style="color:#e6db74">&#34;100&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;custom_canvas_assignment_title&#34;</span>: <span style="color:#e6db74">&#34;Test LTI 1.3 Assignment Name&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;custom_canvas_course_id&#34;</span>: <span style="color:#e6db74">&#34;3&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;custom_canvas_enrollment_state&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;custom_canvas_module_id&#34;</span>: <span style="color:#e6db74">&#34;$Canvas.module.id&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;custom_canvas_module_item_id&#34;</span>: <span style="color:#e6db74">&#34;2&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;custom_canvas_user_id&#34;</span>: <span style="color:#e6db74">&#34;1&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;custom_canvas_user_login_id&#34;</span>: <span style="color:#e6db74">&#34;canvasadmin@russfeld.me&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;custom_canvas_workflow_state&#34;</span>: <span style="color:#e6db74">&#34;available&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;ext_ims_lis_basic_outcome_url&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/api/lti/v1/tools/6/ext_grade_passback&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;ext_lti_assignment_id&#34;</span>: <span style="color:#e6db74">&#34;8aa641d1-b4d4-4fea-8a9b-e9fedfb62b1e&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;ext_outcome_data_values_accepted&#34;</span>: <span style="color:#e6db74">&#34;url,text&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;ext_outcome_result_total_score_accepted&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;ext_outcome_submission_needs_additional_review_accepted&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;ext_outcome_submission_prioritize_non_tool_grade_accepted&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;ext_outcome_submission_submitted_at_accepted&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;ext_outcomes_tool_placement_url&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/api/lti/v1/turnitin/outcomes_placement/6&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;ext_roles&#34;</span>: <span style="color:#e6db74">&#34;urn:lti:instrole:ims/lis/Administrator,urn:lti:sysrole:ims/lis/SysAdmin,urn:lti:sysrole:ims/lis/User&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;context_id&#34;</span>: <span style="color:#e6db74">&#34;thisisasectionkey&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;context_label&#34;</span>: <span style="color:#e6db74">&#34;PL Default&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;context_title&#34;</span>: <span style="color:#e6db74">&#34;PrairieLearn Default Section&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;launch_presentation_document_target&#34;</span>: <span style="color:#e6db74">&#34;iframe&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;launch_presentation_locale&#34;</span>: <span style="color:#e6db74">&#34;en&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;launch_presentation_return_url&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/courses/3/assignments&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lis_outcome_service_url&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/api/lti/v1/tools/6/grade_passback&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lis_person_contact_email_primary&#34;</span>: <span style="color:#e6db74">&#34;canvasadmin@russfeld.me&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lis_person_name_family&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lis_person_name_full&#34;</span>: <span style="color:#e6db74">&#34;canvasadmin@russfeld.me&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lis_person_name_given&#34;</span>: <span style="color:#e6db74">&#34;canvasadmin@russfeld.me&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;launch_presentation_return_url&#34;</span>: <span style="color:#e6db74">&#34;https://lpp.home.russfeld.me/student/1&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lis_outcome_service_url&#34;</span>: <span style="color:#e6db74">&#34;https://lpp.home.russfeld.me/lti/consumer/grade_passback&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lis_result_sourcedid&#34;</span>: <span style="color:#e6db74">&#34;thisisasectionkey:thisisalessonkey:n7StL49uxddH2Gf5aBqoC:hqTqbHFOw1IoSA4Qf6R_A&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lis_person_contact_email_primary&#34;</span>: <span style="color:#e6db74">&#34;canvasstudent@russfeld.me&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lis_person_name_family&#34;</span>: <span style="color:#e6db74">&#34;StudentLast&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lis_person_name_full&#34;</span>: <span style="color:#e6db74">&#34;StudentFirst StudentLast&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lis_person_name_given&#34;</span>: <span style="color:#e6db74">&#34;StudentFirst&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lti_message_type&#34;</span>: <span style="color:#e6db74">&#34;basic-lti-launch-request&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;lti_version&#34;</span>: <span style="color:#e6db74">&#34;LTI-1p0&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_callback&#34;</span>: <span style="color:#e6db74">&#34;about:blank&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;resource_link_id&#34;</span>: <span style="color:#e6db74">&#34;6a8aaca162bfc4393804afd4cd53cd94413c48bb&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;resource_link_title&#34;</span>: <span style="color:#e6db74">&#34;Test LTI 1.3 Assignment Name&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;roles&#34;</span>: <span style="color:#e6db74">&#34;urn:lti:instrole:ims/lis/Administrator,urn:lti:sysrole:ims/lis/SysAdmin&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;tool_consumer_info_product_family_code&#34;</span>: <span style="color:#e6db74">&#34;canvas&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;resource_link_id&#34;</span>: <span style="color:#e6db74">&#34;thisisalessonkey&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;resource_link_title&#34;</span>: <span style="color:#e6db74">&#34;Introduction to Variables in Python&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;roles&#34;</span>: <span style="color:#e6db74">&#34;Learner&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;tool_consumer_info_product_family_code&#34;</span>: <span style="color:#e6db74">&#34;learningpathplatform&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;tool_consumer_info_version&#34;</span>: <span style="color:#e6db74">&#34;cloud&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;tool_consumer_instance_contact_email&#34;</span>: <span style="color:#e6db74">&#34;canvas@russfeld.me&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;tool_consumer_instance_guid&#34;</span>: <span style="color:#e6db74">&#34;zOUAtkfS3gI8nh5IskzlgAro1oCx3rx6SGGahiLL:canvas-lms&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;tool_consumer_instance_name&#34;</span>: <span style="color:#e6db74">&#34;ALT+CS Lab&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;user_id&#34;</span>: <span style="color:#e6db74">&#34;535fa085f22b4655f48cd5a36a9215f64c062838&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;tool_consumer_instance_contact_email&#34;</span>: <span style="color:#e6db74">&#34;russfeld@ksu.edu&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;tool_consumer_instance_guid&#34;</span>: <span style="color:#e6db74">&#34;devplatform&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;tool_consumer_instance_name&#34;</span>: <span style="color:#e6db74">&#34;Learning Path Platform&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;user_id&#34;</span>: <span style="color:#e6db74">&#34;n7StL49uxddH2Gf5aBqoC&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;user_image&#34;</span>: <span style="color:#e6db74">&#34;http://canvas.instructure.com/images/messages/avatar-50.png&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_signature&#34;</span>: <span style="color:#e6db74">&#34;lrWfY8y049li0gJBEM//4hwgUy8=&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;oauth_signature&#34;</span>: <span style="color:#e6db74">&#34;DzeROfQzBafyvblTAZeeM+n4ryA=&#34;</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 
   <footer class="footline">
@@ -1057,9 +1064,13 @@
       
       
     </div>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1760113577" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1760113577" defer></script>
-  <script src="/lti-toolkit/js/embed-iframe.min.js?1760113577" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1769278497" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1769278497" defer></script>
+      
+      
+      
+    </div> 
+  <script src="/lti-toolkit/js/tele-scroll.min.js?1769278497" defer></script>
   </body>
 </html>
