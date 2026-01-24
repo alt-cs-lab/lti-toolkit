@@ -7,6 +7,7 @@
 /**
  * LTI 1.0 Grade Passback Handler for LTI Tool Consumer
  *
+ * @param {Object} req the Express request object
  * @param {string} contextKey the context (course) key
  * @param {string} resourceKey the resource (lesson or assignment) key
  * @param {string} userKey the user (student) key
@@ -20,12 +21,75 @@ async function postGradeHandler(
   userKey,
   gradebookKey,
   score,
+  req
 ) {
-  // For now, just log the grade passback attempt
-  // eslint-disable-next-line no-console
-  console.log(
-    `LTI 1.0 Grade Passback Received: providerKey=${providerKey}, contextKey=${contextKey}, resourceKey=${resourceKey}, userKey=${userKey}, gradebookKey=${gradebookKey}, score=${score}`,
+  
+  // Store grade in the local data store
+  updateLocalDataStoreWithGrade(
+    req,
+    contextKey,
+    resourceKey,
+    userKey,
+    gradebookKey,
+    score,
   );
+
+  // No need to return anything; library assumes success here
 }
+
+/**
+ * Function to update local data store with grade
+ * 
+ * @param {Object} req the Express request object
+ * @param {string} providerKey the provider key
+ * @param {string} contextKey the context (course) key
+ * @param {string} resourceKey the resource (lesson or assignment) key
+ * @param {string} userKey the user (student) key
+ * @param {string} gradebookKey the gradebook key
+ * @param {number} score the score to post (0.0 - 1.0)
+ */
+function updateLocalDataStoreWithGrade(
+  req,
+  contextKey,
+  resourceKey,
+  userKey,
+  gradebookKey,
+  score,
+) {
+  // This is a placeholder function for updating a local data store
+  // In a real application, you would implement logic to store
+  // relevant course and grade data in your database or other storage system
+  const courses = req.app.locals.dataStore.courses;
+
+  // Ensure course exists
+  if (!courses[contextKey]) {
+    courses[contextKey] = {
+      id: contextKey,
+      assignments: {},
+    };
+  }
+
+  // Ensure assignment exists
+  if (!courses[contextKey].assignments[resourceKey]) {
+    courses[contextKey].assignments[resourceKey] = {
+      id: resourceKey,
+      users: {},
+    };
+  }
+
+  // Ensure user exists
+  if (!courses[contextKey].assignments[resourceKey].users[userKey]) {
+    courses[contextKey].assignments[resourceKey].users[userKey] = {
+      id: userKey,
+      grades: {},
+    };
+  }
+
+  // Store grade
+  courses[contextKey].assignments[resourceKey].users[userKey].grades[gradebookKey] = {
+    score: score,
+  };
+}
+
 
 export default postGradeHandler;

@@ -52,24 +52,36 @@ async function ProviderLaunchHandler(req, res) {
     },
     manager: req.body.manager === "true",
     gradebook_id: req.body.gradebook_id,
-  }
+  };
 
   // Check if any required fields are missing
-  const requiredFields = ["context.key", "context.label", "context.name", "resource.key", "resource.name", "user.key", "user.email", "user.given_name", "user.family_name", "manager", "gradebook_id"];
-  const missingFields = requiredFields.filter(
-    (field) => {
-      // Handle nested fields
-      const fieldParts = field.split(".");
-      let value = data;
-      for (const part of fieldParts) {
-        value = value[part];
-        if (value === undefined) {
-          return true;
-        }
+  const requiredFields = [
+    "context.key",
+    "context.label",
+    "context.name",
+    "resource.key",
+    "resource.name",
+    "user.key",
+    "user.email",
+    "user.given_name",
+    "user.family_name",
+    "manager",
+    "gradebook_id",
+  ];
+  const missingFields = requiredFields.filter((field) => {
+    // Handle nested fields
+    const fieldParts = field.split(".");
+    let value = data;
+    for (const part of fieldParts) {
+      value = value[part];
+      if (value === undefined) {
+        return true;
       }
-      return value === undefined || value === null || value.toString().trim() === "";
     }
-  );
+    return (
+      value === undefined || value === null || value.toString().trim() === ""
+    );
+  });
   if (missingFields.length > 0) {
     error = "Missing required fields: " + missingFields.join(", ");
 
@@ -81,12 +93,15 @@ async function ProviderLaunchHandler(req, res) {
       message: message,
     });
   } else {
+    // Store launch data in local data store
+    updateDataStoreWithLaunch(data, providerData, req);
+
     // Create LTI Launch
     const launch = lti.controllers.lti.generateLTI10FormData(
-      provider.key,
-      providerSecret.secret,
-      provider.launch_url,
-      "/provider/" + provider.id,
+      providerData.key,
+      providerData.secret,
+      providerData.launch_url,
+      "/provider/" + providerData.id,
       data.context,
       data.resource,
       data.user,
@@ -98,6 +113,62 @@ async function ProviderLaunchHandler(req, res) {
     res.render("launch.njk", {
       launch,
     });
+  }
+}
+
+/**
+ * Function to update local data store with launch data
+ * 
+ * @param {Object} launchData - the LTI Launch Data object
+ * @param {Object} provider - the LTI Tool Provider object
+ * @param {Object} req - the Express request object
+ */
+function updateDataStoreWithLaunch(launchData, provider, req) {
+  // This is a placeholder function for updating a local data store
+  // In a real application, you would implement logic to store
+  // relevant course and grade data in your database or other storage system
+  const courses = req.app.locals.dataStore.courses;
+  const courseId = launchData.context.key;
+  const assignmentId = launchData.resource.key;
+
+  // Ensure course exists
+  if (!courses[courseId]) {
+    courses[courseId] = {
+      id: courseId,
+      name: launchData.context.name,
+      assignments: {},
+    };
+  }
+
+  // Ensure assignment exists
+  if (!courses[courseId].assignments[assignmentId]) {
+    courses[courseId].assignments[assignmentId] = {
+      id: assignmentId,
+      name: launchData.resource.name,
+      provider: {
+        id: provider.id,
+        name: provider.name,
+      },
+      users: {},
+    };
+  }
+
+  // Ensure user record exists
+  const userId = launchData.user.key;
+  if (!courses[courseId].assignments[assignmentId].users[userId]) {
+    courses[courseId].assignments[assignmentId].users[userId] = {
+      id: userId,
+      name: launchData.user.name,
+      email: launchData.user.email,
+      grades: {},
+    };
+  }
+
+  // Add empty grade record
+  if (!courses[courseId].assignments[assignmentId].users[userId].grades[launchData.gradebook_id]) {
+    courses[courseId].assignments[assignmentId].users[userId].grades[launchData.gradebook_id] = {
+      score: null,
+    };
   }
 }
 

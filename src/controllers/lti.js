@@ -603,12 +603,13 @@ class LTIToolkitController {
 
     // Post Provider Grade to Handler Function
     await this.consumer.postProviderGrade(
-      providerKey,
+      providerKey.key,
       contextKey,
       resourceKey,
       userKey,
       gradebookKey,
       score,
+      request,
     );
 
     // TODO update assignment grade and send to tool consumer

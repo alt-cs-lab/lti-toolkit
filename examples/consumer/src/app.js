@@ -19,6 +19,7 @@ import lti from "./configs/lti.js";
 // Import Handlers
 import IndexHandler from "./routes/index.js";
 import ConfigureProviderHandler from "./routes/configure.js";
+import GradeHandler from "./routes/grades.js";
 import ProviderHandler from "./routes/provider.js";
 import ProviderLaunchHandler from "./routes/provider-launch.js";
 
@@ -61,6 +62,7 @@ app.get("/", IndexHandler);
 app.post("/configure", ConfigureProviderHandler);
 app.get("/provider/:id", ProviderHandler);
 app.post("/provider/:id/launch", ProviderLaunchHandler);
+app.get("/grades", GradeHandler);
 
 // Use static files
 app.use(express.static(path.join(import.meta.dirname, "../public")));

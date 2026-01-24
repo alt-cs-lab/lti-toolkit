@@ -12,7 +12,9 @@
         {% if error %}
         <p style="color: red">{{ error }}
         {% endif %}
-        <p>Select or configure an LTI 1.0 Tool Provider to continue</p>
+        <p><a href="grades">View the gradebook</a></p>
+        <hr />
+        <p>Select or configure an LTI 1.0 Tool Provider to perform an LTI Launch</p>
         <h2>LTI Tool Providers</h2>
         <ul>
         {% for provider in providers %}
@@ -20,7 +22,7 @@
         {% endfor %}
         </ul>
         <hr />
-        <h2>Add Provider</h2>
+        <h2>Add LTI 1.0 Tool Provider</h2>
         <form method="POST" action="/configure">
           <label for="name">Provider Name</label><br>
           <input type="text" id="name" name="name" size="50">

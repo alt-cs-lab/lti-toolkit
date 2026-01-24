@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <main>
+      <h1>LTI Toolkit Example</h1>
+      <h2>Gradebook</h2>
+      {% for course in courses %}
+        <h3>{{ course.name }} ({{ course.id }})</h3>
+        {% for assignment in course.assignments %}
+          <h4>{{ assignment.name }}({{ assignment.id }})</h4>
+          <p><b>Provider:</b> {{ provider.name }} ({{ provider.id }})
+          {% for user in assignment.users %}
+            <h5>{{ user.name }} - {{ user.email }} ({{ user.id }})</h5>
+            <ul>
+            {% for gradeID, grade in user.grades %}
+              <li>{{ gradeID }} - {{ grade.score }}</li>
+            {% else %}
+              <li><b>No grades found!</b></li>
+            {% endfor %}
+            </ul>
+          {% else %}
+            <h5>No users found!</h5>
+          {% endfor %}
+        {% else %}
+          <h4>No assignments found!</h4>
+        {% endfor %}
+      {% else %}
+        <h3>No courses found!</h3>
+      {% endfor %}
+    </main>
+  </body>
+</html>
