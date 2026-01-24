@@ -102,7 +102,10 @@ export default async function LtiToolkit(config) {
         "A valid deployment ID is required in Consumer configuration",
       );
     }
-    if (!config.consumer.product_name || typeof config.consumer.product_name !== "string") {
+    if (
+      !config.consumer.product_name ||
+      typeof config.consumer.product_name !== "string"
+    ) {
       config.consumer.product_name = "lti-toolkit";
     }
     if (

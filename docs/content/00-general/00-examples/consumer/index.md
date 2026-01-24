@@ -458,7 +458,10 @@ This should be enough information to properly record the grade in the LMS gradeb
 
 ## Viewing Grades
 
-This example application will display any grades received in the `grades` path:
+This example application will display any grades received and stored in local memory in the `grades` path:
 
 ![LTI Example Grades](images/ltigrades.png)
 
+This matches the grade found in the LTI 1.0 Tool Provider:
+
+![LTI Tool Grades](images/ltigrades2.png)

@@ -7,12 +7,13 @@
 /**
  * LTI 1.0 Grade Passback Handler for LTI Tool Consumer
  *
- * @param {Object} req the Express request object
+ * @param {string} providerKey the provider key
  * @param {string} contextKey the context (course) key
  * @param {string} resourceKey the resource (lesson or assignment) key
  * @param {string} userKey the user (student) key
  * @param {string} gradebookKey the gradebook key
  * @param {number} score the score to post (0.0 - 1.0)
+ * @param {Object} req the Express request object
  */
 async function postGradeHandler(
   providerKey,

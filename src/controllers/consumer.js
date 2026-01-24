@@ -34,7 +34,7 @@ class ConsumerController {
 
   /**
    * Get a consumer by ID
-   * 
+   *
    * @param {number} id the ID of the consumer
    * @return {Consumer} the consumer with the given ID
    */
@@ -43,9 +43,9 @@ class ConsumerController {
     return consumer;
   }
 
-  /** 
+  /**
    * Get a consumer by key
-   * 
+   *
    * @param {string} key the key of the consumer
    * @return {Consumer} the consumer with the given key
    */
