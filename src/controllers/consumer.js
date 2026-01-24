@@ -33,6 +33,32 @@ class ConsumerController {
   }
 
   /**
+   * Get a consumer by ID
+   * 
+   * @param {number} id the ID of the consumer
+   * @return {Consumer} the consumer with the given ID
+   */
+  async getById(id) {
+    const consumer = await this.models.Consumer.findByPk(id);
+    return consumer;
+  }
+
+  /** 
+   * Get a consumer by key
+   * 
+   * @param {string} key the key of the consumer
+   * @return {Consumer} the consumer with the given key
+   */
+  async getByKey(key) {
+    const consumer = await this.models.Consumer.findOne({
+      where: {
+        key: key,
+      },
+    });
+    return consumer;
+  }
+
+  /**
    * Create a new consumer
    *
    * @param {Object} data the consumer data to create

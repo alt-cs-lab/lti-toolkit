@@ -45,8 +45,11 @@ import ConsumerController from "./src/controllers/consumer.js";
  * @param {Object|None} [config.consumer] - LTI Consumer Configuration
  * @param {Function} [config.consumer.postProviderGrade] - Required function to handle posting grades to the provider
  * @param {string} [config.consumer.admin_email] - Admin email address (e.g., "admin@example.com")
+ * @param {string} [config.consumer.product_name] - Optional Product name (e.g., "lti-toolkit")
+ * @param {string} [config.consumer.product_version] - Optional Product version (e.g., "cloud")
  * @param {string} [config.consumer.deployment_name] - Deployment name (e.g., "My LTI Tool")
  * @param {string} [config.consumer.deployment_id] - Deployment ID (e.g., "deployment-12345")
+ * @param {string} [config.consumer.route_prefix] - Optional route prefix for consumer routes (defaults to "/lti/consumer")
  * @param {boolean|None} [config.test] - Optional flag to indicate if running in test mode (defaults to false)
  * @returns {Promise<Object>} - Returns a promise that resolves to an object containing the models and routers
  */
@@ -98,6 +101,21 @@ export default async function LtiToolkit(config) {
       throw new Error(
         "A valid deployment ID is required in Consumer configuration",
       );
+    }
+    if (!config.consumer.product_name || typeof config.consumer.product_name !== "string") {
+      config.consumer.product_name = "lti-toolkit";
+    }
+    if (
+      !config.consumer.product_version ||
+      typeof config.consumer.product_version !== "string"
+    ) {
+      config.consumer.product_version = "cloud";
+    }
+    if (
+      !config.consumer.route_prefix ||
+      typeof config.consumer.route_prefix !== "string"
+    ) {
+      config.consumer.route_prefix = "/lti/consumer";
     }
   } else {
     config.consumer = null;

@@ -27,7 +27,7 @@ See the [Examples]({{% relref "00-general/00-examples" %}}) section for detailed
 
 ## Configuration
 
-A minimal configuration example for LTI 1.0:
+A minimal configuration example as an LTI 1.0 tool provider:
 
 ```js
 // Import LTI Toolkit
@@ -117,8 +117,8 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // REQUIRED
     // LTI Grade Handler
     // User-provided async function to receive LTI Grades
-    // Params: SectionKey, LessonKey, UserKey, AssignmentKey, Score
-    // Function should resolve when grade is posted 
+    // Params: LTI Provider Key, Context Key, Resource Key, User Key, Gradebook Key, Score, Express Request Object
+    // Function should resolve when grade is posted, no return needed
     postProviderGrade: LTIGradeHandler,
 
     // REQUIRED
@@ -135,6 +135,21 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // LTI Tool Consumer Deployment ID
     // Unique ID of the LTI Deployment
     deployment_id: "lti-toolkit-testing-app",
+
+    // OPTIONAL
+    // LTI Product Name
+    // Unique name identifying the LTI product
+    product_name: "lti-toolkit",
+
+    // OPTIONAL
+    // LTI Product Version
+    // Version of the LTI product (e.g. "1.0.0" or "cloud")
+    product_version: "cloud",
+
+    // OPTIONAL
+    // LTI Consumer Route Prefix
+    // Prefix of routes for LTI consumer functions
+    route_prefix: "/lti/consumer",
   }
 
   // OPTIONAL
@@ -186,20 +201,24 @@ The initialized LTI Toolkit is a complex object containing the following items:
     // Returned if provider is configured
     provider: {
       getAll(),
-      getSecret(),
-      updateProvider(),
-      createProvider(),
-      deleteProvider()
+      getById(id),
+      getByKey(key),
+      getSecret(id),
+      updateProvider(id, data),
+      createProvider(data),
+      deleteProvider(id)
     },
     // LTI Coonsumer Controller Instance
     // Returned if consumer is configured
     consumer: {
       getAll(),
-      createConsumer(),
-      updateConsumer(),
-      deleteConsumer(),
-      getSecret(),
-      updateSecret()
+      getById(id),
+      getByKey(key)
+      createConsumer(data),
+      updateConsumer(id, data),
+      deleteConsumer(id),
+      getSecret(id),
+      updateSecret(id)
     }
   },
   // Sequelize Database Models

@@ -85,7 +85,7 @@ const lti = await LTIToolkit({
 export default lti;
 ```
 
-It configures a default LTI 1.0 Tool Provider using the domain, key and secret provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library ro the `LTILaunch` function provided by one of the routes as the handler for incoming LTI Launch Requests.
+It configures a default LTI 1.0 Tool Provider using the domain, key and secret provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library to the `LTILaunch` function provided by one of the routes as the handler for incoming LTI Launch Requests.
 
 ## Integrating Application Routes
 

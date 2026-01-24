@@ -7,13 +7,13 @@
     <main>
       <h1>LTI Toolkit Example</h1>
       <h2>Gradebook</h2>
-      {% for course in courses %}
-        <h3>{{ course.name }} ({{ course.id }})</h3>
-        {% for assignment in course.assignments %}
-          <h4>{{ assignment.name }}({{ assignment.id }})</h4>
-          <p><b>Provider:</b> {{ provider.name }} ({{ provider.id }})
-          {% for user in assignment.users %}
-            <h5>{{ user.name }} - {{ user.email }} ({{ user.id }})</h5>
+      {% for courseid, course in courses %}
+        <h3>Course: {{ course.name }} ({{ course.id }})</h3>
+        {% for assignmentid, assignment in course.assignments %}
+          <h4>Assignment: {{ assignment.name }} ({{ assignment.id }}) on {{ assignment.provider.name }}</h4>
+          {% for userid, user in assignment.users %}
+            <h5>User: {{ user.name }} - {{ user.email }} ({{ user.id }})</h5>
+            <p>Grades: </p>
             <ul>
             {% for gradeID, grade in user.grades %}
               <li>{{ gradeID }} - {{ grade.score }}</li>

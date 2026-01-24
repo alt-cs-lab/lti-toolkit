@@ -22,7 +22,7 @@
         <hr />
         <h3>Configure Launch</h3>
         <p>Provide information to configure an LTI 1.0 Launch Request</p>
-        <form method="POST" action="/provider/{{ provider.id }}/launch">
+        <form method="POST" target="_blank" action="/provider/{{ provider.id }}/launch">
           <h4>Context (Course)</h4>
           <label for="context_key">Context Key</label><br>
           <input type="text" id="context_key" name="context_key" value="contextkey" size="50">
@@ -57,7 +57,7 @@
           <label for="manager">Instructor?</label>
           <input type="checkbox" id="manager" name="manager" value="true">
           <h4>Gradebook</h4>
-          <label for="gradebook_id">Gradebook Key</label>
+          <label for="gradebook_id">Gradebook Key</label><br>
           <input type="text" id="gradebook_id" name="gradebook_id" value="gradebookkey" size="50">
           <br><br>
           <input type="submit" value="Submit">

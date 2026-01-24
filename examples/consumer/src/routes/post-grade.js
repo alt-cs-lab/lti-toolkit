@@ -23,7 +23,6 @@ async function postGradeHandler(
   score,
   req,
 ) {
-
   // Store grade in the local data store
   updateLocalDataStoreWithGrade(
     req,
