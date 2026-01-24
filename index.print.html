@@ -35,26 +35,26 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
     <link href="https://alt.cs.ksu.edu/lti-toolkit/index.html" rel="canonical" type="text/html" title="LTI-Toolkit :: LTI Toolkit">
     <link href="/lti-toolkit/index.xml" rel="alternate" type="application/rss+xml" title="LTI-Toolkit :: LTI Toolkit">
     <link href="/lti-toolkit/index.lti.js" rel="alternate" type="text/javascript" title="LTI-Toolkit :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1769284879" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1769284879" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1769284879" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1769284879" defer></script>
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1769287359" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1769287359" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1769287359" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1769287359" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1769284879";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1769287359";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1769284879" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1769284879" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1769284879" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1769284879" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1769287359" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1769287359" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1769287359" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1769287359" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769284879" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769284879" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1769284879" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1769284879" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-print.min.css?1769284879" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769287359" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769287359" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1769287359" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1769287359" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-print.min.css?1769287359" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -113,7 +113,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1769284879" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1769287359" rel="stylesheet">
   </head>
   <body class="mobile-support print" data-url="/lti-toolkit/index.html">
     <div id="R-body" class="default-animation">
@@ -448,13 +448,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <p>A fully-featured LTI Tool Provider example can be found in <code>/examples/provider</code>. This document will walk through the details of how that application works.</p>
 <h2 id="environment">Environment</h2>
 <p>The application expects the following environment variables (typically loaded from <code>.env</code>):</p>
-<div class="tab-panel" data-tab-group="dca7a55e8d930faeb0389db972567c5a">
+<div class="tab-panel" data-tab-group="ed43a3f8809523876e5d9c796e8b96cd">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="env"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('dca7a55e8d930faeb0389db972567c5a','env')"
+      onclick="switchTab('ed43a3f8809523876e5d9c796e8b96cd','env')"
     >
       <span class="tab-nav-text">.env</span>
     </button>
@@ -492,21 +492,21 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li><strong>Domain</strong> - typically the <code>DOMAIN_NAME</code> from the app environment without the <code>https://</code> at the front</li>
 <li><strong>Privacy Level</strong> - must be <strong>Public</strong> (the library does not currently support anonymous students)</li>
 </ul>
-<p><a href="#R-image-f249daa846ca761a91bc15e96751bb9b" class="lightbox-link"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-f249daa846ca761a91bc15e96751bb9b"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png"></a></p>
+<p><a href="#R-image-8d9571d23230dd73b289a1b3c5d35745" class="lightbox-link"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-8d9571d23230dd73b289a1b3c5d35745"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png"></a></p>
 <p>Once the application has been added to the course, an assignment can be created to direct students to the Launch URL used above.</p>
-<p><a href="#R-image-2bb5532fe672c0d0940f71b316a775b3" class="lightbox-link"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-2bb5532fe672c0d0940f71b316a775b3"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png"></a></p>
+<p><a href="#R-image-8c4c7ebcba7933a0dae76286556c2d3a" class="lightbox-link"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-8c4c7ebcba7933a0dae76286556c2d3a"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png"></a></p>
 <p>To access the rest of the application, students and teachers should use the assignment configured in the learning management system to perform an LTI Launch as described below.</p>
 <h2 id="lti-toolkit-configuration">LTI Toolkit Configuration</h2>
 <p>The <code>src/configs/lti.js</code> file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Provider:</p>
-<div class="tab-panel" data-tab-group="c7e2e08294f50eb5e8f28150315f3887">
+<div class="tab-panel" data-tab-group="9eca555456e53b366011256f16decc57">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcconfigsltijs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('c7e2e08294f50eb5e8f28150315f3887','srcconfigsltijs')"
+      onclick="switchTab('9eca555456e53b366011256f16decc57','srcconfigsltijs')"
     >
       <span class="tab-nav-text">src/configs/lti.js</span>
     </button>
@@ -553,13 +553,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </div><p>It configures a default LTI 1.0 Tool Provider using the domain, key and secret provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library ro the <code>LTILaunch</code> function provided by one of the routes as the handler for incoming LTI Launch Requests.</p>
 <h2 id="integrating-application-routes">Integrating Application Routes</h2>
 <p>The <code>app.js</code> file creates a basic <a href="https://www.npmjs.com/package/express" rel="external" target="_blank">Express</a> application with a minimal set of libraries and configuration.</p>
-<div class="tab-panel" data-tab-group="c7ec77a407a9adf840206e1f3a4329ef">
+<div class="tab-panel" data-tab-group="26c6be1b807671c3d8f7ee51acacbf03">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="appjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('c7ec77a407a9adf840206e1f3a4329ef','appjs')"
+      onclick="switchTab('26c6be1b807671c3d8f7ee51acacbf03','appjs')"
     >
       <span class="tab-nav-text">app.js</span>
     </button>
@@ -593,13 +593,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li><code>req</code> - the incoming Express request object</li>
 </ul>
 <p>In the example project, we use the following LTI Launch Handler:</p>
-<div class="tab-panel" data-tab-group="a5446ddb416fb7da1d3d6b397799b78d">
+<div class="tab-panel" data-tab-group="d529bfab57eaba0b41c77cf955800348">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('a5446ddb416fb7da1d3d6b397799b78d','srcrouteslti-launchjs')"
+      onclick="switchTab('d529bfab57eaba0b41c77cf955800348','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -640,13 +640,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
   </div>
 </div><p>Notice that we serialize the <code>consumer</code> parameter to JSON since it is provided as a Sequelize object instance.</p>
 <p>This handler users two helper functions. The first will parse the incoming roles in the <code>launchData</code> object:</p>
-<div class="tab-panel" data-tab-group="6451972642e32ec70ea6e370b29a3060">
+<div class="tab-panel" data-tab-group="92aa0cda407c6d212d03587141e73ef9">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('6451972642e32ec70ea6e370b29a3060','srcrouteslti-launchjs')"
+      onclick="switchTab('92aa0cda407c6d212d03587141e73ef9','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -693,13 +693,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
   </div>
 </div><p>It will simply return <code>true</code> if the role is a student, otherwise it will treat the role as an instructor. This may or may not be desired behavior for a production application.</p>
 <p>Finally, it also stores data about the incoming <code>launchData</code> in a shared data structure that is only stored in memory.</p>
-<div class="tab-panel" data-tab-group="8b17c97f668b1930f2487765aca7abfe">
+<div class="tab-panel" data-tab-group="30fde65ea5bf818a3c2bb77a0e663f5d">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('8b17c97f668b1930f2487765aca7abfe','srcrouteslti-launchjs')"
+      onclick="switchTab('30fde65ea5bf818a3c2bb77a0e663f5d','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -759,13 +759,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </div><p>In practice, this would be replaced with appropriate code and logic to store this data in a database or other storage mechanism for the application. However, this data structure is instructive as it shows a minimal set of data that could be stored in order to track courses, assignments, students, and grades.</p>
 <h2 id="student-grade-passback">Student Grade Passback</h2>
 <p>Once a student&rsquo;s grade has been determined, it can be passed back to the learning management system (LMS) using the LTI Controller&rsquo;s <code>postGrade</code> method:</p>
-<div class="tab-panel" data-tab-group="11f2afd3eb04b3b0de9a9bdb90024a08">
+<div class="tab-panel" data-tab-group="b402fb94211c5cccccc075a451a0ceb5">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesstudent-gradejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('11f2afd3eb04b3b0de9a9bdb90024a08','srcroutesstudent-gradejs')"
+      onclick="switchTab('b402fb94211c5cccccc075a451a0ceb5','srcroutesstudent-gradejs')"
     >
       <span class="tab-nav-text">src/routes/student-grade.js</span>
     </button>
@@ -843,13 +843,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </div><p>This method constructs the grade object required by the <code>postGrade</code> method using data from the LTI Launch Data and the LTI Consumer originally provided to the LTI Launch Handler. In this example, those values are read directly from the user&rsquo;s session.</p>
 <h2 id="instructor-grade-passback">Instructor Grade Passback</h2>
 <p>A more advanced example of submitting grades could involve the instructor providing grades after a student has completed an assignment:</p>
-<div class="tab-panel" data-tab-group="de91bbe2755504bf98ff376ca0b73f17">
+<div class="tab-panel" data-tab-group="6dab44500ed6f5daae2878c61c66cdb5">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesinstructor-gradejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('de91bbe2755504bf98ff376ca0b73f17','srcroutesinstructor-gradejs')"
+      onclick="switchTab('6dab44500ed6f5daae2878c61c66cdb5','srcroutesinstructor-gradejs')"
     >
       <span class="tab-nav-text">src/routes/instructor-grade.js</span>
     </button>
@@ -954,24 +954,24 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li><strong>Public JWK URL</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/key13</code> by default.</li>
 </ul>
 <p>The base of these URLs can be configured in <code>app.js</code> as discussed above.</p>
-<p><a href="#R-image-1509e3b8d0b3ccef3c49945ccc531131" class="lightbox-link"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-1509e3b8d0b3ccef3c49945ccc531131"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png"></a></p>
+<p><a href="#R-image-a1e0eef68480342a28fa5e0b89863cd2" class="lightbox-link"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-a1e0eef68480342a28fa5e0b89863cd2"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png"></a></p>
 <p>In the LTI Advantage Services configuration, at a minimum the &ldquo;Can create and update submission results for assignments associated with the tool&rdquo; must be selected, which will allow this application to send grades back to the learning management system.</p>
-<p><a href="#R-image-2bcd1da126832bb7c427d545dcc02ac1" class="lightbox-link"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-2bcd1da126832bb7c427d545dcc02ac1"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png"></a></p>
+<p><a href="#R-image-87958a6d98c6286c32e0793a252ab9a0" class="lightbox-link"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-87958a6d98c6286c32e0793a252ab9a0"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png"></a></p>
 <p>At the bottom, the privacy level must be set to <strong>PUBLIC</strong> to get student information (this library does not support anonymous students).</p>
-<p><a href="#R-image-a9ea634ed8e9a610aeb21261901d06fe" class="lightbox-link"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-a9ea634ed8e9a610aeb21261901d06fe"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png"></a></p>
+<p><a href="#R-image-b223737c695cc8aeea4d4ebae2126e6a" class="lightbox-link"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-b223737c695cc8aeea4d4ebae2126e6a"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png"></a></p>
 <p>Once the LTI Key is created, a Client ID is provided by Canvas. Make a note of this value for later. Also, make sure the LTI Key is enabled here.</p>
-<p><a href="#R-image-91ff536c672855f99850981af38fe5f5" class="lightbox-link"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-91ff536c672855f99850981af38fe5f5"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png"></a></p>
+<p><a href="#R-image-883f6ef3d127ff12ed8bc427a8108039" class="lightbox-link"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-883f6ef3d127ff12ed8bc427a8108039"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png"></a></p>
 <h3 id="step-2---add-lti-13-application-to-a-course">Step 2 - Add LTI 1.3 Application to a Course</h3>
 <p>Once the LTI 1.3 Key is created, the application can be added to a course within the learning management system. In Canvas, this can be found on the Settings of a course on the Apps tab. Click the button to add a new application, and enter the Client ID from Step 1 above.</p>
-<p><a href="#R-image-3b772b00594150b1021e4fd01be770f6" class="lightbox-link"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-3b772b00594150b1021e4fd01be770f6"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png"></a></p>
+<p><a href="#R-image-69f906626bbb19067996ee0dc6c4f9ae" class="lightbox-link"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-69f906626bbb19067996ee0dc6c4f9ae"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png"></a></p>
 <p>Once the application has been added to the course, click the menu next to the application and display the Deployment ID for the application. Save this value for later.</p>
-<p><a href="#R-image-9112a6b0e02d20bb1dd8dcf68ef46ef0" class="lightbox-link"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-9112a6b0e02d20bb1dd8dcf68ef46ef0"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png"></a></p>
+<p><a href="#R-image-422c0f4803d981e369a1a0f9c5552f23" class="lightbox-link"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-422c0f4803d981e369a1a0f9c5552f23"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png"></a></p>
 <h3 id="step-3---configure-lti-13-settings">Step 3 - Configure LTI 1.3 Settings</h3>
 <p>Back in the LTI Provider Demo application, click the link on the homepage or navigate to the <code>/admin</code> page to access the LTI 1.3 configuration. On this page, enter the LTI 1.3 configuration information for your learning management system. Examples below are shown for Canvas using the configuration provided in the steps above.</p>
 <ul>
@@ -982,22 +982,22 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li><strong>LTI 1.3 Token URL:</strong> For Canvas, <code>/login/oauth2/token</code></li>
 <li><strong>LTI 1.3 Auth URL:</strong> For Canvas, <code>/api/lti/authorize_redirect</code></li>
 </ul>
-<p><a href="#R-image-1957f5249f5feecb4c278387debbc801" class="lightbox-link"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-1957f5249f5feecb4c278387debbc801"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png"></a></p>
+<p><a href="#R-image-13ecce8216d21fe483373b30f8b3bdc9" class="lightbox-link"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-13ecce8216d21fe483373b30f8b3bdc9"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png"></a></p>
 <h3 id="step-4---configure-lms-assignment">Step 4 - Configure LMS Assignment</h3>
 <p>In Canvas, configure an assignment that uses an external URL (similar to working with LTI 1.0 Applications as shown below). This time, it will use the Target Link URI configured in Step 1 - typically the <code>DOMAIN_NAME</code> from the environment followed by <code>/lti/provider/launch13</code>.</p>
-<p><a href="#R-image-76316864667f20aebc4bb91446f81e93" class="lightbox-link"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-76316864667f20aebc4bb91446f81e93"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png"></a></p>
+<p><a href="#R-image-ffd346f51c14285a490c98fb37a7ef2d" class="lightbox-link"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ffd346f51c14285a490c98fb37a7ef2d"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png"></a></p>
 <p>From this point onward, students and teachers can access the LTI Demo Application through this Canvas assignment to perform an LTI 1.3 Launch.</p>
 <h2 id="managing-lti-consumers">Managing LTI Consumers</h2>
 <p>Within the sample application, the Admin Configuration handler gives a demonstration for using this library&rsquo;s controllers to manage the LTI Consumers available within the application.</p>
-<div class="tab-panel" data-tab-group="8dc6ec91451f8d994d51878f40f6698e">
+<div class="tab-panel" data-tab-group="dc564a072979f3a9653dd871c10791e2">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesadmin-configjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('8dc6ec91451f8d994d51878f40f6698e','srcroutesadmin-configjs')"
+      onclick="switchTab('dc564a072979f3a9653dd871c10791e2','srcroutesadmin-configjs')"
     >
       <span class="tab-nav-text">src/routes/admin-config.js</span>
     </button>
@@ -1101,8 +1101,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 
 <h1 id="database-schema">Database Schema</h1>
 
-<p><a href="#R-image-519be96099f3869c8de9b968767799c3" class="lightbox-link"><img alt="Database Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-519be96099f3869c8de9b968767799c3"><img alt="Database Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png"></a></p>
+<p><a href="#R-image-5fb3d2e71040f6333f1529fb0e4a17a5" class="lightbox-link"><img alt="Database Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-5fb3d2e71040f6333f1529fb0e4a17a5"><img alt="Database Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png"></a></p>
 <h2 id="system-managed-tables">System Managed Tables</h2>
 <h3 id="lti_migrations">lti_migrations</h3>
 <p>This is the migrations table managed by <a href="https://github.com/sequelize/umzug" rel="external" target="_blank">Umzug</a>. It tracks any changes that must be made to the database schema as future versions are released.</p>
@@ -1254,13 +1254,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <ol>
 <li>Clone Repository</li>
 </ol>
-<div class="tab-panel" data-tab-group="0f430245a3dd375f9d7dab0764a70b08">
+<div class="tab-panel" data-tab-group="85c841f0ac1cccf1305c01707e4b3757">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('0f430245a3dd375f9d7dab0764a70b08','terminal')"
+      onclick="switchTab('85c841f0ac1cccf1305c01707e4b3757','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -1278,13 +1278,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li>Modify Setup Script</li>
 </ol>
 <p>The setup script insists that Docker Compose be installed separately; it is now part of the default Docker installation on Ubuntu and does not appear as a separate item on my system. So, it can be removed from the setup script.</p>
-<div class="tab-panel" data-tab-group="005f363c4a584260e09ca6161a27cb85">
+<div class="tab-panel" data-tab-group="995a7c405cae325111255985041435b2">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="scriptcommonoslinuxdev_setupsh"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('005f363c4a584260e09ca6161a27cb85','scriptcommonoslinuxdev_setupsh')"
+      onclick="switchTab('995a7c405cae325111255985041435b2','scriptcommonoslinuxdev_setupsh')"
     >
       <span class="tab-nav-text">script/common/os/linux/dev_setup.sh</span>
     </button>
@@ -1311,13 +1311,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li>Export Environment Settings</li>
 </ol>
 <p>My development environment seems to require these settings:</p>
-<div class="tab-panel" data-tab-group="6f31ce3ec9030346822bd5f508b1456f">
+<div class="tab-panel" data-tab-group="797dbdede3ff91410c40d0f379a60cd5">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('6f31ce3ec9030346822bd5f508b1456f','terminal')"
+      onclick="switchTab('797dbdede3ff91410c40d0f379a60cd5','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -1336,13 +1336,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li>Set Gemfile Permissions</li>
 </ol>
 <p>There are several file permission errors that will crop up during the build. The best fix is to give Canvas user permission to all files in the build folder via <code>setfacl</code>:</p>
-<div class="tab-panel" data-tab-group="38e8e25acff16d039140ef69e6c0dfb3">
+<div class="tab-panel" data-tab-group="a96717af9ba78901cb0e02099ae1340b">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('38e8e25acff16d039140ef69e6c0dfb3','terminal')"
+      onclick="switchTab('a96717af9ba78901cb0e02099ae1340b','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -1366,13 +1366,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <ol start="5">
 <li>Run Setup Script</li>
 </ol>
-<div class="tab-panel" data-tab-group="dfb8cd76e58638ed30d6efe7a0cac8aa">
+<div class="tab-panel" data-tab-group="45122b160073d8915eea0a8f94037cb1">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('dfb8cd76e58638ed30d6efe7a0cac8aa','terminal')"
+      onclick="switchTab('45122b160073d8915eea0a8f94037cb1','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -1445,13 +1445,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li>Edit Configuration Files</li>
 </ol>
 <p><strong>Domain Configuration</strong></p>
-<div class="tab-panel" data-tab-group="c600548a6921d97804fc5ae93ff7d40e">
+<div class="tab-panel" data-tab-group="e7dbc658565bdd3bdccd7e48fc87c4c8">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="configdomainyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('c600548a6921d97804fc5ae93ff7d40e','configdomainyml')"
+      onclick="switchTab('e7dbc658565bdd3bdccd7e48fc87c4c8','configdomainyml')"
     >
       <span class="tab-nav-text">config/domain.yml</span>
     </button>
@@ -1473,13 +1473,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
     </div>
   </div>
 </div><p><strong>Email Configuration</strong></p>
-<div class="tab-panel" data-tab-group="6a2e27d2ac143a6da9e9060e1b4944e6">
+<div class="tab-panel" data-tab-group="f3718d4b1e01eefdd3965b148526393b">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="configoutgoing_mailyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('6a2e27d2ac143a6da9e9060e1b4944e6','configoutgoing_mailyml')"
+      onclick="switchTab('f3718d4b1e01eefdd3965b148526393b','configoutgoing_mailyml')"
     >
       <span class="tab-nav-text">config/outgoing_mail.yml</span>
     </button>
@@ -1502,13 +1502,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
     </div>
   </div>
 </div><p><strong>Security Configuration</strong></p>
-<div class="tab-panel" data-tab-group="42defa4632b8404cba0ac383e0dd4571">
+<div class="tab-panel" data-tab-group="2a095ce05c7b701a6d9c8255809a7c49">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="configsecurityyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('42defa4632b8404cba0ac383e0dd4571','configsecurityyml')"
+      onclick="switchTab('2a095ce05c7b701a6d9c8255809a7c49','configsecurityyml')"
     >
       <span class="tab-nav-text">config/security.yml</span>
     </button>
@@ -1534,13 +1534,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li>Enable Mailcatcher</li>
 </ol>
 <p>Enable the Mailcatcher service by adding it to the .env file:</p>
-<div class="tab-panel" data-tab-group="11f9725bf2ada8877056aa9d6a1929f4">
+<div class="tab-panel" data-tab-group="187b24c24702d231c447a2682629c12f">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="env"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('11f9725bf2ada8877056aa9d6a1929f4','env')"
+      onclick="switchTab('187b24c24702d231c447a2682629c12f','env')"
     >
       <span class="tab-nav-text">.env</span>
     </button>
@@ -1563,13 +1563,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </ol>
 <p>This will set the Traefik tags for each container and other options.</p>
 <p><strong>Main Docker Compose</strong></p>
-<div class="tab-panel" data-tab-group="800d602c14cf5b51e7882fa3499500e4">
+<div class="tab-panel" data-tab-group="5d6d46accdc6dc53ca517bcd23302c24">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="docker-composeoverrideyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('800d602c14cf5b51e7882fa3499500e4','docker-composeoverrideyml')"
+      onclick="switchTab('5d6d46accdc6dc53ca517bcd23302c24','docker-composeoverrideyml')"
     >
       <span class="tab-nav-text">docker-compose.override.yml</span>
     </button>
@@ -1618,13 +1618,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
     </div>
   </div>
 </div><p><strong>Mailcatcher Docker Compose</strong></p>
-<div class="tab-panel" data-tab-group="3188d208830378518089bcbd3c3bd9c2">
+<div class="tab-panel" data-tab-group="9ee20f035b073d3ea50b11e45ea97736">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="docker-composemailcatcheroverrideyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('3188d208830378518089bcbd3c3bd9c2','docker-composemailcatcheroverrideyml')"
+      onclick="switchTab('9ee20f035b073d3ea50b11e45ea97736','docker-composemailcatcheroverrideyml')"
     >
       <span class="tab-nav-text">docker-compose/mailcatcher.override.yml</span>
     </button>
@@ -1677,13 +1677,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </div><ol start="10">
 <li>Start the Server</li>
 </ol>
-<div class="tab-panel" data-tab-group="22bf729bdad6b73ba12aad9ac1e48e0d">
+<div class="tab-panel" data-tab-group="cef75eae10fe9c8bd5dc5f84b1553fc0">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('22bf729bdad6b73ba12aad9ac1e48e0d','terminal')"
+      onclick="switchTab('cef75eae10fe9c8bd5dc5f84b1553fc0','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -1730,8 +1730,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 
 <p>This page documents the messages sent from an LMS to this tool acting as an LTI 1.0 Tool Provider.</p>
 <h2 id="sequence-diagram">Sequence Diagram</h2>
-<p><a href="#R-image-4a1add60b9d24a45f08147310ecc7716" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-4a1add60b9d24a45f08147310ecc7716"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png"></a></p>
+<p><a href="#R-image-b09f5ebc87d294634562030d52203430" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-b09f5ebc87d294634562030d52203430"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png"></a></p>
 <h2 id="sample-lti-launch-messages">Sample LTI Launch Messages</h2>
 <h3 id="lti-10-launch-from-canvas---admin-account">LTI 1.0 Launch from Canvas - Admin Account</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
@@ -1918,8 +1918,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 
 <p>This page documents the messages sent from an LMS to this tool acting as an LTI 1.3 Tool Provider.</p>
 <h2 id="sequence-diagram">Sequence Diagram</h2>
-<p><a href="#R-image-fea692f92057e920f602ae9b04916a71" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-fea692f92057e920f602ae9b04916a71"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png"></a></p>
+<p><a href="#R-image-ab3642d88d016c99597734f95f74cb8a" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ab3642d88d016c99597734f95f74cb8a"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png"></a></p>
 <h2 id="sample-lti-launch-messages">Sample LTI Launch Messages</h2>
 <h3 id="login-message-from-canvas">Login Message from Canvas</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
@@ -2643,8 +2643,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 
 </div>
     </div>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1769284879" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1769284879" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1769284879" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1769287359" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1769287359" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1769287359" defer></script>
   </body>
 </html>
