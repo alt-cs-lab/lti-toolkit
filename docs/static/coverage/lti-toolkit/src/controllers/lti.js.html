@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">13.47% </span>
+                <span class="strong">13.55% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>137/1017</span>
+                <span class='fraction'>137/1011</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">13.47% </span>
+                <span class="strong">13.55% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>137/1017</span>
+                <span class='fraction'>137/1011</span>
             </div>
         
             
@@ -1074,13 +1074,7 @@
 <a name='L1009'></a><a href='#L1009'>1009</a>
 <a name='L1010'></a><a href='#L1010'>1010</a>
 <a name='L1011'></a><a href='#L1011'>1011</a>
-<a name='L1012'></a><a href='#L1012'>1012</a>
-<a name='L1013'></a><a href='#L1013'>1013</a>
-<a name='L1014'></a><a href='#L1014'>1014</a>
-<a name='L1015'></a><a href='#L1015'>1015</a>
-<a name='L1016'></a><a href='#L1016'>1016</a>
-<a name='L1017'></a><a href='#L1017'>1017</a>
-<a name='L1018'></a><a href='#L1018'>1018</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<a name='L1012'></a><a href='#L1012'>1012</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -1548,12 +1542,6 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2340,10 +2328,10 @@ class LTIToolkitController {
    * @param {string} url - the URL to launch the LTI tool
    * @param {string} ret_url - the return URL for the LTI tool
    * @param {Object} context - the context for the LTI launch (course)
-   * @param {Object} lesson - the lesson for the LTI launch
+   * @param {Object} resource - the resource for the LTI launch (assignment or lesson)
    * @param {Object} user - the user launching the LTI tool
    * @param {boolean} manager - true if the user is a course manager, else false
-   * @param {Object} assignment - the assignment for the LTI launch
+   * @param {string} gradebook_key - the gradebook ID for the LTI launch
    * @return {Object} an object containing the form fields and action URL for the LTI launch
    */
 <span class="fstat-no" title="function not covered" >  generateLTI10FormData(</span>
@@ -2352,10 +2340,10 @@ class LTIToolkitController {
 <span class="cstat-no" title="statement not covered" >    url,</span>
 <span class="cstat-no" title="statement not covered" >    ret_url,</span>
 <span class="cstat-no" title="statement not covered" >    context,</span>
-<span class="cstat-no" title="statement not covered" >    lesson,</span>
+<span class="cstat-no" title="statement not covered" >    resource,</span>
 <span class="cstat-no" title="statement not covered" >    user,</span>
 <span class="cstat-no" title="statement not covered" >    manager,</span>
-<span class="cstat-no" title="statement not covered" >    assignment,</span>
+<span class="cstat-no" title="statement not covered" >    gradebook_key,</span>
 <span class="cstat-no" title="statement not covered" >  ) {</span>
 <span class="cstat-no" title="statement not covered" >    if (!this.consumer) {</span>
 <span class="cstat-no" title="statement not covered" >      this.logger.error("LTI Consumer not found");</span>
@@ -2379,7 +2367,7 @@ class LTIToolkitController {
 <span class="cstat-no" title="statement not covered" >        "/lti/consumer/grade_passback",</span>
 <span class="cstat-no" title="statement not covered" >        this.domain_name,</span>
 <span class="cstat-no" title="statement not covered" >      ).href,</span>
-<span class="cstat-no" title="statement not covered" >      lis_result_sourcedid: `${context.key}:${lesson.key}:${user.key}:${assignment.key}`,</span>
+<span class="cstat-no" title="statement not covered" >      lis_result_sourcedid: `${context.key}:${resource.key}:${user.key}:${gradebook_key}`,</span>
 <span class="cstat-no" title="statement not covered" >      lis_person_contact_email_primary: user.email,</span>
 <span class="cstat-no" title="statement not covered" >      lis_person_name_family: user.family_name,</span>
 <span class="cstat-no" title="statement not covered" >      lis_person_name_full: user.name,</span>
@@ -2387,8 +2375,8 @@ class LTIToolkitController {
 <span class="cstat-no" title="statement not covered" >      lti_message_type: "basic-lti-launch-request",</span>
 <span class="cstat-no" title="statement not covered" >      lti_version: "LTI-1p0",</span>
 <span class="cstat-no" title="statement not covered" >      oauth_callback: "about:blank",</span>
-<span class="cstat-no" title="statement not covered" >      resource_link_id: lesson.key,</span>
-<span class="cstat-no" title="statement not covered" >      resource_link_title: lesson.name,</span>
+<span class="cstat-no" title="statement not covered" >      resource_link_id: resource.key,</span>
+<span class="cstat-no" title="statement not covered" >      resource_link_title: resource.name,</span>
 <span class="cstat-no" title="statement not covered" >      roles: manager ? "Instructor" : "Learner",</span>
 <span class="cstat-no" title="statement not covered" >      tool_consumer_info_product_family_code: "learningpathplatform",</span>
 <span class="cstat-no" title="statement not covered" >      tool_consumer_info_version: "cloud",</span>
@@ -2698,21 +2686,15 @@ class LTIToolkitController {
 <span class="cstat-no" title="statement not covered" >        "replaceResult",</span>
 <span class="cstat-no" title="statement not covered" >      );</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >    const [sectionKey, lessonKey, userKey, assignmentKey] = sourceValues;</span>
+<span class="cstat-no" title="statement not covered" >    const [contextKey, resourceKey, userKey, gradebookKey] = sourceValues;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // await StudentController.postProviderGrade(</span>
-<span class="cstat-no" title="statement not covered" >    //   sectionKey,</span>
-<span class="cstat-no" title="statement not covered" >    //   lessonKey,</span>
-<span class="cstat-no" title="statement not covered" >    //   userKey,</span>
-<span class="cstat-no" title="statement not covered" >    //   assignmentKey,</span>
-<span class="cstat-no" title="statement not covered" >    //   score,</span>
-<span class="cstat-no" title="statement not covered" >    // );</span>
-<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Post Provider Grade to Handler Function</span>
 <span class="cstat-no" title="statement not covered" >    await this.consumer.postProviderGrade(</span>
-<span class="cstat-no" title="statement not covered" >      sectionKey,</span>
-<span class="cstat-no" title="statement not covered" >      lessonKey,</span>
+<span class="cstat-no" title="statement not covered" >      providerKey,</span>
+<span class="cstat-no" title="statement not covered" >      contextKey,</span>
+<span class="cstat-no" title="statement not covered" >      resourceKey,</span>
 <span class="cstat-no" title="statement not covered" >      userKey,</span>
-<span class="cstat-no" title="statement not covered" >      assignmentKey,</span>
+<span class="cstat-no" title="statement not covered" >      gradebookKey,</span>
 <span class="cstat-no" title="statement not covered" >      score,</span>
 <span class="cstat-no" title="statement not covered" >    );</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -3121,7 +3103,7 @@ export default LTIToolkitController;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-19T22:19:34.698Z
+                at 2026-01-24T18:14:34.705Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
