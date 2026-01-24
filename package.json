@@ -1,6 +1,6 @@
 {
   "name": "lti-toolkit",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "type": "module",
   "description": "LTI Toolkit for ALT+CS Web Applications",
   "repository": {
