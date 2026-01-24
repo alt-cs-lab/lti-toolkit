@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">65.7% </span>
+                <span class="strong">67.11% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>182/277</span>
+                <span class='fraction'>200/298</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.76% </span>
+                <span class="strong">10% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/17</span>
+                <span class='fraction'>2/20</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">65.7% </span>
+                <span class="strong">67.11% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>182/277</span>
+                <span class='fraction'>200/298</span>
             </div>
         
             
@@ -340,7 +340,31 @@
 <a name='L275'></a><a href='#L275'>275</a>
 <a name='L276'></a><a href='#L276'>276</a>
 <a name='L277'></a><a href='#L277'>277</a>
-<a name='L278'></a><a href='#L278'>278</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -441,6 +465,24 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -664,8 +706,11 @@ import ConsumerController from "./src/controllers/consumer.js";
  * @param {Object|None} [config.consumer] - LTI Consumer Configuration
  * @param {Function} [config.consumer.postProviderGrade] - Required function to handle posting grades to the provider
  * @param {string} [config.consumer.admin_email] - Admin email address (e.g., "admin@example.com")
+ * @param {string} [config.consumer.product_name] - Optional Product name (e.g., "lti-toolkit")
+ * @param {string} [config.consumer.product_version] - Optional Product version (e.g., "cloud")
  * @param {string} [config.consumer.deployment_name] - Deployment name (e.g., "My LTI Tool")
  * @param {string} [config.consumer.deployment_id] - Deployment ID (e.g., "deployment-12345")
+ * @param {string} [config.consumer.route_prefix] - Optional route prefix for consumer routes (defaults to "/lti/consumer")
  * @param {boolean|None} [config.test] - Optional flag to indicate if running in test mode (defaults to false)
  * @returns {Promise&lt;Object&gt;} - Returns a promise that resolves to an object containing the models and routers
  */
@@ -718,6 +763,24 @@ export default async function LtiToolkit(config) {
 <span class="cstat-no" title="statement not covered" >        "A valid deployment ID is required in Consumer configuration",</span>
 <span class="cstat-no" title="statement not covered" >      );</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
+    if (
+      !config.consumer.product_name <span class="branch-0 cbranch-no" title="branch not covered" >||</span>
+<span class="cstat-no" title="statement not covered" >      typeof config.consumer.product_name !== "string"</span>
+    ) {
+      config.consumer.product_name = "lti-toolkit";
+    }
+    if (
+      !config.consumer.product_version <span class="branch-0 cbranch-no" title="branch not covered" >||</span>
+<span class="cstat-no" title="statement not covered" >      typeof config.consumer.product_version !== "string"</span>
+    ) {
+      config.consumer.product_version = "cloud";
+    }
+    if (
+      !config.consumer.route_prefix <span class="branch-0 cbranch-no" title="branch not covered" >||</span>
+<span class="cstat-no" title="statement not covered" >      typeof config.consumer.route_prefix !== "string"</span>
+    ) {
+      config.consumer.route_prefix = "/lti/consumer";
+    }
   }<span class="branch-0 cbranch-no" title="branch not covered" > else {</span>
 <span class="cstat-no" title="statement not covered" >    config.consumer = null;</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
@@ -901,7 +964,7 @@ export default async function LtiToolkit(config) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-24T20:49:50.151Z
+                at 2026-01-24T22:27:34.130Z
             </div>
         <script src="../prettify.js"></script>
         <script>

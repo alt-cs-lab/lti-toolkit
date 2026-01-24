@@ -22,7 +22,7 @@
   </url>
   <url>
     <loc>https://alt.cs.ksu.edu/lti-toolkit/00-general/01-database/index.html</loc>
-    <lastmod>2026-01-16T23:33:46+00:00</lastmod>
+    <lastmod>2026-01-24T22:27:22+00:00</lastmod>
   </url>
   <url>
     <loc>https://alt.cs.ksu.edu/lti-toolkit/01-setup/01-canvas/index.html</loc>
@@ -34,7 +34,11 @@
   </url>
   <url>
     <loc>https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/provider/index.html</loc>
-    <lastmod>2026-01-19T22:19:19+00:00</lastmod>
+    <lastmod>2026-01-24T22:17:22+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/consumer/index.html</loc>
+    <lastmod>2026-01-24T22:27:22+00:00</lastmod>
   </url>
   <url>
     <loc>https://alt.cs.ksu.edu/lti-toolkit/02-lti/02-lti13-tool/index.html</loc>
@@ -53,7 +57,7 @@
   </url>
   <url>
     <loc>https://alt.cs.ksu.edu/lti-toolkit/index.html</loc>
-    <lastmod>2026-01-24T20:00:36+00:00</lastmod>
+    <lastmod>2026-01-24T22:17:22+00:00</lastmod>
   </url>
   <url>
     <loc>https://alt.cs.ksu.edu/lti-toolkit/tags/index.html</loc>

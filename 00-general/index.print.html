@@ -33,26 +33,26 @@ Examples Database Schema">
     <link href="/lti-toolkit/00-general/index.xml" rel="alternate" type="application/rss+xml" title="Documentation :: LTI Toolkit">
     <link href="/lti-toolkit/00-general/tele.html" rel="alternate" type="text/html" title="Documentation :: LTI Toolkit">
     <link href="/lti-toolkit/00-general/embed.html" rel="alternate" type="text/html" title="Documentation :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1769287813" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1769287813" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1769287813" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1769287813" defer></script>
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1769293676" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1769293676" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1769293676" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1769293676" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1769287813";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1769293676";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1769287813" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1769287813" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1769287813" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1769287813" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1769293676" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1769293676" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1769293676" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1769293676" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769287813" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769287813" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1769287813" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1769287813" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-print.min.css?1769287813" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769293676" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769293676" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1769293676" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1769293676" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-print.min.css?1769293676" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -111,12 +111,9 @@ Examples Database Schema">
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1769287813" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1769293676" rel="stylesheet">
   </head>
-  <body class="mobile-support print" data-url="/lti-toolkit/00-general/index.html">
-    
-    <div id="tele" class="tele mirror">
-    
+  <body class="mobile-support embed print" data-url="/lti-toolkit/00-general/index.html">
     <div id="R-body" class="default-animation">
       <div id="R-body-overlay"></div>
       
@@ -151,6 +148,7 @@ Examples Database Schema">
 <p>LTI Toolkit Example Project Documentation</p>
 <ul class="children children-li children-sort-">
   <li class="children-title"><a href="/lti-toolkit/00-general/00-examples/provider/index.html">LTI Provider</a></li>
+  <li class="children-title"><a href="/lti-toolkit/00-general/00-examples/consumer/index.html">LTI Consumer</a></li>
 </ul>
 
   <footer class="footline">
@@ -167,13 +165,13 @@ Examples Database Schema">
 <p>A fully-featured LTI Tool Provider example can be found in <code>/examples/provider</code>. This document will walk through the details of how that application works.</p>
 <h2 id="environment">Environment</h2>
 <p>The application expects the following environment variables (typically loaded from <code>.env</code>):</p>
-<div class="tab-panel" data-tab-group="acc9858cbf6dc77e11f0d47a04a144ff">
+<div class="tab-panel" data-tab-group="9db6a6771556aa01d1158ab0d7197228">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="env"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('acc9858cbf6dc77e11f0d47a04a144ff','env')"
+      onclick="switchTab('9db6a6771556aa01d1158ab0d7197228','env')"
     >
       <span class="tab-nav-text">.env</span>
     </button>
@@ -211,21 +209,21 @@ Examples Database Schema">
 <li><strong>Domain</strong> - typically the <code>DOMAIN_NAME</code> from the app environment without the <code>https://</code> at the front</li>
 <li><strong>Privacy Level</strong> - must be <strong>Public</strong> (the library does not currently support anonymous students)</li>
 </ul>
-<p><a href="#R-image-3aed061dc6fff8ae61bf3455d465f5e2" class="lightbox-link"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-3aed061dc6fff8ae61bf3455d465f5e2"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png"></a></p>
+<p><a href="#R-image-145d99673199621d8fe96853e8e229dd" class="lightbox-link"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-145d99673199621d8fe96853e8e229dd"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png"></a></p>
 <p>Once the application has been added to the course, an assignment can be created to direct students to the Launch URL used above.</p>
-<p><a href="#R-image-6b9fc8246168f43dc595ed5de486536b" class="lightbox-link"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-6b9fc8246168f43dc595ed5de486536b"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png"></a></p>
+<p><a href="#R-image-3e63d134622645492ee37fc42196f979" class="lightbox-link"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-3e63d134622645492ee37fc42196f979"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png"></a></p>
 <p>To access the rest of the application, students and teachers should use the assignment configured in the learning management system to perform an LTI Launch as described below.</p>
 <h2 id="lti-toolkit-configuration">LTI Toolkit Configuration</h2>
 <p>The <code>src/configs/lti.js</code> file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Provider:</p>
-<div class="tab-panel" data-tab-group="d8b88417081c063832ef7f830ae943e6">
+<div class="tab-panel" data-tab-group="9699743eb0fb27aaa516a74bca15e412">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcconfigsltijs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('d8b88417081c063832ef7f830ae943e6','srcconfigsltijs')"
+      onclick="switchTab('9699743eb0fb27aaa516a74bca15e412','srcconfigsltijs')"
     >
       <span class="tab-nav-text">src/configs/lti.js</span>
     </button>
@@ -269,16 +267,16 @@ Examples Database Schema">
       </div>
     </div>
   </div>
-</div><p>It configures a default LTI 1.0 Tool Provider using the domain, key and secret provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library ro the <code>LTILaunch</code> function provided by one of the routes as the handler for incoming LTI Launch Requests.</p>
+</div><p>It configures a default LTI 1.0 Tool Provider using the domain, key and secret provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library to the <code>LTILaunch</code> function provided by one of the routes as the handler for incoming LTI Launch Requests.</p>
 <h2 id="integrating-application-routes">Integrating Application Routes</h2>
 <p>The <code>app.js</code> file creates a basic <a href="https://www.npmjs.com/package/express" rel="external" target="_blank">Express</a> application with a minimal set of libraries and configuration.</p>
-<div class="tab-panel" data-tab-group="bdae8f47a55f828f6377b0000a1a3f88">
+<div class="tab-panel" data-tab-group="47a6786b7f00676622e97e96389a6dee">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="appjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('bdae8f47a55f828f6377b0000a1a3f88','appjs')"
+      onclick="switchTab('47a6786b7f00676622e97e96389a6dee','appjs')"
     >
       <span class="tab-nav-text">app.js</span>
     </button>
@@ -312,13 +310,13 @@ Examples Database Schema">
 <li><code>req</code> - the incoming Express request object</li>
 </ul>
 <p>In the example project, we use the following LTI Launch Handler:</p>
-<div class="tab-panel" data-tab-group="d51d0c756ab2a9e64d36825a5edd3a45">
+<div class="tab-panel" data-tab-group="074f06fbd13fd72bb68e6d1c81ec034e">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('d51d0c756ab2a9e64d36825a5edd3a45','srcrouteslti-launchjs')"
+      onclick="switchTab('074f06fbd13fd72bb68e6d1c81ec034e','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -359,13 +357,13 @@ Examples Database Schema">
   </div>
 </div><p>Notice that we serialize the <code>consumer</code> parameter to JSON since it is provided as a Sequelize object instance.</p>
 <p>This handler users two helper functions. The first will parse the incoming roles in the <code>launchData</code> object:</p>
-<div class="tab-panel" data-tab-group="0b6a90686c8990bad5e1d8e55af01170">
+<div class="tab-panel" data-tab-group="170733dd5f9beeba86b676d9bd7b536c">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('0b6a90686c8990bad5e1d8e55af01170','srcrouteslti-launchjs')"
+      onclick="switchTab('170733dd5f9beeba86b676d9bd7b536c','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -412,13 +410,13 @@ Examples Database Schema">
   </div>
 </div><p>It will simply return <code>true</code> if the role is a student, otherwise it will treat the role as an instructor. This may or may not be desired behavior for a production application.</p>
 <p>Finally, it also stores data about the incoming <code>launchData</code> in a shared data structure that is only stored in memory.</p>
-<div class="tab-panel" data-tab-group="623f61f0b19b917e2a2a574f8ec48551">
+<div class="tab-panel" data-tab-group="c59d5ad063d018e068494f63d1a89e80">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('623f61f0b19b917e2a2a574f8ec48551','srcrouteslti-launchjs')"
+      onclick="switchTab('c59d5ad063d018e068494f63d1a89e80','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -478,13 +476,13 @@ Examples Database Schema">
 </div><p>In practice, this would be replaced with appropriate code and logic to store this data in a database or other storage mechanism for the application. However, this data structure is instructive as it shows a minimal set of data that could be stored in order to track courses, assignments, students, and grades.</p>
 <h2 id="student-grade-passback">Student Grade Passback</h2>
 <p>Once a student&rsquo;s grade has been determined, it can be passed back to the learning management system (LMS) using the LTI Controller&rsquo;s <code>postGrade</code> method:</p>
-<div class="tab-panel" data-tab-group="f1abf5ee0d7b5704171861557286e13c">
+<div class="tab-panel" data-tab-group="b616971d859097c6f0a25867604248bf">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesstudent-gradejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('f1abf5ee0d7b5704171861557286e13c','srcroutesstudent-gradejs')"
+      onclick="switchTab('b616971d859097c6f0a25867604248bf','srcroutesstudent-gradejs')"
     >
       <span class="tab-nav-text">src/routes/student-grade.js</span>
     </button>
@@ -562,13 +560,13 @@ Examples Database Schema">
 </div><p>This method constructs the grade object required by the <code>postGrade</code> method using data from the LTI Launch Data and the LTI Consumer originally provided to the LTI Launch Handler. In this example, those values are read directly from the user&rsquo;s session.</p>
 <h2 id="instructor-grade-passback">Instructor Grade Passback</h2>
 <p>A more advanced example of submitting grades could involve the instructor providing grades after a student has completed an assignment:</p>
-<div class="tab-panel" data-tab-group="e29645551c973a8af0b264a3ef0e67d7">
+<div class="tab-panel" data-tab-group="d43e398deb43e0d88d8d0e9bd0fcad78">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesinstructor-gradejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('e29645551c973a8af0b264a3ef0e67d7','srcroutesinstructor-gradejs')"
+      onclick="switchTab('d43e398deb43e0d88d8d0e9bd0fcad78','srcroutesinstructor-gradejs')"
     >
       <span class="tab-nav-text">src/routes/instructor-grade.js</span>
     </button>
@@ -673,24 +671,24 @@ Examples Database Schema">
 <li><strong>Public JWK URL</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/key13</code> by default.</li>
 </ul>
 <p>The base of these URLs can be configured in <code>app.js</code> as discussed above.</p>
-<p><a href="#R-image-e5e9d4a07f6cedef5e2dd82cf1253347" class="lightbox-link"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-e5e9d4a07f6cedef5e2dd82cf1253347"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png"></a></p>
+<p><a href="#R-image-3f252bfee94750b293d0eee3775730f7" class="lightbox-link"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-3f252bfee94750b293d0eee3775730f7"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png"></a></p>
 <p>In the LTI Advantage Services configuration, at a minimum the &ldquo;Can create and update submission results for assignments associated with the tool&rdquo; must be selected, which will allow this application to send grades back to the learning management system.</p>
-<p><a href="#R-image-6c9fd6cace3d65149d3205db71418699" class="lightbox-link"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-6c9fd6cace3d65149d3205db71418699"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png"></a></p>
+<p><a href="#R-image-b6e7b81f6d222e82275b13185230e76c" class="lightbox-link"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-b6e7b81f6d222e82275b13185230e76c"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png"></a></p>
 <p>At the bottom, the privacy level must be set to <strong>PUBLIC</strong> to get student information (this library does not support anonymous students).</p>
-<p><a href="#R-image-42cff2a7e0e56a784b1a26aa41ee8c57" class="lightbox-link"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-42cff2a7e0e56a784b1a26aa41ee8c57"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png"></a></p>
+<p><a href="#R-image-fe0ee720ecfbd29ec81954afe70da5f5" class="lightbox-link"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-fe0ee720ecfbd29ec81954afe70da5f5"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png"></a></p>
 <p>Once the LTI Key is created, a Client ID is provided by Canvas. Make a note of this value for later. Also, make sure the LTI Key is enabled here.</p>
-<p><a href="#R-image-e2db27f5eb3d1345c7cca0c85d0b1ab9" class="lightbox-link"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-e2db27f5eb3d1345c7cca0c85d0b1ab9"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png"></a></p>
+<p><a href="#R-image-f8c7f630ade56ff3b49a76160eb9afb2" class="lightbox-link"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f8c7f630ade56ff3b49a76160eb9afb2"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png"></a></p>
 <h3 id="step-2---add-lti-13-application-to-a-course">Step 2 - Add LTI 1.3 Application to a Course</h3>
 <p>Once the LTI 1.3 Key is created, the application can be added to a course within the learning management system. In Canvas, this can be found on the Settings of a course on the Apps tab. Click the button to add a new application, and enter the Client ID from Step 1 above.</p>
-<p><a href="#R-image-36880df7b6f9d12875e122e868e2030c" class="lightbox-link"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-36880df7b6f9d12875e122e868e2030c"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png"></a></p>
+<p><a href="#R-image-c2f1df219b3351ce592944fdf67b947b" class="lightbox-link"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-c2f1df219b3351ce592944fdf67b947b"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png"></a></p>
 <p>Once the application has been added to the course, click the menu next to the application and display the Deployment ID for the application. Save this value for later.</p>
-<p><a href="#R-image-3356854b753855b51f04c69f7678dc3a" class="lightbox-link"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-3356854b753855b51f04c69f7678dc3a"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png"></a></p>
+<p><a href="#R-image-1ee42290c302cce3454db6bfded0876a" class="lightbox-link"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1ee42290c302cce3454db6bfded0876a"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png"></a></p>
 <h3 id="step-3---configure-lti-13-settings">Step 3 - Configure LTI 1.3 Settings</h3>
 <p>Back in the LTI Provider Demo application, click the link on the homepage or navigate to the <code>/admin</code> page to access the LTI 1.3 configuration. On this page, enter the LTI 1.3 configuration information for your learning management system. Examples below are shown for Canvas using the configuration provided in the steps above.</p>
 <ul>
@@ -701,22 +699,22 @@ Examples Database Schema">
 <li><strong>LTI 1.3 Token URL:</strong> For Canvas, <code>/login/oauth2/token</code></li>
 <li><strong>LTI 1.3 Auth URL:</strong> For Canvas, <code>/api/lti/authorize_redirect</code></li>
 </ul>
-<p><a href="#R-image-1eb7d429a789d8752ea2c9a66530f5d9" class="lightbox-link"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-1eb7d429a789d8752ea2c9a66530f5d9"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png"></a></p>
+<p><a href="#R-image-46e3c7b555c8a724c875ce088449d03d" class="lightbox-link"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-46e3c7b555c8a724c875ce088449d03d"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png"></a></p>
 <h3 id="step-4---configure-lms-assignment">Step 4 - Configure LMS Assignment</h3>
 <p>In Canvas, configure an assignment that uses an external URL (similar to working with LTI 1.0 Applications as shown below). This time, it will use the Target Link URI configured in Step 1 - typically the <code>DOMAIN_NAME</code> from the environment followed by <code>/lti/provider/launch13</code>.</p>
-<p><a href="#R-image-c6be794940c41cea20797aafe43884f3" class="lightbox-link"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-c6be794940c41cea20797aafe43884f3"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png"></a></p>
+<p><a href="#R-image-3fa788db27e2478eb78969961ca7c0b2" class="lightbox-link"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-3fa788db27e2478eb78969961ca7c0b2"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png"></a></p>
 <p>From this point onward, students and teachers can access the LTI Demo Application through this Canvas assignment to perform an LTI 1.3 Launch.</p>
 <h2 id="managing-lti-consumers">Managing LTI Consumers</h2>
 <p>Within the sample application, the Admin Configuration handler gives a demonstration for using this library&rsquo;s controllers to manage the LTI Consumers available within the application.</p>
-<div class="tab-panel" data-tab-group="5f06efefbe90c5665ebbcd4113d19b25">
+<div class="tab-panel" data-tab-group="5f8e5600be1d872214ca79359e3ca47d">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesadmin-configjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('5f06efefbe90c5665ebbcd4113d19b25','srcroutesadmin-configjs')"
+      onclick="switchTab('5f8e5600be1d872214ca79359e3ca47d','srcroutesadmin-configjs')"
     >
       <span class="tab-nav-text">src/routes/admin-config.js</span>
     </button>
@@ -813,6 +811,566 @@ Examples Database Schema">
   <footer class="footline">
   </footer>
 </article>
+<article class="default">
+  <header class="headline">
+  </header>
+
+<h1 id="lti-consumer">LTI Consumer</h1>
+
+<p>A fully-featured LTI Tool Consumer example can be found in <code>/examples/consumer</code>. This document will walk through the details of how that application works.</p>
+<h2 id="environment">Environment</h2>
+<p>The application expects the following environment variables (typically loaded from <code>.env</code>):</p>
+<div class="tab-panel" data-tab-group="eb3d5dce2928ea9d185aeef9949f4598">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="env"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('eb3d5dce2928ea9d185aeef9949f4598','env')"
+    >
+      <span class="tab-nav-text">.env</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="env"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-env" data-lang="env"><span style="display:flex;"><span><span style="color:#75715e"># Express Session Secret</span>
+</span></span><span style="display:flex;"><span>SESSION_SECRET<span style="color:#f92672">=</span>your_session_secret
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Log Level</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># One of error warn info http verbose lti debug sql silly</span>
+</span></span><span style="display:flex;"><span>LOG_LEVEL<span style="color:#f92672">=</span>lti
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Application Domain Name</span>
+</span></span><span style="display:flex;"><span>DOMAIN_NAME<span style="color:#f92672">=</span>https://ltidemo.home.russfeld.me
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># LTI Tool Consumer Settings</span>
+</span></span><span style="display:flex;"><span>ADMIN_EMAIL<span style="color:#f92672">=</span>admin@domain.tld
+</span></span><span style="display:flex;"><span>DEPLOYMENT_NAME<span style="color:#f92672">=</span>LTI Toolkit Demo
+</span></span><span style="display:flex;"><span>DEPLOYMENT_ID<span style="color:#f92672">=</span>deployment-001</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><h2 id="lti-toolkit-configuration">LTI Toolkit Configuration</h2>
+<p>The <code>src/configs/lti.js</code> file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Consumer:</p>
+<div class="tab-panel" data-tab-group="8f7b2e9cd06332af5ce10c5bb708fb78">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcconfigsltijs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('8f7b2e9cd06332af5ce10c5bb708fb78','srcconfigsltijs')"
+    >
+      <span class="tab-nav-text">src/configs/lti.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcconfigsltijs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @file Configuration information for LTI Toolkit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @author Russell Feldhausen &lt;russfeld@ksu.edu&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @exports lti an LTI Toolkit instance configured for this app
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Import LTI Toolkit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">LTIToolkit</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;lti-toolkit&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// LTI Post Provider Grade Handler
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">postProviderGrade</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;../routes/post-grade.js&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Initialize LTI Toolkit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">lti</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">LTIToolkit</span>({
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Domain name for this application
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">domain_name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DOMAIN_NAME</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Logging Level
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">log_level</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">LOG_LEVEL</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">&#34;silly&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Use In-memory database for testing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">db_storage</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;:memory:&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Consumer Configuration
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">consumer</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Incoming grade handler
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">postProviderGrade</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">postProviderGrade</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Tool Consumer Information
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">admin_email</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">ADMIN_EMAIL</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">deployment_name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DEPLOYMENT_NAME</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">deployment_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DEPLOYMENT_ID</span>,
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">lti</span>;</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>It configures a default LTI 1.0 Tool Consumer using the domain provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. In addition, it provides some configuration information about the LTI 1.0 Tool Consumer using the information provided in the environment. Finally, it directs the library to the <code>postProviderGrade</code> function provided by one of the routes as the handler for incoming LTI grade passback.</p>
+<h2 id="integrating-application-routes">Integrating Application Routes</h2>
+<p>The <code>app.js</code> file creates a basic <a href="https://www.npmjs.com/package/express" rel="external" target="_blank">Express</a> application with a minimal set of libraries and configuration.</p>
+<div class="tab-panel" data-tab-group="4c171aa35af243dc49ccf79189c31e6c">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="appjs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('4c171aa35af243dc49ccf79189c31e6c','appjs')"
+    >
+      <span class="tab-nav-text">app.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="appjs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// Import LTI configuration
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">lti</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;./configs/lti.js&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Other imports here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Create Express application
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">app</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">express</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Other configuration here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Add LTI Toolkit Routes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">use</span>(<span style="color:#e6db74">&#34;/lti/consumer&#34;</span>, <span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">routers</span>.<span style="color:#a6e22e">consumer</span>);</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>The details of that file are omitted (<em>read the source, you must</em>), but the notable configuration is shown above. The configured LTI Toolkit is imported, and then the LTI Provider Router is connected to the application at the <code>/lti/consumer</code> path. So, any incoming requests sent to that URL will be passed to the LTI Toolkit for handling. This matches the default route in the toolkit configuration; if this route is changed, it must also be provided in the configuration.</p>
+<h2 id="adding-an-lti-10-tool-provider">Adding an LTI 1.0 Tool Provider</h2>
+<p>Once the application is launched, the first step is to add an LTI 1.0 Tool Provider from the homepage. Each LTI 1.0 Tool Provider is a little different, so consult the instructions for adding that provider to your LMS. Currently this application only supports manually configured tools (configuration via XML is not currently supported).</p>
+<p>Required settings:</p>
+<ul>
+<li><strong>Provider Name</strong> - a memorable name for the LTI Tool Provider</li>
+<li><strong>LTI 1.0 Shared Key</strong> - the shared key used with this provider</li>
+<li><strong>LTI 1.0 Shared Secret</strong> - the shared secret used with this provider</li>
+<li><strong>LTI 1.0 Launch URL</strong> - the launch URL for the LTI Tool Provider.</li>
+<li><strong>LTI 1.0 Tool Provider Domain</strong> - the domain for the LTI Tool Provider</li>
+<li><strong>Use Sections?</strong> - enable if the LTI Tool Provider requires special section configuration
+<ul>
+<li>Currently this does nothing in the library itself, but may be useful for applications implementing LTI Tool Consumer functionality</li>
+</ul>
+</li>
+<li><strong>LTI 1.0 Custom Values</strong> - set custom values for the LTI 1.0 Launch Request (currently unsupported)</li>
+<li><strong>LTI 1.0 Enabled</strong> - enable LTI 1.3 Tool Providers (currently unsupported)</li>
+</ul>
+<p>An example configuration for connecting to <a href="https://www.prairielearn.com/" rel="external" target="_blank">PrairieLearn</a> is shown below:</p>
+<p><a href="#R-image-eeeb05797727843e3d560933dc13190f" class="lightbox-link"><img alt="LTI 1.0 Tool Provider Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-eeeb05797727843e3d560933dc13190f"><img alt="LTI 1.0 Tool Provider Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool.png"></a></p>
+<p>LTI 1.0 Tool Providers are added to the system using the <code>Provider</code> controller as shown in the <code>configure</code> handler.</p>
+<div class="tab-panel" data-tab-group="53e994a070ea203bb919320d54d938c6">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcroutesconfigurejs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('53e994a070ea203bb919320d54d938c6','srcroutesconfigurejs')"
+    >
+      <span class="tab-nav-text">src/routes/configure.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcroutesconfigurejs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Handle LTI Tool Provider Configuration
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} req - the Express request object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} res - the Express response object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">ProviderConfigHandler</span>(<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">res</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get Form Data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">name</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI 1.3 is not supported
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">lti13</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">key</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">key</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">secret</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">secret</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">launch_url</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">launch_url</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">domain</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">domain</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// custom values are unsupported in this example
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">custom</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// use_section is optional
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">use_section</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">use_section</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;true&#34;</span>,
+</span></span><span style="display:flex;"><span>  };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Check if any required fields are missing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">requiredFields</span> <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;name&#34;</span>, <span style="color:#e6db74">&#34;key&#34;</span>, <span style="color:#e6db74">&#34;secret&#34;</span>, <span style="color:#e6db74">&#34;launch_url&#34;</span>, <span style="color:#e6db74">&#34;domain&#34;</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">missingFields</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">requiredFields</span>.<span style="color:#a6e22e">filter</span>(
+</span></span><span style="display:flex;"><span>    (<span style="color:#a6e22e">field</span>) =&gt; <span style="color:#f92672">!</span><span style="color:#a6e22e">data</span>[<span style="color:#a6e22e">field</span>] <span style="color:#f92672">||</span> <span style="color:#a6e22e">data</span>[<span style="color:#a6e22e">field</span>].<span style="color:#a6e22e">trim</span>() <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>  );
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">missingFields</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Missing required fields: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">missingFields</span>.<span style="color:#a6e22e">join</span>(<span style="color:#e6db74">&#34;, &#34;</span>);
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Create Provider
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">controllers</span>.<span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">createProvider</span>(<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">err</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Failed to create provider: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">message</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Successfully created provider.&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get list of configured tool providers
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">providers</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">controllers</span>.<span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">getAll</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get secrets for each provider and convert to JSON-friendly format
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">providerData</span> <span style="color:#f92672">=</span> [];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">provider</span> <span style="color:#66d9ef">of</span> <span style="color:#a6e22e">providers</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">providerSecret</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">controllers</span>.<span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">getSecret</span>(
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">id</span>,
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">providerData</span>.<span style="color:#a6e22e">push</span>({ ...<span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">toJSON</span>(), <span style="color:#a6e22e">secret</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">providerSecret</span> });
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Render index view
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">render</span>(<span style="color:#e6db74">&#34;index.njk&#34;</span>, {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;LTI Tool Consumer - Index&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">domain</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DOMAIN_NAME</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">providers</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">providerData</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">error</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">message</span>,
+</span></span><span style="display:flex;"><span>  });
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>Once an LTI 1.0 Tool Provider is configured, it will be listed on the index page. Click the link to access it.</p>
+<p><a href="#R-image-d93654cfd2729f58315c17f095e804ea" class="lightbox-link"><img alt="LTI 1.0 Tool Provider List" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-d93654cfd2729f58315c17f095e804ea"><img alt="LTI 1.0 Tool Provider List" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool2.png"></a></p>
+<h2 id="configuring-an-lti-10-launch-request">Configuring an LTI 1.0 Launch Request</h2>
+<p>A fully-configured LTI 1.0 Launch Request requires several pieces of information. Generally this information is part of the internal functionalty of the learning management system (LMS) that is implementing LTI 1.0 Tool Consumer functionality. For this example, we instead just use hand-entered values to simulate this process. In an actual LMS, most of this data would already be present.</p>
+<p>For all of the items listed below, the <strong>key</strong> values should not be the sequentially autogenerated database IDs, as that may leak internal data from the LMS and allow malicious users to guess other valid values. Intead, these values should be unique and randomly generated, such as <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier" rel="external" target="_blank">UUIDs</a> or similar, but they should be consistent (i.e. a key should uniquely identify an item, and that item should always use the same key). Internally, this library uses the <a href="https://www.npmjs.com/package/nanoid" rel="external" target="_blank">nanoid</a> package to generate random ID values.</p>
+<ul>
+<li><strong>Context</strong> - Generally, the context of an LTI launch refers to a course in the LMS
+<ul>
+<li><strong>Key</strong> - a uniquely identifiable key for the course</li>
+<li><strong>Label</strong> - a short label for the course (e.g. &ldquo;LTI 101&rdquo;)</li>
+<li><strong>Name</strong> - a long name for the course (e.g. &ldquo;LTI Demo Course&rdquo;)</li>
+</ul>
+</li>
+<li><strong>Resource</strong> - A resource in an LTI launch refers to a specific assignment within the LMS
+<ul>
+<li><strong>Key</strong> - a uniquely identifiable key for the assignment</li>
+<li><strong>Name</strong> - a long name for the assignment (e.g. &ldquo;LTI Demo Assignment&rdquo;)</li>
+</ul>
+</li>
+<li><strong>User</strong> - Information about the user for the LTI launch. This tool does not currently support anonymous LTI launches.
+<ul>
+<li><strong>Key</strong> - a uniquely identifiable key for the user</li>
+<li><strong>Email</strong> - the email address associated with the user. Most LTI Tool Providers use the email address to uniquely identify users within their own systems.</li>
+<li><strong>Given Name</strong> - the given name, sometimes referred to as the first name, of the user</li>
+<li><strong>Family Name</strong> - the family name, sometimes referred to as the last name or surname, of the user</li>
+</ul>
+</li>
+<li><strong>Launch Type</strong> - currently this tool only supports launching as either an &ldquo;Instructor&rdquo; or &ldquo;Learner&rdquo; role</li>
+<li><strong>Gradebook Key</strong> - a uniquely identifiable key for the gradebook line item. This can be used to differentiate between individual launches to the same LTI Tool Provider, or to differentiate between launches to different LTI Tool Providers using the same context and resource keys.</li>
+</ul>
+<p>This sample application provides default values for all of these options in the form to configure the launch.</p>
+<p><a href="#R-image-e1b2cfdcd3525ce45d23be970e3fabc6" class="lightbox-link"><img alt="LTI 1.0 Launch Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-e1b2cfdcd3525ce45d23be970e3fabc6"><img alt="LTI 1.0 Launch Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch.png"></a></p>
+<p>Once the launch is configured, click the &ldquo;Submit&rdquo; button to prepare the LTI 1.0 Launch page. This is handled by the <code>provider-launch</code> handler in the demo application. In short, it collects all of the form data and constructs the parameters for the <code>generateLTI10FormData</code> function in the LTI controller:</p>
+<div class="tab-panel" data-tab-group="9f8b41cdc48fb391302bccd4d0dfca10">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcroutesprovider-launchjs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('9f8b41cdc48fb391302bccd4d0dfca10','srcroutesprovider-launchjs')"
+    >
+      <span class="tab-nav-text">src/routes/provider-launch.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcroutesprovider-launchjs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Provider Launch Handler for LTI Tool Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} req - the Express request object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} res - the Express response object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">ProviderLaunchHandler</span>(<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">res</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">providerId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">id</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get Provider
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">provider</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">controllers</span>.<span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">getById</span>(<span style="color:#a6e22e">providerId</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">provider</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">status</span>(<span style="color:#ae81ff">404</span>).<span style="color:#a6e22e">send</span>(<span style="color:#e6db74">&#34;Provider not found&#34;</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get Secret
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">providerSecret</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">controllers</span>.<span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">getSecret</span>(<span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">id</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Formatted provider including secret
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">providerData</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">toJSON</span>();
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">providerData</span>.<span style="color:#a6e22e">secret</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">providerSecret</span>.<span style="color:#a6e22e">secret</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Get Form Data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">context</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">key</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">context_key</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">label</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">context_label</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">context_name</span>,
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">resource</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">key</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">resource_key</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">resource_name</span>,
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">user</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">key</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">user_key</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">email</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">user_email</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">given_name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">user_given_name</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">family_name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">user_family_name</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">user_given_name</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">user_family_name</span>,
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">manager</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">manager</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;true&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">gradebook_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">gradebook_id</span>,
+</span></span><span style="display:flex;"><span>  };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Check if any required fields are missing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">requiredFields</span> <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;context.key&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;context.label&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;context.name&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;resource.key&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;resource.name&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;user.key&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;user.email&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;user.given_name&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;user.family_name&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;manager&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;gradebook_id&#34;</span>,
+</span></span><span style="display:flex;"><span>  ];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">missingFields</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">requiredFields</span>.<span style="color:#a6e22e">filter</span>((<span style="color:#a6e22e">field</span>) =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Handle nested fields
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">fieldParts</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">field</span>.<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">&#34;.&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">data</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">part</span> <span style="color:#66d9ef">of</span> <span style="color:#a6e22e">fieldParts</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">value</span>[<span style="color:#a6e22e">part</span>];
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">value</span> <span style="color:#f92672">===</span> <span style="color:#66d9ef">undefined</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">value</span> <span style="color:#f92672">===</span> <span style="color:#66d9ef">undefined</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">value</span> <span style="color:#f92672">===</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">value</span>.<span style="color:#a6e22e">toString</span>().<span style="color:#a6e22e">trim</span>() <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>  });
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">missingFields</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">error</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Missing required fields: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">missingFields</span>.<span style="color:#a6e22e">join</span>(<span style="color:#e6db74">&#34;, &#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Render provider view
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">render</span>(<span style="color:#e6db74">&#34;provider.njk&#34;</span>, {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">`LTI Tool Consumer - Provider: </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">name</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">provider</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">providerData</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">error</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">error</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">message</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">message</span>,
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Store launch data in local data store
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">updateDataStoreWithLaunch</span>(<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">providerData</span>, <span style="color:#a6e22e">req</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Create LTI Launch
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">launch</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">controllers</span>.<span style="color:#a6e22e">lti</span>.<span style="color:#a6e22e">generateLTI10FormData</span>(
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">providerData</span>.<span style="color:#a6e22e">key</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">providerData</span>.<span style="color:#a6e22e">secret</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">providerData</span>.<span style="color:#a6e22e">launch_url</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/provider/&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">providerData</span>.<span style="color:#a6e22e">id</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">context</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">resource</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">user</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">manager</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">gradebook_id</span>,
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Render template
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">render</span>(<span style="color:#e6db74">&#34;launch.njk&#34;</span>, {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">launch</span>,
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>The <code>generateLTI10FormData</code> function returns an object with 2 attributes:</p>
+<ul>
+<li><code>action</code> : the LTI Launch URL to send the request to</li>
+<li><code>fields</code> : a set of fields to be sent in the LTI Launch</li>
+</ul>
+<h2 id="sending-an-lti-launch-request">Sending an LTI Launch Request</h2>
+<p>LTI 1.0 Launch Requests must be sent by the user&rsquo;s browser. The easiest way to do this is by constructing a form on the webpage with only hidden fields, and then having the user click a button to submit the form to the LTI Launch URL of the LTI 1.0 Tool Provider. The form can also be configured to submit automatically if desired.</p>
+<p>The <code>launch.njk</code> template demonstrates how to generate this page using the <a href="https://www.npmjs.com/package/nunjucks" rel="external" target="_blank">Nunjucks</a> template engine.</p>
+<div class="tab-panel" data-tab-group="851bb4a1caf89c04a56e342ed5d46d53">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcviewslaunchnjk"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('851bb4a1caf89c04a56e342ed5d46d53','srcviewslaunchnjk')"
+    >
+      <span class="tab-nav-text">src/views/launch.njk</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcviewslaunchnjk"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0"><code class="language-njk" data-lang="njk">&lt;form method=&#34;POST&#34; action=&#34;{{ launch.action }}&#34;&gt;
+  {% for attr, value in launch.fields %}
+  &lt;input type=&#34;hidden&#34; id=&#34;{{ attr }}&#34; name=&#34;{{ attr }}&#34; value=&#34;{{ value }}&#34; /&gt;
+  {% endfor %}
+  &lt;input type=&#34;submit&#34; value=&#34;LTI Launch&#34;&gt;
+&lt;/form&gt;</code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>Below is another helpful example for creating a similar page using a <a href="https://vuejs.org/" rel="external" target="_blank">Vue.js</a> component:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vue" data-lang="vue"><span style="display:flex;"><span>&lt;<span style="color:#f92672">template</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;auto-form&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">form</span> <span style="color:#f92672">v-if</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;form&#34; :action=&#34;form.action&#34; method=&#34;POST&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">input</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">v-for</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;(value, key) in form.fields&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">:key</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;key&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">:name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;key&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">:value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;value&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span>
+</span></span><span style="display:flex;"><span>      /&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">Button</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;submit&#34;</span> <span style="color:#a6e22e">label</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Launch Lesson&#34;</span> <span style="color:#a6e22e">severity</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;primary&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">form</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">template</span>&gt;</span></span></code></pre></div>
+<p>Using the settings configured above, an LTI Launch page would contain the following object:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;fields&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;oauth_consumer_key&#34;</span>: <span style="color:#960050;background-color:#1e0010">&lt;redacted&gt;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;oauth_signature_method&#34;</span>: <span style="color:#e6db74">&#34;HMAC-SHA1&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;oauth_timestamp&#34;</span>: <span style="color:#e6db74">&#34;1769290880&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;oauth_nonce&#34;</span>: <span style="color:#e6db74">&#34;URY5gH_jRTpDDTsCH2MXP&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;oauth_version&#34;</span>: <span style="color:#e6db74">&#34;1.0&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;context_id&#34;</span>: <span style="color:#e6db74">&#34;contextkey&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;context_label&#34;</span>: <span style="color:#e6db74">&#34;LTI 101&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;context_title&#34;</span>: <span style="color:#e6db74">&#34;LTI Demo Course&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;launch_presentation_document_target&#34;</span>: <span style="color:#e6db74">&#34;iframe&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;launch_presentation_locale&#34;</span>: <span style="color:#e6db74">&#34;en&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;launch_presentation_return_url&#34;</span>: <span style="color:#e6db74">&#34;/provider/1&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;lis_outcome_service_url&#34;</span>: <span style="color:#e6db74">&#34;https://ltidemo.home.russfeld.me/lti/consumer/grade_passback&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;lis_result_sourcedid&#34;</span>: <span style="color:#e6db74">&#34;contextkey:resourcekey:userkey:gradebookkey&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;lis_person_contact_email_primary&#34;</span>: <span style="color:#e6db74">&#34;user@domain.tld&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;lis_person_name_family&#34;</span>: <span style="color:#e6db74">&#34;FamilyName&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;lis_person_name_full&#34;</span>: <span style="color:#e6db74">&#34;GivenName FamilyName&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;lis_person_name_given&#34;</span>: <span style="color:#e6db74">&#34;GivenName&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;lti_message_type&#34;</span>: <span style="color:#e6db74">&#34;basic-lti-launch-request&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;lti_version&#34;</span>: <span style="color:#e6db74">&#34;LTI-1p0&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;oauth_callback&#34;</span>: <span style="color:#e6db74">&#34;about:blank&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;resource_link_id&#34;</span>: <span style="color:#e6db74">&#34;resourcekey&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;resource_link_title&#34;</span>: <span style="color:#e6db74">&#34;LTI Demo Resource&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;roles&#34;</span>: <span style="color:#e6db74">&#34;Learner&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;tool_consumer_info_product_family_code&#34;</span>: <span style="color:#e6db74">&#34;lti-toolkit&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;tool_consumer_info_version&#34;</span>: <span style="color:#e6db74">&#34;cloud&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;tool_consumer_instance_contact_email&#34;</span>: <span style="color:#e6db74">&#34;admin@domain.tld&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;tool_consumer_instance_guid&#34;</span>: <span style="color:#e6db74">&#34;deployment-001&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;tool_consumer_instance_name&#34;</span>: <span style="color:#e6db74">&#34;LTI Toolkit Demo&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;user_id&#34;</span>: <span style="color:#e6db74">&#34;userkey&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;oauth_signature&#34;</span>: <span style="color:#960050;background-color:#1e0010">&lt;redacted&gt;</span>
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;action&#34;</span>: <span style="color:#e6db74">&#34;https://pl.home.russfeld.me/pl/lti&#34;</span>
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<p>The resulting page:</p>
+<p><a href="#R-image-4cc44983325dfb5b97a6827b558015d1" class="lightbox-link"><img alt="LTI Launch Page" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-4cc44983325dfb5b97a6827b558015d1"><img alt="LTI Launch Page" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch2.png"></a></p>
+<p>Click the button to lanuch the LTI 1.0 Tool Provider.</p>
+<h2 id="handling-grade-passback">Handling Grade Passback</h2>
+<p>At any time, the LTI 1.0 Tool Provider may provide updated grade information to our example program. That is received at the <code>grade_passback</code> route in the LTI Consumer Router, and then sent to the <code>postProviderGrade</code> function provided in the toolkit configuration as shown above. For this example program, this is handled in the <code>post-grade</code> handler:</p>
+<div class="tab-panel" data-tab-group="09f60d3ce86ff796d5719044184721a1">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="srcroutespost-gradejs"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('09f60d3ce86ff796d5719044184721a1','srcroutespost-gradejs')"
+    >
+      <span class="tab-nav-text">src/routes/post-grade.js</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="srcroutespost-gradejs"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * LTI 1.0 Grade Passback Handler for LTI Tool Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {string} providerKey the provider key
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {string} contextKey the context (course) key
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {string} resourceKey the resource (lesson or assignment) key
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {string} userKey the user (student) key
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {string} gradebookKey the gradebook key
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {number} score the score to post (0.0 - 1.0)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {Object} req the Express request object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">postGradeHandler</span>(
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">providerKey</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">contextKey</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">resourceKey</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">userKey</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">gradebookKey</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">score</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">req</span>,
+</span></span><span style="display:flex;"><span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Store grade in the local data store
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">updateLocalDataStoreWithGrade</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">req</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">contextKey</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">resourceKey</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">userKey</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">gradebookKey</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">score</span>,
+</span></span><span style="display:flex;"><span>  );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// No need to return anything; library assumes success here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>This function is called with a number of helpful parameters:</p>
+<ul>
+<li><code>providerKey</code> - the shared key for the LTI 1.0 Tool Provider, which can be used to look up the provider in the <code>Provider</code> controller with the <code>getByKey</code> method.</li>
+<li><code>contextKey</code> - the unique key for the context (course) in the original LTI launch</li>
+<li><code>resourceKey</code> - the unique key for the resource (assignment) in the original LTI launch</li>
+<li><code>userKey</code> - the unique key for the user in the original LTI launch</li>
+<li><code>gradebookKey</code> - the unique key for the gradebook line item in the original LTI launch</li>
+<li><code>score</code> - the grade received, as a floating-point value between 0.0 and 1.0</li>
+<li><code>req</code> - the original Express request object</li>
+</ul>
+<p>This should be enough information to properly record the grade in the LMS gradebook. In this example application, it is just stored in an in-memory object for short-term tracking.</p>
+<h2 id="viewing-grades">Viewing Grades</h2>
+<p>This example application will display any grades received and stored in local memory in the <code>grades</code> path:</p>
+<p><a href="#R-image-4a3c092d6b087356c8ed2b90da85a53a" class="lightbox-link"><img alt="LTI Example Grades" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-4a3c092d6b087356c8ed2b90da85a53a"><img alt="LTI Example Grades" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades.png"></a></p>
+<p>This matches the grade found in the LTI 1.0 Tool Provider:</p>
+<p><a href="#R-image-6993961aa1472cb7ea51ef040656c41d" class="lightbox-link"><img alt="LTI Tool Grades" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-6993961aa1472cb7ea51ef040656c41d"><img alt="LTI Tool Grades" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades2.png"></a></p>
+
+  <footer class="footline">
+  </footer>
+</article>
           </section>
 <article class="default">
   <header class="headline">
@@ -820,8 +1378,8 @@ Examples Database Schema">
 
 <h1 id="database-schema">Database Schema</h1>
 
-<p><a href="#R-image-2c901b424825d1211cbe177bca140d3b" class="lightbox-link"><img alt="Database Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-2c901b424825d1211cbe177bca140d3b"><img alt="Database Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png"></a></p>
+<p><a href="#R-image-7ba9476bdf5ed72e31913098907be0fb" class="lightbox-link"><img alt="Database Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-7ba9476bdf5ed72e31913098907be0fb"><img alt="Database Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png"></a></p>
 <h2 id="system-managed-tables">System Managed Tables</h2>
 <h3 id="lti_migrations">lti_migrations</h3>
 <p>This is the migrations table managed by <a href="https://github.com/sequelize/umzug" rel="external" target="_blank">Umzug</a>. It tracks any changes that must be made to the database schema as future versions are released.</p>
@@ -889,11 +1447,7 @@ Examples Database Schema">
 <li><strong>LTI 1.3 is currently not implemented for LTI Tool Providers</strong></li>
 </ul>
 </li>
-<li><code>key</code> - <span class="badge cstyle default"><span class="badge-content">Both</span></span> autogenerated internal key used to identify the LTI Tool Provider
-<ul>
-<li>This key is used in lieu of the database ID to prevent guessing attacks against sequential values. The key is generated using <a href="https://www.npmjs.com/package/nanoid" rel="external" target="_blank">nanoid</a></li>
-</ul>
-</li>
+<li><code>key</code> - <span class="badge cstyle default"><span class="badge-content">Both</span></span> shared key used to identify the LTI Tool Provider</li>
 <li><code>launch_url</code> - <span class="badge cstyle default"><span class="badge-content">LTI 1.0</span></span> the launch URL for LTI 1.0 connections to the LTI Tool Provider</li>
 <li><code>domain</code> - <span class="badge cstyle default"><span class="badge-content">LTI 1.0</span></span> the base domain name of the LTI Tool Provider</li>
 <li><code>custom</code> - <span class="badge cstyle default"><span class="badge-content">LTI 1.0</span></span> custom launch variables provided as part of the LTI 1.0 connection to the LTI Tool Provider
@@ -901,13 +1455,14 @@ Examples Database Schema">
 <li><strong>Custom Variables are not currently implemented</strong></li>
 </ul>
 </li>
+<li><code>use_section</code> - <span class="badge cstyle default"><span class="badge-content">Both</span></span> flag for some LTI Tool Providers that require special handling. This is not implemenetd within this library but may be handy for other uses.</li>
 <li><code>createdAt</code> - <span class="badge cstyle default"><span class="badge-content">Auto</span></span> creation timestamp</li>
 <li><code>updatedAt</code> - <span class="badge cstyle default"><span class="badge-content">Auto</span></span> last updated timestamp</li>
 </ul>
 <h3 id="lti_provider_keys">lti_provider_keys</h3>
 <p>This table stores the secrets associated with an LTI Tool Provider. It is stored in a separate table to prevent accidental modification through the <code>Provider</code> model directly.</p>
 <ul>
-<li><code>key</code> - <span class="badge cstyle default"><span class="badge-content">Auto</span></span> autogenerated internal key used to identify the LTI Tool Provider</li>
+<li><code>key</code> - <span class="badge cstyle default"><span class="badge-content">Auto</span></span> shared key used to identify the LTI Tool Provider</li>
 <li><code>secret</code> - <span class="badge cstyle default"><span class="badge-content">LTI 1.0</span></span> shared secret with the LTI Tool Provider</li>
 </ul>
 
@@ -921,13 +1476,9 @@ Examples Database Schema">
       
       
     </div>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1769287813" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1769287813" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1769287813" defer></script>
-      
-      
-      
-    </div> 
-  <script src="/lti-toolkit/js/tele-scroll.min.js?1769287813" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1769293676" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1769293676" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1769293676" defer></script>
+  <script src="/lti-toolkit/js/embed-iframe.min.js?1769293676" defer></script>
   </body>
 </html>
