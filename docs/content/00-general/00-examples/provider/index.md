@@ -37,7 +37,7 @@ The settings above can then be used to configure this application in your learni
 * **Shared Secret** - `LTI_CONSUMER_SECRET` from the app environment
 * **Launch URL** - `DOMAIN_NAME` from the app environment followed by `/lti/provider/launch10` by default. The URL can be configured in `app.js` as described below.
 * **Domain** - typically the `DOMAIN_NAME` from the app environment without the `https://` at the front
-* **Privacy Level** - must be **Public** (the library does not currently support anonymous students)
+* **Privacy Level** - any option ("Public" provides all info, "Anonymous" omits most student info)
 
 ![LTI 1.0 Configuration in Canvas](images/lti10.png)
 
@@ -420,7 +420,7 @@ In the LTI Advantage Services configuration, at a minimum the "Can create and up
 
 ![LTI 1.3 Advantage Services in Canvas](images/lti13admin2.png)
 
-At the bottom, the privacy level must be set to **PUBLIC** to get student information (this library does not support anonymous students).
+At the bottom, the privacy level may be set to any value. The "Public" option provides all data about students (name, email, image). Other privacy levels may omit some of this data.
 
 ![LTI 1.3 Privacy Configuration in Canvas](images/lti13admin3.png)
 

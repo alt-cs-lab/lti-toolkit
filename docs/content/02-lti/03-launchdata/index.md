@@ -58,18 +58,23 @@ agsURL = "https://purl.imsglobal.org/spec/lti-ags/claim/"
 * `user_email` - the email address of the student
   * LTI 1.0: `lis_person_contact_email_primary`
   * LTI 1.3: `email`
+  * May be omitted depending on privacy level selected
 * `user_name` - the full name of the student (e.g. `"Willie Wildcat"`)
   * LTI 1.0: `lis_person_name_full`
   * LTI 1.3: `name`
+  * May be omitted depending on privacy level selected
 * `user_given_name` - the given name (first name) of the student (e.g. `"Willie"`)
   * LTI 1.0: `lis_person_name_given`
   * LTI 1.3: `given_name`
+  * May be omitted depending on privacy level selected
 * `user_family_name` - the famly name (last name or surname) of the student (e.g. `"Wildcat"`)
   * LTI 1.0: `lis_person_name_family`
   * LTI 1.3: `family_name`
+  * May be omitted depending on privacy level selected
 * `user_image` - the URL of the profile image of the user
   * LTI 1.0: `user_image`
   * LTI 1.3: `picture`
+  * May be omitted depending on privacy level selected
 * `user_roles` - the roles assigned to the user
   * LTI 1.0: `role`
   * LTI 1.3: `[baseUrl + "roles"]`

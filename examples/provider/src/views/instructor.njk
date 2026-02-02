@@ -12,6 +12,7 @@
         {% if error %}
         <p style="color: red">{{ error }}
         {% endif %}
+        <p><b>Logged in as: </b>{{ launchData.user_name | d("Anonymous Instructor", true) }} &lt;{{ launchData.user_email | d("no email", true) }}&gt;</p>
         {% for courseId, course in courses %}
           <h2>{{ course.name }} ({{ course.label }})</h2>
           <p>
@@ -29,7 +30,7 @@
               </ul>
             </p>
             {% for userId, grade in assignment.grades %}
-              <h4>{{ grade.name }}</h4>
+              <h4>{{ grade.name | d("Anonymous Student", true) }} &lt;{{ grade.email | d("no email", true) }}&gt;</h4>
               <p>
                 <ul>
                   <li><b>ID: </b> {{ userId }}</li>

@@ -403,7 +403,7 @@ The resulting page:
 
 ![LTI Launch Page](images/ltilaunch2.png)
 
-Click the button to lanuch the LTI 1.0 Tool Provider.
+Click the button to launch the LTI 1.0 Tool Provider.
 
 ## Handling Grade Passback
 

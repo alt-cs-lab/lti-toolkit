@@ -10,7 +10,8 @@ This project is yet another toolkit for developing [LTI (Learning Tools Interope
  - Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient)
  - LTI 1.3 is not implemeneted iwthin the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time)
  - LTI 1.0 connections to external LTI Tool Providers don't currently support custom variables
- - Does not support anonymous students or test students in LTI Launch Requests (requires Public privacy level)
+ - Supports all Canvas privacy levels in LTI Launch Requests to Tool Providers
+ - Supports test students from Canvas in LTI Launch Requests
  - Not currently tested or certified against the [1EdTech LTI Certification Tool](https://build.1edtech.org/)
  - Not currently tested against LTI Tool Consumers other than [Instructure Canvas](https://www.instructure.com/solutions/learning-management/k12)
  - Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted

@@ -106,11 +106,13 @@ function updateDataStore(launchData, isStudent, req) {
   }
   if (isStudent) {
     const userName = launchData.user_name;
+    const userEmail = launchData.user_email;
     const userId = launchData.user_lis_id;
     const userId13 = launchData.user_lis13_id;
     const outcomeId = launchData.outcome_id;
     assignments[assignmentId].grades[userId] = {
       name: userName,
+      email: userEmail,
       lis_id: userId,
       lis13_id: userId13,
       outcome_id: outcomeId,

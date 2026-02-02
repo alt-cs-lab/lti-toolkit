@@ -12,6 +12,7 @@
         {% if error %}
         <p style="color: red">{{ error }}
         {% endif %}
+        <p><b>Logged in as: </b>{{ launchData.user_name | d("Anonymous Student", true) }} &lt;{{ launchData.user_email | d("no email", true) }}&gt;</p>
         <h2>{{ launchData.course_name }} ({{ launchData.course_label }})</h2>
         <h3>{{ launchData.assignment_name }}</h3>
         <form method="POST" action="/student/grade">
