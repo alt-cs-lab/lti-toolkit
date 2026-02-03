@@ -33,11 +33,19 @@ LTI_13_LMS_DOMAIN=https://canvas.instructure.com
 
 The settings above can then be used to configure this application in your learning management system (LMS) using LTI 1.0. Refer to your LMS documentation for specific details. An example using Canvas is given below.
 
-* **Consumer Key** - `LTI_CONSUMER_KEY` from the app environment
-* **Shared Secret** - `LTI_CONSUMER_SECRET` from the app environment
+* **Consumer Key** - `LTI_CONSUMER_KEY` from the app environment.
+* **Shared Secret** - `LTI_CONSUMER_SECRET` from the app environment.
+* **XML Configuration URL** - `DOMAIN_NAME` from the app environment followed by `/lti/provider/config10` by default. The URL can be configured in `app.js` as described below.
+  * Additional settings for the XML configuration can be set in the `lti.js` config file.
 * **Launch URL** - `DOMAIN_NAME` from the app environment followed by `/lti/provider/launch10` by default. The URL can be configured in `app.js` as described below.
-* **Domain** - typically the `DOMAIN_NAME` from the app environment without the `https://` at the front
-* **Privacy Level** - any option ("Public" provides all info, "Anonymous" omits most student info)
+* **Domain** - typically the `DOMAIN_NAME` from the app environment without the `https://` at the front.
+* **Privacy Level** - any option ("Public" provides all info, "Anonymous" omits most student info).
+
+### XML Configuration
+
+![LTI 1.0 XML Configuration in Canvas](images/lti10xml.png)
+
+### Manual Configuration
 
 ![LTI 1.0 Configuration in Canvas](images/lti10.png)
 

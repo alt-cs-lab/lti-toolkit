@@ -8,7 +8,7 @@ This project is yet another toolkit for developing [LTI (Learning Tools Interope
 **Limitations**
  - Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case)
  - Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient)
- - LTI 1.3 is not implemeneted iwthin the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time)
+ - LTI 1.3 is not implemeneted within the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time)
  - LTI 1.0 connections to external LTI Tool Providers don't currently support custom variables
  - Supports all Canvas privacy levels in LTI Launch Requests to Tool Providers
  - Supports test students from Canvas in LTI Launch Requests
@@ -110,6 +110,28 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     key: "your_lti_key",
     // LTI 1.0 Secret
     secret: "your_lti_secret"
+
+    // OPTIONAL Information for XML Configuration
+    // All of the options below are only used for automatic
+    // XML configuration of the tool within an LMS
+    // Title
+    title: "LTI Toolkit",
+    // Description
+    description: "LTI Toolkit for LTI Tool Providers",
+    // Launch URL
+    launch_url: domain_name + "/lti/provider/launch10",
+    // Icon Url
+    icon_url: "https://placehold.co/64x64.png",
+    // Custom Parameters
+    // Example shown below; names must begin with "custom_"
+    custom_params: {
+      custom_name: "custom_value",
+    }
+    // Unique Tool ID
+    tool_id: "lti_toolkit",
+    // Privacy Level
+    // For Canvas, one of "public" or "anonymous"
+    privacy_level: "public"
   }
 
   // OPTIONAL
@@ -174,6 +196,7 @@ The initialized LTI Toolkit is a complex object containing the following items:
     // Returned if provider is configured
     provider: {
       "/launch10",
+      "/config10",
       "/launch13",
       "/redirect13",
       "/login13/:key",

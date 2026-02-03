@@ -44,6 +44,26 @@ export default async function setupProviderRoutes(
   });
 
   /**
+   * LIT 1.0 Configuration URL
+   * 
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   *
+   * @swagger
+   * /lti/provider/config10:
+   *   get:
+   *     summary: LTI 1.0 Configuration
+   *     description: LTI 1.0 Configuration URL
+   *     tags: [lti-provider]
+   */
+  router.get("/config10", async function (req, res, next) {
+    const config = await LTIToolkitController.getLTI10Config();
+    res.header("Content-Type", "application/xml");
+    res.status(200).send(config);
+  });
+
+  /**
    * LTI 1.3 Launch Target
    *
    * @param {Object} req - Express request object

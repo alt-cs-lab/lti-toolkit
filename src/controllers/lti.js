@@ -9,6 +9,7 @@ import { nanoid } from "nanoid";
 import xml2js from "xml2js";
 import crypto from "crypto";
 import ky from "ky";
+import { config } from "process";
 
 class LTIToolkitController {
   /**
@@ -1009,6 +1010,43 @@ class LTIToolkitController {
       }
     });
     return output;
+  }
+
+  /**
+   * Get an LTI 1.0 Configuration XML
+   */
+  async getLTI10Config() {
+    // remove https:// from domain name for domain property
+    const domain = this.domain_name.replace(/^https?:\/\//, "");
+    // build custom properties XML
+    let custom = "";
+    if (this.provider.custom_params) {
+      for (const [key, value] of Object.entries(this.provider.custom_params)) {
+        custom += `<lticm:property name="${key}">${value}</lticm:property> \n    `;
+      }
+      custom = `<blti:custom> \n    ${custom}</blti:custom>\n`;
+    }
+    const xml_string = `<?xml version="1.0" encoding="UTF-8"?> \
+<cartridge_basiclti_link xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0" \
+  xmlns:blti = "http://www.imsglobal.org/xsd/imsbasiclti_v1p0" \
+  xmlns:lticm ="http://www.imsglobal.org/xsd/imslticm_v1p0" \
+  xmlns:lticp ="http://www.imsglobal.org/xsd/imslticp_v1p0" \
+  xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" \
+  xsi:schemaLocation = "http://www.imsglobal.org/xsd/imslticc_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticc_v1p0.xsd http://www.imsglobal.org/xsd/imsbasiclti_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd http://www.imsglobal.org/xsd/imslticm_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd http://www.imsglobal.org/xsd/imslticp_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd"> \
+  <blti:title>${this.provider.title}</blti:title> \
+  <blti:description>${this.provider.description}</blti:description> \
+  <blti:icon>${this.provider.icon_url}</blti:icon> \
+  <blti:launch_url>${this.provider.launch_url}</blti:launch_url> \
+  ${custom} \
+  <blti:extensions platform="canvas.instructure.com"> \
+    <lticm:property name="tool_id">${this.provider.tool_id}</lticm:property> \
+    <lticm:property name="privacy_level">${this.provider.privacy_level}</lticm:property> \
+    <lticm:property name="domain">${domain}</lticm:property> \
+  </blti:extensions> \
+  <cartridge_bundle identifierref="BLTI001_Bundle"/> \
+  <cartridge_icon identifierref="BLTI001_Icon"/> \
+</cartridge_basiclti_link>`;
+    return xml_string;
   }
 }
 

@@ -42,6 +42,13 @@ import ConsumerController from "./src/controllers/consumer.js";
  * @param {Function} [config.provider.handleLaunch] - Required function to handle launch requests
  * @param {string|None} [config.provider.key] - LTI 1.0 Key for Single Provider Setup
  * @param {string|None} [config.provider.secret] - LTI 1.0 Secret for Single Provider Setup
+ * @param {string|None} [config.provider.title] - Optional title for configuration XML (e.g., "LTI Toolkit")
+ * @param {string|None} [config.provider.description] - Optional description for configuration XML (e.g., "LTI Toolkit Description")
+ * @param {string|None} [config.provider.launch_url] - Optional launch URL for configuration XML (e.g., "https://example.com/lti/provider/launch10")
+ * @param {string|None} [config.provider.icon_url] - Optional icon URL for configuration XML (e.g., "https://example.com/icon.png")
+ * @param {string|None} [config.provider.custom_params] - Optional custom parameters for configuration XML (e.g., { "custom_name": "custom_value" })
+ * @param {string|None} [config.provider.tool_id] - Optional tool ID for configuration XML (e.g., "lti_toolkit")
+ * @param {string|None} [config.provider.privacy_level] - Optional privacy level for configuration XML (e.g., "public")
  * @param {Object|None} [config.consumer] - LTI Consumer Configuration
  * @param {Function} [config.consumer.postProviderGrade] - Required function to handle posting grades to the provider
  * @param {string} [config.consumer.admin_email] - Admin email address (e.g., "admin@example.com")
@@ -57,6 +64,9 @@ export default async function LtiToolkit(config) {
   if (!config) {
     throw new Error("Configuration object is required");
   }
+  if (!config.domain_name || typeof config.domain_name !== "string") {
+    throw new Error("A valid domain name is required in configuration");
+  }
   // Check for provider and consumer functions
   if (!config.provider && !config.consumer) {
     throw new Error(
@@ -68,6 +78,46 @@ export default async function LtiToolkit(config) {
       throw new Error(
         "provider.handleLaunch function is required in Provider configuration",
       );
+    }
+    if (!config.provider.title || typeof config.provider.title !== "string") {
+      config.provider.title = "LTI Toolkit";
+    }
+    if (
+      !config.provider.description ||
+      typeof config.provider.description !== "string"
+    ) {
+      config.provider.description = "LTI Toolkit for LTI Tool Providers";
+    }
+    if (
+      !config.provider.launch_url ||
+      typeof config.provider.launch_url !== "string"
+    ) {
+      config.provider.launch_url =
+        `${config.domain_name}/lti/provider/launch10`;
+    }
+    if (
+      !config.provider.icon_url ||
+      typeof config.provider.icon_url !== "string"
+    ) {
+      config.provider.icon_url = "https://placehold.co/64x64.png";
+    }
+    if (
+      !config.provider.custom_params ||
+      typeof config.provider.custom_params !== "object"
+    ) {
+      config.provider.custom_params = {};
+    }
+    if (
+      !config.provider.tool_id ||
+      typeof config.provider.tool_id !== "string"
+    ) {
+      config.provider.tool_id = "lti_toolkit";
+    }
+    if (
+      !config.provider.privacy_level ||
+      typeof config.provider.privacy_level !== "string"
+    ) {
+      config.provider.privacy_level = "public";
     }
   } else {
     config.provider = null;
@@ -123,9 +173,7 @@ export default async function LtiToolkit(config) {
   } else {
     config.consumer = null;
   }
-  if (!config.domain_name || typeof config.domain_name !== "string") {
-    throw new Error("A valid domain name is required in configuration");
-  }
+  
 
   // TODO check types of logger and database?
 
