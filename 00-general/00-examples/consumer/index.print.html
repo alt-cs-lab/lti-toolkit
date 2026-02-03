@@ -24,13 +24,13 @@ Environment The application expects the following environment variables (typical
     <meta property="og:locale" content="en_us">
     <meta property="og:type" content="article">
     <meta property="article:section" content="Documentation">
-    <meta property="article:modified_time" content="2026-01-24T22:27:22+00:00">
+    <meta property="article:modified_time" content="2026-02-02T21:59:23+00:00">
     <meta property="og:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <meta itemprop="name" content="LTI Consumer :: LTI Toolkit">
     <meta itemprop="description" content="A fully-featured LTI Tool Consumer example can be found in /examples/consumer. This document will walk through the details of how that application works.
 Environment The application expects the following environment variables (typically loaded from .env):
 ​ .env # Express Session Secret SESSION_SECRET=your_session_secret # Log Level # One of error warn info http verbose lti debug sql silly LOG_LEVEL=lti # Application Domain Name DOMAIN_NAME=https://ltidemo.home.russfeld.me # LTI Tool Consumer Settings ADMIN_EMAIL=admin@domain.tld DEPLOYMENT_NAME=LTI Toolkit Demo DEPLOYMENT_ID=deployment-001 LTI Toolkit Configuration The src/configs/lti.js file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Consumer:">
-    <meta itemprop="dateModified" content="2026-01-24T22:27:22+00:00">
+    <meta itemprop="dateModified" content="2026-02-02T21:59:23+00:00">
     <meta itemprop="wordCount" content="2233">
     <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <title>LTI Consumer :: LTI Toolkit</title>
@@ -38,26 +38,26 @@ Environment The application expects the following environment variables (typical
     <link href="/lti-toolkit/00-general/00-examples/consumer/index.xml" rel="alternate" type="application/rss+xml" title="LTI Consumer :: LTI Toolkit">
     <link href="/lti-toolkit/00-general/00-examples/consumer/tele.html" rel="alternate" type="text/html" title="LTI Consumer :: LTI Toolkit">
     <link href="/lti-toolkit/00-general/00-examples/consumer/embed.html" rel="alternate" type="text/html" title="LTI Consumer :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1769293676" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1769293676" defer></script>
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1770144754" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1770144754" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1769293676";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1770144754";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1769293676" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1770144754" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769293676" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769293676" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1769293676" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1769293676" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-print.min.css?1769293676" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1770144754" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1770144754" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1770144754" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1770144754" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-print.min.css?1770144754" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -116,7 +116,7 @@ Environment The application expects the following environment variables (typical
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1769293676" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1770144754" rel="stylesheet">
   </head>
   <body class="mobile-support print" data-url="/lti-toolkit/00-general/00-examples/consumer/index.html">
     <div id="R-body" class="default-animation">
@@ -184,13 +184,13 @@ Environment The application expects the following environment variables (typical
 <p>A fully-featured LTI Tool Consumer example can be found in <code>/examples/consumer</code>. This document will walk through the details of how that application works.</p>
 <h2 id="environment">Environment</h2>
 <p>The application expects the following environment variables (typically loaded from <code>.env</code>):</p>
-<div class="tab-panel" data-tab-group="eb3d5dce2928ea9d185aeef9949f4598">
+<div class="tab-panel" data-tab-group="11786aca959034b8a155064767b53258">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="env"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('eb3d5dce2928ea9d185aeef9949f4598','env')"
+      onclick="switchTab('11786aca959034b8a155064767b53258','env')"
     >
       <span class="tab-nav-text">.env</span>
     </button>
@@ -219,13 +219,13 @@ Environment The application expects the following environment variables (typical
   </div>
 </div><h2 id="lti-toolkit-configuration">LTI Toolkit Configuration</h2>
 <p>The <code>src/configs/lti.js</code> file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Consumer:</p>
-<div class="tab-panel" data-tab-group="8f7b2e9cd06332af5ce10c5bb708fb78">
+<div class="tab-panel" data-tab-group="d1b5040847da86b31dd86fdaa03f613b">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcconfigsltijs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('8f7b2e9cd06332af5ce10c5bb708fb78','srcconfigsltijs')"
+      onclick="switchTab('d1b5040847da86b31dd86fdaa03f613b','srcconfigsltijs')"
     >
       <span class="tab-nav-text">src/configs/lti.js</span>
     </button>
@@ -273,13 +273,13 @@ Environment The application expects the following environment variables (typical
 </div><p>It configures a default LTI 1.0 Tool Consumer using the domain provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. In addition, it provides some configuration information about the LTI 1.0 Tool Consumer using the information provided in the environment. Finally, it directs the library to the <code>postProviderGrade</code> function provided by one of the routes as the handler for incoming LTI grade passback.</p>
 <h2 id="integrating-application-routes">Integrating Application Routes</h2>
 <p>The <code>app.js</code> file creates a basic <a href="https://www.npmjs.com/package/express" rel="external" target="_blank">Express</a> application with a minimal set of libraries and configuration.</p>
-<div class="tab-panel" data-tab-group="4c171aa35af243dc49ccf79189c31e6c">
+<div class="tab-panel" data-tab-group="c9005792b6c2a7d942c6241a30a7289b">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="appjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('4c171aa35af243dc49ccf79189c31e6c','appjs')"
+      onclick="switchTab('c9005792b6c2a7d942c6241a30a7289b','appjs')"
     >
       <span class="tab-nav-text">app.js</span>
     </button>
@@ -323,16 +323,16 @@ Environment The application expects the following environment variables (typical
 <li><strong>LTI 1.0 Enabled</strong> - enable LTI 1.3 Tool Providers (currently unsupported)</li>
 </ul>
 <p>An example configuration for connecting to <a href="https://www.prairielearn.com/" rel="external" target="_blank">PrairieLearn</a> is shown below:</p>
-<p><a href="#R-image-eeeb05797727843e3d560933dc13190f" class="lightbox-link"><img alt="LTI 1.0 Tool Provider Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-eeeb05797727843e3d560933dc13190f"><img alt="LTI 1.0 Tool Provider Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool.png"></a></p>
+<p><a href="#R-image-1497dd0da4d95728a9b23eb416186f80" class="lightbox-link"><img alt="LTI 1.0 Tool Provider Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1497dd0da4d95728a9b23eb416186f80"><img alt="LTI 1.0 Tool Provider Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool.png"></a></p>
 <p>LTI 1.0 Tool Providers are added to the system using the <code>Provider</code> controller as shown in the <code>configure</code> handler.</p>
-<div class="tab-panel" data-tab-group="53e994a070ea203bb919320d54d938c6">
+<div class="tab-panel" data-tab-group="c51f886a66ce25f7e3520f7a6cbcfe56">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesconfigurejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('53e994a070ea203bb919320d54d938c6','srcroutesconfigurejs')"
+      onclick="switchTab('c51f886a66ce25f7e3520f7a6cbcfe56','srcroutesconfigurejs')"
     >
       <span class="tab-nav-text">src/routes/configure.js</span>
     </button>
@@ -411,8 +411,8 @@ Environment The application expects the following environment variables (typical
     </div>
   </div>
 </div><p>Once an LTI 1.0 Tool Provider is configured, it will be listed on the index page. Click the link to access it.</p>
-<p><a href="#R-image-d93654cfd2729f58315c17f095e804ea" class="lightbox-link"><img alt="LTI 1.0 Tool Provider List" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-d93654cfd2729f58315c17f095e804ea"><img alt="LTI 1.0 Tool Provider List" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool2.png"></a></p>
+<p><a href="#R-image-b846b0fbcef62f3df4c19ea222257b07" class="lightbox-link"><img alt="LTI 1.0 Tool Provider List" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-b846b0fbcef62f3df4c19ea222257b07"><img alt="LTI 1.0 Tool Provider List" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool2.png"></a></p>
 <h2 id="configuring-an-lti-10-launch-request">Configuring an LTI 1.0 Launch Request</h2>
 <p>A fully-configured LTI 1.0 Launch Request requires several pieces of information. Generally this information is part of the internal functionalty of the learning management system (LMS) that is implementing LTI 1.0 Tool Consumer functionality. For this example, we instead just use hand-entered values to simulate this process. In an actual LMS, most of this data would already be present.</p>
 <p>For all of the items listed below, the <strong>key</strong> values should not be the sequentially autogenerated database IDs, as that may leak internal data from the LMS and allow malicious users to guess other valid values. Intead, these values should be unique and randomly generated, such as <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier" rel="external" target="_blank">UUIDs</a> or similar, but they should be consistent (i.e. a key should uniquely identify an item, and that item should always use the same key). Internally, this library uses the <a href="https://www.npmjs.com/package/nanoid" rel="external" target="_blank">nanoid</a> package to generate random ID values.</p>
@@ -442,16 +442,16 @@ Environment The application expects the following environment variables (typical
 <li><strong>Gradebook Key</strong> - a uniquely identifiable key for the gradebook line item. This can be used to differentiate between individual launches to the same LTI Tool Provider, or to differentiate between launches to different LTI Tool Providers using the same context and resource keys.</li>
 </ul>
 <p>This sample application provides default values for all of these options in the form to configure the launch.</p>
-<p><a href="#R-image-e1b2cfdcd3525ce45d23be970e3fabc6" class="lightbox-link"><img alt="LTI 1.0 Launch Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-e1b2cfdcd3525ce45d23be970e3fabc6"><img alt="LTI 1.0 Launch Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch.png"></a></p>
+<p><a href="#R-image-c20c1c4ce7d4a202b195740a4ebe31b9" class="lightbox-link"><img alt="LTI 1.0 Launch Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-c20c1c4ce7d4a202b195740a4ebe31b9"><img alt="LTI 1.0 Launch Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch.png"></a></p>
 <p>Once the launch is configured, click the &ldquo;Submit&rdquo; button to prepare the LTI 1.0 Launch page. This is handled by the <code>provider-launch</code> handler in the demo application. In short, it collects all of the form data and constructs the parameters for the <code>generateLTI10FormData</code> function in the LTI controller:</p>
-<div class="tab-panel" data-tab-group="9f8b41cdc48fb391302bccd4d0dfca10">
+<div class="tab-panel" data-tab-group="db26d68771c3117b4006431a8d913c8a">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesprovider-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('9f8b41cdc48fb391302bccd4d0dfca10','srcroutesprovider-launchjs')"
+      onclick="switchTab('db26d68771c3117b4006431a8d913c8a','srcroutesprovider-launchjs')"
     >
       <span class="tab-nav-text">src/routes/provider-launch.js</span>
     </button>
@@ -580,13 +580,13 @@ Environment The application expects the following environment variables (typical
 <h2 id="sending-an-lti-launch-request">Sending an LTI Launch Request</h2>
 <p>LTI 1.0 Launch Requests must be sent by the user&rsquo;s browser. The easiest way to do this is by constructing a form on the webpage with only hidden fields, and then having the user click a button to submit the form to the LTI Launch URL of the LTI 1.0 Tool Provider. The form can also be configured to submit automatically if desired.</p>
 <p>The <code>launch.njk</code> template demonstrates how to generate this page using the <a href="https://www.npmjs.com/package/nunjucks" rel="external" target="_blank">Nunjucks</a> template engine.</p>
-<div class="tab-panel" data-tab-group="851bb4a1caf89c04a56e342ed5d46d53">
+<div class="tab-panel" data-tab-group="d148300cc15afced0ec1a53b3284896f">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcviewslaunchnjk"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('851bb4a1caf89c04a56e342ed5d46d53','srcviewslaunchnjk')"
+      onclick="switchTab('d148300cc15afced0ec1a53b3284896f','srcviewslaunchnjk')"
     >
       <span class="tab-nav-text">src/views/launch.njk</span>
     </button>
@@ -657,18 +657,18 @@ Environment The application expects the following environment variables (typical
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;action&#34;</span>: <span style="color:#e6db74">&#34;https://pl.home.russfeld.me/pl/lti&#34;</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <p>The resulting page:</p>
-<p><a href="#R-image-4cc44983325dfb5b97a6827b558015d1" class="lightbox-link"><img alt="LTI Launch Page" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-4cc44983325dfb5b97a6827b558015d1"><img alt="LTI Launch Page" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch2.png"></a></p>
-<p>Click the button to lanuch the LTI 1.0 Tool Provider.</p>
+<p><a href="#R-image-86067f714d8e69832ccc462eaaffe8ea" class="lightbox-link"><img alt="LTI Launch Page" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-86067f714d8e69832ccc462eaaffe8ea"><img alt="LTI Launch Page" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch2.png"></a></p>
+<p>Click the button to launch the LTI 1.0 Tool Provider.</p>
 <h2 id="handling-grade-passback">Handling Grade Passback</h2>
 <p>At any time, the LTI 1.0 Tool Provider may provide updated grade information to our example program. That is received at the <code>grade_passback</code> route in the LTI Consumer Router, and then sent to the <code>postProviderGrade</code> function provided in the toolkit configuration as shown above. For this example program, this is handled in the <code>post-grade</code> handler:</p>
-<div class="tab-panel" data-tab-group="09f60d3ce86ff796d5719044184721a1">
+<div class="tab-panel" data-tab-group="c296487628e3a5351ece4b18bb75eaae">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutespost-gradejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('09f60d3ce86ff796d5719044184721a1','srcroutespost-gradejs')"
+      onclick="switchTab('c296487628e3a5351ece4b18bb75eaae','srcroutespost-gradejs')"
     >
       <span class="tab-nav-text">src/routes/post-grade.js</span>
     </button>
@@ -726,11 +726,11 @@ Environment The application expects the following environment variables (typical
 <p>This should be enough information to properly record the grade in the LMS gradebook. In this example application, it is just stored in an in-memory object for short-term tracking.</p>
 <h2 id="viewing-grades">Viewing Grades</h2>
 <p>This example application will display any grades received and stored in local memory in the <code>grades</code> path:</p>
-<p><a href="#R-image-4a3c092d6b087356c8ed2b90da85a53a" class="lightbox-link"><img alt="LTI Example Grades" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-4a3c092d6b087356c8ed2b90da85a53a"><img alt="LTI Example Grades" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades.png"></a></p>
+<p><a href="#R-image-ccc12e3ce6126a5c5d5962ad1e0ea3dd" class="lightbox-link"><img alt="LTI Example Grades" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ccc12e3ce6126a5c5d5962ad1e0ea3dd"><img alt="LTI Example Grades" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades.png"></a></p>
 <p>This matches the grade found in the LTI 1.0 Tool Provider:</p>
-<p><a href="#R-image-6993961aa1472cb7ea51ef040656c41d" class="lightbox-link"><img alt="LTI Tool Grades" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-6993961aa1472cb7ea51ef040656c41d"><img alt="LTI Tool Grades" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades2.png"></a></p>
+<p><a href="#R-image-7e5ed918aa66b2277276214d1d728faa" class="lightbox-link"><img alt="LTI Tool Grades" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-7e5ed918aa66b2277276214d1d728faa"><img alt="LTI Tool Grades" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades2.png"></a></p>
 
   <footer class="footline">
   </footer>
@@ -741,13 +741,13 @@ Environment The application expects the following environment variables (typical
   <p class="theme-version-footer">8.0.0</p>
 <p>Last modified by:
               <i class='fa-fw fas fa-user'></i> Russell Feldhausen
-              <i class='fas fa-calendar'></i> <a href="https://github.com/alt-cs-lab/lti-toolkit/commit/1977cc4285b2a9f8bae7c98758b06072b6d874a9">Jan 24, 2026</a>
+              <i class='fas fa-calendar'></i> <a href="https://github.com/alt-cs-lab/lti-toolkit/commit/aba492031252acd05cd4c08c2176ed74a0f27177">Feb 2, 2026</a>
 </p>
 
 </div>
     </div>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1769293676" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1770144754" defer></script>
   </body>
 </html>

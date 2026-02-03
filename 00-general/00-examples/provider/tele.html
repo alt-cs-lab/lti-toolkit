@@ -25,40 +25,40 @@ Environment The application expects the following environment variables (typical
     <meta property="og:locale" content="en_us">
     <meta property="og:type" content="article">
     <meta property="article:section" content="Documentation">
-    <meta property="article:modified_time" content="2026-01-24T22:17:22+00:00">
+    <meta property="article:modified_time" content="2026-02-03T18:49:41+00:00">
     <meta property="og:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <meta itemprop="name" content="LTI Provider :: LTI Toolkit">
     <meta itemprop="description" content="A fully-featured LTI Tool Provider example can be found in /examples/provider. This document will walk through the details of how that application works.
 Environment The application expects the following environment variables (typically loaded from .env):
 ​ .env # Express Session Secret SESSION_SECRET=your_session_secret # Log Level # One of error warn info http verbose lti debug sql silly LOG_LEVEL=lti # Application Domain Name DOMAIN_NAME=https://ltidemo.home.russfeld.me # LTI Consumer Key and Secret LTI_CONSUMER_KEY=your_lti_consumer_key LTI_CONSUMER_SECRET=your_lti_consumer_secret # LTI 1.3 LMS Domain LTI_13_LMS_DOMAIN=https://canvas.instructure.com LMS Configuration - LTI 1.0 The settings above can then be used to configure this application in your learning management system (LMS) using LTI 1.0. Refer to your LMS documentation for specific details. An example using Canvas is given below.">
-    <meta itemprop="dateModified" content="2026-01-24T22:17:22+00:00">
-    <meta itemprop="wordCount" content="2786">
+    <meta itemprop="dateModified" content="2026-02-03T18:49:41+00:00">
+    <meta itemprop="wordCount" content="2838">
     <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <title>LTI Provider :: LTI Toolkit</title>
     <link href="https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/provider/index.html" rel="canonical" type="text/html" title="LTI Provider :: LTI Toolkit">
     <link href="/lti-toolkit/00-general/00-examples/provider/index.xml" rel="alternate" type="application/rss+xml" title="LTI Provider :: LTI Toolkit">
     <link href="/lti-toolkit/00-general/00-examples/provider/index.print.html" rel="alternate" type="text/html" title="LTI Provider :: LTI Toolkit">
     <link href="/lti-toolkit/00-general/00-examples/provider/embed.html" rel="alternate" type="text/html" title="LTI Provider :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1769293676" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1769293676" defer></script>
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1770144754" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1770144754" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1769293676";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1770144754";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1769293676" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1770144754" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769293676" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1769293676" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1769293676" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1769293676" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-html.min.css?1769293676" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1770144754" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1770144754" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1770144754" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1770144754" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-html.min.css?1770144754" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -117,7 +117,7 @@ Environment The application expects the following environment variables (typical
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1769293676" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1770144754" rel="stylesheet">
   </head>
   <body class="mobile-support html" data-url="/lti-toolkit/00-general/00-examples/provider/index.html">
     
@@ -140,13 +140,13 @@ Environment The application expects the following environment variables (typical
 <p>A fully-featured LTI Tool Provider example can be found in <code>/examples/provider</code>. This document will walk through the details of how that application works.</p>
 <h2 id="environment">Environment</h2>
 <p>The application expects the following environment variables (typically loaded from <code>.env</code>):</p>
-<div class="tab-panel" data-tab-group="9db6a6771556aa01d1158ab0d7197228">
+<div class="tab-panel" data-tab-group="16cd2f02b763ba637b49453a5653367b">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="env"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('9db6a6771556aa01d1158ab0d7197228','env')"
+      onclick="switchTab('16cd2f02b763ba637b49453a5653367b','env')"
     >
       <span class="tab-nav-text">.env</span>
     </button>
@@ -178,27 +178,36 @@ Environment The application expects the following environment variables (typical
 </div><h2 id="lms-configuration---lti-10">LMS Configuration - LTI 1.0</h2>
 <p>The settings above can then be used to configure this application in your learning management system (LMS) using LTI 1.0. Refer to your LMS documentation for specific details. An example using Canvas is given below.</p>
 <ul>
-<li><strong>Consumer Key</strong> - <code>LTI_CONSUMER_KEY</code> from the app environment</li>
-<li><strong>Shared Secret</strong> - <code>LTI_CONSUMER_SECRET</code> from the app environment</li>
-<li><strong>Launch URL</strong> - <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/launch10</code> by default. The URL can be configured in <code>app.js</code> as described below.</li>
-<li><strong>Domain</strong> - typically the <code>DOMAIN_NAME</code> from the app environment without the <code>https://</code> at the front</li>
-<li><strong>Privacy Level</strong> - must be <strong>Public</strong> (the library does not currently support anonymous students)</li>
+<li><strong>Consumer Key</strong> - <code>LTI_CONSUMER_KEY</code> from the app environment.</li>
+<li><strong>Shared Secret</strong> - <code>LTI_CONSUMER_SECRET</code> from the app environment.</li>
+<li><strong>XML Configuration URL</strong> - <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/config10</code> by default. The URL can be configured in <code>app.js</code> as described below.
+<ul>
+<li>Additional settings for the XML configuration can be set in the <code>lti.js</code> config file.</li>
 </ul>
-<p><a href="#R-image-145d99673199621d8fe96853e8e229dd" class="lightbox-link"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-145d99673199621d8fe96853e8e229dd"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png"></a></p>
+</li>
+<li><strong>Launch URL</strong> - <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/launch10</code> by default. The URL can be configured in <code>app.js</code> as described below.</li>
+<li><strong>Domain</strong> - typically the <code>DOMAIN_NAME</code> from the app environment without the <code>https://</code> at the front.</li>
+<li><strong>Privacy Level</strong> - any option (&ldquo;Public&rdquo; provides all info, &ldquo;Anonymous&rdquo; omits most student info).</li>
+</ul>
+<h3 id="xml-configuration">XML Configuration</h3>
+<p><a href="#R-image-b8cf241002771d6191e5a7ce139422cd" class="lightbox-link"><img alt="LTI 1.0 XML Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10xml.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-b8cf241002771d6191e5a7ce139422cd"><img alt="LTI 1.0 XML Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10xml.png"></a></p>
+<h3 id="manual-configuration">Manual Configuration</h3>
+<p><a href="#R-image-c59bd2bf9d90020008b37ff6ed5f7dfa" class="lightbox-link"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-c59bd2bf9d90020008b37ff6ed5f7dfa"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png"></a></p>
 <p>Once the application has been added to the course, an assignment can be created to direct students to the Launch URL used above.</p>
-<p><a href="#R-image-3e63d134622645492ee37fc42196f979" class="lightbox-link"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-3e63d134622645492ee37fc42196f979"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png"></a></p>
+<p><a href="#R-image-7041faa3708a50ced8bb287c2a3aa65f" class="lightbox-link"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-7041faa3708a50ced8bb287c2a3aa65f"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png"></a></p>
 <p>To access the rest of the application, students and teachers should use the assignment configured in the learning management system to perform an LTI Launch as described below.</p>
 <h2 id="lti-toolkit-configuration">LTI Toolkit Configuration</h2>
 <p>The <code>src/configs/lti.js</code> file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Provider:</p>
-<div class="tab-panel" data-tab-group="9699743eb0fb27aaa516a74bca15e412">
+<div class="tab-panel" data-tab-group="5704ef2e6da72ae7fdbcca1b0f12d08f">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcconfigsltijs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('9699743eb0fb27aaa516a74bca15e412','srcconfigsltijs')"
+      onclick="switchTab('5704ef2e6da72ae7fdbcca1b0f12d08f','srcconfigsltijs')"
     >
       <span class="tab-nav-text">src/configs/lti.js</span>
     </button>
@@ -245,13 +254,13 @@ Environment The application expects the following environment variables (typical
 </div><p>It configures a default LTI 1.0 Tool Provider using the domain, key and secret provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library to the <code>LTILaunch</code> function provided by one of the routes as the handler for incoming LTI Launch Requests.</p>
 <h2 id="integrating-application-routes">Integrating Application Routes</h2>
 <p>The <code>app.js</code> file creates a basic <a href="https://www.npmjs.com/package/express" rel="external" target="_blank">Express</a> application with a minimal set of libraries and configuration.</p>
-<div class="tab-panel" data-tab-group="47a6786b7f00676622e97e96389a6dee">
+<div class="tab-panel" data-tab-group="fc1015406f0fe6758d0ca59661d538ce">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="appjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('47a6786b7f00676622e97e96389a6dee','appjs')"
+      onclick="switchTab('fc1015406f0fe6758d0ca59661d538ce','appjs')"
     >
       <span class="tab-nav-text">app.js</span>
     </button>
@@ -285,13 +294,13 @@ Environment The application expects the following environment variables (typical
 <li><code>req</code> - the incoming Express request object</li>
 </ul>
 <p>In the example project, we use the following LTI Launch Handler:</p>
-<div class="tab-panel" data-tab-group="074f06fbd13fd72bb68e6d1c81ec034e">
+<div class="tab-panel" data-tab-group="92053c2a6a45b8f1b394e237aaa0f53a">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('074f06fbd13fd72bb68e6d1c81ec034e','srcrouteslti-launchjs')"
+      onclick="switchTab('92053c2a6a45b8f1b394e237aaa0f53a','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -332,13 +341,13 @@ Environment The application expects the following environment variables (typical
   </div>
 </div><p>Notice that we serialize the <code>consumer</code> parameter to JSON since it is provided as a Sequelize object instance.</p>
 <p>This handler users two helper functions. The first will parse the incoming roles in the <code>launchData</code> object:</p>
-<div class="tab-panel" data-tab-group="170733dd5f9beeba86b676d9bd7b536c">
+<div class="tab-panel" data-tab-group="fc9b154320f8168b88244fb45efcb68c">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('170733dd5f9beeba86b676d9bd7b536c','srcrouteslti-launchjs')"
+      onclick="switchTab('fc9b154320f8168b88244fb45efcb68c','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -385,13 +394,13 @@ Environment The application expects the following environment variables (typical
   </div>
 </div><p>It will simply return <code>true</code> if the role is a student, otherwise it will treat the role as an instructor. This may or may not be desired behavior for a production application.</p>
 <p>Finally, it also stores data about the incoming <code>launchData</code> in a shared data structure that is only stored in memory.</p>
-<div class="tab-panel" data-tab-group="c59d5ad063d018e068494f63d1a89e80">
+<div class="tab-panel" data-tab-group="1ad14f645c2f2c25ed00a94c88af4b75">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('c59d5ad063d018e068494f63d1a89e80','srcrouteslti-launchjs')"
+      onclick="switchTab('1ad14f645c2f2c25ed00a94c88af4b75','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -451,13 +460,13 @@ Environment The application expects the following environment variables (typical
 </div><p>In practice, this would be replaced with appropriate code and logic to store this data in a database or other storage mechanism for the application. However, this data structure is instructive as it shows a minimal set of data that could be stored in order to track courses, assignments, students, and grades.</p>
 <h2 id="student-grade-passback">Student Grade Passback</h2>
 <p>Once a student&rsquo;s grade has been determined, it can be passed back to the learning management system (LMS) using the LTI Controller&rsquo;s <code>postGrade</code> method:</p>
-<div class="tab-panel" data-tab-group="b616971d859097c6f0a25867604248bf">
+<div class="tab-panel" data-tab-group="718283ed7dafafd8c06e2fa59d7c383e">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesstudent-gradejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('b616971d859097c6f0a25867604248bf','srcroutesstudent-gradejs')"
+      onclick="switchTab('718283ed7dafafd8c06e2fa59d7c383e','srcroutesstudent-gradejs')"
     >
       <span class="tab-nav-text">src/routes/student-grade.js</span>
     </button>
@@ -535,13 +544,13 @@ Environment The application expects the following environment variables (typical
 </div><p>This method constructs the grade object required by the <code>postGrade</code> method using data from the LTI Launch Data and the LTI Consumer originally provided to the LTI Launch Handler. In this example, those values are read directly from the user&rsquo;s session.</p>
 <h2 id="instructor-grade-passback">Instructor Grade Passback</h2>
 <p>A more advanced example of submitting grades could involve the instructor providing grades after a student has completed an assignment:</p>
-<div class="tab-panel" data-tab-group="d43e398deb43e0d88d8d0e9bd0fcad78">
+<div class="tab-panel" data-tab-group="1ffe31e0ed06372978d1a8b2145b45d1">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesinstructor-gradejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('d43e398deb43e0d88d8d0e9bd0fcad78','srcroutesinstructor-gradejs')"
+      onclick="switchTab('1ffe31e0ed06372978d1a8b2145b45d1','srcroutesinstructor-gradejs')"
     >
       <span class="tab-nav-text">src/routes/instructor-grade.js</span>
     </button>
@@ -646,24 +655,24 @@ Environment The application expects the following environment variables (typical
 <li><strong>Public JWK URL</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/key13</code> by default.</li>
 </ul>
 <p>The base of these URLs can be configured in <code>app.js</code> as discussed above.</p>
-<p><a href="#R-image-3f252bfee94750b293d0eee3775730f7" class="lightbox-link"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-3f252bfee94750b293d0eee3775730f7"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png"></a></p>
+<p><a href="#R-image-abbc1c03d1c73705eff9c38fba67a570" class="lightbox-link"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-abbc1c03d1c73705eff9c38fba67a570"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png"></a></p>
 <p>In the LTI Advantage Services configuration, at a minimum the &ldquo;Can create and update submission results for assignments associated with the tool&rdquo; must be selected, which will allow this application to send grades back to the learning management system.</p>
-<p><a href="#R-image-b6e7b81f6d222e82275b13185230e76c" class="lightbox-link"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-b6e7b81f6d222e82275b13185230e76c"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png"></a></p>
-<p>At the bottom, the privacy level must be set to <strong>PUBLIC</strong> to get student information (this library does not support anonymous students).</p>
-<p><a href="#R-image-fe0ee720ecfbd29ec81954afe70da5f5" class="lightbox-link"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-fe0ee720ecfbd29ec81954afe70da5f5"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png"></a></p>
+<p><a href="#R-image-5056df2cc9ce1d2b02c496e1b5069fe8" class="lightbox-link"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-5056df2cc9ce1d2b02c496e1b5069fe8"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png"></a></p>
+<p>At the bottom, the privacy level may be set to any value. The &ldquo;Public&rdquo; option provides all data about students (name, email, image). Other privacy levels may omit some of this data.</p>
+<p><a href="#R-image-314f60deeabecfa57926732bec994da6" class="lightbox-link"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-314f60deeabecfa57926732bec994da6"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png"></a></p>
 <p>Once the LTI Key is created, a Client ID is provided by Canvas. Make a note of this value for later. Also, make sure the LTI Key is enabled here.</p>
-<p><a href="#R-image-f8c7f630ade56ff3b49a76160eb9afb2" class="lightbox-link"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-f8c7f630ade56ff3b49a76160eb9afb2"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png"></a></p>
+<p><a href="#R-image-4cb2713fcd408f40f967cc5854667c8b" class="lightbox-link"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-4cb2713fcd408f40f967cc5854667c8b"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png"></a></p>
 <h3 id="step-2---add-lti-13-application-to-a-course">Step 2 - Add LTI 1.3 Application to a Course</h3>
 <p>Once the LTI 1.3 Key is created, the application can be added to a course within the learning management system. In Canvas, this can be found on the Settings of a course on the Apps tab. Click the button to add a new application, and enter the Client ID from Step 1 above.</p>
-<p><a href="#R-image-c2f1df219b3351ce592944fdf67b947b" class="lightbox-link"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-c2f1df219b3351ce592944fdf67b947b"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png"></a></p>
+<p><a href="#R-image-1a4792a92be1c39e1cdcc9265b545bf7" class="lightbox-link"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1a4792a92be1c39e1cdcc9265b545bf7"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png"></a></p>
 <p>Once the application has been added to the course, click the menu next to the application and display the Deployment ID for the application. Save this value for later.</p>
-<p><a href="#R-image-1ee42290c302cce3454db6bfded0876a" class="lightbox-link"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-1ee42290c302cce3454db6bfded0876a"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png"></a></p>
+<p><a href="#R-image-21f58fc191e7172615dae9e3c23fa5bc" class="lightbox-link"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-21f58fc191e7172615dae9e3c23fa5bc"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png"></a></p>
 <h3 id="step-3---configure-lti-13-settings">Step 3 - Configure LTI 1.3 Settings</h3>
 <p>Back in the LTI Provider Demo application, click the link on the homepage or navigate to the <code>/admin</code> page to access the LTI 1.3 configuration. On this page, enter the LTI 1.3 configuration information for your learning management system. Examples below are shown for Canvas using the configuration provided in the steps above.</p>
 <ul>
@@ -674,22 +683,22 @@ Environment The application expects the following environment variables (typical
 <li><strong>LTI 1.3 Token URL:</strong> For Canvas, <code>/login/oauth2/token</code></li>
 <li><strong>LTI 1.3 Auth URL:</strong> For Canvas, <code>/api/lti/authorize_redirect</code></li>
 </ul>
-<p><a href="#R-image-46e3c7b555c8a724c875ce088449d03d" class="lightbox-link"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-46e3c7b555c8a724c875ce088449d03d"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png"></a></p>
+<p><a href="#R-image-d303a86549a0e8ac5925959a0cc975ce" class="lightbox-link"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-d303a86549a0e8ac5925959a0cc975ce"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png"></a></p>
 <h3 id="step-4---configure-lms-assignment">Step 4 - Configure LMS Assignment</h3>
 <p>In Canvas, configure an assignment that uses an external URL (similar to working with LTI 1.0 Applications as shown below). This time, it will use the Target Link URI configured in Step 1 - typically the <code>DOMAIN_NAME</code> from the environment followed by <code>/lti/provider/launch13</code>.</p>
-<p><a href="#R-image-3fa788db27e2478eb78969961ca7c0b2" class="lightbox-link"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-3fa788db27e2478eb78969961ca7c0b2"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png"></a></p>
+<p><a href="#R-image-3a8f155e48e136ca1d67b50c38cdc322" class="lightbox-link"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-3a8f155e48e136ca1d67b50c38cdc322"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png"></a></p>
 <p>From this point onward, students and teachers can access the LTI Demo Application through this Canvas assignment to perform an LTI 1.3 Launch.</p>
 <h2 id="managing-lti-consumers">Managing LTI Consumers</h2>
 <p>Within the sample application, the Admin Configuration handler gives a demonstration for using this library&rsquo;s controllers to manage the LTI Consumers available within the application.</p>
-<div class="tab-panel" data-tab-group="5f8e5600be1d872214ca79359e3ca47d">
+<div class="tab-panel" data-tab-group="1e92ba7b8f4f2c2e8a5fb89bb77e6c62">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesadmin-configjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('5f8e5600be1d872214ca79359e3ca47d','srcroutesadmin-configjs')"
+      onclick="switchTab('1e92ba7b8f4f2c2e8a5fb89bb77e6c62','srcroutesadmin-configjs')"
     >
       <span class="tab-nav-text">src/routes/admin-config.js</span>
     </button>
@@ -792,13 +801,13 @@ Environment The application expects the following environment variables (typical
       
       
     </div>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1769293676" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1769293676" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1770144754" defer></script>
       
       
       
     </div> 
-  <script src="/lti-toolkit/js/tele-scroll.min.js?1769293676" defer></script>
+  <script src="/lti-toolkit/js/tele-scroll.min.js?1770144754" defer></script>
   </body>
 </html>
