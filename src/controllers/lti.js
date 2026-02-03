@@ -9,7 +9,6 @@ import { nanoid } from "nanoid";
 import xml2js from "xml2js";
 import crypto from "crypto";
 import ky from "ky";
-import { config } from "process";
 
 class LTIToolkitController {
   /**

@@ -65,3 +65,6 @@ typings/
 
 # dev example
 examples/dev
+
+# coverage temp
+docs/static/coverage/tmp
