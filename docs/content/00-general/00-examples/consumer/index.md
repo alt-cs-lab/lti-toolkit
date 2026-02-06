@@ -20,9 +20,10 @@ LOG_LEVEL=lti
 
 # Application Domain Name
 DOMAIN_NAME=https://ltidemo.home.russfeld.me
+# Admin Email Address
+ADMIN_EMAIL=admin@domain.tld
 
 # LTI Tool Consumer Settings
-ADMIN_EMAIL=admin@domain.tld
 DEPLOYMENT_NAME=LTI Toolkit Demo
 DEPLOYMENT_ID=deployment-001
 ```
@@ -48,6 +49,8 @@ import postProviderGrade from "../routes/post-grade.js";
 const lti = await LTIToolkit({
   // Domain name for this application
   domain_name: process.env.DOMAIN_NAME,
+  // Admin email address for this application
+  admin_email: process.env.ADMIN_EMAIL,
   // Logging Level
   log_level: process.env.LOG_LEVEL || "silly",
   // Use In-memory database for testing
@@ -57,7 +60,6 @@ const lti = await LTIToolkit({
     // Incoming grade handler
     postProviderGrade: postProviderGrade,
     // LTI Tool Consumer Information
-    admin_email: process.env.ADMIN_EMAIL,
     deployment_name: process.env.DEPLOYMENT_NAME,
     deployment_id: process.env.DEPLOYMENT_ID,
   },

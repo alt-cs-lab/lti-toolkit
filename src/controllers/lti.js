@@ -9,6 +9,7 @@ import { nanoid } from "nanoid";
 import xml2js from "xml2js";
 import crypto from "crypto";
 import ky from "ky";
+import { response } from "express";
 
 class LTIToolkitController {
   /**
@@ -21,8 +22,11 @@ class LTIToolkitController {
    * @param {*} lti10 LTI 1.0 Utilities instance
    * @param {*} lti13 LTI 1.3 Utilities instance
    * @param {string} domain_name Domain name of the application (e.g., "example.com")
+   * @param {string} admin_email Admin email address (e.g., "admin@example.com")
+   * @param {Object} consumer_controller the consumer controller instance (optional, used for generating LTI 1.0 form data)
+   * @returns {LTIToolkitController} an instance of the LTI Controller
    */
-  constructor(provider, consumer, models, logger, lti10, lti13, domain_name) {
+  constructor(provider, consumer, models, logger, lti10, lti13, domain_name, admin_email, consumer_controller) {
     this.provider = provider;
     this.consumer = consumer;
     this.models = models;
@@ -30,6 +34,8 @@ class LTIToolkitController {
     this.lti10 = lti10;
     this.lti13 = lti13;
     this.domain_name = domain_name;
+    this.admin_email = admin_email;
+    this.consumer_controller = consumer_controller;
   }
   /**
    * Handle an LTI 1.0 Launch Request
@@ -293,7 +299,7 @@ class LTIToolkitController {
       roles: manager ? "Instructor" : "Learner",
       tool_consumer_info_product_family_code: this.consumer.product_name,
       tool_consumer_info_version: this.consumer.product_version,
-      tool_consumer_instance_contact_email: this.consumer.admin_email,
+      tool_consumer_instance_contact_email: this.admin_email,
       tool_consumer_instance_guid: this.consumer.deployment_id,
       tool_consumer_instance_name: this.consumer.deployment_name,
       user_id: user.key,
@@ -1013,6 +1019,8 @@ class LTIToolkitController {
 
   /**
    * Get an LTI 1.0 Configuration XML
+   * 
+   * @return {string} the LTI 1.0 configuration XML
    */
   async getLTI10Config() {
     // remove https:// from domain name for domain property
@@ -1035,7 +1043,7 @@ class LTIToolkitController {
   <blti:title>${this.provider.title}</blti:title> \
   <blti:description>${this.provider.description}</blti:description> \
   <blti:icon>${this.provider.icon_url}</blti:icon> \
-  <blti:launch_url>${this.provider.launch_url}</blti:launch_url> \
+  <blti:launch_url>${this.provider.url_prefix}/launch10</blti:launch_url> \
   ${custom} \
   <blti:extensions platform="canvas.instructure.com"> \
     <lticm:property name="tool_id">${this.provider.tool_id}</lticm:property> \
@@ -1046,6 +1054,121 @@ class LTIToolkitController {
   <cartridge_icon identifierref="BLTI001_Icon"/> \
 </cartridge_basiclti_link>`;
     return xml_string;
+  }
+
+  /**
+   * LTI 1.3 Dyanamic Registration Handler
+   * 
+   * @param {Object} query - the query parameters from the request
+   * @return {Object|null} the LTI 1.3 configuration JSON or null if unable to get details
+   */
+  async dynamicRegistration(query) {
+    // Get details from LMS
+    const lmsDetails = await this.lti13.getLMSDetails(query);
+    if (!lmsDetails) {
+      this.logger.error("Cannot get LMS details for LTI 1.3 configuration");
+      return null;
+    }
+
+    // Get Consumer information based on LMS details
+    let name = lmsDetails["https://purl.imsglobal.org/spec/lti-platform-configuration"]["product_family_code"];
+    if (lmsDetails["https://purl.imsglobal.org/spec/lti-platform-configuration"]["https://canvas.instructure.com/lti/account_name"]) {
+      name = lmsDetails["https://purl.imsglobal.org/spec/lti-platform-configuration"]["https://canvas.instructure.com/lti/account_name"];
+    }
+    const consumer = {
+      name: name,
+      lti13: true,
+      client_id: null,
+      platform_id: lmsDetails.issuer,
+      deployment_id: null,
+      keyset_url: lmsDetails.jwks_uri,
+      token_url: lmsDetails.token_endpoint,
+      auth_url: lmsDetails.authorization_endpoint,
+    }
+    // Create Consumer
+    if (!this.consumer_controller) {
+      // This should never happen since the route is not available if the consumer controller is not defined, but just in case
+      this.logger.error("Consumer controller not found, cannot create consumer for LTI 1.3 configuration");
+      return null;
+    }
+
+    const createdConsumer = await this.consumer_controller.createConsumer(consumer);
+    if (!createdConsumer) {
+      this.logger.error("Failed to create consumer for LTI 1.3 configuration");
+      return null;
+    }
+
+    // remove https:// from domain name for domain property
+    const domain = this.domain_name.replace(/^https?:\/\//, "");
+    // Get claims based on privacy level
+    let claims = [];
+    if (this.provider.privacy_level === "public") {
+      claims = ["iss", "sub", "name", "given_name", "family_name", "email", "picture"];
+    } else if (this.provider.privacy_level === "name_only") {
+      claims = ["iss", "sub", "name"];
+    } else if (this.provider.privacy_level === "email_only") {
+      claims = ["iss", "sub", "email"];
+    } else if (this.provider.privacy_level === "anonymous") {
+      claims = ["iss", "sub"];
+    }
+    // Build config object
+    const config = {
+      application_type: "web",
+      response_types: ["id_token"],
+      grant_types: ["implicit", "client_credentials"],
+      initiate_login_uri: this.provider.url_prefix + "/login13/" + createdConsumer.key,
+      redirect_uris: [
+        this.provider.url_prefix + "/redirect13",
+      ],
+      client_name: this.provider.title,
+      logo_uri: this.provider.icon_url,
+      token_endpoint_auth_method: "private_key_jwt",
+      jwks_uri: this.provider.url_prefix + "/key13",
+      contacts: [this.admin_email],   
+      scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score ",
+      "https://purl.imsglobal.org/spec/lti-tool-configuration": {
+        domain: domain,
+        description: this.provider.description,
+        target_link_uri: this.provider.url_prefix + "/launch13",
+        custom_parameters: this.provider.custom_params,
+        claims: claims,
+        messages: []
+      }
+    };
+
+    // try to send config to LMS and get response
+    try {
+      let headers = {
+        "Content-Type": "application/json",
+      }
+      if (query.registration_token) {
+        headers["Authorization"] = `Bearer ${query.registration_token}`;
+      }
+      this.logger.silly("Sending LTI 1.3 Configuration to LMS: " + JSON.stringify(config, null, 2));
+      const response = await ky.post(lmsDetails.registration_endpoint, {
+        json: config,
+        headers: headers,
+      });
+      if (response && response.status === 200) {
+        const responseData = await response.json();
+        // Update consumer with client_id and deployment_id from response
+        createdConsumer.client_id = responseData.client_id;
+        createdConsumer.deployment_id = responseData.deployment_id;
+        await createdConsumer.save();
+        this.logger.lti("LTI 1.3 Configuration registered successfully with LMS");
+        this.logger.silly("LTI 1.3 Configuration Response: " + JSON.stringify(responseData, null, 2));
+        return config;
+      } else {
+        this.logger.error("Failed to register LTI 1.3 configuration with LMS");
+        this.logger.error("Response: " + JSON.stringify(response, null, 2));
+        return null;
+      }
+    } catch (error) {
+      this.logger.error("Error registering LTI 1.3 configuration with LMS: " + error.message);
+      const body = error.response ? await error.response.json() : null;
+      this.logger.error("Response Body: " + JSON.stringify(body, null, 2));
+      return null;
+    }
   }
 }
 

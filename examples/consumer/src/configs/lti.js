@@ -14,6 +14,8 @@ import postProviderGrade from "../routes/post-grade.js";
 const lti = await LTIToolkit({
   // Domain name for this application
   domain_name: process.env.DOMAIN_NAME,
+  // Admin email address for this application
+  admin_email: process.env.ADMIN_EMAIL,
   // Logging Level
   log_level: process.env.LOG_LEVEL || "silly",
   // Use In-memory database for testing
@@ -23,7 +25,6 @@ const lti = await LTIToolkit({
     // Incoming grade handler
     postProviderGrade: postProviderGrade,
     // LTI Tool Consumer Information
-    admin_email: process.env.ADMIN_EMAIL,
     deployment_name: process.env.DEPLOYMENT_NAME,
     deployment_id: process.env.DEPLOYMENT_ID,
   },

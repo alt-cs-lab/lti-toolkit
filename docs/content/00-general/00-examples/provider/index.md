@@ -20,6 +20,8 @@ LOG_LEVEL=lti
 
 # Application Domain Name
 DOMAIN_NAME=https://ltidemo.home.russfeld.me
+# Admin Email Address
+ADMIN_EMAIL=admin@domain.tld
 
 # LTI Consumer Key and Secret
 LTI_CONSUMER_KEY=your_lti_consumer_key
@@ -76,6 +78,8 @@ import LTILaunch from "../routes/lti-launch.js";
 const lti = await LTIToolkit({
   // Domain name for this application
   domain_name: process.env.DOMAIN_NAME,
+  // Admin email address for this application
+  admin_email: process.env.ADMIN_EMAIL,
   // Logging Level
   log_level: process.env.LOG_LEVEL || "silly",
   // Use In-memory database for testing

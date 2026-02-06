@@ -41,6 +41,8 @@ import LTILaunch from "../routes/lti-launch.js";
 const lti = await LTIToolkit({
   // Domain name for this application
   domain_name: "https://app.domain.tld",
+  // Admin email address for this application
+  admin_email: "admin@domain.tld",
   // Logging Level
   // One of error warn info http verbose lti debug sql silly
   log_level: "lti",
@@ -65,6 +67,11 @@ The LTI Toolkit library is initialized by providing a configuration options obje
   // The fully qualified domain name for the application
   // Must use HTTPS for most other LTI apps to work
   domain_name: "https://app.domain.tld",
+
+  // REQUIRED
+  // Admin Email
+  // Email address for system administrator
+  admin_email: "administrator@app.domain.tld",
 
   // OPTIONAL 
   // Logging Level for built-in Winston instance
@@ -143,11 +150,6 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // Params: LTI Provider Key, Context Key, Resource Key, User Key, Gradebook Key, Score, Express Request Object
     // Function should resolve when grade is posted, no return needed
     postProviderGrade: LTIGradeHandler,
-
-    // REQUIRED
-    // LTI Tool Consumer Admin Email
-    // Email address for system administrator
-    admin_email: "administrator@app.domain.tld",
 
     // REQUIRED
     // LTI Tool Consumer Deployment Name

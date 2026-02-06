@@ -34,6 +34,7 @@ import ConsumerController from "./src/controllers/consumer.js";
  *
  * @param {*} config - Configuration object
  * @param {string} [config.domain_name] - Domain name of the application (e.g., "example.com")
+ * @param {string} [config.admin_email] - Admin email address (e.g., "admin@example.com")
  * @param {Object|None} [config.logger] - Optional logger object (defaults to built-in logger)
  * @param {string|None} [config.log_level] - Optional log level (defaults to "info", use "warn" or "error" for production)
  * @param {Object|None} [config.database] - Optional Sequelize database instance (defaults to built-in SQLite database)
@@ -44,14 +45,13 @@ import ConsumerController from "./src/controllers/consumer.js";
  * @param {string|None} [config.provider.secret] - LTI 1.0 Secret for Single Provider Setup
  * @param {string|None} [config.provider.title] - Optional title for configuration XML (e.g., "LTI Toolkit")
  * @param {string|None} [config.provider.description] - Optional description for configuration XML (e.g., "LTI Toolkit Description")
- * @param {string|None} [config.provider.launch_url] - Optional launch URL for configuration XML (e.g., "https://example.com/lti/provider/launch10")
+ * @param {string|None} [config.provider.url_prefix] - Optional launch URL for configuration XML (e.g., "https://example.com/lti/provider")
  * @param {string|None} [config.provider.icon_url] - Optional icon URL for configuration XML (e.g., "https://example.com/icon.png")
  * @param {string|None} [config.provider.custom_params] - Optional custom parameters for configuration XML (e.g., { "custom_name": "custom_value" })
  * @param {string|None} [config.provider.tool_id] - Optional tool ID for configuration XML (e.g., "lti_toolkit")
  * @param {string|None} [config.provider.privacy_level] - Optional privacy level for configuration XML (e.g., "public")
  * @param {Object|None} [config.consumer] - LTI Consumer Configuration
  * @param {Function} [config.consumer.postProviderGrade] - Required function to handle posting grades to the provider
- * @param {string} [config.consumer.admin_email] - Admin email address (e.g., "admin@example.com")
  * @param {string} [config.consumer.product_name] - Optional Product name (e.g., "lti-toolkit")
  * @param {string} [config.consumer.product_version] - Optional Product version (e.g., "cloud")
  * @param {string} [config.consumer.deployment_name] - Deployment name (e.g., "My LTI Tool")
@@ -66,6 +66,9 @@ export default async function LtiToolkit(config) {
   }
   if (!config.domain_name || typeof config.domain_name !== "string") {
     throw new Error("A valid domain name is required in configuration");
+  }
+  if (!config.admin_email || typeof config.admin_email !== "string") {
+    throw new Error("A valid admin email is required in configuration");
   }
   // Check for provider and consumer functions
   if (!config.provider && !config.consumer) {
@@ -89,11 +92,10 @@ export default async function LtiToolkit(config) {
       config.provider.description = "LTI Toolkit for LTI Tool Providers";
     }
     if (
-      !config.provider.launch_url ||
-      typeof config.provider.launch_url !== "string"
+      !config.provider.url_prefix ||
+      typeof config.provider.url_prefix !== "string"
     ) {
-      config.provider.launch_url =
-        `${config.domain_name}/lti/provider/launch10`;
+      config.provider.url_prefix = `${config.domain_name}/lti/provider`;
     }
     if (
       !config.provider.icon_url ||
@@ -126,14 +128,6 @@ export default async function LtiToolkit(config) {
     if (typeof config.consumer.postProviderGrade !== "function") {
       throw new Error(
         "consumer.postProviderGrade function is required in Consumer configuration",
-      );
-    }
-    if (
-      !config.consumer.admin_email ||
-      typeof config.consumer.admin_email !== "string"
-    ) {
-      throw new Error(
-        "A valid admin email is required in Consumer configuration",
       );
     }
     if (
@@ -173,7 +167,6 @@ export default async function LtiToolkit(config) {
   } else {
     config.consumer = null;
   }
-  
 
   // TODO check types of logger and database?
 
@@ -279,23 +272,10 @@ export default async function LtiToolkit(config) {
     config.domain_name,
   );
 
-  // Setup Controllers
-  const LTIControllerInstance = new LTIToolkitController(
-    config.provider,
-    config.consumer,
-    modelConfig.models,
-    config.logger,
-    lti10,
-    lti13,
-    config.domain_name,
-  );
-
   // Build return object
   const returnObj = {
     routers: {},
-    controllers: {
-      lti: LTIControllerInstance,
-    },
+    controllers: {},
     models: modelConfig.models,
   };
 
@@ -310,7 +290,7 @@ export default async function LtiToolkit(config) {
     };
   }
 
-  // Add Provider and Consumer if configured
+  // Add Provider and Consumer Controllers if configured
   if (config.consumer) {
     // Provider Controller to add/remove providers
     const ProviderControllerInstance = new ProviderController(
@@ -319,12 +299,6 @@ export default async function LtiToolkit(config) {
       config.database,
     );
     returnObj.controllers.provider = ProviderControllerInstance;
-    // Consumer Routes
-    const consumerRouter = await setupConsumerRoutes(
-      LTIControllerInstance,
-      config.logger,
-    );
-    returnObj.routers.consumer = consumerRouter;
   }
   if (config.provider) {
     // Consumer Controller to add/remove consumers
@@ -334,6 +308,33 @@ export default async function LtiToolkit(config) {
       config.database,
     );
     returnObj.controllers.consumer = ConsumerControllerInstance;
+  }
+
+  // Setup LTI Controller
+  const LTIControllerInstance = new LTIToolkitController(
+    config.provider,
+    config.consumer,
+    modelConfig.models,
+    config.logger,
+    lti10,
+    lti13,
+    config.domain_name,
+    config.admin_email,
+    returnObj.controllers.consumer,
+  );
+
+  returnObj.controllers.lti = LTIControllerInstance;
+
+  // Add Routers
+  if (config.consumer) {
+    // Consumer Routes
+    const consumerRouter = await setupConsumerRoutes(
+      LTIControllerInstance,
+      config.logger,
+    );
+    returnObj.routers.consumer = consumerRouter;
+  }
+  if (config.provider) {
     // Provider Routes
     const providerRouter = await setupProviderRoutes(
       LTIControllerInstance,

@@ -12,6 +12,7 @@
 // Import libraries
 import express from "express";
 import nunjucks from "nunjucks";
+import ky from "ky";
 
 export default async function setupProviderRoutes(
   LTIToolkitController,
@@ -45,7 +46,7 @@ export default async function setupProviderRoutes(
 
   /**
    * LIT 1.0 Configuration URL
-   * 
+   *
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
@@ -199,6 +200,7 @@ export default async function setupProviderRoutes(
 
   /**
    * LTI 1.3 Editor Button
+   * 
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
@@ -219,6 +221,7 @@ export default async function setupProviderRoutes(
 
   /**
    * LTI 1.3 Course Navigation Button
+   * 
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
@@ -235,6 +238,44 @@ export default async function setupProviderRoutes(
     logger.lti(JSON.stringify(req.params));
     logger.lti(JSON.stringify(req.body));
     res.status(200).send("Navigation 1.3");
+  });
+
+  /**
+   * LTI 1.3 Dynamic Registration
+   * 
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   *
+   * @swagger
+   * /lti/provider/register13:
+   *   post:
+   *     summary: LTI 1.3 Dynamic Registration URL
+   *     description: LTI 1.3 Dynamic Registration URL
+   *     tags: [lti-provider]
+   */
+  router.all("/register13", async function (req, res, next) {
+    logger.lti("Register 1.3 Request Received");
+    logger.lti(JSON.stringify(req.query));
+    const config = await LTIToolkitController.dynamicRegistration(req.query);
+    if (!config) {
+      res.status(400).send("Invalid Request");
+    } else {
+      nunjucks.configure({ autoescape: true });
+      const output = nunjucks.renderString(
+        '<!doctype html>\
+  <head>\
+  <title>LTI Dynamic Registration</title>\
+  </head>\
+  <body>\
+    Registration Successful. You can close this window.\
+    <script type="text/javascript">\
+      (window.opener || window.parent).postMessage({subject:"org.imsglobal.lti.close"}, "*");\
+    </script>\
+  </body>'
+      );
+      res.status(200).send(output);
+    }
   });
 
   return router;

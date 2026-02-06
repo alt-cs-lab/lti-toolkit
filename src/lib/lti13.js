@@ -324,6 +324,66 @@ class LTI13Utils {
       return null;
     }
   }
+
+  /**
+   * Get LMS Details for Dynamic Registration
+   * 
+   * @param {Object} query the query parameters from the request
+   * @return {Object|null} an object containing the LMS details or null if unable to get details
+   */
+  async getLMSDetails(query) {
+    if (!query.openid_configuration) {
+      this.logger.lti("No OpenID Configuration URL provided for Dynamic Registration");
+      return null;
+    }
+    try {
+      const response = await ky.get(query.openid_configuration).json();
+      // validate registration endpoint is present and is based on issuer
+      if (!response.registration_endpoint) {
+        this.logger.lti("No Registration Endpoint found in OpenID Configuration");
+        return null;
+      }
+      if (!response.issuer) {
+        this.logger.lti("No Issuer found in OpenID Configuration");
+        return null;
+      }
+      if (!response.registration_endpoint.startsWith(response.issuer)) {
+        this.logger.lti("Registration Endpoint does not match Issuer in OpenID Configuration");
+        return null;
+      }
+      // validate other URLs are present
+      if (!response.authorization_endpoint) {
+        this.logger.lti("No Authorization Endpoint found in OpenID Configuration");
+        return null;
+      }
+      if (!response.token_endpoint) {
+        this.logger.lti("No Token Endpoint found in OpenID Configuration");
+        return null;
+      }
+      if (!response.jwks_uri) {
+        this.logger.lti("No JWKS URI found in OpenID Configuration");
+        return null;
+      }
+      // validate lti-platform-configuration is present and has required fields
+      if (!response["https://purl.imsglobal.org/spec/lti-platform-configuration"]) {
+        this.logger.lti("No LTI Platform Configuration found in OpenID Configuration");
+        return null;
+      }
+      const platformConfig = response["https://purl.imsglobal.org/spec/lti-platform-configuration"];
+      if (!platformConfig.product_family_code) {
+        this.logger.lti("No Product Family Code found in LTI Platform Configuration");
+        return null;
+      }
+      if (!platformConfig.version) {
+        this.logger.lti("No Version found in LTI Platform Configuration");
+        return null;
+      }
+      return response;
+    } catch (error) {
+      this.logger.lti("Error getting LMS details: " + error.message);
+      return null;
+    }
+  }
 }
 
 export default LTI13Utils;
