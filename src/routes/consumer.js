@@ -34,13 +34,13 @@ export default function setupConsumerRoutes(LTIToolkitController, logger) {
    * @param {Function} next - Express next middleware function
    *
    * @swagger
-   * /lti/consumer/grade_passback:
+   * /lti/consumer/grade:
    *   get,post:
    *     summary: LTI 1.0 Grade Passback
    *     description: LTI 1.0 Grade Passback Target
    *     tags: [lti-consumer]
    */
-  router.all("/grade_passback", async function (req, res, next) {
+  router.all("/grade", async function (req, res, next) {
     const result = await LTIToolkitController.basicOutcomesHandler(req);
     logger.silly("Sending XML response");
     logger.silly(result.content);

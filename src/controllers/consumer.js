@@ -70,6 +70,7 @@ class ConsumerController {
       consumer = await this.models.Consumer.create(
         {
           name: data.name,
+          key: data.key,
           lti13: data.lti13,
           client_id: data.client_id,
           platform_id: data.platform_id,
@@ -171,10 +172,11 @@ class ConsumerController {
    * Update the secret for an LTI consumer
    *
    * @param {number} id the ID of the consumer
+   * @param {string|null} key the new key for the consumer (if null, a new key will be generated)
    * @param {string|null} secret the new secret for the consumer (if null, a new secret will be generated)
    * @return {ConsumerKey} the updated consumer key
    */
-  async updateSecret(id, secret = null) {
+  async updateSecret(id, key = null, secret = null) {
     const consumer = await this.models.Consumer.findByPk(id);
     if (!consumer) {
       return null;
@@ -188,7 +190,7 @@ class ConsumerController {
     });
     
     // Generate new key and secret for the consumer
-    const newKey = nanoid();
+    const newKey = key || nanoid();
     const newSecret = secret || nanoid();
     consumer.key = newKey;
     await consumer.save();

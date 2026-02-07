@@ -21,21 +21,21 @@ export default async function setupProviderRoutes(
   const router = express.Router();
 
   /**
-   * LTI 1.0 Launch Target
+   * LTI Launch Target
    *
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
    *
    * @swagger
-   * /lti/provider/launch10:
+   * /lti/provider/launch:
    *   post:
-   *     summary: LTI 1.0 Launch
-   *     description: LTI 1.0 Launch Target
+   *     summary: LTI Launch
+   *     description: LTI Launch Target
    *     tags: [lti-provider]
    */
-  router.post("/launch10", async function (req, res, next) {
-    const result = await LTIToolkitController.launch10(req);
+  router.post("/launch", async function (req, res, next) {
+    const result = await LTIToolkitController.launch(req);
     if (result) {
       res.redirect(result);
     } else {
@@ -51,60 +51,16 @@ export default async function setupProviderRoutes(
    * @param {Function} next - Express next middleware function
    *
    * @swagger
-   * /lti/provider/config10:
+   * /lti/provider/config.xml:
    *   get:
    *     summary: LTI 1.0 Configuration
    *     description: LTI 1.0 Configuration URL
    *     tags: [lti-provider]
    */
-  router.get("/config10", async function (req, res, next) {
+  router.get("/config.xml", async function (req, res, next) {
     const config = await LTIToolkitController.getLTI10Config();
     res.header("Content-Type", "application/xml");
     res.status(200).send(config);
-  });
-
-  /**
-   * LTI 1.3 Launch Target
-   *
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   * @param {Function} next - Express next middleware function
-   *
-   * @swagger
-   * /lti/provider/launch13:
-   *   post:
-   *     summary: LTI 1.3 Launch
-   *     description: LTI 1.3 Launch Target
-   *     tags: [lti-provider]
-   */
-  router.post("/launch13", async function (req, res, next) {
-    logger.lti("Launch 1.3 Request Received");
-    logger.lti(JSON.stringify(req.params));
-    logger.lti(JSON.stringify(req.body));
-    res.status(200).send("Launch 1.3");
-  });
-
-  /**
-   * LTI 1.3 Redirect
-   *
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   * @param {Function} next - Express next middleware function
-   *
-   * @swagger
-   * /lti/provider/redirect13:
-   *   post:
-   *     summary: LTI 1.3 Redirect
-   *     description: LTI 1.3 Redirect Target
-   *     tags: [lti-provider]
-   */
-  router.post("/redirect13", async function (req, res, next) {
-    const result = await LTIToolkitController.redirect13(req);
-    if (result) {
-      res.redirect(result);
-    } else {
-      res.status(400).send("Invalid Request");
-    }
   });
 
   /**
@@ -115,23 +71,23 @@ export default async function setupProviderRoutes(
    * @param {Function} next - Express next middleware function
    *
    * @swagger
-   * /lti/provider/login13:
+   * /lti/provider/login:
    *   post:
    *     summary: LTI 1.3 Login
    *     description: LTI 1.3 Login Target
    *     tags: [lti-provider]
    *
    * @swagger
-   * /lti/provider/login13:
+   * /lti/provider/login:
    *   get:
    *     summary: LTI 1.3 Login
    *     description: LTI 1.3 Login Target
    *     tags: [lti-provider]
    */
-  router.get("/login13/:key", handleLogin);
-  router.post("/login13/:key", handleLogin);
+  router.get("/login", handleLogin);
+  router.post("/login", handleLogin);
   async function handleLogin(req, res, next) {
-    const authResult = await LTIToolkitController.login13(req.params.key, req);
+    const authResult = await LTIToolkitController.login13(req);
     if (authResult === false) {
       res.status(400).send("Invalid Request");
     } else {
@@ -164,14 +120,14 @@ export default async function setupProviderRoutes(
    * @param {Function} next - Express next middleware function
    *
    * @swagger
-   * /lti/provider/key13:
+   * /lti/provider/jwks:
    *   get:
    *     summary: LTI 1.3 Keyset URL
    *     description: LTI 1.3 Keyset URL
    *     tags: [lti-provider]
    */
-  router.get("/key13", async function (req, res, next) {
-    logger.lti("Key 1.3 Request Received");
+  router.get("/jwks", async function (req, res, next) {
+    logger.lti("JWKS Request Received");
     const keys = await LTIToolkitController.generateConsumerJWKS();
     res.json(keys);
   });
@@ -184,13 +140,13 @@ export default async function setupProviderRoutes(
    * @param {Function} next - Express next middleware function
    *
    * @swagger
-   * /lti/provider/deeplink13:
+   * /lti/provider/deeplink:
    *   post:
    *     summary: LTI 1.3 Deep Linking URL
    *     description: LTI 1.3 Deep Linking URL
    *     tags: [lti-provider]
    */
-  router.post("/deeplink13", async function (req, res, next) {
+  router.post("/deeplink", async function (req, res, next) {
     logger.lti("Deep Link 1.3 Request Received");
     logger.lti(JSON.stringify(req.params));
     logger.lti(JSON.stringify(req.body));
@@ -205,18 +161,18 @@ export default async function setupProviderRoutes(
    * @param {Function} next - Express next middleware function
    *
    * @swagger
-   * /lti/provider/editor13:
+   * /lti/provider/editor:
    *   post:
    *     summary: LTI 1.3 Editor URL
    *     description: LTI 1.3 Editor URL
    *     tags: [lti-provider]
    */
-  router.post("/editor13", async function (req, res, next) {
-    logger.lti("Editor 1.3 Request Received");
-    logger.lti(JSON.stringify(req.params));
-    logger.lti(JSON.stringify(req.body));
-    res.status(200).send("Editor 1.3");
-  });
+  // router.post("/editor", async function (req, res, next) {
+  //   logger.lti("Editor 1.3 Request Received");
+  //   logger.lti(JSON.stringify(req.params));
+  //   logger.lti(JSON.stringify(req.body));
+  //   res.status(200).send("Editor 1.3");
+  // });
 
   /**
    * LTI 1.3 Course Navigation Button
@@ -226,18 +182,18 @@ export default async function setupProviderRoutes(
    * @param {Function} next - Express next middleware function
    *
    * @swagger
-   * /lti/provider/navigate13:
+   * /lti/provider/navigate:
    *   post:
    *     summary: LTI 1.3 Course Navigation URL
    *     description: LTI 1.3 Course Navigation URL
    *     tags: [lti-provider]
    */
-  router.post("/navigate13", async function (req, res, next) {
-    logger.lti("Navigation 1.3 Request Received");
-    logger.lti(JSON.stringify(req.params));
-    logger.lti(JSON.stringify(req.body));
-    res.status(200).send("Navigation 1.3");
-  });
+  // router.post("/navigate", async function (req, res, next) {
+  //   logger.lti("Navigation 1.3 Request Received");
+  //   logger.lti(JSON.stringify(req.params));
+  //   logger.lti(JSON.stringify(req.body));
+  //   res.status(200).send("Navigation 1.3");
+  // });
 
   /**
    * LTI 1.3 Dynamic Registration
@@ -247,13 +203,13 @@ export default async function setupProviderRoutes(
    * @param {Function} next - Express next middleware function
    *
    * @swagger
-   * /lti/provider/register13:
+   * /lti/provider/register:
    *   post:
    *     summary: LTI 1.3 Dynamic Registration URL
    *     description: LTI 1.3 Dynamic Registration URL
    *     tags: [lti-provider]
    */
-  router.all("/register13", async function (req, res, next) {
+  router.all("/register", async function (req, res, next) {
     logger.lti("Register 1.3 Request Received");
     logger.silly(JSON.stringify(req.query));
     const config = await LTIToolkitController.dynamicRegistration(req.query);

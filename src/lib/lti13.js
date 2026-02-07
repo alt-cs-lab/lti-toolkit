@@ -29,7 +29,7 @@ class LTI13Utils {
    *
    * @param {Object} req - Express request object
    */
-  async authRequest(key, req) {
+  async authRequest(req) {
     try {
       // Hostname must be set
       if (!this.domain_name) {
@@ -37,18 +37,18 @@ class LTI13Utils {
         return false;
       }
 
-      // check if key is valid
+      // merge query and body into single object to handle GET and POST
+      const params = { ...req.query, ...req.body };
+
+      // find consumer using client_id and deployment_id
       const consumer = await this.models.Consumer.findOne({
-        where: { key: key },
+        where: { client_id: params.client_id, deployment_id: params.lti_deployment_id },
       });
 
       if (consumer === null) {
-        this.logger.lti("LTI Consumer Key Not Found: " + key);
+        this.logger.lti("LTI Consumer Not Found: " + params.client_id + " / " + params.lti_deployment_id);
         return false;
       }
-
-      // merge query and body into single object to handle GET and POST
-      const params = { ...req.query, ...req.body };
 
       // #######################
       // OAUTH SPECIFIC THINGS
@@ -87,7 +87,7 @@ class LTI13Utils {
       if (
         !params.target_link_uri ||
         params.target_link_uri !==
-          new URL("/lti/provider/launch13", this.domain_name).href
+          new URL("/lti/provider/launch", this.domain_name).href
       ) {
         this.logger.lti(
           "Invalid LTI Target Link URI: " + params.target_link_uri,
@@ -100,7 +100,7 @@ class LTI13Utils {
       const state = nanoid();
       const nonce = nanoid();
       const login = await this.models.ConsumerLogin.create({
-        key,
+        key: consumer.key,
         state,
         nonce,
         iss: params.iss,
@@ -117,7 +117,7 @@ class LTI13Utils {
         scope: "openid",
         response_type: "id_token",
         client_id: consumer.client_id,
-        redirect_uri: new URL("/lti/provider/redirect13", this.domain_name)
+        redirect_uri: new URL("/lti/provider/launch", this.domain_name)
           .href,
         login_hint: params.login_hint,
         state: state,

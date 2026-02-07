@@ -95,7 +95,7 @@ export default function configureModels(database, logger) {
 
   Consumer.beforeValidate((consumer) => {
     // Generate a unique key for the consumer
-    if (consumer.isNewRecord) {
+    if (consumer.isNewRecord && !consumer.key) {
       consumer.setDataValue("key", nanoid());
     }
   });

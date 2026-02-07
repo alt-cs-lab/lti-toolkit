@@ -14,7 +14,6 @@
     "@dotenvx/dotenvx": "^1.51.4",
     "express": "^5.2.1",
     "express-session": "^1.18.2",
-    "lti-toolkit": "github:alt-cs-lab/lti-toolkit",
     "nunjucks": "^3.2.4"
   },
   "devDependencies": {

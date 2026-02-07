@@ -37,9 +37,9 @@ The settings above can then be used to configure this application in your learni
 
 * **Consumer Key** - `LTI_CONSUMER_KEY` from the app environment.
 * **Shared Secret** - `LTI_CONSUMER_SECRET` from the app environment.
-* **XML Configuration URL** - `DOMAIN_NAME` from the app environment followed by `/lti/provider/config10` by default. The URL can be configured in `app.js` as described below.
+* **XML Configuration URL** - `DOMAIN_NAME` from the app environment followed by `/lti/provider/config.xml` by default. The URL can be configured in `app.js` as described below.
   * Additional settings for the XML configuration can be set in the `lti.js` config file.
-* **Launch URL** - `DOMAIN_NAME` from the app environment followed by `/lti/provider/launch10` by default. The URL can be configured in `app.js` as described below.
+* **Launch URL** - `DOMAIN_NAME` from the app environment followed by `/lti/provider/launch` by default. The URL can be configured in `app.js` as described below.
 * **Domain** - typically the `DOMAIN_NAME` from the app environment without the `https://` at the front.
 * **Privacy Level** - any option ("Public" provides all info, "Anonymous" omits most student info).
 
@@ -414,15 +414,49 @@ In this example, the same data required to build a grade object is read from the
 
 Configuring an application to use the LTI 1.3 protocol is a bit more complex, and requires several steps in both the learning management system (LMS) as well as this tool. Detailed instructions and configuration information can be found at the `/admin` route in the example application, and also are discussed below.
 
+### LTI 1.3 Dynamic Registration
+
+The simplest way to add an LTI 1.3 application to an LMS is the LTI 1.3 Dynamic Registration process. 
+
+#### Step 1 - Add Application to Canvas
+
+In Canvas, this requires administrator access, so you may have to work with your Canvas administrator to accomplish this step. In Canvas, go to the Admin panel for the account used and find the Developer Keys page, then add a new LTI Registration.
+
+* **Registration URL**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/register` by default.
+
+![LTI 1.3 Registration in Canvas](images/lti13dynamic1.png)
+
+Once the registration is complete, click Enable and Close.
+
+![LTI 1.3 Registration in Canvas](images/lti13dynamic.png)
+
+#### Step 2 - Activate Application
+
+Once installed, the application must be made available to courses in Canvas. Click the View in Canvas Apps link next to the new LTI application, then click Edit and choose to make the application Available, then click Save. You can also restrict this to specific subaccounts or classes.
+
+![LTI 1.3 Registration in Canvas](images/lti13dynamic2.png)
+
+#### Step 3 - Configure Assginment
+
+In Canvas, configure an assignment that uses an external URL (similar to working with LTI 1.0 Applications as shown below). This time, it will use the Target Link URI - typically the `DOMAIN_NAME` from the environment followed by `/lti/provider/launch`.
+
+![LTI 1.3 Assignment Configuration](images/lti10assign.png)
+
+From this point onward, students and teachers can access the LTI Demo Application through this Canvas assignment to perform an LTI 1.3 Launch.
+
+### LTI Manual Registration
+
+Alternatively, LTI 1.3 applications can be registered manually in Canvas using the steps below.
+
 ### Step 1 - Add an LTI 1.3 Application in the LMS
 
 The first step is to add an LTI 1.3 application to the learning management system. In Canvas, this requires administrator access, so you may have to work with your Canvas administrator to accomplish this step. In Canvas, go to the Admin panel for the account used and find the Developer Keys page, then add a new LTI Key.
 
-* **Redirect URIs**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/redirect13` by default.
-* **Target Link URIs**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/launch13` by default.
-* **OpenID Connect Initiation Url**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/login13/` and then the `LTI_CONSUMER_KEY` from the app environment by default.
+* **Redirect URIs**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/launch` by default.
+* **Target Link URIs**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/launch` by default.
+* **OpenID Connect Initiation Url**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/login`
 * **JWK Method**: Public JWK URL (this library only supports JWKS via URL)
-* **Public JWK URL**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/key13` by default.
+* **Public JWK URL**: `DOMAIN_NAME` from the app environment followed by `/lti/provider/jwks` by default.
 
 The base of these URLs can be configured in `app.js` as discussed above. 
 
@@ -465,9 +499,9 @@ Back in the LTI Provider Demo application, click the link on the homepage or nav
 
 ### Step 4 - Configure LMS Assignment
 
-In Canvas, configure an assignment that uses an external URL (similar to working with LTI 1.0 Applications as shown below). This time, it will use the Target Link URI configured in Step 1 - typically the `DOMAIN_NAME` from the environment followed by `/lti/provider/launch13`.
+In Canvas, configure an assignment that uses an external URL (similar to working with LTI 1.0 Applications as shown below). This time, it will use the Target Link URI configured in Step 1 - typically the `DOMAIN_NAME` from the environment followed by `/lti/provider/launch`.
 
-![LTI 1.3 Assignment Configuration](images/lti13assign1.png)
+![LTI 1.3 Assignment Configuration](images/lti10assign.png)
 
 From this point onward, students and teachers can access the LTI Demo Application through this Canvas assignment to perform an LTI 1.3 Launch.
 

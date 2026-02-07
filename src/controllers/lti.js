@@ -36,6 +36,25 @@ class LTIToolkitController {
     this.admin_email = admin_email;
     this.consumer_controller = consumer_controller;
   }
+
+  /**
+   * Handle an LTI Launch Request
+   * 
+   * @param {Object} req - Express request object
+   * @return `false` if it is invalid, else return a URL to redirect to
+   */
+  async launch(req) {
+    // Check for LTI 1.3 Redirect Request
+    if (req.body && req.body.id_token) {
+      return await this.redirect13(req);
+    } else if (req.body && req.body.oauth_consumer_key) {
+      return await this.launch10(req);
+    } else {
+      this.logger.lti("Invalid Launch Request - missing id_token or oauth_consumer_key");
+      return false;
+    }
+  }
+
   /**
    * Handle an LTI 1.0 Launch Request
    *
@@ -101,18 +120,17 @@ class LTIToolkitController {
   /**
    * Handle an LTI 1.3 Login Request
    *
-   * @param {String} key - the unique key for the tool consumer
    * @param {Object} req - Express request object
    * @return `false` if it is invalid, else return an authRequest form
    */
-  async login13(key, req) {
+  async login13(req) {
     // Logging
-    this.logger.lti("LTI 1.3 Login Received for key: " + key);
+    this.logger.lti("LTI 1.3 Login Received");
     this.logger.silly("Query: " + JSON.stringify(req.query, null, 2));
     this.logger.silly("Body: " + JSON.stringify(req.body, null, 2));
 
     // Validate the request
-    const authRequestResult = await this.lti13.authRequest(key, req);
+    const authRequestResult = await this.lti13.authRequest(req);
 
     // Check if valid
     if (authRequestResult === false) {
@@ -296,7 +314,7 @@ class LTIToolkitController {
       launch_presentation_locale: "en",
       launch_presentation_return_url: ret_url,
       lis_outcome_service_url: new URL(
-        `${this.consumer.route_prefix}/grade_passback`,
+        `${this.consumer.route_prefix}/grade`,
         this.domain_name,
       ).href,
       lis_result_sourcedid: `${context.key}:${resource.key}:${user.key}:${gradebook_key}`,
@@ -1129,20 +1147,20 @@ class LTIToolkitController {
       application_type: "web",
       response_types: ["id_token"],
       grant_types: ["implicit", "client_credentials"],
-      initiate_login_uri: this.domain_name + this.provider.route_prefix + "/login13/" + createdConsumer.key,
+      initiate_login_uri: this.domain_name + this.provider.route_prefix + "/login",
       redirect_uris: [
-        this.domain_name + this.provider.route_prefix + "/redirect13",
+        this.domain_name + this.provider.route_prefix + "/launch",
       ],
       client_name: this.provider.title,
       logo_uri: this.provider.icon_url,
       token_endpoint_auth_method: "private_key_jwt",
-      jwks_uri: this.domain_name + this.provider.route_prefix + "/key13",
+      jwks_uri: this.domain_name + this.provider.route_prefix + "/jwks",
       contacts: [this.admin_email],   
       scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score ",
       "https://purl.imsglobal.org/spec/lti-tool-configuration": {
         domain: domain,
         description: this.provider.description,
-        target_link_uri: this.domain_name + this.provider.route_prefix + "/launch13",
+        target_link_uri: this.domain_name + this.provider.route_prefix + "/launch",
         custom_parameters: this.provider.custom_params,
         claims: claims,
         messages: []
