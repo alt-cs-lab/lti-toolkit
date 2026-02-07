@@ -26,12 +26,12 @@ should();
 import LTIToolkit from "../../index.js";
 const lti = await LTIToolkit({
   domain_name: "http://localhost:3000",
+  admin_email: "admin@localhost.local",
   provider: {
     handleLaunch: async function () {},
   },
   consumer: {
     postProviderGrade: async function () {},
-    admin_email: "admin@localhost.local",
     deployment_name: "LTI Toolkit Dev",
     deployment_id: "test-deployment-id",
   },
@@ -41,7 +41,7 @@ const lti = await LTIToolkit({
 const gradePassbackCallsController = (state) => {
   it("should call LTIController.basicOutcomesHandler and properly handle the response", (done) => {
     request(state.app)
-      .post("/lti/consumer/grade_passback")
+      .post("/lti/consumer/grade")
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
@@ -69,7 +69,7 @@ describe("/lti/consumer - !!CONTROLLER IS STUBBED!!", () => {
     state.app = app;
   });
 
-  describe("ALL /grade_passback", () => {
+  describe("ALL /grade", () => {
     gradePassbackCallsController(state);
   });
 });

@@ -23,12 +23,12 @@ should();
 import LTIToolkit from "../../index.js";
 const lti = await LTIToolkit({
   domain_name: "http://localhost:3000",
+  admin_email: "admin@localhost.local",
   provider: {
     handleLaunch: async function () {},
   },
   consumer: {
     postProviderGrade: async function () {},
-    admin_email: "admin@localhost.local",
     deployment_name: "LTI Toolkit Dev",
     deployment_id: "test-deployment-id",
   },
@@ -77,7 +77,7 @@ const succeedOnValidSignature = (state, body) => {
     const req = {
       body: body,
       method: "POST",
-      originalUrl: "/lti/provider/launch10",
+      originalUrl: "/lti/provider/launch",
     };
     state.lti10
       .validate10(req)
@@ -141,7 +141,7 @@ const failOnInvalidSignature = (state, body) => {
     const req = {
       body: newBody,
       method: "POST",
-      originalUrl: "/lti/provider/launch10",
+      originalUrl: "/lti/provider/launch",
     };
     state.lti10
       .validate10(req)
@@ -169,7 +169,7 @@ const failOnDuplicateNonce = (state, body) => {
     const req1 = {
       body: signedBody(ltiLaunchOld),
       method: "POST",
-      originalUrl: "/lti/provider/launch10",
+      originalUrl: "/lti/provider/launch",
     };
     state.lti10
       .validate10(req1)
@@ -181,7 +181,7 @@ const failOnDuplicateNonce = (state, body) => {
         const req2 = {
           body: signedBody(ltiLaunchNew),
           method: "POST",
-          originalUrl: "/lti/provider/launch10",
+          originalUrl: "/lti/provider/launch",
         };
         state.lti10
           .validate10(req2)
@@ -210,7 +210,7 @@ const signedBody = (body) => {
   delete newBody.oauth_signature;
   const signature = hmacsign(
     "POST",
-    new URL("/lti/provider/launch10", "http://localhost:3000").href,
+    new URL("/lti/provider/launch", "http://localhost:3000").href,
     newBody,
     "thisisatestsecret",
   );

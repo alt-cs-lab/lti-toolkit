@@ -26,12 +26,12 @@ should();
 import LTIToolkit from "../../index.js";
 const lti = await LTIToolkit({
   domain_name: "http://localhost:3000",
+  admin_email: "admin@localhost.local",
   provider: {
     handleLaunch: async function () {},
   },
   consumer: {
     postProviderGrade: async function () {},
-    admin_email: "admin@localhost.local",
     deployment_name: "LTI Toolkit Dev",
     deployment_id: "test-deployment-id",
   },
@@ -44,15 +44,15 @@ const lti = await LTIToolkit({
 const launch10Success = (state) => {
   it("should call LTIController.launch10 and redirect", (done) => {
     sinon
-      .stub(lti.controllers.lti, "launch10")
+      .stub(lti.controllers.lti, "launch")
       .resolves("https://example.com/redirect");
     request(state.app)
-      .post("/lti/provider/launch10")
+      .post("/lti/provider/launch")
       .expect(302)
       .end((err, res) => {
         if (err) return done(err);
         res.headers.location.should.equal("https://example.com/redirect");
-        expect(lti.controllers.lti.launch10.calledOnce).to.be.true;
+        expect(lti.controllers.lti.launch.calledOnce).to.be.true;
         done();
       });
   });
@@ -63,52 +63,14 @@ const launch10Success = (state) => {
  */
 const launch10Fail = (state) => {
   it("should return 400 on invalid request", (done) => {
-    sinon.stub(lti.controllers.lti, "launch10").resolves(null);
+    sinon.stub(lti.controllers.lti, "launch").resolves(null);
     request(state.app)
-      .post("/lti/provider/launch10")
+      .post("/lti/provider/launch")
       .expect(400)
       .end((err, res) => {
         if (err) return done(err);
         res.text.should.equal("Invalid Request");
-        expect(lti.controllers.lti.launch10.calledOnce).to.be.true;
-        done();
-      });
-  });
-};
-
-/**
- * Redirect 1.3 should call controller and redirect
- */
-const redirect13Success = (state) => {
-  it("should call LTIController.redirect13 and redirect", (done) => {
-    sinon
-      .stub(lti.controllers.lti, "redirect13")
-      .resolves("https://example.com/redirect13");
-    request(state.app)
-      .post("/lti/provider/redirect13")
-      .expect(302)
-      .end((err, res) => {
-        if (err) return done(err);
-        res.headers.location.should.equal("https://example.com/redirect13");
-        expect(lti.controllers.lti.redirect13.calledOnce).to.be.true;
-        done();
-      });
-  });
-};
-
-/**
- * Redirect 1.3 should return 400 on failure
- */
-const redirect13Fail = (state) => {
-  it("should return 400 on invalid request", (done) => {
-    sinon.stub(lti.controllers.lti, "redirect13").resolves(null);
-    request(state.app)
-      .post("/lti/provider/redirect13")
-      .expect(400)
-      .end((err, res) => {
-        if (err) return done(err);
-        res.text.should.equal("Invalid Request");
-        expect(lti.controllers.lti.redirect13.calledOnce).to.be.true;
+        expect(lti.controllers.lti.launch.calledOnce).to.be.true;
         done();
       });
   });
@@ -124,23 +86,24 @@ const login13GetSuccess = (state) => {
         scope: "openid",
         response_type: "id_token",
         client_id: "client_id",
-        redirect_uri: "https://example.com/lti/provider/redirect13",
+        lti_deployment_id: "test-deployment-id",
+        redirect_uri: "https://example.com/lti/provider/launch",
         login_hint: "login_hint",
         state: "state",
         response_mode: "form_post",
         nonce: "nonce",
         prompt: "none",
       },
-      url: "https://example.com/login13",
+      url: "https://example.com/login",
       name: "Test Consumer",
     };
     sinon.stub(lti.controllers.lti, "login13").resolves(result);
     request(state.app)
-      .get("/lti/provider/login13/testkey")
+      .get("/lti/provider/login")
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
-        expect(lti.controllers.lti.login13.calledOnceWith("testkey")).to.be
+        expect(lti.controllers.lti.login13.calledOnce).to.be
           .true;
         res.header["content-type"].should.include("text/html");
         res.header["content-security-policy"].should.include(
@@ -164,12 +127,12 @@ const login13GetFail = (state) => {
   it("should return 400 on invalid request", (done) => {
     sinon.stub(lti.controllers.lti, "login13").resolves(false);
     request(state.app)
-      .get("/lti/provider/login13/testkey")
+      .get("/lti/provider/login")
       .expect(400)
       .end((err, res) => {
         if (err) return done(err);
         res.text.should.equal("Invalid Request");
-        expect(lti.controllers.lti.login13.calledOnceWith("testkey")).to.be
+        expect(lti.controllers.lti.login13.calledOnce).to.be
           .true;
         done();
       });
@@ -186,23 +149,23 @@ const login13PostSuccess = (state) => {
         scope: "openid",
         response_type: "id_token",
         client_id: "client_id",
-        redirect_uri: "https://example.com/lti/provider/redirect13",
+        redirect_uri: "https://example.com/lti/provider/redirect",
         login_hint: "login_hint",
         state: "state",
         response_mode: "form_post",
         nonce: "nonce",
         prompt: "none",
       },
-      url: "https://example.com/login13",
+      url: "https://example.com/login",
       name: "Test Consumer",
     };
     sinon.stub(lti.controllers.lti, "login13").resolves(result);
     request(state.app)
-      .post("/lti/provider/login13/testkey")
+      .post("/lti/provider/login")
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
-        expect(lti.controllers.lti.login13.calledOnceWith("testkey")).to.be
+        expect(lti.controllers.lti.login13.calledOnce).to.be
           .true;
         res.header["content-type"].should.include("text/html");
         res.header["content-security-policy"].should.include(
@@ -226,12 +189,12 @@ const login13PostFail = (state) => {
   it("should return 400 on invalid request", (done) => {
     sinon.stub(lti.controllers.lti, "login13").resolves(false);
     request(state.app)
-      .post("/lti/provider/login13/testkey")
+      .post("/lti/provider/login")
       .expect(400)
       .end((err, res) => {
         if (err) return done(err);
         res.text.should.equal("Invalid Request");
-        expect(lti.controllers.lti.login13.calledOnceWith("testkey")).to.be
+        expect(lti.controllers.lti.login13.calledOnce).to.be
           .true;
         done();
       });
@@ -254,7 +217,7 @@ const keysSuccess = (state) => {
     ];
     sinon.stub(lti.controllers.lti, "generateConsumerJWKS").resolves(result);
     request(state.app)
-      .get("/lti/provider/key13")
+      .get("/lti/provider/jwks")
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
@@ -291,43 +254,34 @@ describe("/lti/provider - !!CONTROLLER IS STUBBED!!", () => {
     state.app = app;
   });
 
-  describe("POST /launch10", () => {
+  describe("POST /launch", () => {
     launch10Success(state);
     launch10Fail(state);
   });
 
-  describe("POST /redirect13", () => {
-    redirect13Success(state);
-    redirect13Fail(state);
-  });
-
-  describe("GET /login13/{key}", () => {
+  describe("GET /login", () => {
     login13GetSuccess(state);
     login13GetFail(state);
   });
 
-  describe("POST /login13/{key}", () => {
+  describe("POST /login", () => {
     login13PostSuccess(state);
     login13PostFail(state);
   });
 
-  describe("GET /key13", () => {
+  describe("GET /jwks", () => {
     keysSuccess(state);
   });
 
-  describe("POST /launch13", () => {
-    dummyTest(state, "launch13", "Launch 1.3");
+  // describe("POST /editor", () => {
+  //   dummyTest(state, "editor", "Editor 1.3");
+  // });
+
+  describe("POST /deeplink", () => {
+    dummyTest(state, "deeplink", "Deep Link 1.3");
   });
 
-  describe("POST /editor13", () => {
-    dummyTest(state, "editor13", "Editor 1.3");
-  });
-
-  describe("POST /deeplink13", () => {
-    dummyTest(state, "deeplink13", "Deep Link 1.3");
-  });
-
-  describe("POST /navigate13", () => {
-    dummyTest(state, "navigate13", "Navigation 1.3");
-  });
+  // describe("POST /navigate", () => {
+  //   dummyTest(state, "navigate", "Navigation 1.3");
+  // });
 });

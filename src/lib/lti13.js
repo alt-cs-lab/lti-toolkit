@@ -45,7 +45,7 @@ class LTI13Utils {
         where: { client_id: params.client_id, deployment_id: params.lti_deployment_id },
       });
 
-      if (consumer === null) {
+      if (!consumer) {
         this.logger.lti("LTI Consumer Not Found: " + params.client_id + " / " + params.lti_deployment_id);
         return false;
       }

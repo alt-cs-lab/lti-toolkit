@@ -14,12 +14,12 @@ should();
 import LTIToolkit from "../index.js";
 const lti = await LTIToolkit({
   domain_name: "http://localhost:3000",
+  admin_email: "admin@localhost.local",
   provider: {
     handleLaunch: async function () {},
   },
   consumer: {
     postProviderGrade: async function () {},
-    admin_email: "admin@localhost.local",
     deployment_name: "LTI Toolkit Dev",
     deployment_id: "test-deployment-id",
   },

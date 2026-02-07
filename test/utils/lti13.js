@@ -25,12 +25,12 @@ const ltiMessageHint = nanoid();
 import LTIToolkit from "../../index.js";
 const lti = await LTIToolkit({
   domain_name: "http://localhost:3000",
+  admin_email: "admin@localhost.local",
   provider: {
     handleLaunch: async function () {},
   },
   consumer: {
     postProviderGrade: async function () {},
-    admin_email: "admin@localhost.local",
     deployment_name: "LTI Toolkit Dev",
     deployment_id: "test-deployment-id",
   },
@@ -42,7 +42,7 @@ const authRequestData = {
   login_hint: loginHint,
   client_id: "10000000000001",
   lti_deployment_id: "thisisatestkey",
-  target_link_uri: new URL("/lti/provider/launch13", "http://localhost:3000")
+  target_link_uri: new URL("/lti/provider/launch", "http://localhost:3000")
     .href,
   lti_message_hint: ltiMessageHint,
   lti_storage_target: "post_message_forwarding",
@@ -52,7 +52,7 @@ const authRequestForm = {
   scope: "openid",
   response_type: "id_token",
   client_id: "10000000000001",
-  redirect_uri: new URL("/lti/provider/redirect13", "http://localhost:3000")
+  redirect_uri: new URL("/lti/provider/launch", "http://localhost:3000")
     .href,
   login_hint: loginHint,
   response_mode: "form_post",
@@ -111,7 +111,7 @@ const sampleJwt = {
   nonce: nonce,
   sub: nanoid(),
   "https://purl.imsglobal.org/spec/lti/claim/target_link_uri": new URL(
-    "/lti/provider/launch13",
+    "/lti/provider/launch",
     "http://localhost:3000",
   ).href,
   picture: "https://placehold.co/64x64",
@@ -157,13 +157,13 @@ const tempJwtSigningKey = crypto.randomBytes(64).toString("hex");
 /**
  * Valid Auth Request
  */
-const validAuthRquest = (state, key, body) => {
+const validAuthRquest = (state, body) => {
   it("should accept a valid auth request", (done) => {
     const req = {
-      body,
+      body: body
     };
     state.lti13
-      .authRequest(key, req)
+      .authRequest(req)
       .then((result) => {
         result.should.be.an("object");
         result.should.have.property("form");
@@ -184,7 +184,7 @@ const validAuthRquest = (state, key, body) => {
 /**
  * Fail Auth on Invalid Attribute
  */
-const failOnInvalidAttribute = (state, key, body, attribute, bad_value) => {
+const failOnInvalidAttribute = (state, body, attribute, bad_value) => {
   it(
     "should fail when attribute " + attribute + " is set to " + bad_value,
     (done) => {
@@ -193,7 +193,7 @@ const failOnInvalidAttribute = (state, key, body, attribute, bad_value) => {
       const req = {
         body: updatedBody,
       };
-      state.lti13.authRequest(key, req).then((result) => {
+      state.lti13.authRequest(req).then((result) => {
         assert.isNotOk(result);
         done();
       });
@@ -322,6 +322,10 @@ describe("LTI 1.3 Utility", () => {
       .withArgs({ where: { key: "thisisatestkey" } })
       .resolves(testConsumer)
       .withArgs({ where: { key: "a" + "thisisatestkey" } })
+      .resolves(null)
+      .withArgs({ where: { client_id: "10000000000001", deployment_id: "thisisatestkey" } })
+      .resolves(testConsumer)
+      .withArgs({ where: { client_id: "10000000000001", deployment_id: "thisisatestkey" + "a" } })
       .resolves(null);
     state.stub2 = sinon
       .stub(lti.models.Consumer, "findByPk")
@@ -336,34 +340,23 @@ describe("LTI 1.3 Utility", () => {
   });
 
   describe("authRequest", () => {
-    const key = "thisisatestkey";
-    validAuthRquest(state, key, authRequestData);
+    validAuthRquest(state, authRequestData);
+    failOnInvalidAttribute(state, authRequestData, "iss", null);
+    failOnInvalidAttribute(state, authRequestData, "login_hint", null);
     failOnInvalidAttribute(
       state,
-      "a" + key,
-      authRequestData,
-      "consumer_key",
-      "a" + key,
-    );
-    failOnInvalidAttribute(state, key, authRequestData, "iss", null);
-    failOnInvalidAttribute(state, key, authRequestData, "login_hint", null);
-    failOnInvalidAttribute(
-      state,
-      key,
       authRequestData,
       "client_id",
       "10000000000001" + "a",
     );
     failOnInvalidAttribute(
       state,
-      key,
       authRequestData,
       "lti_deployment_id",
       "thisisatestkey" + "a",
     );
     failOnInvalidAttribute(
       state,
-      key,
       authRequestData,
       "target_link_uri",
       new URL("/lti/provider/invalid13", "http://localhost:3000").href,
