@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en-us" dir="ltr" itemscope itemtype="http://schema.org/Article" data-r-output-format="print">
   <head>
     <meta charset="utf-8">
@@ -29,33 +28,33 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
     <meta itemprop="description" content="This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.
 Limitations
 Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted within the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Supports all Canvas privacy levels in LTI Launch Requests to Tool Providers Supports test students from Canvas in LTI Launch Requests Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:">
-    <meta itemprop="dateModified" content="2026-02-03T18:49:41+00:00">
-    <meta itemprop="wordCount" content="1265">
+    <meta itemprop="dateModified" content="2026-02-06T22:09:48+00:00">
+    <meta itemprop="wordCount" content="1271">
     <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <title>LTI-Toolkit :: LTI Toolkit</title>
     <link href="https://alt.cs.ksu.edu/lti-toolkit/index.html" rel="canonical" type="text/html" title="LTI-Toolkit :: LTI Toolkit">
     <link href="/lti-toolkit/index.xml" rel="alternate" type="application/rss+xml" title="LTI-Toolkit :: LTI Toolkit">
     <link href="/lti-toolkit/index.lti.js" rel="alternate" type="text/javascript" title="LTI-Toolkit :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1770144754" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1770144754" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1770144754" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1770144754" defer></script>
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1770499033" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1770499033" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1770499033" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1770499033" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1770144754";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1770499033";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1770144754" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1770144754" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1770144754" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1770499033" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1770499033" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1770499033" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1770499033" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1770144754" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1770144754" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1770144754" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1770144754" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-print.min.css?1770144754" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1770499033" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1770499033" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1770499033" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1770499033" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-print.min.css?1770499033" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -82,10 +81,10 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
       window.T_No_results_found = `No results found for "{0}"`;
       window.T_N_results_found = `{1} results found for "{0}"`;
       // variant stuff
-      window.relearn.themevariants = [ 'light-theme' ];
+      window.relearn.themevariants = [ 'auto', 'light-theme', 'dark-theme' ];
       window.relearn.customvariantname = "my-custom-variant";
       // [x] russfeld
-      window.relearn.writeVariant=false;
+      window.relearn.writeVariant=true;
       window.relearn.changeVariant = function(variant) {
         var oldVariant = document.documentElement.dataset.rThemeVariant;
         window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
@@ -114,14 +113,55 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1770144754" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1770499033" rel="stylesheet">
   </head>
-  <body class="mobile-support embed print" data-url="/lti-toolkit/index.html">
+  <body class="mobile-support print" data-url="/lti-toolkit/index.html">
     <div id="R-body" class="default-animation">
       <div id="R-body-overlay"></div>
-      
-      
-      
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="disable" data-width-s="show" data-width-m="hide" data-width-l="hide"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+            <div class="topbar-button topbar-button-toc" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="Table of Contents (CTRL&#43;ALT&#43;t)"><i class="fa-fw fas fa-list-alt"></i></button>
+              <div class="topbar-content">
+                <div class="topbar-content-wrapper">
+<nav class="TableOfContents">
+  <ul>
+    <li><a href="#getting-started">Getting Started</a></li>
+    <li><a href="#configuration">Configuration</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#dependencies">Dependencies</a></li>
+    <li><a href="#documentation">Documentation</a></li>
+  </ul>
+</nav>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class="a11y-only"><span itemprop="name">LTI-Toolkit</span><meta itemprop="position" content="1"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+            <div class="topbar-button topbar-button-edit" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="https://github.com/alt-cs-lab/lti-toolkit/edit/main/docs/content/_index.md" rel="external" target="_blank" title="Edit (CTRL+ALT+w)"><i class="fa-fw fas fa-pen"></i></a>
+            </div>
+            <div class="topbar-button topbar-button-print" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/lti-toolkit/index.print.html" title="Print whole chapter (CTRL+ALT+p)"><i class="fa-fw fas fa-print"></i></a>
+            </div>
+            <div class="topbar-button topbar-button-prev" data-content-empty="disable" data-width-s="show" data-width-m="show" data-width-l="show"><span class="topbar-control"><i class="fa-fw fas fa-chevron-left"></i></span>
+            </div>
+            <div class="topbar-button topbar-button-next" data-content-empty="disable" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/lti-toolkit/00-general/index.html" title="Documentation (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+            <div class="topbar-button topbar-button-more" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="More"><i class="fa-fw fas fa-ellipsis-v"></i></button>
+              <div class="topbar-content">
+                <div class="topbar-content-wrapper">
+                  <div class="topbar-area topbar-area-more" data-area="more">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
       <div id="R-main-overlay"></div>
       <main id="R-body-inner" class="highlightable page" tabindex="-1">
         <div class="flex-block-wrapper">
@@ -160,6 +200,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">lti</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">LTIToolkit</span>({
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Domain name for this application
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">domain_name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://app.domain.tld&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Admin email address for this application
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">admin_email</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;admin@domain.tld&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Logging Level
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// One of error warn info http verbose lti debug sql silly
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">log_level</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;lti&#34;</span>,
@@ -180,6 +222,11 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// The fully qualified domain name for the application
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Must use HTTPS for most other LTI apps to work
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">domain_name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://app.domain.tld&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// REQUIRED
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Admin Email
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Email address for system administrator
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">admin_email</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;administrator@app.domain.tld&#34;</span>,
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// OPTIONAL 
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Logging Level for built-in Winston instance
@@ -258,11 +305,6 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Params: LTI Provider Key, Context Key, Resource Key, User Key, Gradebook Key, Score, Express Request Object
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Function should resolve when grade is posted, no return needed
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">postProviderGrade</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">LTIGradeHandler</span>,
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// REQUIRED
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// LTI Tool Consumer Admin Email
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Email address for system administrator
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">admin_email</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;administrator@app.domain.tld&#34;</span>,
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// REQUIRED
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// LTI Tool Consumer Deployment Name
@@ -452,13 +494,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <p>A fully-featured LTI Tool Provider example can be found in <code>/examples/provider</code>. This document will walk through the details of how that application works.</p>
 <h2 id="environment">Environment</h2>
 <p>The application expects the following environment variables (typically loaded from <code>.env</code>):</p>
-<div class="tab-panel" data-tab-group="16cd2f02b763ba637b49453a5653367b">
+<div class="tab-panel" data-tab-group="9d38b0b19c19e33c9250196da6e80561">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="env"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('16cd2f02b763ba637b49453a5653367b','env')"
+      onclick="switchTab('9d38b0b19c19e33c9250196da6e80561','env')"
     >
       <span class="tab-nav-text">.env</span>
     </button>
@@ -477,6 +519,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># Application Domain Name</span>
 </span></span><span style="display:flex;"><span>DOMAIN_NAME<span style="color:#f92672">=</span>https://ltidemo.home.russfeld.me
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Admin Email Address</span>
+</span></span><span style="display:flex;"><span>ADMIN_EMAIL<span style="color:#f92672">=</span>admin@domain.tld
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># LTI Consumer Key and Secret</span>
 </span></span><span style="display:flex;"><span>LTI_CONSUMER_KEY<span style="color:#f92672">=</span>your_lti_consumer_key
@@ -492,34 +536,34 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <ul>
 <li><strong>Consumer Key</strong> - <code>LTI_CONSUMER_KEY</code> from the app environment.</li>
 <li><strong>Shared Secret</strong> - <code>LTI_CONSUMER_SECRET</code> from the app environment.</li>
-<li><strong>XML Configuration URL</strong> - <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/config10</code> by default. The URL can be configured in <code>app.js</code> as described below.
+<li><strong>XML Configuration URL</strong> - <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/config.xml</code> by default. The URL can be configured in <code>app.js</code> as described below.
 <ul>
 <li>Additional settings for the XML configuration can be set in the <code>lti.js</code> config file.</li>
 </ul>
 </li>
-<li><strong>Launch URL</strong> - <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/launch10</code> by default. The URL can be configured in <code>app.js</code> as described below.</li>
+<li><strong>Launch URL</strong> - <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/launch</code> by default. The URL can be configured in <code>app.js</code> as described below.</li>
 <li><strong>Domain</strong> - typically the <code>DOMAIN_NAME</code> from the app environment without the <code>https://</code> at the front.</li>
 <li><strong>Privacy Level</strong> - any option (&ldquo;Public&rdquo; provides all info, &ldquo;Anonymous&rdquo; omits most student info).</li>
 </ul>
 <h3 id="xml-configuration">XML Configuration</h3>
-<p><a href="#R-image-b8cf241002771d6191e5a7ce139422cd" class="lightbox-link"><img alt="LTI 1.0 XML Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10xml.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-b8cf241002771d6191e5a7ce139422cd"><img alt="LTI 1.0 XML Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10xml.png"></a></p>
+<p><a href="#R-image-4db00b91fdfb442e5630a6c88cd55233" class="lightbox-link"><img alt="LTI 1.0 XML Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10xml.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-4db00b91fdfb442e5630a6c88cd55233"><img alt="LTI 1.0 XML Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10xml.png"></a></p>
 <h3 id="manual-configuration">Manual Configuration</h3>
-<p><a href="#R-image-c59bd2bf9d90020008b37ff6ed5f7dfa" class="lightbox-link"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-c59bd2bf9d90020008b37ff6ed5f7dfa"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png"></a></p>
+<p><a href="#R-image-fce1e5d14f576847aebbbad7a09b9c69" class="lightbox-link"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-fce1e5d14f576847aebbbad7a09b9c69"><img alt="LTI 1.0 Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10.png"></a></p>
 <p>Once the application has been added to the course, an assignment can be created to direct students to the Launch URL used above.</p>
-<p><a href="#R-image-7041faa3708a50ced8bb287c2a3aa65f" class="lightbox-link"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-7041faa3708a50ced8bb287c2a3aa65f"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png"></a></p>
+<p><a href="#R-image-f70469439af9cba290303b208e01b107" class="lightbox-link"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f70469439af9cba290303b208e01b107"><img alt="LTI 1.0 Assignment Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png"></a></p>
 <p>To access the rest of the application, students and teachers should use the assignment configured in the learning management system to perform an LTI Launch as described below.</p>
 <h2 id="lti-toolkit-configuration">LTI Toolkit Configuration</h2>
 <p>The <code>src/configs/lti.js</code> file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Provider:</p>
-<div class="tab-panel" data-tab-group="5704ef2e6da72ae7fdbcca1b0f12d08f">
+<div class="tab-panel" data-tab-group="e03719cbcb94dee13c4e67f7414222cf">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcconfigsltijs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('5704ef2e6da72ae7fdbcca1b0f12d08f','srcconfigsltijs')"
+      onclick="switchTab('e03719cbcb94dee13c4e67f7414222cf','srcconfigsltijs')"
     >
       <span class="tab-nav-text">src/configs/lti.js</span>
     </button>
@@ -545,6 +589,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">lti</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">LTIToolkit</span>({
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Domain name for this application
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">domain_name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DOMAIN_NAME</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Admin email address for this application
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">admin_email</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">ADMIN_EMAIL</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Logging Level
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">log_level</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">LOG_LEVEL</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">&#34;silly&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Use In-memory database for testing
@@ -566,13 +612,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </div><p>It configures a default LTI 1.0 Tool Provider using the domain, key and secret provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library to the <code>LTILaunch</code> function provided by one of the routes as the handler for incoming LTI Launch Requests.</p>
 <h2 id="integrating-application-routes">Integrating Application Routes</h2>
 <p>The <code>app.js</code> file creates a basic <a href="https://www.npmjs.com/package/express" rel="external" target="_blank">Express</a> application with a minimal set of libraries and configuration.</p>
-<div class="tab-panel" data-tab-group="fc1015406f0fe6758d0ca59661d538ce">
+<div class="tab-panel" data-tab-group="dfab0646f99c1f7a75a264fa729943bb">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="appjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('fc1015406f0fe6758d0ca59661d538ce','appjs')"
+      onclick="switchTab('dfab0646f99c1f7a75a264fa729943bb','appjs')"
     >
       <span class="tab-nav-text">app.js</span>
     </button>
@@ -606,13 +652,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li><code>req</code> - the incoming Express request object</li>
 </ul>
 <p>In the example project, we use the following LTI Launch Handler:</p>
-<div class="tab-panel" data-tab-group="92053c2a6a45b8f1b394e237aaa0f53a">
+<div class="tab-panel" data-tab-group="24de29bc82db59bdbb069935ed6c26da">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('92053c2a6a45b8f1b394e237aaa0f53a','srcrouteslti-launchjs')"
+      onclick="switchTab('24de29bc82db59bdbb069935ed6c26da','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -653,13 +699,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
   </div>
 </div><p>Notice that we serialize the <code>consumer</code> parameter to JSON since it is provided as a Sequelize object instance.</p>
 <p>This handler users two helper functions. The first will parse the incoming roles in the <code>launchData</code> object:</p>
-<div class="tab-panel" data-tab-group="fc9b154320f8168b88244fb45efcb68c">
+<div class="tab-panel" data-tab-group="bad808a7e9e66e94f76bae61a58e838c">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('fc9b154320f8168b88244fb45efcb68c','srcrouteslti-launchjs')"
+      onclick="switchTab('bad808a7e9e66e94f76bae61a58e838c','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -706,13 +752,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
   </div>
 </div><p>It will simply return <code>true</code> if the role is a student, otherwise it will treat the role as an instructor. This may or may not be desired behavior for a production application.</p>
 <p>Finally, it also stores data about the incoming <code>launchData</code> in a shared data structure that is only stored in memory.</p>
-<div class="tab-panel" data-tab-group="1ad14f645c2f2c25ed00a94c88af4b75">
+<div class="tab-panel" data-tab-group="40eaa44a2aeab30b7e629c516cc2ceae">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcrouteslti-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('1ad14f645c2f2c25ed00a94c88af4b75','srcrouteslti-launchjs')"
+      onclick="switchTab('40eaa44a2aeab30b7e629c516cc2ceae','srcrouteslti-launchjs')"
     >
       <span class="tab-nav-text">src/routes/lti-launch.js</span>
     </button>
@@ -772,13 +818,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </div><p>In practice, this would be replaced with appropriate code and logic to store this data in a database or other storage mechanism for the application. However, this data structure is instructive as it shows a minimal set of data that could be stored in order to track courses, assignments, students, and grades.</p>
 <h2 id="student-grade-passback">Student Grade Passback</h2>
 <p>Once a student&rsquo;s grade has been determined, it can be passed back to the learning management system (LMS) using the LTI Controller&rsquo;s <code>postGrade</code> method:</p>
-<div class="tab-panel" data-tab-group="718283ed7dafafd8c06e2fa59d7c383e">
+<div class="tab-panel" data-tab-group="3ab4bd2d6a01c4f4a63518f8170ca31d">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesstudent-gradejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('718283ed7dafafd8c06e2fa59d7c383e','srcroutesstudent-gradejs')"
+      onclick="switchTab('3ab4bd2d6a01c4f4a63518f8170ca31d','srcroutesstudent-gradejs')"
     >
       <span class="tab-nav-text">src/routes/student-grade.js</span>
     </button>
@@ -856,13 +902,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </div><p>This method constructs the grade object required by the <code>postGrade</code> method using data from the LTI Launch Data and the LTI Consumer originally provided to the LTI Launch Handler. In this example, those values are read directly from the user&rsquo;s session.</p>
 <h2 id="instructor-grade-passback">Instructor Grade Passback</h2>
 <p>A more advanced example of submitting grades could involve the instructor providing grades after a student has completed an assignment:</p>
-<div class="tab-panel" data-tab-group="1ffe31e0ed06372978d1a8b2145b45d1">
+<div class="tab-panel" data-tab-group="ad741f1586687afceb885224ef8c92b6">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesinstructor-gradejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('1ffe31e0ed06372978d1a8b2145b45d1','srcroutesinstructor-gradejs')"
+      onclick="switchTab('ad741f1586687afceb885224ef8c92b6','srcroutesinstructor-gradejs')"
     >
       <span class="tab-nav-text">src/routes/instructor-grade.js</span>
     </button>
@@ -957,34 +1003,57 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </div><p>In this example, the same data required to build a grade object is read from the shared data structure stored in memory. Again, in practice, this data would be read from a database or another storage mechanism, but this code should be instructive.</p>
 <h2 id="lti-13-configuration">LTI 1.3 Configuration</h2>
 <p>Configuring an application to use the LTI 1.3 protocol is a bit more complex, and requires several steps in both the learning management system (LMS) as well as this tool. Detailed instructions and configuration information can be found at the <code>/admin</code> route in the example application, and also are discussed below.</p>
+<h3 id="lti-13-dynamic-registration">LTI 1.3 Dynamic Registration</h3>
+<p>The simplest way to add an LTI 1.3 application to an LMS is the LTI 1.3 Dynamic Registration process.</p>
+<h4 id="step-1---add-application-to-canvas">Step 1 - Add Application to Canvas</h4>
+<p>In Canvas, this requires administrator access, so you may have to work with your Canvas administrator to accomplish this step. In Canvas, go to the Admin panel for the account used and find the Developer Keys page, then add a new LTI Registration.</p>
+<ul>
+<li><strong>Registration URL</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/register</code> by default.</li>
+</ul>
+<p><a href="#R-image-8e8e50e9a1452616e117b551fa72a3c0" class="lightbox-link"><img alt="LTI 1.3 Registration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13dynamic1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-8e8e50e9a1452616e117b551fa72a3c0"><img alt="LTI 1.3 Registration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13dynamic1.png"></a></p>
+<p>Once the registration is complete, click Enable and Close.</p>
+<p><a href="#R-image-1181784e1af3af5f289ae891b99960be" class="lightbox-link"><img alt="LTI 1.3 Registration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13dynamic.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1181784e1af3af5f289ae891b99960be"><img alt="LTI 1.3 Registration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13dynamic.png"></a></p>
+<h4 id="step-2---activate-application">Step 2 - Activate Application</h4>
+<p>Once installed, the application must be made available to courses in Canvas. Click the View in Canvas Apps link next to the new LTI application, then click Edit and choose to make the application Available, then click Save. You can also restrict this to specific subaccounts or classes.</p>
+<p><a href="#R-image-bfdb8be9b0fe648c12bbf953abf92e6c" class="lightbox-link"><img alt="LTI 1.3 Registration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13dynamic2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-bfdb8be9b0fe648c12bbf953abf92e6c"><img alt="LTI 1.3 Registration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13dynamic2.png"></a></p>
+<h4 id="step-3---configure-assginment">Step 3 - Configure Assginment</h4>
+<p>In Canvas, configure an assignment that uses an external URL (similar to working with LTI 1.0 Applications as shown below). This time, it will use the Target Link URI - typically the <code>DOMAIN_NAME</code> from the environment followed by <code>/lti/provider/launch</code>.</p>
+<p><a href="#R-image-e8f7045982ed1c0ee072e1da2cc1d1a5" class="lightbox-link"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-e8f7045982ed1c0ee072e1da2cc1d1a5"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png"></a></p>
+<p>From this point onward, students and teachers can access the LTI Demo Application through this Canvas assignment to perform an LTI 1.3 Launch.</p>
+<h3 id="lti-manual-registration">LTI Manual Registration</h3>
+<p>Alternatively, LTI 1.3 applications can be registered manually in Canvas using the steps below.</p>
 <h3 id="step-1---add-an-lti-13-application-in-the-lms">Step 1 - Add an LTI 1.3 Application in the LMS</h3>
 <p>The first step is to add an LTI 1.3 application to the learning management system. In Canvas, this requires administrator access, so you may have to work with your Canvas administrator to accomplish this step. In Canvas, go to the Admin panel for the account used and find the Developer Keys page, then add a new LTI Key.</p>
 <ul>
-<li><strong>Redirect URIs</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/redirect13</code> by default.</li>
-<li><strong>Target Link URIs</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/launch13</code> by default.</li>
-<li><strong>OpenID Connect Initiation Url</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/login13/</code> and then the <code>LTI_CONSUMER_KEY</code> from the app environment by default.</li>
+<li><strong>Redirect URIs</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/launch</code> by default.</li>
+<li><strong>Target Link URIs</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/launch</code> by default.</li>
+<li><strong>OpenID Connect Initiation Url</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/login</code></li>
 <li><strong>JWK Method</strong>: Public JWK URL (this library only supports JWKS via URL)</li>
-<li><strong>Public JWK URL</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/key13</code> by default.</li>
+<li><strong>Public JWK URL</strong>: <code>DOMAIN_NAME</code> from the app environment followed by <code>/lti/provider/jwks</code> by default.</li>
 </ul>
 <p>The base of these URLs can be configured in <code>app.js</code> as discussed above.</p>
-<p><a href="#R-image-abbc1c03d1c73705eff9c38fba67a570" class="lightbox-link"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-abbc1c03d1c73705eff9c38fba67a570"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png"></a></p>
+<p><a href="#R-image-193d7b434ea837ff8575c28a61ff5b1c" class="lightbox-link"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-193d7b434ea837ff8575c28a61ff5b1c"><img alt="LTI 1.3 Key Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin1.png"></a></p>
 <p>In the LTI Advantage Services configuration, at a minimum the &ldquo;Can create and update submission results for assignments associated with the tool&rdquo; must be selected, which will allow this application to send grades back to the learning management system.</p>
-<p><a href="#R-image-5056df2cc9ce1d2b02c496e1b5069fe8" class="lightbox-link"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-5056df2cc9ce1d2b02c496e1b5069fe8"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png"></a></p>
+<p><a href="#R-image-8be32b0806c2e2b4723514edb1e3ae68" class="lightbox-link"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-8be32b0806c2e2b4723514edb1e3ae68"><img alt="LTI 1.3 Advantage Services in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin2.png"></a></p>
 <p>At the bottom, the privacy level may be set to any value. The &ldquo;Public&rdquo; option provides all data about students (name, email, image). Other privacy levels may omit some of this data.</p>
-<p><a href="#R-image-314f60deeabecfa57926732bec994da6" class="lightbox-link"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-314f60deeabecfa57926732bec994da6"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png"></a></p>
+<p><a href="#R-image-61b3e6ea1c19477863fa7854a5f52ce0" class="lightbox-link"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-61b3e6ea1c19477863fa7854a5f52ce0"><img alt="LTI 1.3 Privacy Configuration in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin3.png"></a></p>
 <p>Once the LTI Key is created, a Client ID is provided by Canvas. Make a note of this value for later. Also, make sure the LTI Key is enabled here.</p>
-<p><a href="#R-image-4cb2713fcd408f40f967cc5854667c8b" class="lightbox-link"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-4cb2713fcd408f40f967cc5854667c8b"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png"></a></p>
+<p><a href="#R-image-11f6e69a03c8e2ef3e51b3abfb6e3bdc" class="lightbox-link"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-11f6e69a03c8e2ef3e51b3abfb6e3bdc"><img alt="LTI 1.3 Client ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13admin4.png"></a></p>
 <h3 id="step-2---add-lti-13-application-to-a-course">Step 2 - Add LTI 1.3 Application to a Course</h3>
 <p>Once the LTI 1.3 Key is created, the application can be added to a course within the learning management system. In Canvas, this can be found on the Settings of a course on the Apps tab. Click the button to add a new application, and enter the Client ID from Step 1 above.</p>
-<p><a href="#R-image-1a4792a92be1c39e1cdcc9265b545bf7" class="lightbox-link"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-1a4792a92be1c39e1cdcc9265b545bf7"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png"></a></p>
+<p><a href="#R-image-e2e7409e69c3599fb3960d481396bdde" class="lightbox-link"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-e2e7409e69c3599fb3960d481396bdde"><img alt="LTI 1.3 Add App to Course in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course1.png"></a></p>
 <p>Once the application has been added to the course, click the menu next to the application and display the Deployment ID for the application. Save this value for later.</p>
-<p><a href="#R-image-21f58fc191e7172615dae9e3c23fa5bc" class="lightbox-link"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-21f58fc191e7172615dae9e3c23fa5bc"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png"></a></p>
+<p><a href="#R-image-7e6a924249e5630c883fa3af7d5d5b74" class="lightbox-link"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-7e6a924249e5630c883fa3af7d5d5b74"><img alt="LTI 1.3 Deployment ID in Canvas" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13course2.png"></a></p>
 <h3 id="step-3---configure-lti-13-settings">Step 3 - Configure LTI 1.3 Settings</h3>
 <p>Back in the LTI Provider Demo application, click the link on the homepage or navigate to the <code>/admin</code> page to access the LTI 1.3 configuration. On this page, enter the LTI 1.3 configuration information for your learning management system. Examples below are shown for Canvas using the configuration provided in the steps above.</p>
 <ul>
@@ -995,22 +1064,22 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li><strong>LTI 1.3 Token URL:</strong> For Canvas, <code>/login/oauth2/token</code></li>
 <li><strong>LTI 1.3 Auth URL:</strong> For Canvas, <code>/api/lti/authorize_redirect</code></li>
 </ul>
-<p><a href="#R-image-d303a86549a0e8ac5925959a0cc975ce" class="lightbox-link"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-d303a86549a0e8ac5925959a0cc975ce"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png"></a></p>
+<p><a href="#R-image-33ccbad63951b8cb8627cfe9aefeb49d" class="lightbox-link"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-33ccbad63951b8cb8627cfe9aefeb49d"><img alt="LTI 1.3 Consumer Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13app1.png"></a></p>
 <h3 id="step-4---configure-lms-assignment">Step 4 - Configure LMS Assignment</h3>
-<p>In Canvas, configure an assignment that uses an external URL (similar to working with LTI 1.0 Applications as shown below). This time, it will use the Target Link URI configured in Step 1 - typically the <code>DOMAIN_NAME</code> from the environment followed by <code>/lti/provider/launch13</code>.</p>
-<p><a href="#R-image-3a8f155e48e136ca1d67b50c38cdc322" class="lightbox-link"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-3a8f155e48e136ca1d67b50c38cdc322"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti13assign1.png"></a></p>
+<p>In Canvas, configure an assignment that uses an external URL (similar to working with LTI 1.0 Applications as shown below). This time, it will use the Target Link URI configured in Step 1 - typically the <code>DOMAIN_NAME</code> from the environment followed by <code>/lti/provider/launch</code>.</p>
+<p><a href="#R-image-3ce3c3cd56b01f160a765b845a6c8218" class="lightbox-link"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-3ce3c3cd56b01f160a765b845a6c8218"><img alt="LTI 1.3 Assignment Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/provider/images/lti10assign.png"></a></p>
 <p>From this point onward, students and teachers can access the LTI Demo Application through this Canvas assignment to perform an LTI 1.3 Launch.</p>
 <h2 id="managing-lti-consumers">Managing LTI Consumers</h2>
 <p>Within the sample application, the Admin Configuration handler gives a demonstration for using this library&rsquo;s controllers to manage the LTI Consumers available within the application.</p>
-<div class="tab-panel" data-tab-group="1e92ba7b8f4f2c2e8a5fb89bb77e6c62">
+<div class="tab-panel" data-tab-group="e8d305b3e46e691729b73e5e02fb2648">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesadmin-configjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('1e92ba7b8f4f2c2e8a5fb89bb77e6c62','srcroutesadmin-configjs')"
+      onclick="switchTab('e8d305b3e46e691729b73e5e02fb2648','srcroutesadmin-configjs')"
     >
       <span class="tab-nav-text">src/routes/admin-config.js</span>
     </button>
@@ -1116,13 +1185,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <p>A fully-featured LTI Tool Consumer example can be found in <code>/examples/consumer</code>. This document will walk through the details of how that application works.</p>
 <h2 id="environment">Environment</h2>
 <p>The application expects the following environment variables (typically loaded from <code>.env</code>):</p>
-<div class="tab-panel" data-tab-group="11786aca959034b8a155064767b53258">
+<div class="tab-panel" data-tab-group="3d67b820c3112474328f00344798f39a">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="env"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('11786aca959034b8a155064767b53258','env')"
+      onclick="switchTab('3d67b820c3112474328f00344798f39a','env')"
     >
       <span class="tab-nav-text">.env</span>
     </button>
@@ -1141,9 +1210,10 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># Application Domain Name</span>
 </span></span><span style="display:flex;"><span>DOMAIN_NAME<span style="color:#f92672">=</span>https://ltidemo.home.russfeld.me
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Admin Email Address</span>
+</span></span><span style="display:flex;"><span>ADMIN_EMAIL<span style="color:#f92672">=</span>admin@domain.tld
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># LTI Tool Consumer Settings</span>
-</span></span><span style="display:flex;"><span>ADMIN_EMAIL<span style="color:#f92672">=</span>admin@domain.tld
 </span></span><span style="display:flex;"><span>DEPLOYMENT_NAME<span style="color:#f92672">=</span>LTI Toolkit Demo
 </span></span><span style="display:flex;"><span>DEPLOYMENT_ID<span style="color:#f92672">=</span>deployment-001</span></span></code></pre></div>
       </div>
@@ -1151,13 +1221,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
   </div>
 </div><h2 id="lti-toolkit-configuration">LTI Toolkit Configuration</h2>
 <p>The <code>src/configs/lti.js</code> file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Consumer:</p>
-<div class="tab-panel" data-tab-group="d1b5040847da86b31dd86fdaa03f613b">
+<div class="tab-panel" data-tab-group="e8352f6348dfd1d90f3fdd21d2eb47b8">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcconfigsltijs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('d1b5040847da86b31dd86fdaa03f613b','srcconfigsltijs')"
+      onclick="switchTab('e8352f6348dfd1d90f3fdd21d2eb47b8','srcconfigsltijs')"
     >
       <span class="tab-nav-text">src/configs/lti.js</span>
     </button>
@@ -1183,6 +1253,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">lti</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">LTIToolkit</span>({
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Domain name for this application
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">domain_name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DOMAIN_NAME</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Admin email address for this application
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">admin_email</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">ADMIN_EMAIL</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Logging Level
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">log_level</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">LOG_LEVEL</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">&#34;silly&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Use In-memory database for testing
@@ -1192,8 +1264,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Incoming grade handler
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">postProviderGrade</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">postProviderGrade</span>,
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Tool Consumer Information
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">admin_email</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">ADMIN_EMAIL</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">deployment_name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DEPLOYMENT_NAME</span>,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">deployment_name</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DEPLOYMENT_NAME</span>,
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">deployment_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">DEPLOYMENT_ID</span>,
 </span></span><span style="display:flex;"><span>  },
 </span></span><span style="display:flex;"><span>});
@@ -1205,13 +1276,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </div><p>It configures a default LTI 1.0 Tool Consumer using the domain provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. In addition, it provides some configuration information about the LTI 1.0 Tool Consumer using the information provided in the environment. Finally, it directs the library to the <code>postProviderGrade</code> function provided by one of the routes as the handler for incoming LTI grade passback.</p>
 <h2 id="integrating-application-routes">Integrating Application Routes</h2>
 <p>The <code>app.js</code> file creates a basic <a href="https://www.npmjs.com/package/express" rel="external" target="_blank">Express</a> application with a minimal set of libraries and configuration.</p>
-<div class="tab-panel" data-tab-group="c9005792b6c2a7d942c6241a30a7289b">
+<div class="tab-panel" data-tab-group="c7b4de10d9e3177b87c3010d46499501">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="appjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('c9005792b6c2a7d942c6241a30a7289b','appjs')"
+      onclick="switchTab('c7b4de10d9e3177b87c3010d46499501','appjs')"
     >
       <span class="tab-nav-text">app.js</span>
     </button>
@@ -1255,16 +1326,16 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li><strong>LTI 1.0 Enabled</strong> - enable LTI 1.3 Tool Providers (currently unsupported)</li>
 </ul>
 <p>An example configuration for connecting to <a href="https://www.prairielearn.com/" rel="external" target="_blank">PrairieLearn</a> is shown below:</p>
-<p><a href="#R-image-1497dd0da4d95728a9b23eb416186f80" class="lightbox-link"><img alt="LTI 1.0 Tool Provider Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-1497dd0da4d95728a9b23eb416186f80"><img alt="LTI 1.0 Tool Provider Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool.png"></a></p>
+<p><a href="#R-image-78bdee769e390bb4f7439afc072549b7" class="lightbox-link"><img alt="LTI 1.0 Tool Provider Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-78bdee769e390bb4f7439afc072549b7"><img alt="LTI 1.0 Tool Provider Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool.png"></a></p>
 <p>LTI 1.0 Tool Providers are added to the system using the <code>Provider</code> controller as shown in the <code>configure</code> handler.</p>
-<div class="tab-panel" data-tab-group="c51f886a66ce25f7e3520f7a6cbcfe56">
+<div class="tab-panel" data-tab-group="a527b8ee08a94e9bde3219664505a7a7">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesconfigurejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('c51f886a66ce25f7e3520f7a6cbcfe56','srcroutesconfigurejs')"
+      onclick="switchTab('a527b8ee08a94e9bde3219664505a7a7','srcroutesconfigurejs')"
     >
       <span class="tab-nav-text">src/routes/configure.js</span>
     </button>
@@ -1343,8 +1414,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
     </div>
   </div>
 </div><p>Once an LTI 1.0 Tool Provider is configured, it will be listed on the index page. Click the link to access it.</p>
-<p><a href="#R-image-b846b0fbcef62f3df4c19ea222257b07" class="lightbox-link"><img alt="LTI 1.0 Tool Provider List" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-b846b0fbcef62f3df4c19ea222257b07"><img alt="LTI 1.0 Tool Provider List" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool2.png"></a></p>
+<p><a href="#R-image-d11d228b335cf4836447c5e015c4c30c" class="lightbox-link"><img alt="LTI 1.0 Tool Provider List" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-d11d228b335cf4836447c5e015c4c30c"><img alt="LTI 1.0 Tool Provider List" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltitool2.png"></a></p>
 <h2 id="configuring-an-lti-10-launch-request">Configuring an LTI 1.0 Launch Request</h2>
 <p>A fully-configured LTI 1.0 Launch Request requires several pieces of information. Generally this information is part of the internal functionalty of the learning management system (LMS) that is implementing LTI 1.0 Tool Consumer functionality. For this example, we instead just use hand-entered values to simulate this process. In an actual LMS, most of this data would already be present.</p>
 <p>For all of the items listed below, the <strong>key</strong> values should not be the sequentially autogenerated database IDs, as that may leak internal data from the LMS and allow malicious users to guess other valid values. Intead, these values should be unique and randomly generated, such as <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier" rel="external" target="_blank">UUIDs</a> or similar, but they should be consistent (i.e. a key should uniquely identify an item, and that item should always use the same key). Internally, this library uses the <a href="https://www.npmjs.com/package/nanoid" rel="external" target="_blank">nanoid</a> package to generate random ID values.</p>
@@ -1374,16 +1445,16 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li><strong>Gradebook Key</strong> - a uniquely identifiable key for the gradebook line item. This can be used to differentiate between individual launches to the same LTI Tool Provider, or to differentiate between launches to different LTI Tool Providers using the same context and resource keys.</li>
 </ul>
 <p>This sample application provides default values for all of these options in the form to configure the launch.</p>
-<p><a href="#R-image-c20c1c4ce7d4a202b195740a4ebe31b9" class="lightbox-link"><img alt="LTI 1.0 Launch Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-c20c1c4ce7d4a202b195740a4ebe31b9"><img alt="LTI 1.0 Launch Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch.png"></a></p>
+<p><a href="#R-image-6ec323cfd6ab96b22b5bf96ab6617a38" class="lightbox-link"><img alt="LTI 1.0 Launch Configuration" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-6ec323cfd6ab96b22b5bf96ab6617a38"><img alt="LTI 1.0 Launch Configuration" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch.png"></a></p>
 <p>Once the launch is configured, click the &ldquo;Submit&rdquo; button to prepare the LTI 1.0 Launch page. This is handled by the <code>provider-launch</code> handler in the demo application. In short, it collects all of the form data and constructs the parameters for the <code>generateLTI10FormData</code> function in the LTI controller:</p>
-<div class="tab-panel" data-tab-group="db26d68771c3117b4006431a8d913c8a">
+<div class="tab-panel" data-tab-group="96252d3e23d71a5a917919d99e2b064c">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutesprovider-launchjs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('db26d68771c3117b4006431a8d913c8a','srcroutesprovider-launchjs')"
+      onclick="switchTab('96252d3e23d71a5a917919d99e2b064c','srcroutesprovider-launchjs')"
     >
       <span class="tab-nav-text">src/routes/provider-launch.js</span>
     </button>
@@ -1512,13 +1583,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <h2 id="sending-an-lti-launch-request">Sending an LTI Launch Request</h2>
 <p>LTI 1.0 Launch Requests must be sent by the user&rsquo;s browser. The easiest way to do this is by constructing a form on the webpage with only hidden fields, and then having the user click a button to submit the form to the LTI Launch URL of the LTI 1.0 Tool Provider. The form can also be configured to submit automatically if desired.</p>
 <p>The <code>launch.njk</code> template demonstrates how to generate this page using the <a href="https://www.npmjs.com/package/nunjucks" rel="external" target="_blank">Nunjucks</a> template engine.</p>
-<div class="tab-panel" data-tab-group="d148300cc15afced0ec1a53b3284896f">
+<div class="tab-panel" data-tab-group="4c3979c92a75bfe58b86f2d412722ace">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcviewslaunchnjk"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('d148300cc15afced0ec1a53b3284896f','srcviewslaunchnjk')"
+      onclick="switchTab('4c3979c92a75bfe58b86f2d412722ace','srcviewslaunchnjk')"
     >
       <span class="tab-nav-text">src/views/launch.njk</span>
     </button>
@@ -1589,18 +1660,18 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;action&#34;</span>: <span style="color:#e6db74">&#34;https://pl.home.russfeld.me/pl/lti&#34;</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <p>The resulting page:</p>
-<p><a href="#R-image-86067f714d8e69832ccc462eaaffe8ea" class="lightbox-link"><img alt="LTI Launch Page" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-86067f714d8e69832ccc462eaaffe8ea"><img alt="LTI Launch Page" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch2.png"></a></p>
+<p><a href="#R-image-aa202c540910a6a23d364da74a8a85d9" class="lightbox-link"><img alt="LTI Launch Page" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-aa202c540910a6a23d364da74a8a85d9"><img alt="LTI Launch Page" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltilaunch2.png"></a></p>
 <p>Click the button to launch the LTI 1.0 Tool Provider.</p>
 <h2 id="handling-grade-passback">Handling Grade Passback</h2>
 <p>At any time, the LTI 1.0 Tool Provider may provide updated grade information to our example program. That is received at the <code>grade_passback</code> route in the LTI Consumer Router, and then sent to the <code>postProviderGrade</code> function provided in the toolkit configuration as shown above. For this example program, this is handled in the <code>post-grade</code> handler:</p>
-<div class="tab-panel" data-tab-group="c296487628e3a5351ece4b18bb75eaae">
+<div class="tab-panel" data-tab-group="70cba568ec8ee898f1a83896f641c24d">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="srcroutespost-gradejs"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('c296487628e3a5351ece4b18bb75eaae','srcroutespost-gradejs')"
+      onclick="switchTab('70cba568ec8ee898f1a83896f641c24d','srcroutespost-gradejs')"
     >
       <span class="tab-nav-text">src/routes/post-grade.js</span>
     </button>
@@ -1658,11 +1729,11 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <p>This should be enough information to properly record the grade in the LMS gradebook. In this example application, it is just stored in an in-memory object for short-term tracking.</p>
 <h2 id="viewing-grades">Viewing Grades</h2>
 <p>This example application will display any grades received and stored in local memory in the <code>grades</code> path:</p>
-<p><a href="#R-image-ccc12e3ce6126a5c5d5962ad1e0ea3dd" class="lightbox-link"><img alt="LTI Example Grades" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-ccc12e3ce6126a5c5d5962ad1e0ea3dd"><img alt="LTI Example Grades" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades.png"></a></p>
+<p><a href="#R-image-4a3d4d6639a48a6c5f2d62adbf42717d" class="lightbox-link"><img alt="LTI Example Grades" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-4a3d4d6639a48a6c5f2d62adbf42717d"><img alt="LTI Example Grades" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades.png"></a></p>
 <p>This matches the grade found in the LTI 1.0 Tool Provider:</p>
-<p><a href="#R-image-7e5ed918aa66b2277276214d1d728faa" class="lightbox-link"><img alt="LTI Tool Grades" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades2.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-7e5ed918aa66b2277276214d1d728faa"><img alt="LTI Tool Grades" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades2.png"></a></p>
+<p><a href="#R-image-a27badcf5bcb08945a88ec89c53256cb" class="lightbox-link"><img alt="LTI Tool Grades" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-a27badcf5bcb08945a88ec89c53256cb"><img alt="LTI Tool Grades" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/00-examples/consumer/images/ltigrades2.png"></a></p>
 
   <footer class="footline">
   </footer>
@@ -1674,8 +1745,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 
 <h1 id="database-schema">Database Schema</h1>
 
-<p><a href="#R-image-6d66115b6551d7d5f63594db0fcc4bf6" class="lightbox-link"><img alt="Database Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-6d66115b6551d7d5f63594db0fcc4bf6"><img alt="Database Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png"></a></p>
+<p><a href="#R-image-c5735e299c2a603e75804a9ede683e29" class="lightbox-link"><img alt="Database Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-c5735e299c2a603e75804a9ede683e29"><img alt="Database Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/00-general/01-database/images/database.png"></a></p>
 <h2 id="system-managed-tables">System Managed Tables</h2>
 <h3 id="lti_migrations">lti_migrations</h3>
 <p>This is the migrations table managed by <a href="https://github.com/sequelize/umzug" rel="external" target="_blank">Umzug</a>. It tracks any changes that must be made to the database schema as future versions are released.</p>
@@ -1824,13 +1895,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <ol>
 <li>Clone Repository</li>
 </ol>
-<div class="tab-panel" data-tab-group="89f1a5ebd4eab90ca1132f70f39dea0f">
+<div class="tab-panel" data-tab-group="6eb924bd1df810fa5848ce9d3fb20ed6">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('89f1a5ebd4eab90ca1132f70f39dea0f','terminal')"
+      onclick="switchTab('6eb924bd1df810fa5848ce9d3fb20ed6','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -1848,13 +1919,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li>Modify Setup Script</li>
 </ol>
 <p>The setup script insists that Docker Compose be installed separately; it is now part of the default Docker installation on Ubuntu and does not appear as a separate item on my system. So, it can be removed from the setup script.</p>
-<div class="tab-panel" data-tab-group="5332c87cb54305a01b8bedc2fee17674">
+<div class="tab-panel" data-tab-group="261d71edfbdb73b884fae856bc02ed09">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="scriptcommonoslinuxdev_setupsh"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('5332c87cb54305a01b8bedc2fee17674','scriptcommonoslinuxdev_setupsh')"
+      onclick="switchTab('261d71edfbdb73b884fae856bc02ed09','scriptcommonoslinuxdev_setupsh')"
     >
       <span class="tab-nav-text">script/common/os/linux/dev_setup.sh</span>
     </button>
@@ -1881,13 +1952,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li>Export Environment Settings</li>
 </ol>
 <p>My development environment seems to require these settings:</p>
-<div class="tab-panel" data-tab-group="26dbca2985075e374eb2122d55157f7b">
+<div class="tab-panel" data-tab-group="52ed0013244e3fa27b349b99f8253466">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('26dbca2985075e374eb2122d55157f7b','terminal')"
+      onclick="switchTab('52ed0013244e3fa27b349b99f8253466','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -1906,13 +1977,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li>Set Gemfile Permissions</li>
 </ol>
 <p>There are several file permission errors that will crop up during the build. The best fix is to give Canvas user permission to all files in the build folder via <code>setfacl</code>:</p>
-<div class="tab-panel" data-tab-group="c90d84aa36886db98e2c1eaef57b4c40">
+<div class="tab-panel" data-tab-group="04412550aed72fb9f529d6acc02a5119">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('c90d84aa36886db98e2c1eaef57b4c40','terminal')"
+      onclick="switchTab('04412550aed72fb9f529d6acc02a5119','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -1936,13 +2007,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <ol start="5">
 <li>Run Setup Script</li>
 </ol>
-<div class="tab-panel" data-tab-group="4ee5db9115232c809aaba3647bf1f3b0">
+<div class="tab-panel" data-tab-group="4a516dbe3a6df24f04de2cc61c308b8c">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('4ee5db9115232c809aaba3647bf1f3b0','terminal')"
+      onclick="switchTab('4a516dbe3a6df24f04de2cc61c308b8c','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -2015,13 +2086,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li>Edit Configuration Files</li>
 </ol>
 <p><strong>Domain Configuration</strong></p>
-<div class="tab-panel" data-tab-group="006e76cc21e47431c04745ba55fbeaac">
+<div class="tab-panel" data-tab-group="a942777c886702116c0227d326854d88">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="configdomainyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('006e76cc21e47431c04745ba55fbeaac','configdomainyml')"
+      onclick="switchTab('a942777c886702116c0227d326854d88','configdomainyml')"
     >
       <span class="tab-nav-text">config/domain.yml</span>
     </button>
@@ -2043,13 +2114,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
     </div>
   </div>
 </div><p><strong>Email Configuration</strong></p>
-<div class="tab-panel" data-tab-group="a8e75e7319897d70deb62e5f7a4a956c">
+<div class="tab-panel" data-tab-group="ad17d2ea22118df40c6781be033b8de7">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="configoutgoing_mailyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('a8e75e7319897d70deb62e5f7a4a956c','configoutgoing_mailyml')"
+      onclick="switchTab('ad17d2ea22118df40c6781be033b8de7','configoutgoing_mailyml')"
     >
       <span class="tab-nav-text">config/outgoing_mail.yml</span>
     </button>
@@ -2072,13 +2143,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
     </div>
   </div>
 </div><p><strong>Security Configuration</strong></p>
-<div class="tab-panel" data-tab-group="7ef3071d51b3c238b4023ae8fb2dc2b8">
+<div class="tab-panel" data-tab-group="fe15586a2fee1186de05e76337a4175c">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="configsecurityyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('7ef3071d51b3c238b4023ae8fb2dc2b8','configsecurityyml')"
+      onclick="switchTab('fe15586a2fee1186de05e76337a4175c','configsecurityyml')"
     >
       <span class="tab-nav-text">config/security.yml</span>
     </button>
@@ -2104,13 +2175,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li>Enable Mailcatcher</li>
 </ol>
 <p>Enable the Mailcatcher service by adding it to the .env file:</p>
-<div class="tab-panel" data-tab-group="4a76f60551d9a34ab8e0803ed9c11f76">
+<div class="tab-panel" data-tab-group="f5ed30cfbe8ca65e6697f42b56443abd">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="env"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('4a76f60551d9a34ab8e0803ed9c11f76','env')"
+      onclick="switchTab('f5ed30cfbe8ca65e6697f42b56443abd','env')"
     >
       <span class="tab-nav-text">.env</span>
     </button>
@@ -2133,13 +2204,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </ol>
 <p>This will set the Traefik tags for each container and other options.</p>
 <p><strong>Main Docker Compose</strong></p>
-<div class="tab-panel" data-tab-group="bbb433bec51663179b93687a139f8f5d">
+<div class="tab-panel" data-tab-group="8a7f2a4d18b512bbffe9c843b6f6ac25">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="docker-composeoverrideyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('bbb433bec51663179b93687a139f8f5d','docker-composeoverrideyml')"
+      onclick="switchTab('8a7f2a4d18b512bbffe9c843b6f6ac25','docker-composeoverrideyml')"
     >
       <span class="tab-nav-text">docker-compose.override.yml</span>
     </button>
@@ -2188,13 +2259,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
     </div>
   </div>
 </div><p><strong>Mailcatcher Docker Compose</strong></p>
-<div class="tab-panel" data-tab-group="806f61e137171aab2c957eaf0e046a35">
+<div class="tab-panel" data-tab-group="39c8876a6d52085fc72f75505a6ffd34">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="docker-composemailcatcheroverrideyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('806f61e137171aab2c957eaf0e046a35','docker-composemailcatcheroverrideyml')"
+      onclick="switchTab('39c8876a6d52085fc72f75505a6ffd34','docker-composemailcatcheroverrideyml')"
     >
       <span class="tab-nav-text">docker-compose/mailcatcher.override.yml</span>
     </button>
@@ -2247,13 +2318,13 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </div><ol start="10">
 <li>Start the Server</li>
 </ol>
-<div class="tab-panel" data-tab-group="5db0831214679e9ca086fad5713bf8a0">
+<div class="tab-panel" data-tab-group="34692f517cdfb5ee3357101e45586c8b">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('5db0831214679e9ca086fad5713bf8a0','terminal')"
+      onclick="switchTab('34692f517cdfb5ee3357101e45586c8b','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -2285,6 +2356,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
   <li class="children-title"><a href="/lti-toolkit/02-lti/02-lti13-tool/index.html">LTI 1.3 Tool Provider</a></li>
   <li class="children-title"><a href="/lti-toolkit/02-lti/03-launchdata/index.html">LTI Launch Data</a></li>
   <li class="children-title"><a href="/lti-toolkit/02-lti/04-lti10-consumer/index.html">LTI 1.0 Tool Consumer</a></li>
+  <li class="children-title"><a href="/lti-toolkit/02-lti/05-lti-registration/index.html">LTI Registration</a></li>
 </ul>
 
   <footer class="footline">
@@ -2300,8 +2372,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 
 <p>This page documents the messages sent from an LMS to this tool acting as an LTI 1.0 Tool Provider.</p>
 <h2 id="sequence-diagram">Sequence Diagram</h2>
-<p><a href="#R-image-ae20aefce4f4254c33df02c1b31c0adb" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-ae20aefce4f4254c33df02c1b31c0adb"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png"></a></p>
+<p><a href="#R-image-25b637db1f3effdd9066cf42fbce122f" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-25b637db1f3effdd9066cf42fbce122f"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/01-lti10-tool/images/lti_10_seq.png"></a></p>
 <h2 id="sample-lti-launch-messages">Sample LTI Launch Messages</h2>
 <h3 id="lti-10-launch-from-canvas---admin-account">LTI 1.0 Launch from Canvas - Admin Account</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
@@ -2488,8 +2560,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 
 <p>This page documents the messages sent from an LMS to this tool acting as an LTI 1.3 Tool Provider.</p>
 <h2 id="sequence-diagram">Sequence Diagram</h2>
-<p><a href="#R-image-fd41df04a782420a8f088009fad8393f" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-fd41df04a782420a8f088009fad8393f"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png"></a></p>
+<p><a href="#R-image-fc9ee8dc70790bc91d78f46f84b8aad5" class="lightbox-link"><img alt="Sequence Diagram" class="border lazy lightbox figure-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-fc9ee8dc70790bc91d78f46f84b8aad5"><img alt="Sequence Diagram" class="border lazy lightbox lightbox-image" loading="lazy" src="/lti-toolkit/02-lti/02-lti13-tool/images/lti_13_seq.png"></a></p>
 <h2 id="sample-lti-launch-messages">Sample LTI Launch Messages</h2>
 <h3 id="login-message-from-canvas">Login Message from Canvas</h3>
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
@@ -3205,17 +3277,465 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
   <footer class="footline">
   </footer>
 </article>
+<article class="default">
+  <header class="headline">
+  </header>
+
+<h1 id="lti-registration">LTI Registration</h1>
+
+<h2 id="sample-lti-registration-messages">Sample LTI Registration Messages</h2>
+<h3 id="lti-10-xml">LTI 1.0 XML</h3>
+<p>The XML below has been reformatted a bit for readability</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;cartridge_basiclti_link</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">xmlns=</span><span style="color:#e6db74">&#34;http://www.imsglobal.org/xsd/imslticc_v1p0&#34;</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">xmlns:blti=</span><span style="color:#e6db74">&#34;http://www.imsglobal.org/xsd/imsbasiclti_v1p0&#34;</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">xmlns:lticm=</span><span style="color:#e6db74">&#34;http://www.imsglobal.org/xsd/imslticm_v1p0&#34;</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">xmlns:lticp=</span><span style="color:#e6db74">&#34;http://www.imsglobal.org/xsd/imslticp_v1p0&#34;</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">xmlns:xsi=</span><span style="color:#e6db74">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">xsi:schemaLocation=</span><span style="color:#e6db74">&#34;http://www.imsglobal.org/xsd/imslticc_v1p0 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticc_v1p0.xsd 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    http://www.imsglobal.org/xsd/imsbasiclti_v1p0 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    http://www.imsglobal.org/xsd/imslticm_v1p0 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    http://www.imsglobal.org/xsd/imslticp_v1p0 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;blti:title&gt;</span>LTI Toolkit<span style="color:#f92672">&lt;/blti:title&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;blti:description&gt;</span>LTI Toolkit for LTI Tool Providers<span style="color:#f92672">&lt;/blti:description&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;blti:icon&gt;</span>https://placehold.co/64x64.png<span style="color:#f92672">&lt;/blti:icon&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;blti:launch_url&gt;</span>https://ltidemo.home.russfeld.me/lti/provider/launch10<span style="color:#f92672">&lt;/blti:launch_url&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;blti:custom&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;lticm:property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;custom_name&#34;</span><span style="color:#f92672">&gt;</span>custom_value<span style="color:#f92672">&lt;/lticm:property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/blti:custom&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;blti:extensions</span> <span style="color:#a6e22e">platform=</span><span style="color:#e6db74">&#34;canvas.instructure.com&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;lticm:property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;tool_id&#34;</span><span style="color:#f92672">&gt;</span>lti_toolkit<span style="color:#f92672">&lt;/lticm:property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;lticm:property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;privacy_level&#34;</span><span style="color:#f92672">&gt;</span>public<span style="color:#f92672">&lt;/lticm:property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;lticm:property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;domain&#34;</span><span style="color:#f92672">&gt;</span>ltidemo.home.russfeld.me<span style="color:#f92672">&lt;/lticm:property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/blti:extensions&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;cartridge_bundle</span> <span style="color:#a6e22e">identifierref=</span><span style="color:#e6db74">&#34;BLTI001_Bundle&#34;</span><span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;cartridge_icon</span> <span style="color:#a6e22e">identifierref=</span><span style="color:#e6db74">&#34;BLTI001_Icon&#34;</span><span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/cartridge_basiclti_link&gt;</span></span></span></code></pre></div>
+<p>Helpful references:</p>
+<ul>
+<li>LTI XML Builder: <a href="https://www.edu-apps.org/build_xml.html" rel="external" target="_blank">https://www.edu-apps.org/build_xml.html</a></li>
+<li>LTI XML Example: <a href="https://codecheck.io/lti/config" rel="external" target="_blank">https://codecheck.io/lti/config</a></li>
+</ul>
+<h3 id="lti-13-dynamic-registration">LTI 1.3 Dynamic Registration</h3>
+<h4 id="initial-request">Initial Request</h4>
+<p>The process begins with the LMS sending a request to the dynamic configuration URL for the tool (<code>register13</code>). These are the query parameters received from Canvas sent in that POST request.</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;openid_configuration&#34;</span>:<span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/api/lti/security/openid-configuration?registration_token=eyJ0eXAiOiJKV...&#34;</span>,<span style="color:#f92672">&#34;registration_token&#34;</span>:<span style="color:#e6db74">&#34;eyJ0eXAiOiJKV...&#34;</span>
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<p>From Canvas, the token is a JWT containing the following information (this is generally opaque to the tool, but interesting to see):</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;uuid&#34;</span>: <span style="color:#e6db74">&#34;58daa07f-f662-44d7-9408-9cbf4ef1699e&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;initiated_at&#34;</span>: <span style="color:#e6db74">&#34;2026-02-06T13:19:21-07:00&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;user_id&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;root_account_global_id&#34;</span>: <span style="color:#ae81ff">10000000000001</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;root_account_domain&#34;</span>: <span style="color:#e6db74">&#34;canvas.home.russfeld.me&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;registration_url&#34;</span>: <span style="color:#e6db74">&#34;https://ltidemo.home.russfeld.me/lti/provider/register13&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;exp&#34;</span>: <span style="color:#ae81ff">1770412761</span>
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<h4 id="lms-information">LMS Information</h4>
+<p>The tool then sends a request to the <code>openid_configuration</code> URL received in the initial request to learn about the LMS. The following information is received from Canvas:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;issuer&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;authorization_endpoint&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/api/lti/authorize_redirect&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;registration_endpoint&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/api/lti/registrations&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;jwks_uri&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/api/lti/security/jwks&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;token_endpoint&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/login/oauth2/token&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;token_endpoint_auth_methods_supported&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;private_key_jwt&#34;</span>
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;token_endpoint_auth_signing_alg_values_supported&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;RS256&#34;</span>
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;scopes_supported&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;openid&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti-reg/scope/registration.readonly&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti-reg/scope/registration&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti-ags/scope/lineitem&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti-ags/scope/score&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti/scope/noticehandlers&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti/scope/asset.readonly&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti/scope/report&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti/scope/eula/deployment&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti/scope/eula/user&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/public_jwk/scope/update&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/account_lookup/scope/show&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti-ags/progress/scope/show&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/page_content/show&#34;</span>
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;response_types_supported&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;id_token&#34;</span>
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;id_token_signing_alg_values_supported&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;RS256&#34;</span>
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;claims_supported&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;sub&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;picture&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;email&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;name&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;given_name&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;family_name&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;locale&#34;</span>
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;subject_types_supported&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;public&#34;</span>
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;authorization_server&#34;</span>: <span style="color:#e6db74">&#34;canvas.home.russfeld.me&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://purl.imsglobal.org/spec/lti-platform-configuration&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;product_family_code&#34;</span>: <span style="color:#e6db74">&#34;canvas&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;OpenSource&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;messages_supported&#34;</span>: [
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;LtiResourceLinkRequest&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;placements&#34;</span>: [
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/account_navigation&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/analytics_hub&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/assignment_edit&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/assignment_group_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/assignment_index_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/assignment_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/assignment_selection&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/assignment_view&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/collaboration&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/conference_selection&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/course_assignments_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/course_home_sub_navigation&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/course_navigation&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/course_settings_sub_navigation&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/discussion_topic_index_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/discussion_topic_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/file_index_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/file_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/global_navigation&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/homework_submission&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/link_selection&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/migration_selection&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/module_group_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/module_index_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/module_index_menu_modal&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/module_menu_modal&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/module_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/post_grades&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/quiz_index_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/quiz_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/similarity_detection&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/student_context_card&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/submission_type_selection&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/tool_configuration&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/top_navigation&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/user_navigation&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/wiki_index_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/wiki_page_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;ContentArea&#34;</span>
+</span></span><span style="display:flex;"><span>        ]
+</span></span><span style="display:flex;"><span>      },
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;LtiDeepLinkingRequest&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;placements&#34;</span>: [
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/assignment_selection&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;ActivityAssetProcessor&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;ActivityAssetProcessorContribution&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/collaboration&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/conference_selection&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/course_assignments_menu&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/editor_button&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/homework_submission&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/link_selection&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/migration_selection&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/module_index_menu_modal&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/module_menu_modal&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;https://canvas.instructure.com/lti/submission_type_selection&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;ContentArea&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;RichTextEditor&#34;</span>
+</span></span><span style="display:flex;"><span>        ]
+</span></span><span style="display:flex;"><span>      },
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;LtiEulaRequest&#34;</span>
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;notice_types_supported&#34;</span>: [
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;LtiHelloWorldNotice&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;LtiAssetProcessorSubmissionNotice&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;LtiContextCopyNotice&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;LtiAssetProcessorContributionNotice&#34;</span>
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;variables&#34;</span>: [
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;ResourceLink.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;ResourceLink.description&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;ResourceLink.title&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;ResourceLink.available.startDateTime&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;ResourceLink.available.endDateTime&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;ResourceLink.submission.endDateTime&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.User.observees&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.User.sectionNames&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.RCS.app_host&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.User.student_view&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.RCS.service_jwt&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.instui_nav&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Observee.sisIds&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Context.title&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Editor.contents&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Editor.selection&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.PostMessageToken&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Assignment.lti.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Assignment.description&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Assignment.allowedFileExtensions&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.OriginalityReport.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Submission.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.File.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CourseOffering.sourcedId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Context.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Context.globalId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Context.uuid&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Context.sourcedId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Context.id.history&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Activity.id.history&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Message.documentTarget&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Message.locale&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;ToolConsumerInstance.guid&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.api.domain&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.api.collaborationMembers.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.api.baseUrl&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;ToolProxyBinding.memberships.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.account.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.account.name&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.account.sisSourceId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.rootAccount.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.rootAccount.sisSourceId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Account.instructureIdentityOrganizationId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.externalTool.global_id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.externalTool.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.brandConfigJSON.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.brandConfigJSON&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.brandConfigJS.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.css.common&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.shard.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.root_account.global_id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.root_account.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;vnd.Canvas.root_account.uuid&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.root_account.sisSourceId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;vnd.instructure.Course.uuid&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.name&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.sisSourceId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Course.integrationId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.startAt&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.endAt&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.workflowState&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.hideDistributionGraphs&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.gradePassbackSetting&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.term.startAt&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.term.endAt&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.term.name&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.term.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CourseSection.sourcedId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.enrollment.enrollmentState&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Assignment.anonymous_grading&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Assignment.restrict_quantitative_data&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Course.gradingScheme&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.Instructure.membership.roles&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.membership.roles&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.membership.concludedRoles&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.membership.permissions&lt;&gt;&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.previousContextIds&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.previousContextIds.recursive&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.previousCourseIds&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Course.rce_studio_embed_improvements&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Person.name.full&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Person.name.display&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Person.name.family&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Person.name.given&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Person.name_sortable&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Person.email.primary&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Person.pronouns&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;vnd.Canvas.Person.email.sis&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Person.address.timezone&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;User.image&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;User.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.user.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;vnd.instructure.User.uuid&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;vnd.instructure.User.current_uuid&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.User.instructureIdentityGlobalUserId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.User.instructureIdentityOrganizationUserId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.user.prefersHighContrast&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.user.prefersDyslexicFont&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Course.groupIds&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.group.contextIds&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Membership.role&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.xuser.allRoles&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.User.allRoles&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.user.globalId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.user.isRootAccountAdmin&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.user.adminableAccounts&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;User.username&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.user.loginId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.user.sisSourceId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.user.sisIntegrationId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Person.sourcedId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.logoutService.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.masqueradingUser.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.masqueradingUser.userId&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.xapi.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Caliper.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.sectionIds&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.sectionRestricted&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.sectionSisSourceIds&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.contextLabel&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.module.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.moduleItem.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.new_quizzes_type&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.anonymous_participants&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.description&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CourseGroup.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Group.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Group.name&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Tag.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Tag.name&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.title&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.pointsPossible&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.hideInGradebook&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.omitFromFinalGrade&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.unlockAt&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.lockAt&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.dueAt&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.unlockAt.iso8601&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.lockAt.iso8601&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.dueAt.iso8601&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.earliestEnrollmentDueAt.iso8601&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.allDueAts.iso8601&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.published&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.lockdownEnabled&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.allowedAttempts&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.assignment.submission.studentAttempts&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;LtiLink.custom.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;ToolProxyBinding.custom.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;ToolProxy.custom.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;ToolConsumerProfile.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;vnd.Canvas.OriginalityReport.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;vnd.Canvas.submission.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;vnd.Canvas.submission.history.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.file.media.id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.file.media.type&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.file.media.duration&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.file.media.size&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.file.media.title&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.file.usageRights.name&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.file.usageRights.url&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.file.usageRights.copyrightText&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Course.accept_canvas_resource_types&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Course.canvas_resource_type&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Course.canvas_resource_id&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Course.allow_canvas_resource_selection&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Course.available_canvas_resources&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.Account.usage_metrics_enabled&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;com.instructure.user.lti_1_1_id.history&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;LineItem.resultValue.max&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.account.decimal_separator&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.account.thousand_separator&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Canvas.course.aiQuizGeneration&#34;</span>
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;https://canvas.instructure.com/lti/account_name&#34;</span>: <span style="color:#e6db74">&#34;ALT+CS Dev Canvas&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;https://canvas.instructure.com/lti/account_lti_guid&#34;</span>: <span style="color:#e6db74">&#34;aUiNs1PwAjfVJ29mX5po2mGGUd1FjvpxfBxX8gHl:canvas-lms&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;https://canvas.instructure.com/lti/account_domain&#34;</span>: <span style="color:#e6db74">&#34;canvas.home.russfeld.me&#34;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<p>The tool must verify the <code>registration_endpoint</code> is a valid endpoint that includes the <code>issuer</code> as the domain to prevent any attacks.</p>
+<h4 id="registration-request">Registration Request</h4>
+<p>The tool then sends a POST request to the LMS using the <code>registration_endpoint</code> URL, and optionally with the <code>registration_token</code> provided in a header. Sample content of that request is shown below:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;application_type&#34;</span>: <span style="color:#e6db74">&#34;web&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;response_types&#34;</span>: [<span style="color:#e6db74">&#34;id_token&#34;</span>],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;grant_types&#34;</span>: [<span style="color:#e6db74">&#34;implicit&#34;</span>, <span style="color:#e6db74">&#34;client_credentials&#34;</span>],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;initiate_login_uri&#34;</span>: <span style="color:#e6db74">&#34;https://example.com/lti/provider/login13&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;redirect_uris&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://example.com/lti/provider/redirect13&#34;</span>,
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;client_name&#34;</span>: <span style="color:#e6db74">&#34;LTI Toolkit&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;logo_uri&#34;</span>: <span style="color:#e6db74">&#34;https://example.com/icon.png&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;token_endpoint_auth_method&#34;</span>: <span style="color:#e6db74">&#34;private_key_jwt&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;jwks_uri&#34;</span>: <span style="color:#e6db74">&#34;https://example.com/lti/provider/key13&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;contacts&#34;</span>: [<span style="color:#e6db74">&#34;admin@example.com&#34;</span>],   
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;scope&#34;</span>: <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti-ags/scope/score&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://purl.imsglobal.org/spec/lti-tool-configuration&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;domain&#34;</span>: <span style="color:#e6db74">&#34;ltidemo.home.russfeld.me&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;description&#34;</span>: <span style="color:#e6db74">&#34;LTI Demo Tool Description&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;target_link_uri&#34;</span>: <span style="color:#e6db74">&#34;https://example.com/lti/provider//launch13&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;custom_parameters&#34;</span>: {
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;custom_name&#34;</span>: <span style="color:#e6db74">&#34;custom_value&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;claims&#34;</span>: [<span style="color:#e6db74">&#34;iss&#34;</span>, <span style="color:#e6db74">&#34;sub&#34;</span>, <span style="color:#e6db74">&#34;name&#34;</span>, <span style="color:#e6db74">&#34;given_name&#34;</span>, <span style="color:#e6db74">&#34;family_name&#34;</span>, <span style="color:#e6db74">&#34;email&#34;</span>, <span style="color:#e6db74">&#34;picture&#34;</span>],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;messages&#34;</span>: []
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<h4 id="registration-response">Registration Response</h4>
+<p>If successful, the LMS will return a JSON response containing information about the registration. An example from Canvas is below:</p>
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;client_id&#34;</span>: <span style="color:#e6db74">&#34;10000000000005&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;application_type&#34;</span>: <span style="color:#e6db74">&#34;web&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;grant_types&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;client_credentials&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;implicit&#34;</span>
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;initiate_login_uri&#34;</span>: <span style="color:#e6db74">&#34;https://ltidemo.home.russfeld.me/lti/provider/login13&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;redirect_uris&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;https://ltidemo.home.russfeld.me/lti/provider/redirect13&#34;</span>
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;response_types&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;id_token&#34;</span>
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;client_name&#34;</span>: <span style="color:#e6db74">&#34;LTI Toolkit&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;jwks_uri&#34;</span>: <span style="color:#e6db74">&#34;https://ltidemo.home.russfeld.me/lti/provider/key13&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;logo_uri&#34;</span>: <span style="color:#e6db74">&#34;https://placehold.co/64x64.png&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;token_endpoint_auth_method&#34;</span>: <span style="color:#e6db74">&#34;private_key_jwt&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;scope&#34;</span>: <span style="color:#e6db74">&#34;https://purl.imsglobal.org/spec/lti-ags/scope/score&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;https://purl.imsglobal.org/spec/lti-tool-configuration&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;domain&#34;</span>: <span style="color:#e6db74">&#34;ltidemo.home.russfeld.me&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;messages&#34;</span>: [],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;claims&#34;</span>: [
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;iss&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;sub&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;name&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;given_name&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;family_name&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;email&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;picture&#34;</span>
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;target_link_uri&#34;</span>: <span style="color:#e6db74">&#34;https://ltidemo.home.russfeld.me/lti/provider/launch13&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;custom_parameters&#34;</span>: {},
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;description&#34;</span>: <span style="color:#e6db74">&#34;LTI Toolkit for LTI Tool Providers&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;https://canvas.instructure.com/lti/registration_config_url&#34;</span>: <span style="color:#e6db74">&#34;https://canvas.home.russfeld.me/api/lti/registrations/10000000000001/view&#34;</span>
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;deployment_id&#34;</span>: <span style="color:#e6db74">&#34;9:8865aa05b4b79b64a91a86042e43af5ea8ae79eb&#34;</span>
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<p>This provides the <code>client_id</code> and <code>deployment_id</code>, which is needed to complete the registration.</p>
+
+  <footer class="footline">
+  </footer>
+</article>
           </section>
           </section>
         </div>
       </main>
-      
-      
-      
+<div class="git-footer">
+  <p class="theme-version-footer">8.0.0</p>
+<p>Last modified by:
+              <i class='fa-fw fas fa-user'></i> Russell Feldhausen
+              <i class='fas fa-calendar'></i> <a href="https://github.com/alt-cs-lab/lti-toolkit/commit/69fcab10e88f3a08799a2b773601231c0dbcc6e2">Feb 6, 2026</a>
+</p>
+
+</div>
     </div>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1770144754" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1770144754" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1770144754" defer></script>
-  <script src="/lti-toolkit/js/embed-iframe.min.js?1770144754" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1770499033" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1770499033" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1770499033" defer></script>
   </body>
 </html>

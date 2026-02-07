@@ -17,7 +17,7 @@ var relearn_lti_index = [
   },
   {
     "breadcrumb": "",
-    "description": "LTI Protocol Notes \u0026 Documentation\nWhen developing this project, I couldn’t find any good detailed examples for what these messages actually looked like in practice, especially the ones coming from Instructure Canvas. So, as I worked on this project, I carefully stored and documented these protocol messages. They can also be mostly exposed from this tool by enabling the silly logging level.\nLTI 1.0 Tool Provider LTI 1.3 Tool Provider LTI Launch Data LTI 1.0 Tool Consumer",
+    "description": "LTI Protocol Notes \u0026 Documentation\nWhen developing this project, I couldn’t find any good detailed examples for what these messages actually looked like in practice, especially the ones coming from Instructure Canvas. So, as I worked on this project, I carefully stored and documented these protocol messages. They can also be mostly exposed from this tool by enabling the silly logging level.\nLTI 1.0 Tool Provider LTI 1.3 Tool Provider LTI Launch Data LTI 1.0 Tool Consumer LTI Registration",
     "modified": "2026-01-16T23:33:46+00:00",
     "tags": [],
     "title": "LTI Docs",
@@ -65,16 +65,16 @@ var relearn_lti_index = [
   },
   {
     "breadcrumb": "Documentation \u003e Examples",
-    "description": "A fully-featured LTI Tool Provider example can be found in /examples/provider. This document will walk through the details of how that application works.\nEnvironment The application expects the following environment variables (typically loaded from .env):\n​ .env # Express Session Secret SESSION_SECRET=your_session_secret # Log Level # One of error warn info http verbose lti debug sql silly LOG_LEVEL=lti # Application Domain Name DOMAIN_NAME=https://ltidemo.home.russfeld.me # LTI Consumer Key and Secret LTI_CONSUMER_KEY=your_lti_consumer_key LTI_CONSUMER_SECRET=your_lti_consumer_secret # LTI 1.3 LMS Domain LTI_13_LMS_DOMAIN=https://canvas.instructure.com LMS Configuration - LTI 1.0 The settings above can then be used to configure this application in your learning management system (LMS) using LTI 1.0. Refer to your LMS documentation for specific details. An example using Canvas is given below.",
-    "modified": "2026-02-03T18:49:41+00:00",
+    "description": "A fully-featured LTI Tool Provider example can be found in /examples/provider. This document will walk through the details of how that application works.\nEnvironment The application expects the following environment variables (typically loaded from .env):\n​ .env # Express Session Secret SESSION_SECRET=your_session_secret # Log Level # One of error warn info http verbose lti debug sql silly LOG_LEVEL=lti # Application Domain Name DOMAIN_NAME=https://ltidemo.home.russfeld.me # Admin Email Address ADMIN_EMAIL=admin@domain.tld # LTI Consumer Key and Secret LTI_CONSUMER_KEY=your_lti_consumer_key LTI_CONSUMER_SECRET=your_lti_consumer_secret # LTI 1.3 LMS Domain LTI_13_LMS_DOMAIN=https://canvas.instructure.com LMS Configuration - LTI 1.0 The settings above can then be used to configure this application in your learning management system (LMS) using LTI 1.0. Refer to your LMS documentation for specific details. An example using Canvas is given below.",
+    "modified": "2026-02-07T20:09:27+00:00",
     "tags": [],
     "title": "LTI Provider",
     "uri": "/lti-toolkit/00-general/00-examples/provider/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Examples",
-    "description": "A fully-featured LTI Tool Consumer example can be found in /examples/consumer. This document will walk through the details of how that application works.\nEnvironment The application expects the following environment variables (typically loaded from .env):\n​ .env # Express Session Secret SESSION_SECRET=your_session_secret # Log Level # One of error warn info http verbose lti debug sql silly LOG_LEVEL=lti # Application Domain Name DOMAIN_NAME=https://ltidemo.home.russfeld.me # LTI Tool Consumer Settings ADMIN_EMAIL=admin@domain.tld DEPLOYMENT_NAME=LTI Toolkit Demo DEPLOYMENT_ID=deployment-001 LTI Toolkit Configuration The src/configs/lti.js file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Consumer:",
-    "modified": "2026-02-02T21:59:23+00:00",
+    "description": "A fully-featured LTI Tool Consumer example can be found in /examples/consumer. This document will walk through the details of how that application works.\nEnvironment The application expects the following environment variables (typically loaded from .env):\n​ .env # Express Session Secret SESSION_SECRET=your_session_secret # Log Level # One of error warn info http verbose lti debug sql silly LOG_LEVEL=lti # Application Domain Name DOMAIN_NAME=https://ltidemo.home.russfeld.me # Admin Email Address ADMIN_EMAIL=admin@domain.tld # LTI Tool Consumer Settings DEPLOYMENT_NAME=LTI Toolkit Demo DEPLOYMENT_ID=deployment-001 LTI Toolkit Configuration The src/configs/lti.js file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Consumer:",
+    "modified": "2026-02-06T22:09:48+00:00",
     "tags": [],
     "title": "LTI Consumer",
     "uri": "/lti-toolkit/00-general/00-examples/consumer/index.html"
@@ -104,6 +104,14 @@ var relearn_lti_index = [
     "uri": "/lti-toolkit/02-lti/04-lti10-consumer/index.html"
   },
   {
+    "breadcrumb": "LTI Docs",
+    "description": "Sample LTI Registration Messages LTI 1.0 XML The XML below has been reformatted a bit for readability\n\u003ccartridge_basiclti_link xmlns=\"http://www.imsglobal.org/xsd/imslticc_v1p0\" xmlns:blti=\"http://www.imsglobal.org/xsd/imsbasiclti_v1p0\" xmlns:lticm=\"http://www.imsglobal.org/xsd/imslticm_v1p0\" xmlns:lticp=\"http://www.imsglobal.org/xsd/imslticp_v1p0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.imsglobal.org/xsd/imslticc_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticc_v1p0.xsd http://www.imsglobal.org/xsd/imsbasiclti_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd http://www.imsglobal.org/xsd/imslticm_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd http://www.imsglobal.org/xsd/imslticp_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd\" \u003e \u003cblti:title\u003eLTI Toolkit\u003c/blti:title\u003e \u003cblti:description\u003eLTI Toolkit for LTI Tool Providers\u003c/blti:description\u003e \u003cblti:icon\u003ehttps://placehold.co/64x64.png\u003c/blti:icon\u003e \u003cblti:launch_url\u003ehttps://ltidemo.home.russfeld.me/lti/provider/launch10\u003c/blti:launch_url\u003e \u003cblti:custom\u003e \u003clticm:property name=\"custom_name\"\u003ecustom_value\u003c/lticm:property\u003e \u003c/blti:custom\u003e \u003cblti:extensions platform=\"canvas.instructure.com\"\u003e \u003clticm:property name=\"tool_id\"\u003elti_toolkit\u003c/lticm:property\u003e \u003clticm:property name=\"privacy_level\"\u003epublic\u003c/lticm:property\u003e \u003clticm:property name=\"domain\"\u003eltidemo.home.russfeld.me\u003c/lticm:property\u003e \u003c/blti:extensions\u003e \u003ccartridge_bundle identifierref=\"BLTI001_Bundle\"/\u003e \u003ccartridge_icon identifierref=\"BLTI001_Icon\"/\u003e \u003c/cartridge_basiclti_link\u003e Helpful references:\nLTI XML Builder: https://www.edu-apps.org/build_xml.html LTI XML Example: https://codecheck.io/lti/config LTI 1.3 Dynamic Registration Initial Request The process begins with the LMS sending a request to the dynamic configuration URL for the tool (register13). These are the query parameters received from Canvas sent in that POST request.",
+    "modified": "2026-02-06T22:09:48+00:00",
+    "tags": [],
+    "title": "LTI Registration",
+    "uri": "/lti-toolkit/02-lti/05-lti-registration/index.html"
+  },
+  {
     "breadcrumb": "",
     "description": "",
     "modified": "0001-01-01T00:00:00+00:00",
@@ -114,7 +122,7 @@ var relearn_lti_index = [
   {
     "breadcrumb": "",
     "description": "This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.\nLimitations\nOnly supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted within the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Supports all Canvas privacy levels in LTI Launch Requests to Tool Providers Supports test students from Canvas in LTI Launch Requests Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:",
-    "modified": "2026-02-03T18:49:41+00:00",
+    "modified": "2026-02-06T22:09:48+00:00",
     "tags": [],
     "title": "LTI-Toolkit",
     "uri": "/lti-toolkit/index.html"

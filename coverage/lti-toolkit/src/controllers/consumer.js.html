@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.62% </span>
+                <span class="strong">42.12% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>90/233</span>
+                <span class='fraction'>99/235</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.11% </span>
+                <span class="strong">10% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/9</span>
+                <span class='fraction'>1/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.62% </span>
+                <span class="strong">42.12% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>90/233</span>
+                <span class='fraction'>99/235</span>
             </div>
         
             
@@ -296,7 +296,9 @@
 <a name='L231'></a><a href='#L231'>231</a>
 <a name='L232'></a><a href='#L232'>232</a>
 <a name='L233'></a><a href='#L233'>233</a>
-<a name='L234'></a><a href='#L234'>234</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<a name='L234'></a><a href='#L234'>234</a>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -392,18 +394,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -485,6 +475,8 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -511,6 +503,18 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -601,6 +605,7 @@ class ConsumerController {
 <span class="cstat-no" title="statement not covered" >      consumer = await this.models.Consumer.create(</span>
 <span class="cstat-no" title="statement not covered" >        {</span>
 <span class="cstat-no" title="statement not covered" >          name: data.name,</span>
+<span class="cstat-no" title="statement not covered" >          key: data.key,</span>
 <span class="cstat-no" title="statement not covered" >          lti13: data.lti13,</span>
 <span class="cstat-no" title="statement not covered" >          client_id: data.client_id,</span>
 <span class="cstat-no" title="statement not covered" >          platform_id: data.platform_id,</span>
@@ -611,24 +616,11 @@ class ConsumerController {
 <span class="cstat-no" title="statement not covered" >        },</span>
 <span class="cstat-no" title="statement not covered" >        { transaction: t },</span>
 <span class="cstat-no" title="statement not covered" >      );</span>
-<span class="cstat-no" title="statement not covered" >      let publicKey = null;</span>
-<span class="cstat-no" title="statement not covered" >      let privateKey = null;</span>
-<span class="cstat-no" title="statement not covered" >      // Generate keys for the consumer</span>
-<span class="cstat-no" title="statement not covered" >      ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {</span>
-<span class="cstat-no" title="statement not covered" >        modulusLength: 4096,</span>
-<span class="cstat-no" title="statement not covered" >        publicKeyEncoding: {</span>
-<span class="cstat-no" title="statement not covered" >          type: "spki",</span>
-<span class="cstat-no" title="statement not covered" >          format: "pem",</span>
-<span class="cstat-no" title="statement not covered" >        },</span>
-<span class="cstat-no" title="statement not covered" >        privateKeyEncoding: {</span>
-<span class="cstat-no" title="statement not covered" >          type: "pkcs1",</span>
-<span class="cstat-no" title="statement not covered" >          format: "pem",</span>
-<span class="cstat-no" title="statement not covered" >        },</span>
-<span class="cstat-no" title="statement not covered" >      }));</span>
+<span class="cstat-no" title="statement not covered" >      const { publicKey, privateKey } = await this.#generateKeys(); // Generate keys for the consumer</span>
 <span class="cstat-no" title="statement not covered" >      await this.models.ConsumerKey.create(</span>
 <span class="cstat-no" title="statement not covered" >        {</span>
 <span class="cstat-no" title="statement not covered" >          key: consumer.key,</span>
-<span class="cstat-no" title="statement not covered" >          secret: nanoid(),</span>
+<span class="cstat-no" title="statement not covered" >          secret: data.secret || nanoid(),</span>
 <span class="cstat-no" title="statement not covered" >          public: publicKey,</span>
 <span class="cstat-no" title="statement not covered" >          private: privateKey,</span>
 <span class="cstat-no" title="statement not covered" >        },</span>
@@ -715,20 +707,51 @@ class ConsumerController {
    * Update the secret for an LTI consumer
    *
    * @param {number} id the ID of the consumer
+   * @param {string|null} key the new key for the consumer (if null, a new key will be generated)
+   * @param {string|null} secret the new secret for the consumer (if null, a new secret will be generated)
    * @return {ConsumerKey} the updated consumer key
    */
-<span class="fstat-no" title="function not covered" >  async updateSecret(id) {</span>
+<span class="fstat-no" title="function not covered" >  async updateSecret(id, key = null, secret = null) {</span>
 <span class="cstat-no" title="statement not covered" >    const consumer = await this.models.Consumer.findByPk(id);</span>
 <span class="cstat-no" title="statement not covered" >    if (!consumer) {</span>
 <span class="cstat-no" title="statement not covered" >      return null;</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >    // Generate new keys</span>
-<span class="cstat-no" title="statement not covered" >    const newKey = nanoid();</span>
-<span class="cstat-no" title="statement not covered" >    const newSecret = nanoid();</span>
+<span class="cstat-no" title="statement not covered" >    </span>
+<span class="cstat-no" title="statement not covered" >    // Remove old key and secret for the consumer</span>
+<span class="cstat-no" title="statement not covered" >    await this.models.ConsumerKey.destroy({</span>
+<span class="cstat-no" title="statement not covered" >      where: {</span>
+<span class="cstat-no" title="statement not covered" >        key: consumer.key,</span>
+<span class="cstat-no" title="statement not covered" >      },</span>
+<span class="cstat-no" title="statement not covered" >    });</span>
+<span class="cstat-no" title="statement not covered" >    </span>
+<span class="cstat-no" title="statement not covered" >    // Generate new key and secret for the consumer</span>
+<span class="cstat-no" title="statement not covered" >    const newKey = key || nanoid();</span>
+<span class="cstat-no" title="statement not covered" >    const newSecret = secret || nanoid();</span>
+<span class="cstat-no" title="statement not covered" >    consumer.key = newKey;</span>
+<span class="cstat-no" title="statement not covered" >    await consumer.save();</span>
 <span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Generate new keys for the consumer</span>
+<span class="cstat-no" title="statement not covered" >    const { publicKey, privateKey } = await this.#generateKeys(); </span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Save the new key, secret, and keys for the consumer</span>
+<span class="cstat-no" title="statement not covered" >    const consumerkey = await this.models.ConsumerKey.create({</span>
+<span class="cstat-no" title="statement not covered" >      key: newKey,</span>
+<span class="cstat-no" title="statement not covered" >      secret: newSecret,</span>
+<span class="cstat-no" title="statement not covered" >      public: publicKey,</span>
+<span class="cstat-no" title="statement not covered" >      private: privateKey,</span>
+<span class="cstat-no" title="statement not covered" >    });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    return consumerkey;</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+&nbsp;
+  /**
+   * Generate keys for an LTI consumer
+   * 
+   * @return {Object} the generated keys
+   */
+<span class="fstat-no" title="function not covered" >  async #generateKeys() {</span>
 <span class="cstat-no" title="statement not covered" >    let publicKey = null;</span>
 <span class="cstat-no" title="statement not covered" >    let privateKey = null;</span>
-<span class="cstat-no" title="statement not covered" >    // Generate keys for the consumer</span>
 <span class="cstat-no" title="statement not covered" >    ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {</span>
 <span class="cstat-no" title="statement not covered" >      modulusLength: 4096,</span>
 <span class="cstat-no" title="statement not covered" >      publicKeyEncoding: {</span>
@@ -740,24 +763,7 @@ class ConsumerController {
 <span class="cstat-no" title="statement not covered" >        format: "pem",</span>
 <span class="cstat-no" title="statement not covered" >      },</span>
 <span class="cstat-no" title="statement not covered" >    }));</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    await this.models.ConsumerKey.destroy({</span>
-<span class="cstat-no" title="statement not covered" >      where: {</span>
-<span class="cstat-no" title="statement not covered" >        key: consumer.key,</span>
-<span class="cstat-no" title="statement not covered" >      },</span>
-<span class="cstat-no" title="statement not covered" >    });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    consumer.key = newKey;</span>
-<span class="cstat-no" title="statement not covered" >    await consumer.save();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    const consumerkey = await this.models.ConsumerKey.create({</span>
-<span class="cstat-no" title="statement not covered" >      key: newKey,</span>
-<span class="cstat-no" title="statement not covered" >      secret: newSecret,</span>
-<span class="cstat-no" title="statement not covered" >      public: publicKey,</span>
-<span class="cstat-no" title="statement not covered" >      private: privateKey,</span>
-<span class="cstat-no" title="statement not covered" >    });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    return consumerkey;</span>
+<span class="cstat-no" title="statement not covered" >    return { publicKey, privateKey };</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
 }
 &nbsp;
@@ -769,7 +775,7 @@ export default ConsumerController;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-02-03T18:52:11.516Z
+                at 2026-02-07T21:16:52.300Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
