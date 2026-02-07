@@ -5,9 +5,6 @@
  * @license MIT
  */
 
-// Import libraries
-import crypto from "crypto";
-
 // Import configuration
 import configureLogger from "./src/config/logger.js";
 import configureDatabase from "./src/config/database.js";
