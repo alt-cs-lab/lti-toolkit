@@ -12,6 +12,12 @@
         {% if error %}
         <p style="color: red">{{ error }}
         {% endif %}
+        <h2>LTI Tool Consumers</h2>
+        <ul>
+        {% for a_consumer in consumers %}
+          <li><a href="consumer/{{ a_consumer.id }}">{{ a_consumer.name }}</a></li>
+        {% endfor %}
+        </ul>
         <h2>Consumer Configuration</h2>
         <form method="POST" action="/admin/config">
           <label for="name">Consumer Name</label><br>
@@ -45,7 +51,26 @@
           <input type="submit" value="Submit">
         </form>
         <hr />
-        <h2>LTI 1.3 Configuration Steps</h2>
+        <h2>LTI 1.3 Dynamic Registration Globally</h2>
+
+        <h3>Step 1 - Add LTI Application to Canvas Globally<h3>
+        <p>This requires administrator access in Canvas. Go to the Admin panel for the account used and find the Developer Keys page, then add a new LTI Registration.<p>
+        <ul>
+          <li><b>Registration URL</b>: {{ domain }}/lti/provider/register13
+        </ul>
+        <p>Once registration is complete, click "Enable and Close"</p>
+        <img src="/images/lti13dynamic.png" style="border:1px solid black" />
+
+        <h3>Step 2 - Activate Application</h3>
+        <p>Once installed, click the link to View in Canvas Apps, then click Edit and choose Available. This will allow it to be used in Canvas courses without installation.</p>
+        <img src="/images/lti13dynamic2.png" style="border:1px solid black" />
+
+        <h3>Step 4 - Configure Assignment</h3>
+        <p>In Canvas, configure an LTI assignment as usual. Use {{ domain }}/lti/provider/launch13 as the URL.</p>
+        <img src="/images/lti13assign1.png" style="border:1px solid black" />
+
+        <hr />
+        <h2>LTI 1.3 Manual Configuration Steps</h2>
 
         <h3>Step 1 - Add LTI Application to Canvas</h3>
         <p>This requires administrator access in Canvas. Go to the Admin panel for the account used and find the Developer Keys page, then add a new LTI Key.<p>

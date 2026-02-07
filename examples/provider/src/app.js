@@ -27,6 +27,7 @@ import InstructorGradeHandler from "./routes/instructor-grade.js";
 import InstructorHandler from "./routes/instructor.js";
 import StudentGradeHandler from "./routes/student-grade.js";
 import StudentHandler from "./routes/student.js";
+import ConsumerHandler from "./routes/consumer.js";
 
 // Create Express application
 var app = express();
@@ -66,6 +67,7 @@ app.use("/lti/provider", lti.routers.provider);
 app.get("/", IndexHandler);
 app.get("/admin", AdminHandler);
 app.post("/admin/config", AdminConfigHandler);
+app.get("/consumer/:id", ConsumerHandler);
 app.get("/student", requireLTI, StudentHandler);
 app.post("/student/grade", requireLTI, StudentGradeHandler);
 app.get("/instructor", requireLTI, InstructorHandler);

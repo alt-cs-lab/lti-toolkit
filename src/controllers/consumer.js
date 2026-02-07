@@ -80,24 +80,11 @@ class ConsumerController {
         },
         { transaction: t },
       );
-      let publicKey = null;
-      let privateKey = null;
-      // Generate keys for the consumer
-      ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
-        modulusLength: 4096,
-        publicKeyEncoding: {
-          type: "spki",
-          format: "pem",
-        },
-        privateKeyEncoding: {
-          type: "pkcs1",
-          format: "pem",
-        },
-      }));
+      const { publicKey, privateKey } = await this.#generateKeys(); // Generate keys for the consumer
       await this.models.ConsumerKey.create(
         {
           key: consumer.key,
-          secret: nanoid(),
+          secret: data.secret || nanoid(),
           public: publicKey,
           private: privateKey,
         },
@@ -184,20 +171,50 @@ class ConsumerController {
    * Update the secret for an LTI consumer
    *
    * @param {number} id the ID of the consumer
+   * @param {string|null} secret the new secret for the consumer (if null, a new secret will be generated)
    * @return {ConsumerKey} the updated consumer key
    */
-  async updateSecret(id) {
+  async updateSecret(id, secret = null) {
     const consumer = await this.models.Consumer.findByPk(id);
     if (!consumer) {
       return null;
     }
-    // Generate new keys
+    
+    // Remove old key and secret for the consumer
+    await this.models.ConsumerKey.destroy({
+      where: {
+        key: consumer.key,
+      },
+    });
+    
+    // Generate new key and secret for the consumer
     const newKey = nanoid();
-    const newSecret = nanoid();
+    const newSecret = secret || nanoid();
+    consumer.key = newKey;
+    await consumer.save();
 
+    // Generate new keys for the consumer
+    const { publicKey, privateKey } = await this.#generateKeys(); 
+
+    // Save the new key, secret, and keys for the consumer
+    const consumerkey = await this.models.ConsumerKey.create({
+      key: newKey,
+      secret: newSecret,
+      public: publicKey,
+      private: privateKey,
+    });
+
+    return consumerkey;
+  }
+
+  /**
+   * Generate keys for an LTI consumer
+   * 
+   * @return {Object} the generated keys
+   */
+  async #generateKeys() {
     let publicKey = null;
     let privateKey = null;
-    // Generate keys for the consumer
     ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
       modulusLength: 4096,
       publicKeyEncoding: {
@@ -209,24 +226,7 @@ class ConsumerController {
         format: "pem",
       },
     }));
-
-    await this.models.ConsumerKey.destroy({
-      where: {
-        key: consumer.key,
-      },
-    });
-
-    consumer.key = newKey;
-    await consumer.save();
-
-    const consumerkey = await this.models.ConsumerKey.create({
-      key: newKey,
-      secret: newSecret,
-      public: publicKey,
-      private: privateKey,
-    });
-
-    return consumerkey;
+    return { publicKey, privateKey };
   }
 }
 

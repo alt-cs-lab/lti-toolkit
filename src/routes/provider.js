@@ -12,7 +12,6 @@
 // Import libraries
 import express from "express";
 import nunjucks from "nunjucks";
-import ky from "ky";
 
 export default async function setupProviderRoutes(
   LTIToolkitController,
@@ -256,7 +255,7 @@ export default async function setupProviderRoutes(
    */
   router.all("/register13", async function (req, res, next) {
     logger.lti("Register 1.3 Request Received");
-    logger.lti(JSON.stringify(req.query));
+    logger.silly(JSON.stringify(req.query));
     const config = await LTIToolkitController.dynamicRegistration(req.query);
     if (!config) {
       res.status(400).send("Invalid Request");

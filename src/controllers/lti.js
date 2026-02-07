@@ -9,7 +9,6 @@ import { nanoid } from "nanoid";
 import xml2js from "xml2js";
 import crypto from "crypto";
 import ky from "ky";
-import { response } from "express";
 
 class LTIToolkitController {
   /**
@@ -44,50 +43,59 @@ class LTIToolkitController {
    * @return `false` if it is invalid, else ??
    */
   async launch10(req) {
+    //Logging
     this.logger.lti("LTI 1.0 Launch Request Received");
     this.logger.silly(JSON.stringify(req.body, null, 2));
+
+    // Validate the request
     const launchResult = await this.lti10.validate10(req);
+
+    // Check if valid
     if (launchResult === false) {
       this.logger.lti("Launch invalid!");
       return false;
-    } else {
-      this.logger.lti("Launch valid!");
-      const customItems = Object.keys(launchResult)
-        .filter((key) => key.startsWith("custom_"))
-        .reduce((obj, key) => {
-          obj[key.substring(7)] = launchResult[key];
-          return obj;
-        }, {});
-      const launchData = {
-        launch_type: "lti1.0",
-        tool_consumer_key: launchResult.oauth_consumer_key,
-        tool_consumer_product:
-          launchResult.tool_consumer_info_product_family_code,
-        tool_consumer_guid: launchResult.tool_consumer_instance_guid,
-        tool_consumer_name: launchResult.tool_consumer_instance_name,
-        tool_consumer_version: launchResult.tool_consumer_info_version,
-        course_id: launchResult.context_id,
-        course_label: launchResult.context_label,
-        course_name: launchResult.context_title,
-        assignment_id: launchResult.resource_link_id,
-        assignment_lti_id: launchResult.ext_lti_assignment_id,
-        assignment_name: launchResult.resource_link_title,
-        return_url: launchResult.launch_presentation_return_url,
-        outcome_url: launchResult.lis_outcome_service_url,
-        outcome_id: launchResult.lis_result_sourcedid,
-        outcome_ags: null,
-        user_lis_id: launchResult.user_id,
-        user_lis13_id: null,
-        user_email: launchResult.lis_person_contact_email_primary,
-        user_name: launchResult.lis_person_name_full,
-        user_given_name: launchResult.lis_person_name_given,
-        user_family_name: launchResult.lis_person_name_family,
-        user_image: launchResult.user_image,
-        user_roles: launchResult.roles,
-        custom: customItems,
-      };
-      return await this.#launch(launchData, req);
     }
+    this.logger.lti("Launch valid!");
+
+    // Build custom items object
+    const customItems = Object.keys(launchResult)
+      .filter((key) => key.startsWith("custom_"))
+      .reduce((obj, key) => {
+        obj[key.substring(7)] = launchResult[key];
+        return obj;
+      }, {});
+
+    // Build launch data object
+    const launchData = {
+      launch_type: "lti1.0",
+      tool_consumer_key: launchResult.oauth_consumer_key,
+      tool_consumer_product: launchResult.tool_consumer_info_product_family_code,
+      tool_consumer_guid: launchResult.tool_consumer_instance_guid,
+      tool_consumer_name: launchResult.tool_consumer_instance_name,
+      tool_consumer_version: launchResult.tool_consumer_info_version,
+      course_id: launchResult.context_id,
+      course_label: launchResult.context_label,
+      course_name: launchResult.context_title,
+      assignment_id: launchResult.resource_link_id,
+      assignment_lti_id: launchResult.ext_lti_assignment_id,
+      assignment_name: launchResult.resource_link_title,
+      return_url: launchResult.launch_presentation_return_url,
+      outcome_url: launchResult.lis_outcome_service_url,
+      outcome_id: launchResult.lis_result_sourcedid,
+      outcome_ags: null,
+      user_lis_id: launchResult.user_id,
+      user_lis13_id: null,
+      user_email: launchResult.lis_person_contact_email_primary,
+      user_name: launchResult.lis_person_name_full,
+      user_given_name: launchResult.lis_person_name_given,
+      user_family_name: launchResult.lis_person_name_family,
+      user_image: launchResult.user_image,
+      user_roles: launchResult.roles,
+      custom: customItems,
+    };
+
+    // Call Launch Handler
+    return await this.#launch(launchData, req);
   }
 
   /**
@@ -98,10 +106,15 @@ class LTIToolkitController {
    * @return `false` if it is invalid, else return an authRequest form
    */
   async login13(key, req) {
+    // Logging
     this.logger.lti("LTI 1.3 Login Received for key: " + key);
     this.logger.silly("Query: " + JSON.stringify(req.query, null, 2));
     this.logger.silly("Body: " + JSON.stringify(req.body, null, 2));
+
+    // Validate the request
     const authRequestResult = await this.lti13.authRequest(key, req);
+
+    // Check if valid
     if (authRequestResult === false) {
       this.logger.lti("Login invalid!");
       return false;
@@ -1043,7 +1056,7 @@ class LTIToolkitController {
   <blti:title>${this.provider.title}</blti:title> \
   <blti:description>${this.provider.description}</blti:description> \
   <blti:icon>${this.provider.icon_url}</blti:icon> \
-  <blti:launch_url>${this.provider.url_prefix}/launch10</blti:launch_url> \
+  <blti:launch_url>${this.domain_name}${this.provider.route_prefix}/launch10</blti:launch_url> \
   ${custom} \
   <blti:extensions platform="canvas.instructure.com"> \
     <lticm:property name="tool_id">${this.provider.tool_id}</lticm:property> \
@@ -1116,20 +1129,20 @@ class LTIToolkitController {
       application_type: "web",
       response_types: ["id_token"],
       grant_types: ["implicit", "client_credentials"],
-      initiate_login_uri: this.provider.url_prefix + "/login13/" + createdConsumer.key,
+      initiate_login_uri: this.domain_name + this.provider.route_prefix + "/login13/" + createdConsumer.key,
       redirect_uris: [
-        this.provider.url_prefix + "/redirect13",
+        this.domain_name + this.provider.route_prefix + "/redirect13",
       ],
       client_name: this.provider.title,
       logo_uri: this.provider.icon_url,
       token_endpoint_auth_method: "private_key_jwt",
-      jwks_uri: this.provider.url_prefix + "/key13",
+      jwks_uri: this.domain_name + this.provider.route_prefix + "/key13",
       contacts: [this.admin_email],   
       scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score ",
       "https://purl.imsglobal.org/spec/lti-tool-configuration": {
         domain: domain,
         description: this.provider.description,
-        target_link_uri: this.provider.url_prefix + "/launch13",
+        target_link_uri: this.domain_name + this.provider.route_prefix + "/launch13",
         custom_parameters: this.provider.custom_params,
         claims: claims,
         messages: []

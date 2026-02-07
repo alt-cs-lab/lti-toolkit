@@ -71,6 +71,7 @@ async function AdminConfigHandler(req, res) {
   res.render("admin.njk", {
     title: "LTI Tool Provider - Admin Configuration View",
     consumer: consumer,
+    consumers: consumers,
     lmsDomain: lmsDomain,
     domain: process.env.DOMAIN_NAME,
     key: process.env.LTI_CONSUMER_KEY,

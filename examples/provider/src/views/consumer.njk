@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <main>
+        <h1>LTI Tool Consumer</h1>
+        {% if message %}
+        <p style="color: green">{{ message }}
+        {% endif %}
+        {% if error %}
+        <p style="color: red">{{ error }}
+        {% endif %}
+        <h2>{{ consumer.name }}</h2>
+        <h3>Settings</h3>
+        <ul>
+          <li><b>LTI 1.3:</b> {{ consumer.lti13 }}</li>
+          <li><b>Key:</b> {{ consumer.key }}</li>
+          <li><b>Secret:</b> {{ consumer.secret }}</li>
+          {% if consumer.lti13 %}
+          <li><b>Client ID:</b> {{ consumer.client_id }}</li>
+          <li><b>Platform ID:</b> {{ consumer.platform_id }}</li>
+          <li><b>Deployment ID:</b> {{ consumer.deployment_id }}</li>
+          <li><b>Keyset URL:</b> {{ consumer.keyset_url }}</li>
+          <li><b>Token URL:</b> {{ consumer.token_url }}</li>
+          <li><b>Auth URL:</b> {{ consumer.auth_url }}</li>
+          {% endif %}
+        </ul>
+        <hr />
+        <details>
+          <summary>LTI Debugging Information</summary>
+          <p><b>LTI Consumer</b></p>
+          <pre>
+{{ consumer | dump(2) | safe }}
+          </pre>
+        </details>
+    </main>
+  </body>
+</html>
