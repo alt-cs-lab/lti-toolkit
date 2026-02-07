@@ -42,11 +42,19 @@ class LTI13Utils {
 
       // find consumer using client_id and deployment_id
       const consumer = await this.models.Consumer.findOne({
-        where: { client_id: params.client_id, deployment_id: params.lti_deployment_id },
+        where: {
+          client_id: params.client_id,
+          deployment_id: params.lti_deployment_id,
+        },
       });
 
       if (!consumer) {
-        this.logger.lti("LTI Consumer Not Found: " + params.client_id + " / " + params.lti_deployment_id);
+        this.logger.lti(
+          "LTI Consumer Not Found: " +
+            params.client_id +
+            " / " +
+            params.lti_deployment_id,
+        );
         return false;
       }
 
@@ -117,8 +125,7 @@ class LTI13Utils {
         scope: "openid",
         response_type: "id_token",
         client_id: consumer.client_id,
-        redirect_uri: new URL("/lti/provider/launch", this.domain_name)
-          .href,
+        redirect_uri: new URL("/lti/provider/launch", this.domain_name).href,
         login_hint: params.login_hint,
         state: state,
         response_mode: "form_post",
@@ -327,20 +334,24 @@ class LTI13Utils {
 
   /**
    * Get LMS Details for Dynamic Registration
-   * 
+   *
    * @param {Object} query the query parameters from the request
    * @return {Object|null} an object containing the LMS details or null if unable to get details
    */
   async getLMSDetails(query) {
     if (!query.openid_configuration) {
-      this.logger.lti("No OpenID Configuration URL provided for Dynamic Registration");
+      this.logger.lti(
+        "No OpenID Configuration URL provided for Dynamic Registration",
+      );
       return null;
     }
     try {
       const response = await ky.get(query.openid_configuration).json();
       // validate registration endpoint is present and is based on issuer
       if (!response.registration_endpoint) {
-        this.logger.lti("No Registration Endpoint found in OpenID Configuration");
+        this.logger.lti(
+          "No Registration Endpoint found in OpenID Configuration",
+        );
         return null;
       }
       if (!response.issuer) {
@@ -348,12 +359,16 @@ class LTI13Utils {
         return null;
       }
       if (!response.registration_endpoint.startsWith(response.issuer)) {
-        this.logger.lti("Registration Endpoint does not match Issuer in OpenID Configuration");
+        this.logger.lti(
+          "Registration Endpoint does not match Issuer in OpenID Configuration",
+        );
         return null;
       }
       // validate other URLs are present
       if (!response.authorization_endpoint) {
-        this.logger.lti("No Authorization Endpoint found in OpenID Configuration");
+        this.logger.lti(
+          "No Authorization Endpoint found in OpenID Configuration",
+        );
         return null;
       }
       if (!response.token_endpoint) {
@@ -365,13 +380,20 @@ class LTI13Utils {
         return null;
       }
       // validate lti-platform-configuration is present and has required fields
-      if (!response["https://purl.imsglobal.org/spec/lti-platform-configuration"]) {
-        this.logger.lti("No LTI Platform Configuration found in OpenID Configuration");
+      if (
+        !response["https://purl.imsglobal.org/spec/lti-platform-configuration"]
+      ) {
+        this.logger.lti(
+          "No LTI Platform Configuration found in OpenID Configuration",
+        );
         return null;
       }
-      const platformConfig = response["https://purl.imsglobal.org/spec/lti-platform-configuration"];
+      const platformConfig =
+        response["https://purl.imsglobal.org/spec/lti-platform-configuration"];
       if (!platformConfig.product_family_code) {
-        this.logger.lti("No Product Family Code found in LTI Platform Configuration");
+        this.logger.lti(
+          "No Product Family Code found in LTI Platform Configuration",
+        );
         return null;
       }
       if (!platformConfig.version) {

@@ -181,14 +181,14 @@ class ConsumerController {
     if (!consumer) {
       return null;
     }
-    
+
     // Remove old key and secret for the consumer
     await this.models.ConsumerKey.destroy({
       where: {
         key: consumer.key,
       },
     });
-    
+
     // Generate new key and secret for the consumer
     const newKey = key || nanoid();
     const newSecret = secret || nanoid();
@@ -196,7 +196,7 @@ class ConsumerController {
     await consumer.save();
 
     // Generate new keys for the consumer
-    const { publicKey, privateKey } = await this.#generateKeys(); 
+    const { publicKey, privateKey } = await this.#generateKeys();
 
     // Save the new key, secret, and keys for the consumer
     const consumerkey = await this.models.ConsumerKey.create({
@@ -211,7 +211,7 @@ class ConsumerController {
 
   /**
    * Generate keys for an LTI consumer
-   * 
+   *
    * @return {Object} the generated keys
    */
   async #generateKeys() {

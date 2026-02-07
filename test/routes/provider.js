@@ -103,8 +103,7 @@ const login13GetSuccess = (state) => {
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
-        expect(lti.controllers.lti.login13.calledOnce).to.be
-          .true;
+        expect(lti.controllers.lti.login13.calledOnce).to.be.true;
         res.header["content-type"].should.include("text/html");
         res.header["content-security-policy"].should.include(
           `form-action ${result.url}`,
@@ -132,8 +131,7 @@ const login13GetFail = (state) => {
       .end((err, res) => {
         if (err) return done(err);
         res.text.should.equal("Invalid Request");
-        expect(lti.controllers.lti.login13.calledOnce).to.be
-          .true;
+        expect(lti.controllers.lti.login13.calledOnce).to.be.true;
         done();
       });
   });
@@ -165,8 +163,7 @@ const login13PostSuccess = (state) => {
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
-        expect(lti.controllers.lti.login13.calledOnce).to.be
-          .true;
+        expect(lti.controllers.lti.login13.calledOnce).to.be.true;
         res.header["content-type"].should.include("text/html");
         res.header["content-security-policy"].should.include(
           `form-action ${result.url}`,
@@ -194,8 +191,7 @@ const login13PostFail = (state) => {
       .end((err, res) => {
         if (err) return done(err);
         res.text.should.equal("Invalid Request");
-        expect(lti.controllers.lti.login13.calledOnce).to.be
-          .true;
+        expect(lti.controllers.lti.login13.calledOnce).to.be.true;
         done();
       });
   });

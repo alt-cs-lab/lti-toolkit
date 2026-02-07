@@ -169,7 +169,7 @@ export default async function LtiToolkit(config) {
       key: config.provider.key,
       secret: config.provider.secret,
       lti13: false,
-    })
+    });
     config.logger.info(
       "Added Single LTI Consumer for Provider Key: " + config.provider.key,
     );
@@ -212,7 +212,7 @@ export default async function LtiToolkit(config) {
 
 /**
  * Validate Required Configuration Fields
- * 
+ *
  * @param {Object} config - Configuration object
  * @throws Will throw an error if required fields are missing or invalid
  */
@@ -237,7 +237,7 @@ function validateConfig(config) {
 
 /**
  * Validate Provider Configuration and set defaults
- * 
+ *
  * @param {Object} providerConfig - Provider configuration object
  * @returns {Object} Validated and defaulted provider configuration
  * @throws Will throw an error if required fields are missing or invalid
@@ -276,10 +276,7 @@ function validateProviderConfig(providerConfig) {
     ) {
       providerConfig.custom_params = {};
     }
-    if (
-      !providerConfig.tool_id ||
-      typeof providerConfig.tool_id !== "string"
-    ) {
+    if (!providerConfig.tool_id || typeof providerConfig.tool_id !== "string") {
       providerConfig.tool_id = "lti_toolkit";
     }
     if (
@@ -296,7 +293,7 @@ function validateProviderConfig(providerConfig) {
 
 /**
  * Validate Consumer Configuration and set defaults
- * 
+ *
  * @param {Object} consumerConfig - Consumer configuration object
  * @returns {Object} Validated and defaulted consumer configuration
  * @throws Will throw an error if required fields are missing or invalid

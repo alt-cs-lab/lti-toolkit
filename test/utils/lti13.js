@@ -52,8 +52,7 @@ const authRequestForm = {
   scope: "openid",
   response_type: "id_token",
   client_id: "10000000000001",
-  redirect_uri: new URL("/lti/provider/launch", "http://localhost:3000")
-    .href,
+  redirect_uri: new URL("/lti/provider/launch", "http://localhost:3000").href,
   login_hint: loginHint,
   response_mode: "form_post",
   prompt: "none",
@@ -160,7 +159,7 @@ const tempJwtSigningKey = crypto.randomBytes(64).toString("hex");
 const validAuthRquest = (state, body) => {
   it("should accept a valid auth request", (done) => {
     const req = {
-      body: body
+      body: body,
     };
     state.lti13
       .authRequest(req)
@@ -323,9 +322,16 @@ describe("LTI 1.3 Utility", () => {
       .resolves(testConsumer)
       .withArgs({ where: { key: "a" + "thisisatestkey" } })
       .resolves(null)
-      .withArgs({ where: { client_id: "10000000000001", deployment_id: "thisisatestkey" } })
+      .withArgs({
+        where: { client_id: "10000000000001", deployment_id: "thisisatestkey" },
+      })
       .resolves(testConsumer)
-      .withArgs({ where: { client_id: "10000000000001", deployment_id: "thisisatestkey" + "a" } })
+      .withArgs({
+        where: {
+          client_id: "10000000000001",
+          deployment_id: "thisisatestkey" + "a",
+        },
+      })
       .resolves(null);
     state.stub2 = sinon
       .stub(lti.models.Consumer, "findByPk")

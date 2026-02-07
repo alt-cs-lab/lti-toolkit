@@ -155,7 +155,7 @@ export default async function setupProviderRoutes(
 
   /**
    * LTI 1.3 Editor Button
-   * 
+   *
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
@@ -176,7 +176,7 @@ export default async function setupProviderRoutes(
 
   /**
    * LTI 1.3 Course Navigation Button
-   * 
+   *
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
@@ -197,7 +197,7 @@ export default async function setupProviderRoutes(
 
   /**
    * LTI 1.3 Dynamic Registration
-   * 
+   *
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
@@ -227,7 +227,7 @@ export default async function setupProviderRoutes(
     <script type="text/javascript">\
       (window.opener || window.parent).postMessage({subject:"org.imsglobal.lti.close"}, "*");\
     </script>\
-  </body>'
+  </body>',
       );
       res.status(200).send(output);
     }
