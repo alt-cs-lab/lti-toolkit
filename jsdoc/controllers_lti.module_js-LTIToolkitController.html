@@ -327,7 +327,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line28">line 28</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line29">line 29</a>
     </li></ul></dd>
     
 
@@ -413,6 +413,94 @@
 
 
 <div class="description">
+    Update LMS data in the database
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line275">line 275</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=""><span class="type-signature">(async) </span><span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
     Handle an LTI Launch Request
 </div>
 
@@ -457,7 +545,95 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line211">line 211</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line325">line 325</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=""><span class="type-signature">(async) </span><span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Handle an LTI Launch Request
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line348">line 348</a>
     </li></ul></dd>
     
 
@@ -589,7 +765,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line374">line 374</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line455">line 455</a>
     </li></ul></dd>
     
 
@@ -645,6 +821,235 @@
 </dl>
 
     
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="createDeepLink"><span class="type-signature">(async) </span>createDeepLink<span class="signature">(res, consumer, return_url, id, title)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    LTI 1.3 Deeplink Selection Handler
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the Express response object</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>consumer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Consumer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the LTI Consumer</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>return_url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the URL to send the data to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the ID of the resource to be created</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>title</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the title of the resource to be created</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line1387">line 1387</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -757,7 +1162,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line1109">line 1109</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line1201">line 1201</a>
     </li></ul></dd>
     
 
@@ -870,7 +1275,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line1048">line 1048</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line1129">line 1129</a>
     </li></ul></dd>
     
 
@@ -1191,7 +1596,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line300">line 300</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line381">line 381</a>
     </li></ul></dd>
     
 
@@ -1301,7 +1706,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line1069">line 1069</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line1150">line 1150</a>
     </li></ul></dd>
     
 
@@ -1460,7 +1865,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line56">line 56</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line57">line 57</a>
     </li></ul></dd>
     
 
@@ -1607,7 +2012,154 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line76">line 76</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line77">line 77</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    `false` if it is invalid, else ??
+</div>
+
+
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="launch13"><span class="type-signature">(async) </span>launch13<span class="signature">(req)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Handle an LTI 1.3 Launch Request
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Express request object</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line177">line 177</a>
     </li></ul></dd>
     
 
@@ -1754,7 +2306,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line139">line 139</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line152">line 152</a>
     </li></ul></dd>
     
 
@@ -2287,7 +2839,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line819">line 819</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line900">line 900</a>
     </li></ul></dd>
     
 
@@ -2312,153 +2864,6 @@
 
 
 
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="redirect13"><span class="type-signature">(async) </span>redirect13<span class="signature">(req)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Handle an LTI 1.3 Redirect Request
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express request object</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line164">line 164</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    `false` if it is invalid, else ??
-</div>
-
-
-
-    
 
 
 
@@ -2663,7 +3068,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line521">line 521</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line602">line 602</a>
     </li></ul></dd>
     
 
@@ -2915,7 +3320,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line740">line 740</a>
+        <a href="controllers_lti.js.html">controllers/lti.js</a>, <a href="controllers_lti.js.html#line821">line 821</a>
     </li></ul></dd>
     
 
@@ -2989,7 +3394,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Feb 07 2026 21:16:56 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Thu Feb 12 2026 19:41:40 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80.22% </span>
+                <span class="strong">80.55% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>280/349</span>
+                <span class='fraction'>290/360</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">16.66% </span>
+                <span class="strong">15.62% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>5/30</span>
+                <span class='fraction'>5/32</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80.22% </span>
+                <span class="strong">80.55% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>280/349</span>
+                <span class='fraction'>290/360</span>
             </div>
         
             
@@ -411,7 +411,19 @@
 <a name='L346'></a><a href='#L346'>346</a>
 <a name='L347'></a><a href='#L347'>347</a>
 <a name='L348'></a><a href='#L348'>348</a>
-<a name='L349'></a><a href='#L349'>349</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<a name='L349'></a><a href='#L349'>349</a>
+<a name='L350'></a><a href='#L350'>350</a>
+<a name='L351'></a><a href='#L351'>351</a>
+<a name='L352'></a><a href='#L352'>352</a>
+<a name='L353'></a><a href='#L353'>353</a>
+<a name='L354'></a><a href='#L354'>354</a>
+<a name='L355'></a><a href='#L355'>355</a>
+<a name='L356'></a><a href='#L356'>356</a>
+<a name='L357'></a><a href='#L357'>357</a>
+<a name='L358'></a><a href='#L358'>358</a>
+<a name='L359'></a><a href='#L359'>359</a>
+<a name='L360'></a><a href='#L360'>360</a>
+<a name='L361'></a><a href='#L361'>361</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -471,6 +483,8 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
@@ -658,9 +672,15 @@
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
@@ -680,11 +700,14 @@
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
@@ -758,8 +781,9 @@
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * LTI Toolkit - A toolkit for building LTI (Learning Tools Interoperability) applications.
  *
  * @author Russell Feldhausen &lt;russfeld@ksu.edu&gt;
@@ -808,6 +832,8 @@ import ConsumerController from "./src/controllers/consumer.js";
  * @param {string|None} [config.provider.custom_params] - Optional custom parameters for configuration XML (e.g., { "custom_name": "custom_value" })
  * @param {string|None} [config.provider.tool_id] - Optional tool ID for configuration XML (e.g., "lti_toolkit")
  * @param {string|None} [config.provider.privacy_level] - Optional privacy level for configuration XML (e.g., "public")
+ * @param {string|None} [config.provider.handleDeeplink] - Optional LTI 1.3 Deeplink Handler
+ * @param {boolean|None} [config.provider.Navigation] - Optional show LTI tool in course navigation
  * @param {Object|None} [config.consumer] - LTI Consumer Configuration
  * @param {Function} [config.consumer.postProviderGrade] - Required function to handle posting grades to the provider
  * @param {string} [config.consumer.product_name] - Optional Product name (e.g., "lti-toolkit")
@@ -930,7 +956,7 @@ export default async function LtiToolkit(config) {
 <span class="cstat-no" title="statement not covered" >      key: config.provider.key,</span>
 <span class="cstat-no" title="statement not covered" >      secret: config.provider.secret,</span>
 <span class="cstat-no" title="statement not covered" >      lti13: false,</span>
-<span class="cstat-no" title="statement not covered" >    })</span>
+<span class="cstat-no" title="statement not covered" >    });</span>
 <span class="cstat-no" title="statement not covered" >    config.logger.info(</span>
 <span class="cstat-no" title="statement not covered" >      "Added Single LTI Consumer for Provider Key: " + config.provider.key,</span>
 <span class="cstat-no" title="statement not covered" >    );</span>
@@ -973,7 +999,7 @@ export default async function LtiToolkit(config) {
 &nbsp;
 /**
  * Validate Required Configuration Fields
- * 
+ *
  * @param {Object} config - Configuration object
  * @throws Will throw an error if required fields are missing or invalid
  */
@@ -998,7 +1024,7 @@ function validateConfig(config) {
 &nbsp;
 /**
  * Validate Provider Configuration and set defaults
- * 
+ *
  * @param {Object} providerConfig - Provider configuration object
  * @returns {Object} Validated and defaulted provider configuration
  * @throws Will throw an error if required fields are missing or invalid
@@ -1037,10 +1063,7 @@ function validateProviderConfig(providerConfig) {
     ) {
       providerConfig.custom_params = {};
     }
-    if (
-      !providerConfig.tool_id <span class="branch-0 cbranch-no" title="branch not covered" >||</span>
-<span class="cstat-no" title="statement not covered" >      typeof providerConfig.tool_id !== "string"</span>
-    ) {
+    if (!providerConfig.tool_id <span class="branch-0 cbranch-no" title="branch not covered" >|| typeof providerConfig.tool_id !== "string")</span> {
       providerConfig.tool_id = "lti_toolkit";
     }
     if (
@@ -1048,6 +1071,18 @@ function validateProviderConfig(providerConfig) {
 <span class="cstat-no" title="statement not covered" >      typeof providerConfig.privacy_level !== "string"</span>
     ) {
       providerConfig.privacy_level = "public";
+    }
+    if (
+      !providerConfig.handleDeeplink <span class="branch-0 cbranch-no" title="branch not covered" >||</span>
+<span class="cstat-no" title="statement not covered" >      typeof providerConfig.handleDeeplink !== "function"</span>
+    ) {
+      providerConfig.handleDeeplink = null;
+    }
+    if (
+      !providerConfig.navigation <span class="branch-0 cbranch-no" title="branch not covered" >||</span>
+<span class="cstat-no" title="statement not covered" >      typeof providerConfig.navigation !== "boolean"</span>
+    ) {
+      providerConfig.navigation = true;
     }
   }<span class="branch-0 cbranch-no" title="branch not covered" > else {</span>
 <span class="cstat-no" title="statement not covered" >    providerConfig = null;</span>
@@ -1057,7 +1092,7 @@ function validateProviderConfig(providerConfig) {
 &nbsp;
 /**
  * Validate Consumer Configuration and set defaults
- * 
+ *
  * @param {Object} consumerConfig - Consumer configuration object
  * @returns {Object} Validated and defaulted consumer configuration
  * @throws Will throw an error if required fields are missing or invalid
@@ -1107,14 +1142,15 @@ function validateConsumerConfig(consumerConfig) {
 <span class="cstat-no" title="statement not covered" >    consumerConfig = null;</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
   return consumerConfig;
-}</pre></td></tr></table></pre>
+}
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-02-07T21:16:52.300Z
+                at 2026-02-12T19:41:36.568Z
             </div>
         <script src="../prettify.js"></script>
         <script>
