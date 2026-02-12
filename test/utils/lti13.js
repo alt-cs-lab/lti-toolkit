@@ -209,7 +209,7 @@ const validRedirectRequest = (state, body) => {
       body: body,
     };
     state.lti13
-      .redirectRequest(req)
+      .loginRequest(req)
       .then((result) => {
         result.should.be.an("object");
         result.should.shallowDeepEqual(sampleJwt);
@@ -237,7 +237,7 @@ const redirectFailOnInvalidAttribute = (state, body, attribute, bad_value) => {
       const req = {
         body: updatedBody,
       };
-      state.lti13.redirectRequest(req).then((result) => {
+      state.lti13.loginRequest(req).then((result) => {
         assert.isNotOk(result);
         done();
       });
@@ -264,7 +264,7 @@ const redirectFailOnInvalidJWTAttribute = (
         body: body,
       };
       state.lti13
-        .redirectRequest(req)
+        .loginRequest(req)
         .then((result) => {
           assert.isNotOk(result);
           done();
@@ -369,7 +369,7 @@ describe("LTI 1.3 Utility", () => {
     );
   });
 
-  describe("redirectRequest", () => {
+  describe("loginRequest", () => {
     beforeEach(async () => {
       sinon
         .stub(lti.models.ConsumerLogin, "findOne")
