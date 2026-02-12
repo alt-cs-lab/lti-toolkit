@@ -470,3 +470,8 @@ If successful, the LMS will return a JSON response containing information about 
 ```
 
 This provides the `client_id` and `deployment_id`, which is needed to complete the registration. 
+
+## Helpful Resources
+
+* https://developerdocs.instructure.com/services/canvas/external-tools/lti/file.registration
+* https://www.imsglobal.org/spec/lti-dr/v1p0 

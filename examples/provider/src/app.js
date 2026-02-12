@@ -18,6 +18,7 @@ import lti from "./configs/lti.js";
 
 // Import Middleware
 import { requireLTI } from "./middlewares/require-lti.js";
+import { requireDeeplink } from "./middlewares/require-deeplink.js";
 
 // Import Handlers
 import AdminConfigHandler from "./routes/admin-config.js";
@@ -28,6 +29,8 @@ import InstructorHandler from "./routes/instructor.js";
 import StudentGradeHandler from "./routes/student-grade.js";
 import StudentHandler from "./routes/student.js";
 import ConsumerHandler from "./routes/consumer.js";
+import DeepLinkHandler from "./routes/deeplink.js";
+import DeepLinkSelect from "./routes/deeplink-select.js";
 
 // Create Express application
 var app = express();
@@ -72,6 +75,8 @@ app.get("/student", requireLTI, StudentHandler);
 app.post("/student/grade", requireLTI, StudentGradeHandler);
 app.get("/instructor", requireLTI, InstructorHandler);
 app.post("/instructor/grade", requireLTI, InstructorGradeHandler);
+app.get("/deeplink", requireDeeplink, DeepLinkHandler)
+app.post("/deeplink/select", requireDeeplink, DeepLinkSelect)
 
 // Use static files
 app.use(express.static(path.join(import.meta.dirname, "../public")));

@@ -79,7 +79,7 @@ agsURL = "https://purl.imsglobal.org/spec/lti-ags/claim/"
   * LTI 1.0: `role`
   * LTI 1.3: `[baseUrl + "roles"]`
 * `custom` - any custom parameters provided to the system (in LTI 1.0, they **MUST** be prefixed with `lpp` to be detected)
-  * LTI 1.0: search for any attributes prefixed with `lpp_`
+  * LTI 1.0: search for any attributes prefixed with `custom_`
   * LTI 1.3: `[baseUrl + "custom"]`
 
 Four additional items are stored in the `consumer` database by the library itself, but aren't passed to the user's `handleLaunch` function:

@@ -152,20 +152,20 @@ class LTI13Utils {
   }
 
   /**
-   * Validate an LTI 1.3 Redirect Request
+   * Validate an LTI 1.3 Launch Request
    *
    * @param {Object} req - Express request object
    */
-  async redirectRequest(req) {
+  async launchRequest(req) {
     try {
       // Check State
       if (!req.body.state) {
-        this.logger.lti("State Not Found in Redirect Request");
+        this.logger.lti("State Not Found in Launch Request");
         return false;
       }
       // Check Token
       if (!req.body.id_token) {
-        this.logger.lti("JWT Not Found in Redirect Request");
+        this.logger.lti("JWT Not Found in Launch Request");
         return false;
       }
 
@@ -174,7 +174,7 @@ class LTI13Utils {
         where: { state: req.body.state },
       });
       if (!loginState) {
-        this.logger.lti("Invalid State in Redirect Request");
+        this.logger.lti("Invalid State in Launch Request");
         return false;
       }
 
@@ -219,6 +219,8 @@ class LTI13Utils {
       // Remove login state to prevent replays
       await loginState.destroy();
 
+      // TODO: Store and check nonce in token?
+
       const baseUrl = "https://purl.imsglobal.org/spec/lti/claim/";
 
       // #######################
@@ -228,7 +230,8 @@ class LTI13Utils {
 
       if (
         !token[baseUrl + "message_type"] ||
-        token[baseUrl + "message_type"] !== "LtiResourceLinkRequest"
+        (token[baseUrl + "message_type"] !== "LtiResourceLinkRequest" && 
+         token[baseUrl + "message_type"] !== "LtiDeepLinkingRequest")
       ) {
         this.logger.lti(
           "Invalid LTI Message Type: " + token[baseUrl + "message_type"],
@@ -247,7 +250,7 @@ class LTI13Utils {
       // Return validated payload to controller
       return token;
     } catch (error) {
-      this.logger.error("Exception while parsing LTI 1.3 Redirect!");
+      this.logger.error("Exception while parsing LTI 1.3 Launch!");
       this.logger.error(error);
       return false;
     }
@@ -405,6 +408,30 @@ class LTI13Utils {
       this.logger.lti("Error getting LMS details: " + error.message);
       return null;
     }
+  }
+
+  /**
+   * Create Tool JWT Token to send to client
+   * 
+   * @param {Object} consumer_key the tool consumer key
+   * @param {Object} data the data to include in the token
+   * @returns {string} the signed token
+   */
+  async createToolToken(consumer_key, data) {
+    const key = await this.models.ConsumerKey.findOne({
+      where: { key: consumer_key },
+    });
+    if (!key) {
+      this.logger.lti("Consumer key not found");
+      return null;
+    }
+    const privateKey = crypto.createPrivateKey(key.private);
+    const jwt = await jsonwebtoken.sign(data, privateKey, {
+      algorithm: "RS256",
+      expiresIn: "1h",
+      keyid: consumer_key,
+    });
+    return jwt;
   }
 }
 

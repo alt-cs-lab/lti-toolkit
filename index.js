@@ -47,6 +47,8 @@ import ConsumerController from "./src/controllers/consumer.js";
  * @param {string|None} [config.provider.custom_params] - Optional custom parameters for configuration XML (e.g., { "custom_name": "custom_value" })
  * @param {string|None} [config.provider.tool_id] - Optional tool ID for configuration XML (e.g., "lti_toolkit")
  * @param {string|None} [config.provider.privacy_level] - Optional privacy level for configuration XML (e.g., "public")
+ * @param {string|None} [config.provider.handleDeeplink] - Optional LTI 1.3 Deeplink Handler
+ * @param {boolean|None} [config.provider.Navigation] - Optional show LTI tool in course navigation
  * @param {Object|None} [config.consumer] - LTI Consumer Configuration
  * @param {Function} [config.consumer.postProviderGrade] - Required function to handle posting grades to the provider
  * @param {string} [config.consumer.product_name] - Optional Product name (e.g., "lti-toolkit")
@@ -284,6 +286,18 @@ function validateProviderConfig(providerConfig) {
       typeof providerConfig.privacy_level !== "string"
     ) {
       providerConfig.privacy_level = "public";
+    }
+    if (
+      !providerConfig.handleDeeplink ||
+      typeof providerConfig.handleDeeplink !== "function"
+    ) {
+      providerConfig.handleDeeplink = null;
+    }
+    if (
+      !providerConfig.navigation ||
+      typeof providerConfig.navigation !== "boolean"
+    ) {
+      providerConfig.navigation = true;
     }
   } else {
     providerConfig = null;

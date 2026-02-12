@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <main>
+        <h1>LTI Toolkit Example - Deeplink Selector</h1>
+        {% if message %}
+        <p style="color: green">{{ message }}
+        {% endif %}
+        {% if error %}
+        <p style="color: red">{{ error }}
+        {% endif %}
+        <p><b>Logged in as: </b>{{ deeplinkData.user_name | d("Anonymous Student", true) }} &lt;{{ deeplinkData.user_email | d("no email", true) }}&gt;</p>
+        <h2>{{ deeplinkData.course_name }} ({{ deeplinkData.course_label }})</h2>
+        <h3>Create a New Assignment</h3>
+        <p>In a production LTI tool, you may also show the user a list of existing activities to choose from here</p>
+        <form method="POST" action="/deeplink/select">
+          <label for="title">Title</label>
+          <input type="text" id="title" name="title">
+          <label for="id">ID</label>
+          <input type="text" id="id" name="id">
+          <input type="submit" value="Submit">
+        </form>
+        <hr />
+        <details>
+          <summary>LTI Debugging Information</summary>
+          <p><b>LTI Deeplink Launch Data</b></p>
+          <pre>
+{{ deeplinkData | dump(2) | safe }}
+          </pre>
+          <p><b>LTI Consumer</b></p>
+          <pre>
+{{ consumer | dump(2) | safe }}
+          </pre>
+        </details>
+    </main>
+  </body>
+</html>

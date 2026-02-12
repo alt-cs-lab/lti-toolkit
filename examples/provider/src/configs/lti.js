@@ -10,6 +10,9 @@ import LTIToolkit from "lti-toolkit";
 // LTI Launch Handler
 import LTILaunch from "../routes/lti-launch.js";
 
+// LTI Deeplink Handler
+import LTIDeepLink from "../routes/deeplink-launch.js";
+
 // Initialize LTI Toolkit
 const lti = await LTIToolkit({
   // Domain name for this application
@@ -27,6 +30,10 @@ const lti = await LTIToolkit({
     // for single LTI consumer setup
     key: process.env.LTI_CONSUMER_KEY,
     secret: process.env.LTI_CONSUMER_SECRET,
+    // Enable Deeplinking
+    handleDeeplink: LTIDeepLink,
+    // Enable Course Navigation Link
+    navigation: true
   },
 });
 
