@@ -16,6 +16,8 @@
         <ul>
         {% for a_consumer in consumers %}
           <li><a href="consumer/{{ a_consumer.id }}">{{ a_consumer.name }}</a></li>
+        {% else %}
+          No consumers found!
         {% endfor %}
         </ul>
         <h2>LTI 1.3 Dynamic Registration</h2>
@@ -131,15 +133,6 @@
           <li><b>Launch URL: </b> <pre style="display: inline">{{ domain }}/lti/provider/launch</pre></li>
         </ul>
         <img src="/images/lti10assign.png" style="border:1px solid black" />
-
-        <hr />
-        <details>
-          <summary>LTI Debugging Information</summary>
-          <p><b>LTI Consumer</b></p>
-          <pre>
-{{ consumer | dump(2) | safe }}
-          </pre>
-        </details>
     </main>
   </body>
 </html>

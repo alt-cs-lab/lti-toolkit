@@ -16,7 +16,6 @@ import lti from "../configs/lti.js";
 async function AdminHandler(req, res) {
   // Get LTI Consumer
   const consumers = await lti.controllers.consumer.getAll();
-  const consumer = consumers[0].toJSON();
 
   // Get LMS Domain
   const lmsDomain =
@@ -24,7 +23,6 @@ async function AdminHandler(req, res) {
 
   res.render("admin.njk", {
     title: "LTI Tool Provider - Admin View",
-    consumer: consumer,
     consumers: consumers,
     lmsDomain: lmsDomain,
     domain: process.env.DOMAIN_NAME,

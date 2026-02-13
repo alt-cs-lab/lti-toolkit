@@ -230,8 +230,8 @@ class LTI13Utils {
 
       if (
         !token[baseUrl + "message_type"] ||
-        (token[baseUrl + "message_type"] !== "LtiResourceLinkRequest" && 
-         token[baseUrl + "message_type"] !== "LtiDeepLinkingRequest")
+        (token[baseUrl + "message_type"] !== "LtiResourceLinkRequest" &&
+          token[baseUrl + "message_type"] !== "LtiDeepLinkingRequest")
       ) {
         this.logger.lti(
           "Invalid LTI Message Type: " + token[baseUrl + "message_type"],
@@ -412,7 +412,7 @@ class LTI13Utils {
 
   /**
    * Create Tool JWT Token to send to client
-   * 
+   *
    * @param {Object} consumer_key the tool consumer key
    * @param {Object} data the data to include in the token
    * @returns {string} the signed token

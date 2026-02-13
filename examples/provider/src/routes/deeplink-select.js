@@ -23,7 +23,13 @@ async function DeepLinkSelect(req, res) {
   const title = req.body.title;
 
   // Submit Deeplink Selection
-  await lti.controllers.lti.createDeepLink(res, consumer, deeplinkData.deep_link_return_url, id, title)
+  await lti.controllers.lti.createDeepLink(
+    res,
+    consumer,
+    deeplinkData.deep_link_return_url,
+    id,
+    title,
+  );
 }
 
 export default DeepLinkSelect;

@@ -8,7 +8,7 @@
 
 /**
  * Handle an incoming LTI Deeplink Request
- * 
+ *
  * @param {Object} deeplinkData - an LTI Deep Link Data object
  * @param {Object} consumer - the LTI consumer object
  * @param {Object} req - the Express request object

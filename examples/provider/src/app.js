@@ -75,8 +75,8 @@ app.get("/student", requireLTI, StudentHandler);
 app.post("/student/grade", requireLTI, StudentGradeHandler);
 app.get("/instructor", requireLTI, InstructorHandler);
 app.post("/instructor/grade", requireLTI, InstructorGradeHandler);
-app.get("/deeplink", requireDeeplink, DeepLinkHandler)
-app.post("/deeplink/select", requireDeeplink, DeepLinkSelect)
+app.get("/deeplink", requireDeeplink, DeepLinkHandler);
+app.post("/deeplink/select", requireDeeplink, DeepLinkSelect);
 
 // Use static files
 app.use(express.static(path.join(import.meta.dirname, "../public")));

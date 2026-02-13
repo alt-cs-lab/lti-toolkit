@@ -96,7 +96,7 @@ class LTIToolkitController {
       launchResult.tool_consumer_instance_guid,
       launchResult.tool_consumer_instance_name,
       launchResult.tool_consumer_info_version,
-    )
+    );
     if (!consumer) {
       return false;
     }
@@ -192,13 +192,13 @@ class LTIToolkitController {
         launchResult[baseUrl + "tool_platform"].guid,
         launchResult[baseUrl + "tool_platform"].name,
         launchResult[baseUrl + "tool_platform"].version,
-      )
+      );
       if (!consumer) {
         return false;
       }
 
       if (launchResult[baseUrl + "message_type"] === "LtiResourceLinkRequest") {
-        this.logger.lti("Handling Resource Link Request")
+        this.logger.lti("Handling Resource Link Request");
         const agsUrl = "https://purl.imsglobal.org/spec/lti-ags/claim/";
         const launchData = {
           launch_type: "lti1.3",
@@ -207,18 +207,19 @@ class LTIToolkitController {
             launchResult[baseUrl + "tool_platform"].product_family_code,
           tool_consumer_guid: launchResult[baseUrl + "tool_platform"].guid,
           tool_consumer_name: launchResult[baseUrl + "tool_platform"].name,
-          tool_consumer_version: launchResult[baseUrl + "tool_platform"].version,
+          tool_consumer_version:
+            launchResult[baseUrl + "tool_platform"].version,
           course_id: launchResult[baseUrl + "context"].id,
           course_label: launchResult[baseUrl + "context"].label,
           course_name: launchResult[baseUrl + "context"].title,
-          assignment_id: launchResult[baseUrl + "lti1p1"].resource_link_id,
-          assignment_lti_id: launchResult[baseUrl + "resource_link"].id,
-          assignment_name: launchResult[baseUrl + "resource_link"].title,
-          return_url: launchResult[baseUrl + "launch_presentation"].return_url,
-          outcome_url: launchResult[agsUrl + "endpoint"].lineitem,
+          assignment_id: launchResult[baseUrl + "lti1p1"]?.resource_link_id,
+          assignment_lti_id: launchResult[baseUrl + "resource_link"]?.id,
+          assignment_name: launchResult[baseUrl + "resource_link"]?.title,
+          return_url: launchResult[baseUrl + "launch_presentation"]?.return_url,
+          outcome_url: launchResult[agsUrl + "endpoint"]?.lineitem,
           outcome_id: null,
           outcome_ags: JSON.stringify(launchResult[agsUrl + "endpoint"]),
-          user_lis_id: launchResult[baseUrl + "lti1p1"].user_id,
+          user_lis_id: launchResult[baseUrl + "lti1p1"]?.user_id,
           user_lis13_id: launchResult.sub,
           user_email: launchResult.email,
           user_name: launchResult.name,
@@ -229,9 +230,12 @@ class LTIToolkitController {
           custom: launchResult[baseUrl + "custom"],
         };
         return await this.#launch(launchData, consumer, req);
-      } else if (launchResult[baseUrl + "message_type"] === "LtiDeepLinkingRequest") {
-        this.logger.lti("Handling Deep Link Request")
-        const dlUrl = "https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings";
+      } else if (
+        launchResult[baseUrl + "message_type"] === "LtiDeepLinkingRequest"
+      ) {
+        this.logger.lti("Handling Deep Link Request");
+        const dlUrl =
+          "https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings";
         const deeplinkData = {
           launch_type: "lti1.3deeplink",
           tool_consumer_key: launchResult.key,
@@ -239,12 +243,13 @@ class LTIToolkitController {
             launchResult[baseUrl + "tool_platform"].product_family_code,
           tool_consumer_guid: launchResult[baseUrl + "tool_platform"].guid,
           tool_consumer_name: launchResult[baseUrl + "tool_platform"].name,
-          tool_consumer_version: launchResult[baseUrl + "tool_platform"].version,
+          tool_consumer_version:
+            launchResult[baseUrl + "tool_platform"].version,
           course_id: launchResult[baseUrl + "context"].id,
           course_label: launchResult[baseUrl + "context"].label,
           course_name: launchResult[baseUrl + "context"].title,
-          return_url: launchResult[baseUrl + "launch_presentation"].return_url,
-          user_lis_id: launchResult[baseUrl + "lti1p1"].user_id,
+          return_url: launchResult[baseUrl + "launch_presentation"]?.return_url,
+          user_lis_id: launchResult[baseUrl + "lti1p1"]?.user_id,
           user_lis13_id: launchResult.sub,
           user_email: launchResult.email,
           user_name: launchResult.name,
@@ -255,17 +260,17 @@ class LTIToolkitController {
           custom: launchResult[baseUrl + "custom"],
           deep_link_return_url: launchResult[dlUrl].deep_link_return_url,
         };
-        return await this.#deeplink(deeplinkData, consumer, req)
+        return await this.#deeplink(deeplinkData, consumer, req);
       } else {
-        this.logger.error("Unrecognized LTI Message Type!")
+        this.logger.error("Unrecognized LTI Message Type!");
       }
     }
   }
 
   /**
    * Update LMS data in the database
-   * 
-   * 
+   *
+   *
    */
   async #updateLMS(key, product, guid, name, version) {
     // Tool Consumers
@@ -273,9 +278,7 @@ class LTIToolkitController {
       where: { key: key },
     });
     if (!consumer) {
-      this.logger.lti(
-        "Cannot find LTI Consumer for key: " + key,
-      );
+      this.logger.lti("Cannot find LTI Consumer for key: " + key);
       return false;
     }
 
@@ -1157,12 +1160,12 @@ class LTIToolkitController {
     }
     // Check for navigation link
     let extras = "";
-    if (this.provider.navigation) { 
+    if (this.provider.navigation) {
       extras += `      <lticm:options name="course_navigation"> \
       <lticm:property name="default">disabled</lticm:property> \
       <lticm:property name="enabled">true</lticm:property> \
       <lticm:property name="windowTarget">_blank</lticm:property> \
-    </lticm:options>` 
+    </lticm:options>`;
     }
 
     const xml_string = `<?xml version="1.0" encoding="UTF-8"?> \
@@ -1267,11 +1270,12 @@ class LTIToolkitController {
     }
 
     // Check for deep linking
-    const messages = []
+    const messages = [];
     if (this.provider.handleDeeplink) {
       messages.push({
         type: "LtiDeepLinkingRequest",
-        target_link_url: this.domain_name + this.provider.route_prefix + "/deeplink",
+        target_link_url:
+          this.domain_name + this.provider.route_prefix + "/deeplink",
         label: this.provider.title,
         icon_uri: this.provider.icon_url,
         // custom_parameters
@@ -1279,14 +1283,15 @@ class LTIToolkitController {
         // roles
         supported_types: ["ltiResourceLink"],
         "https://canvas.instructure.com/lti/visibility": "admins",
-        "https://canvas.instructure.com/lti/display_type": "new_window"
-      })
+        "https://canvas.instructure.com/lti/display_type": "new_window",
+      });
     }
     // Check for navigation link
     if (this.provider.navigation) {
       messages.push({
         type: "LtiResourceLinkRequest",
-        target_link_url: this.domain_name + this.provider.route_prefix + "/launch",
+        target_link_url:
+          this.domain_name + this.provider.route_prefix + "/launch",
         label: this.provider.title,
         icon_uri: this.provider.icon_url,
         // custom_parameters
@@ -1295,8 +1300,8 @@ class LTIToolkitController {
         supported_types: ["ltiResourceLink"],
         "https://canvas.instructure.com/lti/course_navigation/default_enabled": false,
         "https://canvas.instructure.com/lti/visibility": "members",
-        "https://canvas.instructure.com/lti/display_type": "new_window"
-      })
+        "https://canvas.instructure.com/lti/display_type": "new_window",
+      });
     }
     // Build config object
     const config = {
@@ -1345,7 +1350,7 @@ class LTIToolkitController {
         const responseData = await response.json();
         // Update consumer with client_id and deployment_id from response
         createdConsumer.client_id = responseData.client_id;
-        createdConsumer.deployment_id = responseData.deployment_id;
+        createdConsumer.deployment_id = responseData.deployment_id || responseData["https://purl.imsglobal.org/spec/lti-tool-configuration"].deployment_id;
         await createdConsumer.save();
         this.logger.lti(
           "LTI 1.3 Configuration registered successfully with LMS",
@@ -1372,7 +1377,7 @@ class LTIToolkitController {
 
   /**
    * LTI 1.3 Deeplink Selection Handler
-   * 
+   *
    * @param {Object} res the Express response object
    * @param {Consumer} consumer the LTI Consumer
    * @param {string} return_url the URL to send the data to
@@ -1384,8 +1389,10 @@ class LTIToolkitController {
       iss: consumer.client_id,
       aud: consumer.platform_id,
       nonce: nanoid(),
-      "https://purl.imsglobal.org/spec/lti/claim/deployment_id": consumer.deployment_id,
-      "https://purl.imsglobal.org/spec/lti/claim/message_type": "LtiDeepLinkingResponse",
+      "https://purl.imsglobal.org/spec/lti/claim/deployment_id":
+        consumer.deployment_id,
+      "https://purl.imsglobal.org/spec/lti/claim/message_type":
+        "LtiDeepLinkingResponse",
       "https://purl.imsglobal.org/spec/lti/claim/version": "1.3.0",
       "https://purl.imsglobal.org/spec/lti-dl/claim/content_items": [
         {
@@ -1393,17 +1400,17 @@ class LTIToolkitController {
           title: title,
           url: this.domain_name + this.provider.route_prefix + "/launch",
           window: {
-            targetName: "_blank"
+            targetName: "_blank",
           },
           custom: {
-            custom_id: id
-          }
-        }
-      ]
-    }
-    const token = await this.lti13.createToolToken(consumer.key, data)
-    this.logger.lti("Sending DeepLink Response to " + return_url)
-    this.logger.silly(token)
+            custom_id: id,
+          },
+        },
+      ],
+    };
+    const token = await this.lti13.createToolToken(consumer.key, data);
+    this.logger.lti("Sending DeepLink Response to " + return_url);
+    this.logger.silly(token);
     res.header("Content-Type", "text/html");
     res.header("Content-Security-Policy", "form-action " + return_url);
     nunjucks.configure({ autoescape: true });

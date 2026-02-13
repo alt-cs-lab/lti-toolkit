@@ -19,7 +19,7 @@ async function DeepLinkHandler(req, res) {
   res.render("deeplink.njk", {
     title: "LTI Tool Provider - Deeplink Selector",
     consumer,
-    deeplinkData
+    deeplinkData,
   });
 }
 

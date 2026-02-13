@@ -62,7 +62,6 @@ async function AdminConfigHandler(req, res) {
 
   // Get Updated LTI Consumer
   const consumers = await lti.controllers.consumer.getAll();
-  const consumer = consumers[0].toJSON();
 
   // Get LMS Domain
   const lmsDomain =
@@ -70,7 +69,6 @@ async function AdminConfigHandler(req, res) {
 
   res.render("admin.njk", {
     title: "LTI Tool Provider - Admin Configuration View",
-    consumer: consumer,
     consumers: consumers,
     lmsDomain: lmsDomain,
     domain: process.env.DOMAIN_NAME,
