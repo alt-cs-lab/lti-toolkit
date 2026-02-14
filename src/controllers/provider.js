@@ -5,16 +5,20 @@
  */
 
 class ProviderController {
+  // Private Attributes
+  #ProviderModel;
+  #ProviderKeyModel;
+  #transaction;
+
   /**
    * Provider Controller
    * @param {Object} models the database models
-   * @param {Object} logger the logger instance
-   * @param {Object} database the database instance
+   * @param {Object} transaction the database transaction function
    */
-  constructor(models, logger, database) {
-    this.models = models;
-    this.logger = logger;
-    this.database = database;
+  constructor(models, transaction){
+    this.#ProviderModel = models.Provider;
+    this.#ProviderKeyModel = models.ProviderKey;
+    this.#transaction = transaction;
   }
 
   /**
@@ -23,7 +27,7 @@ class ProviderController {
    * @return {Provider[]} all providers in the database
    */
   async getAll() {
-    const providers = await this.models.Provider.findAll();
+    const providers = await this.#ProviderModel.findAll();
     return providers;
   }
 
@@ -34,7 +38,7 @@ class ProviderController {
    * @return {Provider} the provider with the given ID
    */
   async getById(id) {
-    const provider = await this.models.Provider.findByPk(id);
+    const provider = await this.#ProviderModel.findByPk(id);
     return provider;
   }
 
@@ -45,7 +49,7 @@ class ProviderController {
    * @return {Provider} the provider with the given key
    */
   async getByKey(key) {
-    const provider = await this.models.Provider.findOne({
+    const provider = await this.#ProviderModel.findOne({
       where: {
         key: key,
       },
@@ -60,11 +64,11 @@ class ProviderController {
    * @return {ProviderKey} the updated provider key
    */
   async getSecret(id) {
-    const provider = await this.models.Provider.findByPk(id);
+    const provider = await this.#ProviderModel.findByPk(id);
     if (!provider) {
       return null;
     }
-    const providerkey = await this.models.ProviderKey.findOne({
+    const providerkey = await this.#ProviderKeyModel.findOne({
       where: {
         key: provider.key,
       },
@@ -84,8 +88,8 @@ class ProviderController {
    */
   async updateProvider(id, data) {
     let provider = null;
-    await this.database.transaction(async (t) => {
-      provider = await this.models.Provider.findByPk(id);
+    await this.#transaction(async (t) => {
+      provider = await this.#ProviderModel.findByPk(id);
       if (!provider) {
         return null;
       }
@@ -102,9 +106,9 @@ class ProviderController {
         },
         { transaction: t },
       );
-      // If the key has changed, update the provider key and secret
-      if (oldKey !== data.key) {
-        await this.models.ProviderKey.update(
+      // If the key or secret has changed, update the provider key and secret
+      if (oldKey !== data.key || data.secret) {
+        await this.#ProviderKeyModel.update(
           {
             key: data.key,
             secret: data.secret,
@@ -128,19 +132,22 @@ class ProviderController {
    * @returns {Provider} the created provider
    */
   async createProvider(data) {
-    const provider = await this.models.Provider.create({
-      name: data.name,
-      lti13: data.lti13 || false,
-      key: data.key,
-      launch_url: data.launch_url,
-      domain: data.domain,
-      custom: data.custom,
-      use_section: data.use_section || false,
-    });
-    // Generate keys for the provider
-    await this.models.ProviderKey.create({
-      key: provider.key,
-      secret: data.secret,
+    let provider = null;
+    await this.#transaction(async (t) => {
+      provider = await this.#ProviderModel.create({
+        name: data.name,
+        lti13: data.lti13 || false,
+        key: data.key,
+        launch_url: data.launch_url,
+        domain: data.domain,
+        custom: data.custom,
+        use_section: data.use_section || false,
+      }, { transaction: t });
+      // Generate keys for the provider
+      await this.#ProviderKeyModel.create({
+        key: provider.key,
+        secret: data.secret,
+      }, { transaction: t });
     });
     return provider;
   }
@@ -152,13 +159,13 @@ class ProviderController {
    * @returns {boolean} true if the provider was deleted, false otherwise
    */
   async deleteProvider(id) {
-    const provider = await this.models.Provider.findByPk(id);
+    const provider = await this.#ProviderModel.findByPk(id);
     if (!provider) {
       return null;
     }
-    await this.database.transaction(async (t) => {
+    await this.#transaction(async (t) => {
       // Delete the provider key
-      await this.models.ProviderKey.destroy({
+      await this.#ProviderKeyModel.destroy({
         where: {
           key: provider.key,
         },

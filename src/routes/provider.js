@@ -13,8 +13,9 @@
 import express from "express";
 import nunjucks from "nunjucks";
 
-export default async function setupProviderRoutes(
-  LTIToolkitController,
+export default function setupProviderRoutes(
+  LTILaunchController,
+  LTIRegistrationController,
   logger,
 ) {
   // Create Express router
@@ -22,6 +23,10 @@ export default async function setupProviderRoutes(
 
   /**
    * LTI Launch Target
+   * 
+   * All LTI launch requests (1.0 and 1.3) will be sent to this endpoint. 
+   * The controller will determine the version and handle accordingly.
+   * This endpoint also handles LTI 1.3 deeplink requests.
    *
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
@@ -35,11 +40,20 @@ export default async function setupProviderRoutes(
    *     tags: [lti-provider]
    */
   router.post("/launch", async function (req, res, next) {
-    const result = await LTIToolkitController.launch(req);
-    if (result) {
-      res.redirect(result);
-    } else {
-      res.status(400).send("Invalid Request");
+    try {
+      logger.lti("Launch Request Received");
+      logger.silly(JSON.stringify(req.params, null, 2));
+      logger.silly(JSON.stringify(req.query, null, 2));
+      logger.silly(JSON.stringify(req.body, null, 2));
+      const result = await LTILaunchController.launch(req);
+      if (result && typeof result === "string") {
+        res.redirect(result);
+      } else {
+        res.status(400).send("Invalid Request");
+      }
+    } catch (err) {
+      logger.lti(err);
+      return res.status(400).send("Invalid Request");
     }
   });
 
@@ -58,9 +72,14 @@ export default async function setupProviderRoutes(
    *     tags: [lti-provider]
    */
   router.get("/config.xml", async function (req, res, next) {
-    const config = await LTIToolkitController.getLTI10Config();
-    res.header("Content-Type", "application/xml");
-    res.status(200).send(config);
+    try {
+      const config = await LTIRegistrationController.getLTI10Config();
+      res.header("Content-Type", "application/xml");
+      res.status(200).send(config);
+    } catch (err) {
+      logger.lti(err);
+      return res.status(500).send("Server Error");
+    }
   });
 
   /**
@@ -87,10 +106,12 @@ export default async function setupProviderRoutes(
   router.get("/login", handleLogin);
   router.post("/login", handleLogin);
   async function handleLogin(req, res, next) {
-    const authResult = await LTIToolkitController.login13(req);
-    if (authResult === false) {
-      res.status(400).send("Invalid Request");
-    } else {
+    logger.lti("Login Request Received");
+    logger.silly(JSON.stringify(req.params, null, 2));
+    logger.silly(JSON.stringify(req.query, null, 2));
+    logger.silly(JSON.stringify(req.body, null, 2));
+    try {
+      const authResult = await LTILaunchController.login13(req);
       res.header("Content-Type", "text/html");
       res.header("Content-Security-Policy", "form-action " + authResult.url);
       nunjucks.configure({ autoescape: true });
@@ -109,6 +130,9 @@ export default async function setupProviderRoutes(
         authResult,
       );
       res.status(200).send(output);
+    } catch (err) {
+      logger.lti(err);
+      return res.status(400).send("Invalid Request");
     }
   }
 
@@ -127,9 +151,13 @@ export default async function setupProviderRoutes(
    *     tags: [lti-provider]
    */
   router.get("/jwks", async function (req, res, next) {
-    logger.lti("JWKS Request Received");
-    const keys = await LTIToolkitController.generateConsumerJWKS();
-    res.json(keys);
+    try {
+      const keys = await LTILaunchController.generateConsumerJWKS();
+      res.json(keys);
+    } catch (err) {
+      logger.lti(err);
+      return res.status(500).send("Server Error");
+    }
   });
 
   /**
@@ -146,12 +174,12 @@ export default async function setupProviderRoutes(
    *     description: LTI 1.3 Deep Linking URL
    *     tags: [lti-provider]
    */
-  router.post("/deeplink", async function (req, res, next) {
-    logger.lti("Deep Link 1.3 Request Received");
-    logger.lti(JSON.stringify(req.params));
-    logger.lti(JSON.stringify(req.body));
-    res.status(200).send("Deep Link 1.3");
-  });
+  // router.post("/deeplink", async function (req, res, next) {
+  //   logger.lti("Deep Link 1.3 Request Received");
+  //   logger.lti(JSON.stringify(req.params));
+  //   logger.lti(JSON.stringify(req.body));
+  //   res.status(200).send("Deep Link 1.3");
+  // });
 
   /**
    * LTI 1.3 Editor Button
@@ -210,12 +238,13 @@ export default async function setupProviderRoutes(
    *     tags: [lti-provider]
    */
   router.all("/register", async function (req, res, next) {
-    logger.lti("Register 1.3 Request Received");
-    logger.silly(JSON.stringify(req.query));
-    const config = await LTIToolkitController.dynamicRegistration(req.query);
-    if (!config) {
-      res.status(400).send("Invalid Request");
-    } else {
+    logger.lti("Login Request Received");
+    logger.silly(JSON.stringify(req.params, null, 2));
+    logger.silly(JSON.stringify(req.query, null, 2));
+    logger.silly(JSON.stringify(req.body, null, 2));
+
+    try {
+      await LTIRegistrationController.dynamicRegistration(req.query);
       nunjucks.configure({ autoescape: true });
       const output = nunjucks.renderString(
         '<!doctype html>\
@@ -230,6 +259,9 @@ export default async function setupProviderRoutes(
   </body>',
       );
       res.status(200).send(output);
+    } catch (err) {
+      logger.lti(err);
+      return res.status(500).send("Server Error");
     }
   });
 

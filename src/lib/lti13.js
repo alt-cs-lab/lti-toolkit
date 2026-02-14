@@ -12,6 +12,13 @@ import ky from "ky";
 import crypto from "crypto";
 
 class LTI13Utils {
+  // Private Attributes
+  #ConsumerLoginModel;
+  #ConsumerKeyModel;
+  #ConsumerModel;
+  #logger
+  #domain_name
+
   /**
    * Constructor for LTI 1.3 Utilities
    *
@@ -19,9 +26,11 @@ class LTI13Utils {
    * @param {Object} logger the logger instance
    */
   constructor(models, logger, domain_name) {
-    this.models = models;
-    this.logger = logger;
-    this.domain_name = domain_name;
+    this.#ConsumerLoginModel = models.ConsumerLogin;
+    this.#ConsumerKeyModel = models.ConsumerKey;
+    this.#ConsumerModel = models.Consumer;
+    this.#logger = logger;
+    this.#domain_name = domain_name;
   }
 
   /**
@@ -432,6 +441,66 @@ class LTI13Utils {
       keyid: consumer_key,
     });
     return jwt;
+  }
+
+  /**
+   * Send Dynamic Registration Response
+   * 
+   * @param {Object} config the registration data to send to the LMS
+   * @param {string} endpoint the registration endpoint to send the data to
+   * @param {Object} consumer the consumer object containing client_id and deployment_id to update after successful registration
+   * @param {string|null} token an optional access token to include in the request for platforms that require it
+   * @returns {Object} the response from the LMS
+   * @throws {Error} if the registration fails
+   */
+  async sendRegistrationResponse(config, endpoint, consumer, token = null) {
+    let headers = {"Content-Type": "application/json"};
+
+    // Set registration token if provided in query for platforms that require it
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    // Logging
+    this.#logger.lti("Sending LTI 1.3 Configuration to LMS");
+    this.#logger.silly(JSON.stringify(config, null, 2));
+
+    try {
+      const response = await ky.post(endpoint, {
+        json: config,
+        headers: headers,
+      });
+
+      // Parse response
+      if (response && response.status === 200) {
+        // Get response JSON
+        const responseData = await response.json();
+        
+        // Update consumer with client_id and deployment_id from response
+        consumer.client_id = responseData.client_id;
+
+        // Some platforms return deployment_id at the top level, others return it under the lti-tool-configuration claim, so check both places
+        consumer.deployment_id = responseData.deployment_id || responseData["https://purl.imsglobal.org/spec/lti-tool-configuration"].deployment_id;
+
+        // Save updated consumer
+        await consumer.save();
+
+        this.#logger.lti("LTI 1.3 Configuration registered successfully with LMS");
+        this.#logger.silly(JSON.stringify(responseData, null, 2));
+        return config;
+      } else {
+        this.#logger.lti("Failed to register LTI 1.3 configuration with LMS");
+        this.#logger.silly(JSON.stringify(await response.json(), null, 2));
+        throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS");
+      }
+    } catch (error) {
+      this.#logger.lti("Error sending registration response: " + error.message);
+      if (error.response) {
+        this.#logger.lti("Response Status: " + error.response.status);
+        this.#logger.silly(JSON.stringify(await error.response.json(), null, 2));
+      }
+      throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS");
+    }
   }
 }
 

@@ -9,6 +9,13 @@
 import crypto from "crypto";
 
 class LTI10Utils {
+  // Private Attributes
+  #OauthNonceModel;
+  #ConsumerKeyModel;
+  #logger;
+  #domain_name;
+
+
   /**
    * Constructor for LTI 1.0 Utilities
    *
@@ -16,9 +23,10 @@ class LTI10Utils {
    * @param {Object} logger the logger instance
    */
   constructor(models, logger, domain_name) {
-    this.models = models;
-    this.logger = logger;
-    this.domain_name = domain_name;
+    this.#OauthNonceModel = models.OauthNonce;
+    this.#ConsumerKeyModel = models.ConsumerKey;
+    this.#logger = logger;
+    this.#domain_name = domain_name;
   }
 
   /**
@@ -28,153 +36,123 @@ class LTI10Utils {
    */
   async validate10(req) {
     const body = req.body;
-    try {
-      // Hostname must be set
-      if (!this.domain_name) {
-        this.logger.warn("domain_name variable must be set for LTI to work");
-        return false;
-      }
 
-      // Body must not be empty
-      if (!body) {
-        this.logger.lti("Empty LTI Body");
-        return false;
-      }
+    // Body must not be empty
+    if (!body) {
+      throw new Error("Validation Error: Empty Body");
+    }
 
-      // #######################
-      // LTI SPECIFIC THINGS
-      // #######################
-      // Body must include lti_message_type
-      if (
-        !body.lti_message_type ||
-        body.lti_message_type !== "basic-lti-launch-request"
-      ) {
-        this.logger.lti("Invalid LTI Message Type: " + body.lti_message_type);
-        return false;
-      }
-      // Body must include lti_version
-      if (!body.lti_version || body.lti_version !== "LTI-1p0") {
-        this.logger.lti("Invalid LTI Version: " + body.lti_version);
-        return false;
-      }
+    // #######################
+    // LTI SPECIFIC THINGS
+    // #######################
+    // Body must include lti_message_type
+    if (
+      !body.lti_message_type ||
+      body.lti_message_type !== "basic-lti-launch-request"
+    ) {
+      throw new Error("Validation Error: Invalid LTI Message Type: " + body.lti_message_type);
+    }
+    // Body must include lti_version
+    if (!body.lti_version || body.lti_version !== "LTI-1p0") {
+      throw new Error("Validation Error: Invalid LTI Version: " + body.lti_version);
+    }
 
-      // #######################
-      // OAUTH SPECIFIC THINGS
-      // #######################
-      // Body must include oauth_version
-      if (!body.oauth_version || body.oauth_version !== "1.0") {
-        this.logger.lti("Invalid OAuth Version: " + body.oauth_version);
-        return false;
-      }
-      // Body must include oauth_signature_method
-      if (
-        !body.oauth_signature_method ||
-        body.oauth_signature_method !== "HMAC-SHA1"
-      ) {
-        this.logger.lti(
-          "Invalid OAuth Signature Method: " + body.oauth_signature_method,
-        );
-        return false;
-      }
-      // Body must include oauth_consumer_key
-      if (!body.oauth_consumer_key) {
-        this.logger.lti("OAuth Consumer Key Missing");
-        return false;
-      }
-      // Body must include oauth_signature
-      if (!body.oauth_signature) {
-        this.logger.lti("OAuth Signature Missing");
-        return false;
-      }
-      // Body must include oauth_callback
-      if (!body.oauth_callback || body.oauth_callback !== "about:blank") {
-        this.logger.lti("Invalid OAuth Callback: " + body.oauth_callback);
-        return false;
-      }
-      // Body must include oauth_timestamp
-      if (!body.oauth_timestamp) {
-        this.logger.lti("OAuth Timestamp Missing");
-        return false;
-      }
-      // Timestamp must be recent (allow 1 minute into future and 10 minutes into past)
-      const currentTime = Math.floor(Date.now() / 1000);
-      const requestTime = parseInt(body.oauth_timestamp);
-      if (currentTime + 60 < requestTime || currentTime > requestTime + 600) {
-        this.logger.lti(
-          "OAuth Timestamp Invalid! Timestamp: " +
-            requestTime +
-            " | Current: " +
-            currentTime,
-        );
-        return false;
-      }
-      // Body must include oauth_nonce
-      if (!body.oauth_nonce) {
-        this.logger.lti("OAuth Nonce Missing");
-        return false;
-      }
-      // Nonce must be unique
-      const nonceLookup = await this.models.OauthNonce.findOne({
-        where: {
-          key: body.oauth_consumer_key,
-          nonce: body.oauth_nonce,
-        },
-      });
-      if (nonceLookup) {
-        this.logger.lti("Duplicate OAuth Nonce Detected " + body.oauth_nonce);
-        return false;
-      }
-
-      // #######################
-      // VALIDATE OAUTH SIGNATURE
-      // #######################
-      const consumerKey = await this.models.ConsumerKey.findByPk(
-        body.oauth_consumer_key,
+    // #######################
+    // OAUTH SPECIFIC THINGS
+    // #######################
+    // Body must include oauth_version
+    if (!body.oauth_version || body.oauth_version !== "1.0") {
+      throw new Error("Validation Error: Invalid OAuth Version: " + body.oauth_version);
+    }
+    // Body must include oauth_signature_method
+    if (
+      !body.oauth_signature_method ||
+      body.oauth_signature_method !== "HMAC-SHA1"
+    ) {
+      throw new Error("Validation Error: Invalid OAuth Signature Method: " + body.oauth_signature_method);
+    }
+    // Body must include oauth_consumer_key
+    if (!body.oauth_consumer_key) {
+      throw new Error("Validation Error: OAuth Consumer Key Missing");
+    }
+    // Body must include oauth_signature
+    if (!body.oauth_signature) {
+      throw new Error("Validation Error: OAuth Signature Missing");
+    }
+    // Body must include oauth_callback
+    if (!body.oauth_callback || body.oauth_callback !== "about:blank") {
+      throw new Error("Validation Error: Invalid OAuth Callback: " + body.oauth_callback);
+    }
+    // Body must include oauth_timestamp
+    if (!body.oauth_timestamp) {
+      throw new Error("Validation Error: OAuth Timestamp Missing");
+    }
+    // Timestamp must be recent (allow 1 minute into future and 10 minutes into past)
+    const currentTime = Math.floor(Date.now() / 1000);
+    const requestTime = parseInt(body.oauth_timestamp);
+    if (currentTime + 60 < requestTime || currentTime > requestTime + 600) {
+      throw new Error(
+        "Validation Error: OAuth Timestamp Invalid! Timestamp: " +
+          requestTime +
+          " | Current: " +
+          currentTime,
       );
-      if (!consumerKey) {
-        this.logger.lti(
-          "Unable to find secret for consumer key: " + body.oauth_consumer_key,
-        );
-        return false;
-      }
-      // Extract signature from body
-      const { oauth_signature, ...signedParams } = req.body;
-      // Compute signature
-      const computedSignature = this.oauth_sign(
-        body.oauth_signature_method,
-        req.method,
-        req.originalUrl,
-        signedParams,
-        consumerKey.secret,
-      );
-      // Compare extracted signature to computed
-      if (computedSignature !== oauth_signature) {
-        this.logger.lti(
-          "Invalid OAuth Signature!: Computed: " +
-            computedSignature +
-            " | Provided: " +
-            oauth_signature,
-        );
-        return false;
-      }
-
-      // Store Nonce
-      const nonceCreated = await this.models.OauthNonce.create({
+    }
+    // Body must include oauth_nonce
+    if (!body.oauth_nonce) {
+      throw new Error("Validation Error: OAuth Nonce Missing");
+    }
+    // Nonce must be unique
+    const nonceLookup = await this.#OauthNonceModel.findOne({
+      where: {
         key: body.oauth_consumer_key,
         nonce: body.oauth_nonce,
-      });
-      if (!nonceCreated || nonceCreated.nonce != body.oauth_nonce) {
-        this.logger.lti("Unable to save OAuth Nonce - Aborting!");
-        return false;
-      }
-
-      // Return validated payload to controller
-      return signedParams;
-    } catch (error) {
-      this.logger.error("Exception while parsing LTI 1.0 Launch!");
-      this.logger.error(error);
-      return false;
+      },
+    });
+    if (nonceLookup) {
+      throw new Error("Validation Error: Duplicate OAuth Nonce Detected " + body.oauth_nonce);
     }
+
+    // #######################
+    // VALIDATE OAUTH SIGNATURE
+    // #######################
+    const consumerKey = await this.#ConsumerKeyModel.findByPk(
+      body.oauth_consumer_key,
+    );
+    if (!consumerKey) {
+      throw new Error("Validation Error: Unable to find secret for consumer key: " + body.oauth_consumer_key);
+    }
+    // Extract signature from body
+    const { oauth_signature, ...signedParams } = req.body;
+    // Compute signature
+    const computedSignature = this.oauth_sign(
+      body.oauth_signature_method,
+      req.method,
+      req.originalUrl,
+      signedParams,
+      consumerKey.secret,
+    );
+    // Compare extracted signature to computed
+    if (computedSignature !== oauth_signature) {
+      throw new Error(
+        "Validation Error: Invalid OAuth Signature!: Computed: " +
+          computedSignature +
+          " | Provided: " +
+          oauth_signature
+      );
+    }
+
+    // Store Nonce
+    const nonceCreated = await this.models.OauthNonce.create({
+      key: body.oauth_consumer_key,
+      nonce: body.oauth_nonce,
+    });
+    if (!nonceCreated || nonceCreated.nonce != body.oauth_nonce) {
+      throw new Error("Validation Error: Unable to save OAuth Nonce - Aborting!");
+    }
+
+    // Return validated payload to controller
+    return signedParams;
   }
 
   /**
@@ -195,7 +173,7 @@ class LTI10Utils {
   oauth_sign(method, http_method, base_uri, params, secret) {
     // Currently only HMAC-SHA1 signature supported
     if (method !== "HMAC-SHA1") {
-      this.logger.lti("Only HMAC-SHA1 Supported");
+      this.#logger.lti("Only HMAC-SHA1 Supported");
       return null;
     }
 
@@ -204,7 +182,7 @@ class LTI10Utils {
     const part1 = LTI10Utils.#rfc3986(http_method.toUpperCase());
     // Part 2 - Base String URI
     // TODO update this to read domain name from headers?
-    const part2 = LTI10Utils.#rfc3986(new URL(base_uri, this.domain_name).href);
+    const part2 = LTI10Utils.#rfc3986(new URL(base_uri, this.#domain_name).href);
     // Part 3 - Parameters
     const part3 = LTI10Utils.#rfc3986(LTI10Utils.#normalizeParams(params));
 
@@ -290,7 +268,7 @@ class LTI10Utils {
     // OAuth Headers
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("OAuth ")) {
-      this.logger.lti("Missing or invalid OAuth header");
+      this.#logger.lti("Missing or invalid OAuth header");
       return false;
     }
 
@@ -310,37 +288,37 @@ class LTI10Utils {
 
     // Check required OAuth headers
     if (!oauthHeaders["oauth_consumer_key"]) {
-      this.logger.lti("Missing OAuth Consumer Key");
+      this.#logger.lti("Missing OAuth Consumer Key");
       return false;
     }
     if (
       !oauthHeaders["oauth_version"] ||
       oauthHeaders["oauth_version"] !== "1.0"
     ) {
-      this.logger.lti(
+      this.#logger.lti(
         "Invalid OAuth Version: " + oauthHeaders["oauth_version"],
       );
       return false;
     }
     if (!oauthHeaders["oauth_signature_method"]) {
-      this.logger.lti("Missing OAuth Signature Method");
+      this.#logger.lti("Missing OAuth Signature Method");
       return false;
     }
     if (!oauthHeaders["oauth_signature"]) {
-      this.logger.lti("Missing OAuth Signature");
+      this.#logger.lti("Missing OAuth Signature");
       return false;
     }
 
     // Check Timestamp
     if (!oauthHeaders["oauth_timestamp"]) {
-      this.logger.lti("Missing OAuth Timestamp");
+      this.#logger.lti("Missing OAuth Timestamp");
       return false;
     }
     // Timestamp must be recent (allow 1 minute into future and 10 minutes into past)
     const currentTime = Math.floor(Date.now() / 1000);
     const requestTime = parseInt(oauthHeaders["oauth_timestamp"]);
     if (currentTime + 60 < requestTime || currentTime > requestTime + 600) {
-      this.logger.lti(
+      this.#logger.lti(
         "OAuth Timestamp Invalid! Timestamp: " +
           requestTime +
           " | Current: " +
@@ -351,7 +329,7 @@ class LTI10Utils {
 
     // Check Nonce
     if (!oauthHeaders["oauth_nonce"]) {
-      this.logger.lti("Missing OAuth Nonce");
+      this.#logger.lti("Missing OAuth Nonce");
       return false;
     }
     // Nonce must be unique
@@ -362,7 +340,7 @@ class LTI10Utils {
       },
     });
     if (nonceLookup) {
-      this.logger.lti(
+      this.#logger.lti(
         "Duplicate OAuth Nonce Detected " + oauthHeaders["oauth_nonce"],
       );
       return false;
@@ -370,14 +348,14 @@ class LTI10Utils {
 
     // Extract and validate hash
     if (!oauthHeaders["oauth_body_hash"]) {
-      this.logger.lti("Missing OAuth Body Hash");
+      this.#logger.lti("Missing OAuth Body Hash");
       return false;
     }
     if (
       oauthHeaders["oauth_body_hash"] !==
       crypto.createHash("sha1").update(req.rawBody).digest("base64")
     ) {
-      this.logger.lti("Invalid OAuth Body Hash");
+      this.#logger.lti("Invalid OAuth Body Hash");
       return false;
     }
 
@@ -400,7 +378,7 @@ class LTI10Utils {
       providerKey.secret,
     );
     if (signature !== oauthHeaders["oauth_signature"]) {
-      this.logger.lti("Invalid OAuth Signature");
+      this.#logger.lti("Invalid OAuth Signature");
       return false;
     }
 
@@ -410,7 +388,7 @@ class LTI10Utils {
       nonce: oauthHeaders["oauth_nonce"],
     });
     if (!nonceCreated || nonceCreated.nonce != oauthHeaders["oauth_nonce"]) {
-      this.logger.lti("Unable to save OAuth Nonce - Aborting!");
+      this.#logger.lti("Unable to save OAuth Nonce - Aborting!");
       return false;
     }
     return {

@@ -17,10 +17,6 @@ import configureMigrations from "./src/config/migrations.js";
 import setupProviderRoutes from "./src/routes/provider.js";
 import setupConsumerRoutes from "./src/routes/consumer.js";
 
-// Import Utilities
-import LTI10Utils from "./src/lib/lti10.js";
-import LTI13Utils from "./src/lib/lti13.js";
-
 // Import controllers
 import LTIToolkitController from "./src/controllers/lti.js";
 import ProviderController from "./src/controllers/provider.js";
@@ -101,18 +97,6 @@ export default async function LtiToolkit(config) {
   // Initialize LTI Session Expiration
   modelConfig.initializeExpiration();
 
-  // Setup Utilities
-  const lti10 = new LTI10Utils(
-    modelConfig.models,
-    config.logger,
-    config.domain_name,
-  );
-  const lti13 = new LTI13Utils(
-    modelConfig.models,
-    config.logger,
-    config.domain_name,
-  );
-
   // Build return object
   const returnObj = {
     routers: {},
@@ -126,8 +110,6 @@ export default async function LtiToolkit(config) {
       // Expose for testing
       initializeExpiration: modelConfig.initializeExpiration,
       db: config.database,
-      lti10: lti10,
-      lti13: lti13,
     };
   }
 
@@ -183,8 +165,6 @@ export default async function LtiToolkit(config) {
     config.consumer,
     modelConfig.models,
     config.logger,
-    lti10,
-    lti13,
     config.domain_name,
     config.admin_email,
     returnObj.controllers.consumer,

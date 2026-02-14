@@ -5,71 +5,81 @@
 
 // Load Libraries
 import request from "supertest";
-import { use, should, expect } from "chai";
-import Ajv from "ajv";
-import addFormats from "ajv-formats";
-import chaiJsonSchemaAjv from "chai-json-schema-ajv";
-import chaiShallowDeepEqual from "chai-shallow-deep-equal";
+import { should, expect } from "chai";
 import sinon from "sinon";
 import express from "express";
-
-// Configure Chai and AJV
-const ajv = new Ajv();
-addFormats(ajv);
-use(chaiJsonSchemaAjv.create({ ajv, verbose: false }));
-use(chaiShallowDeepEqual);
 
 // Modify Object.prototype for BDD style assertions
 should();
 
-// Import Library
-import LTIToolkit from "../../index.js";
-const lti = await LTIToolkit({
-  domain_name: "http://localhost:3000",
-  admin_email: "admin@localhost.local",
-  provider: {
-    handleLaunch: async function () {},
-  },
-  consumer: {
-    postProviderGrade: async function () {},
-    deployment_name: "LTI Toolkit Dev",
-    deployment_id: "test-deployment-id",
-  },
-  test: true, // Indicate that we are in a test environment
-});
+// Load logger
+import configureLogger from "../../src/config/logger.js";
 
-const gradePassbackCallsController = (state) => {
-  it("should call LTIController.basicOutcomesHandler and properly handle the response", (done) => {
-    request(state.app)
-      .post("/lti/consumer/grade")
-      .expect(200)
-      .end((err, res) => {
-        if (err) return done(err);
-        res.type.should.equal("application/xml");
-        res.text.should.equal("<xml>Response</xml>");
-        res.headers.authorization.should.equal("TestHeader");
-        expect(lti.controllers.lti.basicOutcomesHandler.calledOnce).to.be.true;
-        done();
-      });
-  });
-};
+// Load module under test
+import setupConsumerRoutes from "../../src/routes/consumer.js";
 
-describe("/lti/consumer - !!CONTROLLER IS STUBBED!!", () => {
-  const state = {};
+describe("/routes/consumer.js", function () {
 
-  beforeEach(() => {
-    state.stub = sinon
-      .stub(lti.controllers.lti, "basicOutcomesHandler")
-      .resolves({
-        content: "<xml>Response</xml>",
-        headers: "TestHeader",
-      });
-    const app = express();
-    app.use("/lti/consumer", lti.routers.consumer);
-    state.app = app;
-  });
+  const logger = configureLogger("error");
 
-  describe("ALL /grade", () => {
-    gradePassbackCallsController(state);
+  describe("GET /grade", function () { 
+    it("should handle grade passback request and send XML response", async function () {
+      // Mock controller
+      const LTIConsumerController = {
+        basicOutcomesHandler: sinon.stub().resolves({
+          content: "<xml>response</xml>",
+          headers: "Bearer token123",
+        }),
+      };
+
+      // Setup Express app with router
+      const app = express();
+      app.use("/lti/consumer", setupConsumerRoutes(LTIConsumerController, logger));
+
+      // Send request to route
+      const res = await request(app)
+        .post("/lti/consumer/grade")
+        .send("<xml>request</xml>")
+        .set("Content-Type", "application/xml");
+
+      // Assert controller was called with parsed XML body
+      expect(LTIConsumerController.basicOutcomesHandler.calledOnce).to.be.true;
+      const handlerArg = LTIConsumerController.basicOutcomesHandler.getCall(0).args[0];
+      expect(handlerArg).to.have.property("body");
+      expect(handlerArg.body).to.deep.equal({ xml: "request" });
+
+      // Assert response
+      expect(res.status).to.equal(200);
+      expect(res.headers).to.have.property("content-type").that.includes("application/xml");
+      expect(res.headers).to.have.property("authorization", "Bearer token123");
+      expect(res.text).to.equal("<xml>response</xml>");
+    });
+
+    it("should handle errors in grade passback and send 500", async function () {
+      // Mock controller that throws error
+      const LTIConsumerController = {
+        basicOutcomesHandler: sinon.stub().rejects(new Error("Test error")),
+      };
+
+      // Setup Express app with router
+      const app = express();
+      app.use("/lti/consumer", setupConsumerRoutes(LTIConsumerController, logger));
+
+      // Send request to route
+      const res = await request(app)
+        .post("/lti/consumer/grade")
+        .send("<xml>request</xml>")
+        .set("Content-Type", "application/xml");
+
+      // Assert controller was called with parsed XML body
+      expect(LTIConsumerController.basicOutcomesHandler.calledOnce).to.be.true;
+      const handlerArg = LTIConsumerController.basicOutcomesHandler.getCall(0).args[0];
+      expect(handlerArg).to.have.property("body");
+      expect(handlerArg.body).to.deep.equal({ xml: "request" });
+
+      // Assert response
+      expect(res.status).to.equal(500);
+      expect(res.text).to.equal("Error processing grade passback");
+    });
   });
 });

@@ -9,17 +9,21 @@ import { nanoid } from "nanoid";
 import crypto from "crypto";
 
 class ConsumerController {
+  // Private Attributes
+  #ConsumerModel;
+  #ConsumerKeyModel
+  #transaction
+
   /**
    * Consumer Controller
    *
    * @param {Object} models the database models
-   * @param {Object} logger the logger instance
-   * @param {Object} database the database instance
+   * @param {Object} transaction the database transaction function
    */
-  constructor(models, logger, database) {
-    this.models = models;
-    this.logger = logger;
-    this.database = database;
+  constructor(models, transaction) {
+    this.#ConsumerModel = models.Consumer;
+    this.#ConsumerKeyModel = models.ConsumerKey;
+    this.#transaction = transaction;
   }
 
   /**
@@ -28,7 +32,7 @@ class ConsumerController {
    * @return {Consumer[]} all consumers in the database
    */
   async getAll() {
-    const consumers = await this.models.Consumer.findAll();
+    const consumers = await this.#ConsumerModel.findAll();
     return consumers;
   }
 
@@ -39,7 +43,7 @@ class ConsumerController {
    * @return {Consumer} the consumer with the given ID
    */
   async getById(id) {
-    const consumer = await this.models.Consumer.findByPk(id);
+    const consumer = await this.#ConsumerModel.findByPk(id);
     return consumer;
   }
 
@@ -50,7 +54,7 @@ class ConsumerController {
    * @return {Consumer} the consumer with the given key
    */
   async getByKey(key) {
-    const consumer = await this.models.Consumer.findOne({
+    const consumer = await this.#ConsumerModel.findOne({
       where: {
         key: key,
       },
@@ -66,8 +70,8 @@ class ConsumerController {
    */
   async createConsumer(data) {
     let consumer = null;
-    await this.database.transaction(async (t) => {
-      consumer = await this.models.Consumer.create(
+    await this.#transaction(async (t) => {
+      consumer = await this.#ConsumerModel.create(
         {
           name: data.name,
           key: data.key,
@@ -82,7 +86,7 @@ class ConsumerController {
         { transaction: t },
       );
       const { publicKey, privateKey } = await this.#generateKeys(); // Generate keys for the consumer
-      await this.models.ConsumerKey.create(
+      await this.#ConsumerKeyModel.create(
         {
           key: consumer.key,
           secret: data.secret || nanoid(),
@@ -103,7 +107,7 @@ class ConsumerController {
    * @returns {Consumer} the updated consumer
    */
   async updateConsumer(id, data) {
-    const consumer = await this.models.Consumer.findByPk(id);
+    const consumer = await this.#ConsumerModel.findByPk(id);
     if (!consumer) {
       return null;
     }
@@ -127,13 +131,13 @@ class ConsumerController {
    * @returns {boolean} true if the consumer was deleted, false otherwise
    */
   async deleteConsumer(id) {
-    const consumer = await this.models.Consumer.findByPk(id);
+    const consumer = await this.#ConsumerModel.findByPk(id);
     if (!consumer) {
       return null;
     }
-    await this.database.transaction(async (t) => {
+    await this.#transaction(async (t) => {
       // Delete the consumer key
-      await this.models.ConsumerKey.destroy({
+      await this.#ConsumerKeyModel.destroy({
         where: {
           key: consumer.key,
         },
@@ -152,11 +156,11 @@ class ConsumerController {
    * @return {ConsumerKey} the updated consumer key
    */
   async getSecret(id) {
-    const consumer = await this.models.Consumer.findByPk(id);
+    const consumer = await this.#ConsumerModel.findByPk(id);
     if (!consumer) {
       return null;
     }
-    const consumerkey = await this.models.ConsumerKey.findOne({
+    const consumerkey = await this.#ConsumerKeyModel.findOne({
       attributes: ["key", "secret"],
       where: {
         key: consumer.key,
@@ -177,36 +181,54 @@ class ConsumerController {
    * @return {ConsumerKey} the updated consumer key
    */
   async updateSecret(id, key = null, secret = null) {
-    const consumer = await this.models.Consumer.findByPk(id);
+    const consumer = await this.#ConsumerModel.findByPk(id);
     if (!consumer) {
       return null;
     }
 
-    // Remove old key and secret for the consumer
-    await this.models.ConsumerKey.destroy({
-      where: {
-        key: consumer.key,
-      },
-    });
+    let consumerkey = null;
 
-    // Generate new key and secret for the consumer
-    const newKey = key || nanoid();
-    const newSecret = secret || nanoid();
-    consumer.key = newKey;
-    await consumer.save();
+    await this.#transaction(async (t) => {
 
-    // Generate new keys for the consumer
-    const { publicKey, privateKey } = await this.#generateKeys();
+      // Remove old key and secret for the consumer
+      await this.#ConsumerKeyModel.destroy({
+        where: {
+          key: consumer.key,
+        },
+        transaction: t,
+      });
 
-    // Save the new key, secret, and keys for the consumer
-    const consumerkey = await this.models.ConsumerKey.create({
-      key: newKey,
-      secret: newSecret,
-      public: publicKey,
-      private: privateKey,
+      // Generate new key and secret for the consumer
+      const newKey = key || nanoid();
+      const newSecret = secret || nanoid();
+      consumer.key = newKey;
+      await consumer.save({ transaction: t });
+
+      // Generate new keys for the consumer
+      const { publicKey, privateKey } = await this.#generateKeys();
+
+      // Save the new key, secret, and keys for the consumer
+      consumerkey = await this.#ConsumerKeyModel.create({
+        key: newKey,
+        secret: newSecret,
+        public: publicKey,
+        private: privateKey,
+      }, { transaction: t });
     });
 
     return consumerkey;
+  }
+
+  /**
+   * Get all public keys for all consumers
+   * 
+   * @return {Array} an array of objects containing the key and public key for each consumer
+   */
+  async getAllKeys() {
+    const keys = await this.#ConsumerKeyModel.findAll({
+      attributes: ["key", "public"],
+    });
+    return keys;
   }
 
   /**

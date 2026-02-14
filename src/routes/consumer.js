@@ -13,7 +13,7 @@
 import express from "express";
 import expressXmlBodyparser from "express-xml-bodyparser";
 
-export default function setupConsumerRoutes(LTIToolkitController, logger) {
+export default function setupConsumerRoutes(LTIConsumerController, logger) {
   // Create Express router
   const router = express.Router();
 
@@ -41,15 +41,23 @@ export default function setupConsumerRoutes(LTIToolkitController, logger) {
    *     tags: [lti-consumer]
    */
   router.all("/grade", async function (req, res, next) {
-    const result = await LTIToolkitController.basicOutcomesHandler(req);
-    logger.silly("Sending XML response");
-    logger.silly(result.content);
-    res.type("application/xml");
-    if (result.headers) {
-      logger.silly("Headers - Authorization: " + result.headers);
-      res.set("Authorization", result.headers);
+    logger.lti("Grade Passback Request Received");
+    logger.silly(JSON.stringify(req.params, null, 2));
+    logger.silly(JSON.stringify(req.query, null, 2));
+    logger.silly(JSON.stringify(req.body, null, 2));
+    try {
+      const result = await LTIConsumerController.basicOutcomesHandler(req);
+      logger.silly("Grade Passback XML Response:");
+      logger.silly(result.content);
+      res.type("application/xml");
+      if (result.headers) {
+        res.set("Authorization", result.headers);
+      }
+      res.status(200).send(result.content);
+    } catch (err) {
+      logger.lti(err);
+      return res.status(500).send("Error processing grade passback");
     }
-    res.status(200).send(result.content);
   });
 
   return router;
