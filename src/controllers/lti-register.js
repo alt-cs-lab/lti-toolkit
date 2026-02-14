@@ -23,7 +23,7 @@ class LTIRegistrationController {
    * @param {Object} models - the LTI toolkit models
    * @param {Object} logger - the logger instance
    * @param {string} domain_name - the domain name of the application (e.g., "https://example.com")
-   * @param {string} admin_email - the admin email address (e.g., "
+   * @param {string} admin_email - the admin email address (e.g., "admin@domain.tld")
    * @param {Object} consumer_controller - the consumer controller instance (used for database operations related to consumers)
    */
   constructor(provider_config, models, logger, domain_name, admin_email, consumer_controller) {
@@ -99,7 +99,6 @@ class LTIRegistrationController {
    * LTI 1.3 Dyanamic Registration Handler
    *
    * @param {Object} query - the query parameters from the request
-   * @return {Object|null} the LTI 1.3 configuration JSON or null if unable to get details
    * @throws {Error} if there is an error during the registration process
    */
   async dynamicRegistration(query) {
@@ -137,7 +136,7 @@ class LTIRegistrationController {
     }
 
     // remove https:// from domain name for domain property
-    const domain = this.domain_name.replace(/^https?:\/\//, "");
+    const domain = this.#domain_name.replace(/^https?:\/\//, "");
 
     // Get claims based on configured privacy level
     let claims = [];
@@ -165,7 +164,7 @@ class LTIRegistrationController {
       messages.push({
         type: "LtiDeepLinkingRequest",
         target_link_url:
-          this.domain_name + this.#provider_config.route_prefix + "/launch",
+          this.#domain_name + this.#provider_config.route_prefix + "/launch",
         label: this.#provider_config.title,
         icon_uri: this.#provider_config.icon_url,
         // custom_parameters
@@ -182,7 +181,7 @@ class LTIRegistrationController {
       messages.push({
         type: "LtiResourceLinkRequest",
         target_link_url:
-          this.domain_name + this.#provider_config.route_prefix + "/launch",
+          this.#domain_name + this.#provider_config.route_prefix + "/launch",
         label: this.#provider_config.title,
         icon_uri: this.#provider_config.icon_url,
         // custom_parameters
@@ -201,21 +200,21 @@ class LTIRegistrationController {
       response_types: ["id_token"],
       grant_types: ["implicit", "client_credentials"],
       initiate_login_uri:
-        this.domain_name + this.#provider_config.route_prefix + "/login",
+        this.#domain_name + this.#provider_config.route_prefix + "/login",
       redirect_uris: [
-        this.domain_name + this.#provider_config.route_prefix + "/launch",
+        this.#domain_name + this.#provider_config.route_prefix + "/launch",
       ],
       client_name: this.#provider_config.title,
       logo_uri: this.#provider_config.icon_url,
       token_endpoint_auth_method: "private_key_jwt",
-      jwks_uri: this.domain_name + this.#provider_config.route_prefix + "/jwks",
+      jwks_uri: this.#domain_name + this.#provider_config.route_prefix + "/jwks",
       contacts: [this.#admin_email],
       scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score ",
       "https://purl.imsglobal.org/spec/lti-tool-configuration": {
         domain: domain,
         description: this.#provider_config.description,
         target_link_uri:
-          this.domain_name + this.#provider_config.route_prefix + "/launch",
+          this.#domain_name + this.#provider_config.route_prefix + "/launch",
         custom_parameters: this.#provider_config.custom_params,
         claims: claims,
         messages: messages,
@@ -224,7 +223,7 @@ class LTIRegistrationController {
 
     // try to send config to LMS and get response
     try {
-      LTI13Utils.sendRegistrationResponse(config, lmsDetails.registration_endpoint, createdConsumer, query.registration_token);
+      await this.#LTI13Utils.sendRegistrationResponse(config, lmsDetails.registration_endpoint, createdConsumer, query.registration_token);
     } catch (error) {
       this.#logger.error(
         "Error registering LTI 1.3 configuration with LMS: " + error.message,

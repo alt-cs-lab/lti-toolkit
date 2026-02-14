@@ -7,6 +7,9 @@
 
 // Import libraries
 import crypto from "crypto";
+import { nanoid } from "nanoid";
+import xml2js from "xml2js";
+import ky from "ky";
 
 class LTI10Utils {
   // Private Attributes
@@ -14,7 +17,6 @@ class LTI10Utils {
   #ConsumerKeyModel;
   #logger;
   #domain_name;
-
 
   /**
    * Constructor for LTI 1.0 Utilities
@@ -169,12 +171,13 @@ class LTI10Utils {
    * @param {*} base_uri - base URI for the request
    * @param {*} params - parameters in the body
    * @param {*} secret - signing secret
+   * @returns {string} the generated signature
+   * @throws {Error} if the signing method is not supported
    */
   oauth_sign(method, http_method, base_uri, params, secret) {
     // Currently only HMAC-SHA1 signature supported
     if (method !== "HMAC-SHA1") {
-      this.#logger.lti("Only HMAC-SHA1 Supported");
-      return null;
+      throw new Error("Only HMAC-SHA1 Supported for OAuth Signature Method");
     }
 
     // Compute OAuth Signature
@@ -288,49 +291,40 @@ class LTI10Utils {
 
     // Check required OAuth headers
     if (!oauthHeaders["oauth_consumer_key"]) {
-      this.#logger.lti("Missing OAuth Consumer Key");
-      return false;
+      throw new Error("Validation Error: OAuth Consumer Key Missing");
     }
     if (
       !oauthHeaders["oauth_version"] ||
       oauthHeaders["oauth_version"] !== "1.0"
     ) {
-      this.#logger.lti(
-        "Invalid OAuth Version: " + oauthHeaders["oauth_version"],
-      );
-      return false;
+      throw new Error("Validation Error: Invalid OAuth Version: " + oauthHeaders["oauth_version"]);
     }
     if (!oauthHeaders["oauth_signature_method"]) {
-      this.#logger.lti("Missing OAuth Signature Method");
-      return false;
+      throw new Error("Validation Error: Missing OAuth Signature Method");
     }
     if (!oauthHeaders["oauth_signature"]) {
-      this.#logger.lti("Missing OAuth Signature");
-      return false;
+      throw new Error("Validation Error: Missing OAuth Signature");
     }
 
     // Check Timestamp
     if (!oauthHeaders["oauth_timestamp"]) {
-      this.#logger.lti("Missing OAuth Timestamp");
-      return false;
+      throw new Error("Validation Error: Missing OAuth Timestamp");
     }
     // Timestamp must be recent (allow 1 minute into future and 10 minutes into past)
     const currentTime = Math.floor(Date.now() / 1000);
     const requestTime = parseInt(oauthHeaders["oauth_timestamp"]);
     if (currentTime + 60 < requestTime || currentTime > requestTime + 600) {
-      this.#logger.lti(
-        "OAuth Timestamp Invalid! Timestamp: " +
+      throw new Error(
+        "Validation Error: OAuth Timestamp Invalid! Timestamp: " +
           requestTime +
           " | Current: " +
           currentTime,
       );
-      return false;
     }
 
     // Check Nonce
     if (!oauthHeaders["oauth_nonce"]) {
-      this.#logger.lti("Missing OAuth Nonce");
-      return false;
+      throw new Error("Validation Error: Missing OAuth Nonce");
     }
     // Nonce must be unique
     const nonceLookup = await this.models.OauthNonce.findOne({
@@ -340,23 +334,18 @@ class LTI10Utils {
       },
     });
     if (nonceLookup) {
-      this.#logger.lti(
-        "Duplicate OAuth Nonce Detected " + oauthHeaders["oauth_nonce"],
-      );
-      return false;
+      throw new Error("Validation Error: Duplicate OAuth Nonce Detected " + oauthHeaders["oauth_nonce"]);
     }
 
     // Extract and validate hash
     if (!oauthHeaders["oauth_body_hash"]) {
-      this.#logger.lti("Missing OAuth Body Hash");
-      return false;
+      throw new Error("Validation Error: Missing OAuth Body Hash");
     }
     if (
       oauthHeaders["oauth_body_hash"] !==
       crypto.createHash("sha1").update(req.rawBody).digest("base64")
     ) {
-      this.#logger.lti("Invalid OAuth Body Hash");
-      return false;
+      throw new Error("Validation Error: Invalid OAuth Body Hash");
     }
 
     // Find secret for key
@@ -364,7 +353,7 @@ class LTI10Utils {
       where: { key: oauthHeaders["oauth_consumer_key"] },
     });
     if (!providerKey) {
-      return false;
+      throw new Error("Validation Error: Invalid OAuth Consumer Key");
     }
 
     // Check signature using headers
@@ -378,8 +367,7 @@ class LTI10Utils {
       providerKey.secret,
     );
     if (signature !== oauthHeaders["oauth_signature"]) {
-      this.#logger.lti("Invalid OAuth Signature");
-      return false;
+      throw new Error("Validation Error: Invalid OAuth Signature");
     }
 
     // Store Nonce
@@ -388,8 +376,7 @@ class LTI10Utils {
       nonce: oauthHeaders["oauth_nonce"],
     });
     if (!nonceCreated || nonceCreated.nonce != oauthHeaders["oauth_nonce"]) {
-      this.#logger.lti("Unable to save OAuth Nonce - Aborting!");
-      return false;
+      throw new Error("Validation Error: Unable to save OAuth Nonce");
     }
     return {
       key: providerKey.key,
@@ -432,6 +419,126 @@ class LTI10Utils {
         })
         .join(",");
     return headerString;
+  }
+
+  /**
+   * Post grade to an LTI 1.0 Outcome Service
+   *
+   * @param {string} url - the URL for the outcome service
+   * @param {string} consumer_key - the consumer key for signing
+   * @param {string} lms_grade_id - the LMS grade ID (sourcedId)
+   * @param {string} score - the score to post (0.0 to 1.0)
+   * @returns {boolean} true if the grade was posted successfully, false otherwise
+   * @throws {Error} if required information is missing or if posting fails
+   */
+  async postOutcome(lms_grade_id, score, consumer_key, url) {
+    /**
+     * Example LTI 1.0 Outcome Service Request Body
+     * 
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <imsx_POXEnvelopeRequest xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">
+     * <imsx_POXHeader>
+     *   <imsx_POXRequestHeaderInfo>
+     *     <imsx_version>V1.0</imsx_version>
+     *     <imsx_messageIdentifier>999999123</imsx_messageIdentifier>
+     *   </imsx_POXRequestHeaderInfo>
+     * </imsx_POXHeader>
+     * <imsx_POXBody>
+     *   <replaceResultRequest>
+     *     <resultRecord>
+     *       <sourcedGUID>
+     *         <sourcedId>3124567</sourcedId>
+     *       </sourcedGUID>
+     *       <result>
+     *         <resultScore>
+     *           <language>en</language>
+     *           <textString>0.92</textString>
+     *         </resultScore>
+     *       </result>
+     *     </resultRecord>
+     *   </replaceResultRequest>
+     * </imsx_POXBody>
+     * </imsx_POXEnvelopeRequest>
+    */
+
+    // Build XML Envelope
+    const envelope = {
+      imsx_POXEnvelopeRequest: {
+        $: {
+          xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0",
+        },
+        imsx_POXHeader: {
+          imsx_POXRequestHeaderInfo: {
+            imsx_version: "V1.0",
+            imsx_messageIdentifier: nanoid(),
+          },
+        },
+        imsx_POXBody: {
+          replaceResultRequest: {
+            resultRecord: {
+              sourcedGUID: {
+                sourcedId: lms_grade_id,
+              },
+              result: {
+                resultScore: {
+                  language: "en",
+                  textString: score,
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+    const builder = new xml2js.Builder();
+    const content = builder.buildObject(envelope);
+
+    // Get Key and Secret for Consumer
+    const providerKey = await this.#ConsumerKeyModel.findOne({
+      where: { key: consumer_key },
+      attributes: ["key", "secret"],
+    });
+    if (!providerKey) {
+      throw new Error("Cannot find secret for consumer key: " + consumer_key);
+    }
+
+    // Sign Body
+    const authHeader = await this.signOauthBody(
+      content,
+      providerKey.key,
+      providerKey.secret,
+      url,
+    );
+
+    this.#logger.lti("Posting grade to LTI 1.0 Outcome Service at " + url);
+    this.#logger.silly(authHeader);
+    this.#logger.silly(content);
+
+    // Post to Outcome Service
+    const response = await ky.post(url, {
+      headers: {
+        "Content-Type": "application/xml",
+        Authorization: authHeader,
+      },
+      body: content,
+    });
+
+    // parse response.text to xml
+    const responseText = await response.text();
+    const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+    const responseXml = await parser.parseStringPromise(responseText);
+    this.#logger.silly("Response XML: " + JSON.stringify(responseXml, null, 2));
+
+    if (response && response.status === 200) {
+      if (responseXml.imsx_POXEnvelopeResponse.imsx_POXHeader.imsx_POXResponseHeaderInfo.imsx_statusInfo.imsx_codeMajor === "success") {
+        this.#logger.lti("Grade posted successfully");
+        return true;
+      } else {
+        throw new Error("Failed to post grade: " + JSON.stringify(responseXml, null, 2));
+      }
+    } else {
+      throw new Error("Failed to post grade: HTTP " + response.status + " - " + response.statusText);
+    }
   }
 }
 

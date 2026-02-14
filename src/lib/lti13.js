@@ -10,6 +10,7 @@ import jsonwebtoken from "jsonwebtoken";
 import { nanoid } from "nanoid";
 import ky from "ky";
 import crypto from "crypto";
+import nunjucks from "nunjucks";
 
 class LTI13Utils {
   // Private Attributes
@@ -268,13 +269,13 @@ class LTI13Utils {
   /**
    * Get an access token for the given LTI consumer
    *
-   * @param {string} consumerID the ID of the consumer
+   * @param {string} consumer_key the key of the consumer
    * @param {string} scopes the scopes to request
    * @return {string|null} a string containing the access token or null unable to get token
    */
-  async getAccessToken(consumerID, scopes) {
-    this.logger.lti("Requesting access token for Consumer " + consumerID);
-    const consumer = await this.models.Consumer.findByPk(consumerID);
+  async getAccessToken(consumer_key, scopes) {
+    this.logger.lti("Requesting access token for Consumer " + consumer_key);
+    const consumer = await this.models.Consumer.findOne({ where: { key: consumer_key } });
     if (!consumer) {
       this.logger.lti("Consumer not found");
       return null;
@@ -429,6 +430,7 @@ class LTI13Utils {
   async createToolToken(consumer_key, data) {
     const key = await this.models.ConsumerKey.findOne({
       where: { key: consumer_key },
+      attributes: ["private"],
     });
     if (!key) {
       this.logger.lti("Consumer key not found");
@@ -501,6 +503,83 @@ class LTI13Utils {
       }
       throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS");
     }
+  }
+
+  /**
+   * Post grade to LTI 1.3 AGS
+   *
+   * @param {Object} grade the grade object containing the necessary information to post the grade
+   * @returns {boolean} true if the grade was posted successfully, false otherwise
+   * @throws {Error} if required information is missing or if posting fails
+   */
+  async postAGSGrade(user_lis13_id, score, consumer_key, grade_url) {
+    const token = await this.getAccessToken(consumer_key, "https://purl.imsglobal.org/spec/lti-ags/scope/score");
+
+    // TODO Handle completed vs. incomplete grades here
+    const lineitem = {
+      timestamp: new Date(Date.now()).toISOString(),
+      scoreGiven: parseFloat(score),
+      scoreMaximum: 1.0,
+      activityProgress: "Submitted",
+      gradingProgress: "FullyGraded",
+      userId: user_lis13_id,
+    };
+
+    this.#logger.lti("Posting grade to LTI 1.3 AGS at " + grade_url);
+    this.#logger.silly(JSON.stringify(lineitem, null, 2));
+
+    // Post grade to AGS endpoint
+    const response = await ky.post(grade_url + "/scores", {
+      json: lineitem,
+      headers: {
+        Authorization: `${token.token_type} ${token.access_token}`,
+        "Content-Type": "application/vnd.ims.lis.v1.score+json",
+      },
+    });
+
+    // Check response
+    if (response && response.status === 200) {
+      this.#logger.lti("Grade posted successfully");
+      return true;
+    } else {
+      throw new Error("Failed to post grade: " + JSON.stringify(await response.json(), null, 2));
+    }
+  }
+
+  /**
+   * Send Deep Link Response
+   * 
+   * @param {Object} res the Express response object
+   * @param {Object} data the data to include in the response
+   * @param {string} return_url the URL to send the response to
+   * @param {string} consumer_key the key of the consumer to get an access token for
+   * @returns {Object} the response from the LMS
+   * @throws {Error} if the request fails
+   */
+  async sendDeepLinkResponse(res, data, return_url, consumer_key) {
+    const token = await this.createToolToken(consumer_key, data);
+    this.#logger.lti("Sending DeepLink Response to " + return_url);
+    this.#logger.silly(token);
+
+    res.header("Content-Type", "text/html");
+    res.header("Content-Security-Policy", "form-action " + return_url);
+    nunjucks.configure({ autoescape: true });
+    const output = nunjucks.renderString(
+      '<!doctype html>\
+<head>\
+<title>LTI Autoform</title>\
+</head>\
+<body onload="document.forms[0].submit()">\
+<form method="POST" action="{{ return_url }}">\
+  <input type="hidden" id="JWT" name="JWT" value="{{ token }}" />\
+</form>\
+</body>',
+      {
+        return_url,
+        token,
+      },
+    );
+    res.status(200).send(output);
   }
 }
 
