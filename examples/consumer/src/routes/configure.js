@@ -34,9 +34,7 @@ async function ProviderConfigHandler(req, res) {
 
   // Check if any required fields are missing
   const requiredFields = ["name", "key", "secret", "launch_url", "domain"];
-  const missingFields = requiredFields.filter(
-    (field) => !data[field] || data[field].trim() === "",
-  );
+  const missingFields = requiredFields.filter((field) => !data[field] || data[field].trim() === "");
   if (missingFields.length > 0) {
     error = "Missing required fields: " + missingFields.join(", ");
   } else {
@@ -57,9 +55,7 @@ async function ProviderConfigHandler(req, res) {
   // Get secrets for each provider and convert to JSON-friendly format
   const providerData = [];
   for (const provider of providers) {
-    const providerSecret = await lti.controllers.provider.getSecret(
-      provider.id,
-    );
+    const providerSecret = await lti.controllers.provider.getSecret(provider.id);
     providerData.push({ ...provider.toJSON(), secret: providerSecret });
   }
 

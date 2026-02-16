@@ -62,8 +62,7 @@ async function InstructorGradeHandler(req, res) {
         // Assignment Name
         assignment: assignments[assignmentId].name,
         // Assignment ID (LTI 1.0 and LTI 1.3)
-        assignment_id:
-          assignmentId + "(" + assignments[assignmentId].lti_id + ")",
+        assignment_id: assignmentId + "(" + assignments[assignmentId].lti_id + ")",
       },
     };
     if (lti.controllers.lti.postGrade(gradeObject)) {

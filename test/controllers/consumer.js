@@ -18,8 +18,8 @@ describe("/controllers/consumer.js", () => {
 
   it("should create a ConsumerController instance with the correct properties", async () => {
     // Create mock dependencies
-    const models = { Consumer: {  }, ConsumerKey: { } };
-    
+    const models = { Consumer: {}, ConsumerKey: {} };
+
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 
@@ -28,12 +28,15 @@ describe("/controllers/consumer.js", () => {
   });
 
   // Fixture for testing getAll, getById, and getByKey methods
-  const consumerFixtures = [{ id: 1, key: "test-key", name: "Test Consumer" }, { id: 2, key: "another-key", name: "Another Consumer" }]; // Use the first consumer for getById and getByKey tests
+  const consumerFixtures = [
+    { id: 1, key: "test-key", name: "Test Consumer" },
+    { id: 2, key: "another-key", name: "Another Consumer" },
+  ]; // Use the first consumer for getById and getByKey tests
 
   it("getAll should return all consumers from the database", async () => {
     // Create mock dependencies
     const models = { Consumer: { findAll: sinon.stub().resolves(consumerFixtures) } };
-    
+
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 
@@ -48,7 +51,7 @@ describe("/controllers/consumer.js", () => {
   it("getById should return a consumer by ID from the database", async () => {
     // Create mock dependencies
     const models = { Consumer: { findByPk: sinon.stub().resolves(consumerFixtures[0]) } };
-    
+
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 
@@ -63,7 +66,7 @@ describe("/controllers/consumer.js", () => {
   it("getByKey should return a consumer by key from the database", async () => {
     // Create mock dependencies
     const models = { Consumer: { findOne: sinon.stub().resolves(consumerFixtures[0]) } };
-    
+
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 
@@ -76,7 +79,7 @@ describe("/controllers/consumer.js", () => {
   });
 
   // Fixture for testing create method with all fields provided
-  const fullConsumerData = { 
+  const fullConsumerData = {
     name: "Full Consumer",
     key: "full-key",
     lti13: true,
@@ -85,17 +88,20 @@ describe("/controllers/consumer.js", () => {
     deployment_id: "full-deployment-id",
     keyset_url: "http://example.com/keys",
     token_url: "http://example.com/token",
-    auth_url: "http://example.com/auth"
+    auth_url: "http://example.com/auth",
   };
-  const fullCreatedConsumer = { 
+  const fullCreatedConsumer = {
     id: 3,
-    ...fullConsumerData
+    ...fullConsumerData,
   };
 
   it("create should create a new consumer with all fields in the database", async () => {
     // Create mock dependencies
-    const models = { Consumer: { create: sinon.stub().resolves(fullCreatedConsumer) }, ConsumerKey: { create: sinon.stub().resolves({}) } };
-    
+    const models = {
+      Consumer: { create: sinon.stub().resolves(fullCreatedConsumer) },
+      ConsumerKey: { create: sinon.stub().resolves({}) },
+    };
+
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 
@@ -114,8 +120,11 @@ describe("/controllers/consumer.js", () => {
   // Test that create method generates keys and uses provided secret when creating a new consumer
   it("create should generate keys for new consumers", async () => {
     // Create mock dependencies
-    const models = { Consumer: { create: sinon.stub().resolves({ id: 4, ...fullConsumerData }) }, ConsumerKey: { create: sinon.stub().resolves({}) } };
-    
+    const models = {
+      Consumer: { create: sinon.stub().resolves({ id: 4, ...fullConsumerData }) },
+      ConsumerKey: { create: sinon.stub().resolves({}) },
+    };
+
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 
@@ -137,7 +146,7 @@ describe("/controllers/consumer.js", () => {
   });
 
   // Tests for updating a consumer
-  const updateConsumerData = { 
+  const updateConsumerData = {
     name: "Full Consumer",
     lti13: true,
     client_id: "full-client-id",
@@ -145,14 +154,14 @@ describe("/controllers/consumer.js", () => {
     deployment_id: "full-deployment-id",
     keyset_url: "http://example.com/keys",
     token_url: "http://example.com/token",
-    auth_url: "http://example.com/auth"
+    auth_url: "http://example.com/auth",
   };
 
   it("update should update an existing consumer in the database", async () => {
     // Create mock dependencies
     const update = sinon.stub().resolves([1]);
     const mockConsumer = { id: 3, update: update };
-    const models = { Consumer: { findByPk: sinon.stub().resolves(mockConsumer), } };
+    const models = { Consumer: { findByPk: sinon.stub().resolves(mockConsumer) } };
 
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
@@ -170,7 +179,7 @@ describe("/controllers/consumer.js", () => {
     // Create mock dependencies
     const update = sinon.stub().resolves([1]);
     const mockConsumer = { id: 3, update: update };
-    const models = { Consumer: { findByPk: sinon.stub().resolves(mockConsumer), } };
+    const models = { Consumer: { findByPk: sinon.stub().resolves(mockConsumer) } };
 
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
@@ -187,7 +196,7 @@ describe("/controllers/consumer.js", () => {
 
   it("update should return null if the consumer to update does not exist", async () => {
     // Create mock dependencies
-    const models = { Consumer: { findByPk: sinon.stub().resolves(null), } };
+    const models = { Consumer: { findByPk: sinon.stub().resolves(null) } };
 
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
@@ -205,7 +214,10 @@ describe("/controllers/consumer.js", () => {
     // Create mock dependencies
     const destroy = sinon.stub().resolves();
     const mockConsumer = { id: 3, key: "test-key", destroy: destroy };
-    const models = { Consumer: { findByPk: sinon.stub().resolves(mockConsumer), }, ConsumerKey: { destroy: sinon.stub().resolves() } };
+    const models = {
+      Consumer: { findByPk: sinon.stub().resolves(mockConsumer) },
+      ConsumerKey: { destroy: sinon.stub().resolves() },
+    };
 
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
@@ -215,14 +227,15 @@ describe("/controllers/consumer.js", () => {
 
     // Assertions
     expect(models.Consumer.findByPk.calledOnceWith(3)).to.be.true;
-    expect(models.ConsumerKey.destroy.calledOnceWith({ where: { key: "test-key" }, transaction: sinon.match.any })).to.be.true;
+    expect(models.ConsumerKey.destroy.calledOnceWith({ where: { key: "test-key" }, transaction: sinon.match.any })).to
+      .be.true;
     expect(destroy.calledOnceWith({ transaction: sinon.match.any })).to.be.true;
     expect(result).to.be.true;
   });
 
   it("delete should return null if the consumer to delete does not exist", async () => {
     // Create mock dependencies
-    const models = { Consumer: { findByPk: sinon.stub().resolves(null), } };
+    const models = { Consumer: { findByPk: sinon.stub().resolves(null) } };
 
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
@@ -238,18 +251,22 @@ describe("/controllers/consumer.js", () => {
   // Test get secret
   it("getSecret should return the secret for a consumer", async () => {
     // Create mock dependencies
-    const models = { Consumer: { findByPk: sinon.stub().resolves({ id: 3, key: "test-key" }) }, ConsumerKey: { findOne: sinon.stub().resolves({ secret: "test-secret" }) } };
+    const models = {
+      Consumer: { findByPk: sinon.stub().resolves({ id: 3, key: "test-key" }) },
+      ConsumerKey: { findOne: sinon.stub().resolves({ secret: "test-secret" }) },
+    };
 
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 
     // Call method under test
     const result = await controller.getSecret(3);
-    
+
     // Assertions
     expect(models.Consumer.findByPk.calledOnceWith(3)).to.be.true;
-    expect(models.ConsumerKey.findOne.calledOnceWith({attributes: sinon.match.any, where: { key: "test-key" } })).to.be.true;
-    expect(result).to.deep.equal({secret: "test-secret"});
+    expect(models.ConsumerKey.findOne.calledOnceWith({ attributes: sinon.match.any, where: { key: "test-key" } })).to.be
+      .true;
+    expect(result).to.deep.equal({ secret: "test-secret" });
   });
 
   it("getSecret should return null if the consumer does not exist", async () => {
@@ -261,7 +278,7 @@ describe("/controllers/consumer.js", () => {
 
     // Call method under test
     const result = await controller.getSecret(999);
-    
+
     // Assertions
     expect(models.Consumer.findByPk.calledOnceWith(999)).to.be.true;
     expect(models.ConsumerKey.findOne.notCalled).to.be.true; // Ensure we don't attempt to find the secret if the consumer doesn't exist
@@ -270,17 +287,21 @@ describe("/controllers/consumer.js", () => {
 
   it("getSecret should return null if the consumer key does not exist", async () => {
     // Create mock dependencies
-    const models = { Consumer: { findByPk: sinon.stub().resolves({ id: 3, key: "test-key" }) }, ConsumerKey: { findOne: sinon.stub().resolves(null) } };
+    const models = {
+      Consumer: { findByPk: sinon.stub().resolves({ id: 3, key: "test-key" }) },
+      ConsumerKey: { findOne: sinon.stub().resolves(null) },
+    };
 
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 
     // Call method under test
     const result = await controller.getSecret(3);
-    
+
     // Assertions
     expect(models.Consumer.findByPk.calledOnceWith(3)).to.be.true;
-    expect(models.ConsumerKey.findOne.calledOnceWith({attributes: sinon.match.any, where: { key: "test-key" } })).to.be.true;
+    expect(models.ConsumerKey.findOne.calledOnceWith({ attributes: sinon.match.any, where: { key: "test-key" } })).to.be
+      .true;
     expect(result).to.be.null;
   });
 
@@ -290,9 +311,12 @@ describe("/controllers/consumer.js", () => {
     const save = sinon.stub().resolves();
     const destroy = sinon.stub().resolves();
     const create = sinon.stub().resolves({ secret: "new-secret" });
-    const mockConsumer = { id: 3, key: "test-key", save: save};
-    const models = { Consumer: { findByPk: sinon.stub().resolves(mockConsumer), }, ConsumerKey: { destroy: destroy, create: create } };
-    
+    const mockConsumer = { id: 3, key: "test-key", save: save };
+    const models = {
+      Consumer: { findByPk: sinon.stub().resolves(mockConsumer) },
+      ConsumerKey: { destroy: destroy, create: create },
+    };
+
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 
@@ -319,8 +343,11 @@ describe("/controllers/consumer.js", () => {
 
   it("updateSecret should return null if the consumer to update does not exist", async () => {
     // Create mock dependencies
-    const models = { Consumer: { findByPk: sinon.stub().resolves(null), }, ConsumerKey: { destroy: sinon.stub(), create: sinon.stub() } };
-    
+    const models = {
+      Consumer: { findByPk: sinon.stub().resolves(null) },
+      ConsumerKey: { destroy: sinon.stub(), create: sinon.stub() },
+    };
+
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 
@@ -337,9 +364,12 @@ describe("/controllers/consumer.js", () => {
     const save = sinon.stub().resolves();
     const destroy = sinon.stub().resolves();
     const create = sinon.stub().resolves({ secret: "new-secret" });
-    const mockConsumer = { id: 3, key: "test-key", save: save};
-    const models = { Consumer: { findByPk: sinon.stub().resolves(mockConsumer), }, ConsumerKey: { destroy: destroy, create: create } };
-    
+    const mockConsumer = { id: 3, key: "test-key", save: save };
+    const models = {
+      Consumer: { findByPk: sinon.stub().resolves(mockConsumer) },
+      ConsumerKey: { destroy: destroy, create: create },
+    };
+
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 
@@ -373,7 +403,7 @@ describe("/controllers/consumer.js", () => {
       { key: "key2", public: "public-key-2" },
     ];
     const models = { ConsumerKey: { findAll: sinon.stub().resolves(consumerKeys) } };
-    
+
     // Create instance of ConsumerController
     const controller = new ConsumerController(models, transaction);
 

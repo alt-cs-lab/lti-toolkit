@@ -25,10 +25,7 @@ const sequelizeErrors = format((info) => {
 
       if (info.parameters) {
         const stringifiedParameters = JSON.stringify(info.parameters);
-        if (
-          stringifiedParameters !== "undefined" &&
-          stringifiedParameters !== "{}"
-        ) {
+        if (stringifiedParameters !== "undefined" && stringifiedParameters !== "{}") {
           message += "\nParameters: " + stringifiedParameters;
         }
       }
@@ -87,8 +84,7 @@ export default function configureLogger(level = "info") {
       }),
       align(),
       printf(
-        (info) =>
-          `[${info.timestamp}] ${info.level}: ${info.stack ? info.message + "\n" + info.stack : info.message}`,
+        (info) => `[${info.timestamp}] ${info.level}: ${info.stack ? info.message + "\n" + info.stack : info.message}`,
       ),
     ),
     // Output configuration

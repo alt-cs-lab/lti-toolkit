@@ -17,8 +17,8 @@ class LTI13Utils {
   #ConsumerLoginModel;
   #ConsumerKeyModel;
   #ConsumerModel;
-  #logger
-  #domain_name
+  #logger;
+  #domain_name;
 
   /**
    * Constructor for LTI 1.3 Utilities
@@ -59,12 +59,7 @@ class LTI13Utils {
       });
 
       if (!consumer) {
-        this.logger.lti(
-          "LTI Consumer Not Found: " +
-            params.client_id +
-            " / " +
-            params.lti_deployment_id,
-        );
+        this.logger.lti("LTI Consumer Not Found: " + params.client_id + " / " + params.lti_deployment_id);
         return false;
       }
 
@@ -95,21 +90,16 @@ class LTI13Utils {
       // LTI Deployment ID must match if provided
       if (params.lti_deployment_id) {
         if (params.lti_deployment_id !== consumer.deployment_id) {
-          this.logger.lti(
-            "Invalid LTI Deployment ID: " + params.lti_deployment_id,
-          );
+          this.logger.lti("Invalid LTI Deployment ID: " + params.lti_deployment_id);
           return false;
         }
       }
       // LTI Target URI must match
       if (
         !params.target_link_uri ||
-        params.target_link_uri !==
-          new URL("/lti/provider/launch", this.domain_name).href
+        params.target_link_uri !== new URL("/lti/provider/launch", this.domain_name).href
       ) {
-        this.logger.lti(
-          "Invalid LTI Target Link URI: " + params.target_link_uri,
-        );
+        this.logger.lti("Invalid LTI Target Link URI: " + params.target_link_uri);
         return false;
       }
 
@@ -243,16 +233,11 @@ class LTI13Utils {
         (token[baseUrl + "message_type"] !== "LtiResourceLinkRequest" &&
           token[baseUrl + "message_type"] !== "LtiDeepLinkingRequest")
       ) {
-        this.logger.lti(
-          "Invalid LTI Message Type: " + token[baseUrl + "message_type"],
-        );
+        this.logger.lti("Invalid LTI Message Type: " + token[baseUrl + "message_type"]);
         return false;
       }
       // Token must include LTI version
-      if (
-        !token[baseUrl + "version"] ||
-        token[baseUrl + "version"] !== "1.3.0"
-      ) {
+      if (!token[baseUrl + "version"] || token[baseUrl + "version"] !== "1.3.0") {
         this.logger.lti("Invalid LTI Version: " + token[baseUrl + "version"]);
         return false;
       }
@@ -281,9 +266,7 @@ class LTI13Utils {
       return null;
     }
     if (!consumer.lti13) {
-      this.logger.lti(
-        "Consumer token requested but consumer does not support LTI 1.3",
-      );
+      this.logger.lti("Consumer token requested but consumer does not support LTI 1.3");
       return null;
     }
     if (!consumer.client_id) {
@@ -319,8 +302,7 @@ class LTI13Utils {
     });
     const request = {
       grant_type: "client_credentials",
-      client_assertion_type:
-        "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+      client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
       client_assertion: jwt,
       scopes: scopes,
     };
@@ -333,9 +315,7 @@ class LTI13Utils {
         })
         .json();
       if (!result || !result.access_token) {
-        this.logger.lti(
-          "Unable to get access token from " + consumer.token_url,
-        );
+        this.logger.lti("Unable to get access token from " + consumer.token_url);
         return null;
       }
       return result;
@@ -353,18 +333,14 @@ class LTI13Utils {
    */
   async getLMSDetails(query) {
     if (!query.openid_configuration) {
-      this.logger.lti(
-        "No OpenID Configuration URL provided for Dynamic Registration",
-      );
+      this.logger.lti("No OpenID Configuration URL provided for Dynamic Registration");
       return null;
     }
     try {
       const response = await ky.get(query.openid_configuration).json();
       // validate registration endpoint is present and is based on issuer
       if (!response.registration_endpoint) {
-        this.logger.lti(
-          "No Registration Endpoint found in OpenID Configuration",
-        );
+        this.logger.lti("No Registration Endpoint found in OpenID Configuration");
         return null;
       }
       if (!response.issuer) {
@@ -372,16 +348,12 @@ class LTI13Utils {
         return null;
       }
       if (!response.registration_endpoint.startsWith(response.issuer)) {
-        this.logger.lti(
-          "Registration Endpoint does not match Issuer in OpenID Configuration",
-        );
+        this.logger.lti("Registration Endpoint does not match Issuer in OpenID Configuration");
         return null;
       }
       // validate other URLs are present
       if (!response.authorization_endpoint) {
-        this.logger.lti(
-          "No Authorization Endpoint found in OpenID Configuration",
-        );
+        this.logger.lti("No Authorization Endpoint found in OpenID Configuration");
         return null;
       }
       if (!response.token_endpoint) {
@@ -393,20 +365,13 @@ class LTI13Utils {
         return null;
       }
       // validate lti-platform-configuration is present and has required fields
-      if (
-        !response["https://purl.imsglobal.org/spec/lti-platform-configuration"]
-      ) {
-        this.logger.lti(
-          "No LTI Platform Configuration found in OpenID Configuration",
-        );
+      if (!response["https://purl.imsglobal.org/spec/lti-platform-configuration"]) {
+        this.logger.lti("No LTI Platform Configuration found in OpenID Configuration");
         return null;
       }
-      const platformConfig =
-        response["https://purl.imsglobal.org/spec/lti-platform-configuration"];
+      const platformConfig = response["https://purl.imsglobal.org/spec/lti-platform-configuration"];
       if (!platformConfig.product_family_code) {
-        this.logger.lti(
-          "No Product Family Code found in LTI Platform Configuration",
-        );
+        this.logger.lti("No Product Family Code found in LTI Platform Configuration");
         return null;
       }
       if (!platformConfig.version) {
@@ -447,7 +412,7 @@ class LTI13Utils {
 
   /**
    * Send Dynamic Registration Response
-   * 
+   *
    * @param {Object} config the registration data to send to the LMS
    * @param {string} endpoint the registration endpoint to send the data to
    * @param {Object} consumer the consumer object containing client_id and deployment_id to update after successful registration
@@ -456,7 +421,7 @@ class LTI13Utils {
    * @throws {Error} if the registration fails
    */
   async sendRegistrationResponse(config, endpoint, consumer, token = null) {
-    let headers = {"Content-Type": "application/json"};
+    let headers = { "Content-Type": "application/json" };
 
     // Set registration token if provided in query for platforms that require it
     if (token) {
@@ -477,12 +442,14 @@ class LTI13Utils {
       if (response && response.status === 200) {
         // Get response JSON
         const responseData = await response.json();
-        
+
         // Update consumer with client_id and deployment_id from response
         consumer.client_id = responseData.client_id;
 
         // Some platforms return deployment_id at the top level, others return it under the lti-tool-configuration claim, so check both places
-        consumer.deployment_id = responseData.deployment_id || responseData["https://purl.imsglobal.org/spec/lti-tool-configuration"].deployment_id;
+        consumer.deployment_id =
+          responseData.deployment_id ||
+          responseData["https://purl.imsglobal.org/spec/lti-tool-configuration"].deployment_id;
 
         // Save updated consumer
         await consumer.save();
@@ -548,7 +515,7 @@ class LTI13Utils {
 
   /**
    * Send Deep Link Response
-   * 
+   *
    * @param {Object} res the Express response object
    * @param {Object} data the data to include in the response
    * @param {string} return_url the URL to send the response to

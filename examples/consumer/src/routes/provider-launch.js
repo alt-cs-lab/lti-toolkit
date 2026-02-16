@@ -78,9 +78,7 @@ async function ProviderLaunchHandler(req, res) {
         return true;
       }
     }
-    return (
-      value === undefined || value === null || value.toString().trim() === ""
-    );
+    return value === undefined || value === null || value.toString().trim() === "";
   });
   if (missingFields.length > 0) {
     error = "Missing required fields: " + missingFields.join(", ");
@@ -165,14 +163,8 @@ function updateDataStoreWithLaunch(launchData, provider, req) {
   }
 
   // Add empty grade record
-  if (
-    !courses[courseId].assignments[assignmentId].users[userId].grades[
-      launchData.gradebook_id
-    ]
-  ) {
-    courses[courseId].assignments[assignmentId].users[userId].grades[
-      launchData.gradebook_id
-    ] = {
+  if (!courses[courseId].assignments[assignmentId].users[userId].grades[launchData.gradebook_id]) {
+    courses[courseId].assignments[assignmentId].users[userId].grades[launchData.gradebook_id] = {
       score: null,
     };
   }

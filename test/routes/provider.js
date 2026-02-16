@@ -19,7 +19,6 @@ import configureLogger from "../../src/config/logger.js";
 import setupProviderRoutes from "../../src/routes/provider.js";
 
 describe("/routes/provider.js", function () {
-
   const logger = configureLogger("error");
 
   describe("POST /launch", function () {
@@ -36,9 +35,7 @@ describe("/routes/provider.js", function () {
       app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
       // Send POST request to /launch
-      const res = await request(app)
-        .post("/lti/provider/launch")
-        .send({ some: "data" });
+      const res = await request(app).post("/lti/provider/launch").send({ some: "data" });
 
       // Assert response
       expect(res.status).to.equal(302);
@@ -59,9 +56,7 @@ describe("/routes/provider.js", function () {
       app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
       // Send POST request to /launch
-      const res = await request(app)
-        .post("/lti/provider/launch")
-        .send({ some: "data" });
+      const res = await request(app).post("/lti/provider/launch").send({ some: "data" });
 
       // Assert response
       expect(res.status).to.equal(400);
@@ -81,9 +76,7 @@ describe("/routes/provider.js", function () {
       app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
       // Send POST request to /launch
-      const res = await request(app)
-        .post("/lti/provider/launch")
-        .send({ some: "data" });
+      const res = await request(app).post("/lti/provider/launch").send({ some: "data" });
 
       // Assert response
       expect(res.status).to.equal(400);
@@ -91,161 +84,151 @@ describe("/routes/provider.js", function () {
     });
   });
 
-    describe("GET /config.xml", function () {
-      it("should send LTI 1.0 configuration XML", async function () {
-        // Create mock dependencies
-        const LTILaunchController = {};
-        const LTIRegistrationController = { getLTI10Config: sinon.stub().resolves("<xml>Config</xml>") };
+  describe("GET /config.xml", function () {
+    it("should send LTI 1.0 configuration XML", async function () {
+      // Create mock dependencies
+      const LTILaunchController = {};
+      const LTIRegistrationController = { getLTI10Config: sinon.stub().resolves("<xml>Config</xml>") };
 
-        // Create Express app and use the provider routes
-        const app = express();
-        app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
+      // Create Express app and use the provider routes
+      const app = express();
+      app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
-        // Send GET request to /config.xml
-        const res = await request(app)
-          .get("/lti/provider/config.xml");
+      // Send GET request to /config.xml
+      const res = await request(app).get("/lti/provider/config.xml");
 
-        // Assert response
-        expect(res.status).to.equal(200);
-        expect(res.header["content-type"]).to.match(/application\/xml/);
-        expect(res.text).to.equal("<xml>Config</xml>");
-        expect(LTIRegistrationController.getLTI10Config.calledOnce).to.be.true;
-      });
-
-      it("should handle errors in LTI 1.0 configuration request and send 500", async function () {
-        // Create mock dependencies
-        const LTILaunchController = {};
-        const LTIRegistrationController = { getLTI10Config: sinon.stub().rejects(new Error("Config Error")) };
-
-        // Create Express app and use the provider routes
-        const app = express();
-        app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
-
-        // Send GET request to /config.xml
-        const res = await request(app)
-          .get("/lti/provider/config.xml");
-
-        // Assert response
-        expect(res.status).to.equal(500);
-        expect(LTIRegistrationController.getLTI10Config.calledOnce).to.be.true;
-      });
+      // Assert response
+      expect(res.status).to.equal(200);
+      expect(res.header["content-type"]).to.match(/application\/xml/);
+      expect(res.text).to.equal("<xml>Config</xml>");
+      expect(LTIRegistrationController.getLTI10Config.calledOnce).to.be.true;
     });
 
-    describe("GET /login", function () {
-      it("should handle LTI 1.3 login request and send auto form", async function () {
-        // Create mock dependencies
-        const LTILaunchController = {
-          login13: sinon.stub().resolves({
-            form: {
-              attribute1: "value1",
-              attribute2: "value2",
-            },
-            url: "https://redirectURL"
-          }),
-        };
-        const LTIRegistrationController = {};
+    it("should handle errors in LTI 1.0 configuration request and send 500", async function () {
+      // Create mock dependencies
+      const LTILaunchController = {};
+      const LTIRegistrationController = { getLTI10Config: sinon.stub().rejects(new Error("Config Error")) };
 
-        // Create Express app and use the provider routes
-        const app = express();
-        app.use(express.json());
-        app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
+      // Create Express app and use the provider routes
+      const app = express();
+      app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
-        // Send GET request to /login
-        const res = await request(app)
-          .get("/lti/provider/login")
-          .send({ some: "data" });
+      // Send GET request to /config.xml
+      const res = await request(app).get("/lti/provider/config.xml");
 
-        // Assert response
-        expect(res.status).to.equal(200);
-        expect(res.header["content-type"]).to.match(/text\/html/);
-        expect(res.header["content-security-policy"]).to.match(/form-action https:\/\/redirectURL/);
+      // Assert response
+      expect(res.status).to.equal(500);
+      expect(LTIRegistrationController.getLTI10Config.calledOnce).to.be.true;
+    });
+  });
 
-        // Check form fields in response body
-        expect(res.text).to.include('<form method="POST" action="https://redirectURL">');
-        expect(res.text).to.include('<input type="hidden" id="attribute1" name="attribute1" value="value1" />');
-        expect(res.text).to.include('<input type="hidden" id="attribute2" name="attribute2" value="value2" />');
-        expect(LTILaunchController.login13.calledOnce).to.be.true;
-      });
+  describe("GET /login", function () {
+    it("should handle LTI 1.3 login request and send auto form", async function () {
+      // Create mock dependencies
+      const LTILaunchController = {
+        login13: sinon.stub().resolves({
+          form: {
+            attribute1: "value1",
+            attribute2: "value2",
+          },
+          url: "https://redirectURL",
+        }),
+      };
+      const LTIRegistrationController = {};
 
-      it("should handle errors in LTI 1.3 login request and send 400", async function () {
-        // Create mock dependencies
-        const LTILaunchController = {
-          login13: sinon.stub().rejects(new Error("Login Error")),
-        };
-        const LTIRegistrationController = {};
+      // Create Express app and use the provider routes
+      const app = express();
+      app.use(express.json());
+      app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
-        // Create Express app and use the provider routes
-        const app = express();
-        app.use(express.json());
-        app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
+      // Send GET request to /login
+      const res = await request(app).get("/lti/provider/login").send({ some: "data" });
 
-        // Send GET request to /login
-        const res = await request(app)
-          .get("/lti/provider/login")
-          .send({ some: "data" });
+      // Assert response
+      expect(res.status).to.equal(200);
+      expect(res.header["content-type"]).to.match(/text\/html/);
+      expect(res.header["content-security-policy"]).to.match(/form-action https:\/\/redirectURL/);
 
-        // Assert response
-        expect(res.status).to.equal(400);
-        expect(LTILaunchController.login13.calledOnce).to.be.true;
+      // Check form fields in response body
+      expect(res.text).to.include('<form method="POST" action="https://redirectURL">');
+      expect(res.text).to.include('<input type="hidden" id="attribute1" name="attribute1" value="value1" />');
+      expect(res.text).to.include('<input type="hidden" id="attribute2" name="attribute2" value="value2" />');
+      expect(LTILaunchController.login13.calledOnce).to.be.true;
+    });
+
+    it("should handle errors in LTI 1.3 login request and send 400", async function () {
+      // Create mock dependencies
+      const LTILaunchController = {
+        login13: sinon.stub().rejects(new Error("Login Error")),
+      };
+      const LTIRegistrationController = {};
+
+      // Create Express app and use the provider routes
+      const app = express();
+      app.use(express.json());
+      app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
+
+      // Send GET request to /login
+      const res = await request(app).get("/lti/provider/login").send({ some: "data" });
+
+      // Assert response
+      expect(res.status).to.equal(400);
+      expect(LTILaunchController.login13.calledOnce).to.be.true;
     });
   });
 
   describe("POST /login", function () {
-      it("should handle LTI 1.3 login request and send auto form", async function () {
-        // Create mock dependencies
-        const LTILaunchController = {
-          login13: sinon.stub().resolves({
-            form: {
-              attribute1: "value1",
-              attribute2: "value2",
-            },
-            url: "https://redirectURL"
-          }),
-        };
-        const LTIRegistrationController = {};
+    it("should handle LTI 1.3 login request and send auto form", async function () {
+      // Create mock dependencies
+      const LTILaunchController = {
+        login13: sinon.stub().resolves({
+          form: {
+            attribute1: "value1",
+            attribute2: "value2",
+          },
+          url: "https://redirectURL",
+        }),
+      };
+      const LTIRegistrationController = {};
 
-        // Create Express app and use the provider routes
-        const app = express();
-        app.use(express.json());
-        app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
+      // Create Express app and use the provider routes
+      const app = express();
+      app.use(express.json());
+      app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
-        // Send POST request to /login
-        const res = await request(app)
-          .post("/lti/provider/login")
-          .send({ some: "data" });
+      // Send POST request to /login
+      const res = await request(app).post("/lti/provider/login").send({ some: "data" });
 
-        // Assert response
-        expect(res.status).to.equal(200);
-        expect(res.header["content-type"]).to.match(/text\/html/);
-        expect(res.header["content-security-policy"]).to.match(/form-action https:\/\/redirectURL/);
+      // Assert response
+      expect(res.status).to.equal(200);
+      expect(res.header["content-type"]).to.match(/text\/html/);
+      expect(res.header["content-security-policy"]).to.match(/form-action https:\/\/redirectURL/);
 
-        // Check form fields in response body
-        expect(res.text).to.include('<form method="POST" action="https://redirectURL">');
-        expect(res.text).to.include('<input type="hidden" id="attribute1" name="attribute1" value="value1" />');
-        expect(res.text).to.include('<input type="hidden" id="attribute2" name="attribute2" value="value2" />');
-        expect(LTILaunchController.login13.calledOnce).to.be.true;
-      });
+      // Check form fields in response body
+      expect(res.text).to.include('<form method="POST" action="https://redirectURL">');
+      expect(res.text).to.include('<input type="hidden" id="attribute1" name="attribute1" value="value1" />');
+      expect(res.text).to.include('<input type="hidden" id="attribute2" name="attribute2" value="value2" />');
+      expect(LTILaunchController.login13.calledOnce).to.be.true;
+    });
 
-      it("should handle errors in LTI 1.3 login request and send 400", async function () {
-        // Create mock dependencies
-        const LTILaunchController = {
-          login13: sinon.stub().rejects(new Error("Login Error")),
-        };
-        const LTIRegistrationController = {};
+    it("should handle errors in LTI 1.3 login request and send 400", async function () {
+      // Create mock dependencies
+      const LTILaunchController = {
+        login13: sinon.stub().rejects(new Error("Login Error")),
+      };
+      const LTIRegistrationController = {};
 
-        // Create Express app and use the provider routes
-        const app = express();
-        app.use(express.json());
-        app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
+      // Create Express app and use the provider routes
+      const app = express();
+      app.use(express.json());
+      app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
-        // Send POST request to /login
-        const res = await request(app)
-          .post("/lti/provider/login")
-          .send({ some: "data" });
+      // Send POST request to /login
+      const res = await request(app).post("/lti/provider/login").send({ some: "data" });
 
-        // Assert response
-        expect(res.status).to.equal(400);
-        expect(LTILaunchController.login13.calledOnce).to.be.true;
+      // Assert response
+      expect(res.status).to.equal(400);
+      expect(LTILaunchController.login13.calledOnce).to.be.true;
     });
   });
 
@@ -253,20 +236,20 @@ describe("/routes/provider.js", function () {
     it("should send JWKS JSON", async function () {
       // Create mock dependencies
       const keys = [
-          {
-            kty: "RSA",
-            kid: "key1",
-            use: "sig",
-            n: "modulus",
-            e: "exponent",
-          }, 
-          {
-            kty: "RSA",
-            kid: "key2",
-            use: "sig",
-            n: "modulus2",
-            e: "exponent2",
-          }
+        {
+          kty: "RSA",
+          kid: "key1",
+          use: "sig",
+          n: "modulus",
+          e: "exponent",
+        },
+        {
+          kty: "RSA",
+          kid: "key2",
+          use: "sig",
+          n: "modulus2",
+          e: "exponent2",
+        },
       ];
       const LTILaunchController = {
         generateConsumerJWKS: sinon.stub().resolves(keys),
@@ -278,9 +261,7 @@ describe("/routes/provider.js", function () {
       app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
       // Send GET request to /jwks
-      const res = await request(app)
-        .get("/lti/provider/jwks")
-        .send();
+      const res = await request(app).get("/lti/provider/jwks").send();
 
       // Assert response
       expect(res.status).to.equal(200);
@@ -300,9 +281,7 @@ describe("/routes/provider.js", function () {
       app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
       // Send GET request to /jwks
-      const res = await request(app)
-        .get("/lti/provider/jwks")
-        .send();
+      const res = await request(app).get("/lti/provider/jwks").send();
 
       // Assert response
       expect(res.status).to.equal(500);
@@ -324,9 +303,7 @@ describe("/routes/provider.js", function () {
       app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
       // Send GET request to /register
-      const res = await request(app)
-        .get("/lti/provider/register")
-        .send({ some: "data" });
+      const res = await request(app).get("/lti/provider/register").send({ some: "data" });
 
       // Assert response
       expect(res.status).to.equal(200);
@@ -334,7 +311,9 @@ describe("/routes/provider.js", function () {
       expect(res.header["content-type"]).to.match(/text\/html/);
 
       // Check form fields in response body
-      expect(res.text).to.include('(window.opener || window.parent).postMessage({subject:"org.imsglobal.lti.close"}, "*");');
+      expect(res.text).to.include(
+        '(window.opener || window.parent).postMessage({subject:"org.imsglobal.lti.close"}, "*");',
+      );
     });
 
     it("should handle errors in LTI 1.3 registration request and send 500", async function () {
@@ -350,9 +329,7 @@ describe("/routes/provider.js", function () {
       app.use("/lti/provider", setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger));
 
       // Send GET request to /register
-      const res = await request(app)
-        .get("/lti/provider/register")
-        .send({ some: "data" });
+      const res = await request(app).get("/lti/provider/register").send({ some: "data" });
 
       // Assert response
       expect(res.status).to.equal(500);

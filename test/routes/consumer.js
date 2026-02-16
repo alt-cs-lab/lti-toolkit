@@ -19,10 +19,9 @@ import configureLogger from "../../src/config/logger.js";
 import setupConsumerRoutes from "../../src/routes/consumer.js";
 
 describe("/routes/consumer.js", function () {
-
   const logger = configureLogger("error");
 
-  describe("GET /grade", function () { 
+  describe("GET /grade", function () {
     it("should handle grade passback request and send XML response", async function () {
       // Mock controller
       const LTIConsumerController = {

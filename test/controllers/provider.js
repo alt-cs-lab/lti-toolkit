@@ -18,11 +18,11 @@ describe("/controllers/provider.js", () => {
 
   it("should create a ProviderController instance with the correct properties", async () => {
     // Create stubs for dependencies
-    const models = { Provider: { }, ProviderKey: { } };
-    
+    const models = { Provider: {}, ProviderKey: {} };
+
     // Call the function under test
     const controller = new ProviderController(models, transaction);
-    
+
     // Assertions
     expect(controller).to.be.an.instanceOf(ProviderController);
   });
@@ -30,7 +30,10 @@ describe("/controllers/provider.js", () => {
   // Test getAll
   it("should return all providers from the database", async () => {
     // Create stubs for dependencies
-    const providers = [{ id: 1, name: "Provider 1" }, { id: 2, name: "Provider 2" }];
+    const providers = [
+      { id: 1, name: "Provider 1" },
+      { id: 2, name: "Provider 2" },
+    ];
     const models = { Provider: { findAll: sinon.stub().resolves(providers) } };
 
     // Call the function under test
@@ -75,11 +78,11 @@ describe("/controllers/provider.js", () => {
   // Test getSecret
   it("should return the secret for an LTI provider", async () => {
     // Create stubs for dependencies
-    const provider = { id: 1, name: "Provider 1", key: "test-key"};
+    const provider = { id: 1, name: "Provider 1", key: "test-key" };
     const providerKey = { key: "test-key", secret: "test-secret" };
-    const models = { 
+    const models = {
       Provider: { findByPk: sinon.stub().resolves(provider) },
-      ProviderKey: { findOne: sinon.stub().resolves(providerKey) }
+      ProviderKey: { findOne: sinon.stub().resolves(providerKey) },
     };
 
     // Call the function under test
@@ -90,7 +93,7 @@ describe("/controllers/provider.js", () => {
     expect(models.Provider.findByPk.calledOnceWith(1)).to.be.true;
     expect(models.ProviderKey.findOne.calledOnceWith({ where: { key: "test-key" } })).to.be.true;
     expect(result).to.deep.equal(providerKey);
-  })
+  });
 
   it("should return null if the provider does not exist when getting the secret", async () => {
     // Create stubs for dependencies
@@ -107,10 +110,10 @@ describe("/controllers/provider.js", () => {
 
   it("should return null if the provider key does not exist when getting the secret", async () => {
     // Create stubs for dependencies
-    const provider = { id: 1, name: "Provider 1", key: "test-key"};
-    const models = { 
+    const provider = { id: 1, name: "Provider 1", key: "test-key" };
+    const models = {
       Provider: { findByPk: sinon.stub().resolves(provider) },
-      ProviderKey: { findOne: sinon.stub().resolves(null) }
+      ProviderKey: { findOne: sinon.stub().resolves(null) },
     };
 
     // Call the function under test
@@ -131,26 +134,31 @@ describe("/controllers/provider.js", () => {
     domain: "example.com",
     custom: { custom1: "value1", custom2: "value2" },
     use_section: false,
-  }
+  };
 
   // Test updateProvider
   it("should update a provider in the database", async () => {
     // Create stubs for dependencies
     const update = sinon.stub().resolves([1]);
     const provider = { id: 1, name: "Provider 1", key: "test-key", update: update };
-    const models = { 
-      Provider: { findByPk: sinon.stub().resolves(provider)},
-      ProviderKey: { update: sinon.stub().resolves([1]) }
+    const models = {
+      Provider: { findByPk: sinon.stub().resolves(provider) },
+      ProviderKey: { update: sinon.stub().resolves([1]) },
     };
 
     // Call the function under test
     const controller = new ProviderController(models, transaction);
-    const result = await controller.updateProvider(1, {...updatedProvider, secret: "updated-secret"});
+    const result = await controller.updateProvider(1, { ...updatedProvider, secret: "updated-secret" });
 
     // Assertions
     expect(models.Provider.findByPk.calledOnceWith(1)).to.be.true;
     expect(update.calledOnceWith(updatedProvider)).to.be.true;
-    expect(models.ProviderKey.update.calledOnceWith({ key: "updated-key", secret: "updated-secret" }, { where: { key: "test-key" }, transaction: sinon.match.any })).to.be.true;
+    expect(
+      models.ProviderKey.update.calledOnceWith(
+        { key: "updated-key", secret: "updated-secret" },
+        { where: { key: "test-key" }, transaction: sinon.match.any },
+      ),
+    ).to.be.true;
     expect(result).to.deep.equal(provider);
   });
 
@@ -159,18 +167,18 @@ describe("/controllers/provider.js", () => {
     // Create stubs for dependencies
     const update = sinon.stub().resolves([1]);
     const provider = { id: 1, name: "Provider 1", key: "test-key", update: update };
-    const models = { 
-      Provider: { findByPk: sinon.stub().resolves(provider)},
-      ProviderKey: { update: sinon.stub().resolves([1]) }
+    const models = {
+      Provider: { findByPk: sinon.stub().resolves(provider) },
+      ProviderKey: { update: sinon.stub().resolves([1]) },
     };
 
     // Call the function under test
     const controller = new ProviderController(models, transaction);
-    const result = await controller.updateProvider(1, {...updatedProvider, key: "test-key"});
+    const result = await controller.updateProvider(1, { ...updatedProvider, key: "test-key" });
 
     // Assertions
     expect(models.Provider.findByPk.calledOnceWith(1)).to.be.true;
-    expect(update.calledOnceWith({...updatedProvider, key: "test-key"})).to.be.true;
+    expect(update.calledOnceWith({ ...updatedProvider, key: "test-key" })).to.be.true;
     expect(models.ProviderKey.update.notCalled).to.be.true;
     expect(result).to.deep.equal(provider);
   });
@@ -197,22 +205,27 @@ describe("/controllers/provider.js", () => {
     domain: "example.com",
     custom: { custom1: "value1", custom2: "value2" },
     use_section: false,
-  }
+  };
   it("should create a new provider in the database", async () => {
     // Create stubs for dependencies
     const create = sinon.stub().resolves({ id: 1, ...newProvider });
-    const models = { 
+    const models = {
       Provider: { create: create },
-      ProviderKey: { create: sinon.stub().resolves({ key: "new-key", secret: "new-secret" }) }
+      ProviderKey: { create: sinon.stub().resolves({ key: "new-key", secret: "new-secret" }) },
     };
 
     // Call the function under test
     const controller = new ProviderController(models, transaction);
-    const result = await controller.createProvider({...newProvider, secret: "new-secret"});
+    const result = await controller.createProvider({ ...newProvider, secret: "new-secret" });
 
     // Assertions
     expect(create.calledOnceWith(newProvider)).to.be.true;
-    expect(models.ProviderKey.create.calledOnceWith({ key: "new-key", secret: "new-secret" }, { transaction: sinon.match.any })).to.be.true;
+    expect(
+      models.ProviderKey.create.calledOnceWith(
+        { key: "new-key", secret: "new-secret" },
+        { transaction: sinon.match.any },
+      ),
+    ).to.be.true;
     expect(result).to.deep.equal({ id: 1, ...newProvider });
   });
 
@@ -221,9 +234,9 @@ describe("/controllers/provider.js", () => {
     // Create stubs for dependencies
     const destroy = sinon.stub().resolves(1);
     const provider = { id: 1, name: "Provider 1", key: "test-key", destroy: destroy };
-    const models = { 
+    const models = {
       Provider: { findByPk: sinon.stub().resolves(provider) },
-      ProviderKey: { destroy: sinon.stub().resolves(1) }
+      ProviderKey: { destroy: sinon.stub().resolves(1) },
     };
 
     // Call the function under test
@@ -232,7 +245,8 @@ describe("/controllers/provider.js", () => {
 
     // Assertions
     expect(models.Provider.findByPk.calledOnceWith(1)).to.be.true;
-    expect(models.ProviderKey.destroy.calledOnceWith({ where: { key: "test-key" }, transaction: sinon.match.any })).to.be.true;
+    expect(models.ProviderKey.destroy.calledOnceWith({ where: { key: "test-key" }, transaction: sinon.match.any })).to
+      .be.true;
     expect(destroy.calledOnceWith({ transaction: sinon.match.any })).to.be.true;
     expect(result).to.be.true;
   });

@@ -26,8 +26,8 @@ describe("/controllers/lti-register.js", () => {
 
   it("should create an LTIRegistrationController instance with the correct properties", async () => {
     // Create mock dependencies
-    const provider_config = { };
-    const models = { };
+    const provider_config = {};
+    const models = {};
     const consumer_controller = {};
 
     // Create instance
@@ -59,14 +59,7 @@ describe("/controllers/lti-register.js", () => {
       privacy_level: "public",
     };
 
-    const controller = new LTIRegistrationController(
-      provider_config,
-      {},
-      logger,
-      domain_name,
-      admin_email,
-      {},
-    );
+    const controller = new LTIRegistrationController(provider_config, {}, logger, domain_name, admin_email, {});
 
     const configXML = await controller.getLTI10Config();
 
@@ -86,8 +79,9 @@ describe("/controllers/lti-register.js", () => {
     // Canvas extensions
     expect(configXML).to.include('<lticm:property name="tool_id">test-lti-tool</lticm:property>');
     expect(configXML).to.include('<lticm:property name="privacy_level">public</lticm:property>');
-    expect(configXML).to.include(`<lticm:property name="domain">${domain_name.replace(/^https?:\/\//, "")}</lticm:property>`);
-    
+    expect(configXML).to.include(
+      `<lticm:property name="domain">${domain_name.replace(/^https?:\/\//, "")}</lticm:property>`,
+    );
   });
 
   // LMS Details Fixture
@@ -100,9 +94,9 @@ describe("/controllers/lti-register.js", () => {
     name: "Test Account",
   };
 
-  const registrationConfig = { 
-    privacy_level: "anonymous", 
-    handleDeeplink: null, 
+  const registrationConfig = {
+    privacy_level: "anonymous",
+    handleDeeplink: null,
     navigation: false,
     route_prefix: "/lti/provider",
     title: "Test LTI Tool",
@@ -111,7 +105,7 @@ describe("/controllers/lti-register.js", () => {
     custom_params: {
       custom_key1: "custom_value1",
       custom_key2: "custom_value2",
-    }, 
+    },
   };
 
   const lmsDetails = {
@@ -130,11 +124,8 @@ describe("/controllers/lti-register.js", () => {
     application_type: "web",
     response_types: ["id_token"],
     grant_types: ["implicit", "client_credentials"],
-    initiate_login_uri:
-      "http://localhost:3000/lti/provider/login",
-    redirect_uris: [
-      "http://localhost:3000/lti/provider/launch",
-    ],
+    initiate_login_uri: "http://localhost:3000/lti/provider/login",
+    redirect_uris: ["http://localhost:3000/lti/provider/launch"],
     client_name: "Test LTI Tool",
     logo_uri: "http://localhost:3000/icon.png",
     token_endpoint_auth_method: "private_key_jwt",
@@ -144,32 +135,27 @@ describe("/controllers/lti-register.js", () => {
     "https://purl.imsglobal.org/spec/lti-tool-configuration": {
       domain: "localhost:3000",
       description: "A test LTI tool for unit testing",
-      target_link_uri:
-        "http://localhost:3000/lti/provider/launch",
+      target_link_uri: "http://localhost:3000/lti/provider/launch",
       custom_parameters: {
         custom_key1: "custom_value1",
         custom_key2: "custom_value2",
       },
-      claims: [
-        "iss",
-        "sub",
-      ],
+      claims: ["iss", "sub"],
       messages: [],
     },
   };
 
-
   it("should handle a successful LTI 1.3 dynamic registration", async () => {
     // Create mock dependencies
-    const models = { };
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer)};
+    const models = {};
+    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
 
     // Spy the LTI 1.3 utility function to send registration to the LMS
     const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").resolves();
-    
+
     // Create instance
     const controller = new LTIRegistrationController(
       registrationConfig,
@@ -197,24 +183,20 @@ describe("/controllers/lti-register.js", () => {
     const updatedConfig = { ...registrationConfig, privacy_level: "email_only" };
 
     // Expected claims for email privacy level
-    const claims = [
-      "iss",
-      "sub",
-      "email",
-    ];
+    const claims = ["iss", "sub", "email"];
     const updatedExpectedConfig = structuredClone(expectedConfig);
     updatedExpectedConfig["https://purl.imsglobal.org/spec/lti-tool-configuration"].claims = claims;
 
     // Create mock dependencies
-    const models = { };
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer)};
+    const models = {};
+    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
 
     // Spy the LTI 1.3 utility function to send registration to the LMS
     const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").resolves();
-    
+
     // Create instance
     const controller = new LTIRegistrationController(
       updatedConfig,
@@ -242,24 +224,20 @@ describe("/controllers/lti-register.js", () => {
     const updatedConfig = { ...registrationConfig, privacy_level: "name_only" };
 
     // Expected claims for name privacy level
-    const claims = [
-      "iss",
-      "sub",
-      "name",
-    ];
+    const claims = ["iss", "sub", "name"];
     const updatedExpectedConfig = structuredClone(expectedConfig);
     updatedExpectedConfig["https://purl.imsglobal.org/spec/lti-tool-configuration"].claims = claims;
 
     // Create mock dependencies
-    const models = { };
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer)};
+    const models = {};
+    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
 
     // Spy the LTI 1.3 utility function to send registration to the LMS
     const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").resolves();
-    
+
     // Create instance
     const controller = new LTIRegistrationController(
       updatedConfig,
@@ -287,28 +265,20 @@ describe("/controllers/lti-register.js", () => {
     const updatedConfig = { ...registrationConfig, privacy_level: "public" };
 
     // Expected claims for public privacy level
-    const claims = [
-      "iss",
-      "sub",
-      "name",
-      "given_name",
-      "family_name",
-      "email",
-      "picture",
-    ];
+    const claims = ["iss", "sub", "name", "given_name", "family_name", "email", "picture"];
     const updatedExpectedConfig = structuredClone(expectedConfig);
     updatedExpectedConfig["https://purl.imsglobal.org/spec/lti-tool-configuration"].claims = claims;
 
     // Create mock dependencies
-    const models = { };
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer)};
+    const models = {};
+    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
 
     // Spy the LTI 1.3 utility function to send registration to the LMS
     const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").resolves();
-    
+
     // Create instance
     const controller = new LTIRegistrationController(
       updatedConfig,
@@ -336,31 +306,33 @@ describe("/controllers/lti-register.js", () => {
     const updatedConfig = { ...registrationConfig, handleDeeplink: () => {} };
 
     // Expected messages for deeplink enabled
-    const messages = [{
-      type: "LtiDeepLinkingRequest",
-      target_link_url: "http://localhost:3000/lti/provider/launch",
-      label: "Test LTI Tool",
-      icon_uri: "http://localhost:3000/icon.png",
-      // custom_parameters
-      placements: ["https://canvas.instructure.com/lti/assignment_selection"],
-      // roles
-      supported_types: ["ltiResourceLink"],
-      "https://canvas.instructure.com/lti/visibility": "admins",
-      "https://canvas.instructure.com/lti/display_type": "new_window",
-    }];
+    const messages = [
+      {
+        type: "LtiDeepLinkingRequest",
+        target_link_url: "http://localhost:3000/lti/provider/launch",
+        label: "Test LTI Tool",
+        icon_uri: "http://localhost:3000/icon.png",
+        // custom_parameters
+        placements: ["https://canvas.instructure.com/lti/assignment_selection"],
+        // roles
+        supported_types: ["ltiResourceLink"],
+        "https://canvas.instructure.com/lti/visibility": "admins",
+        "https://canvas.instructure.com/lti/display_type": "new_window",
+      },
+    ];
     const updatedExpectedConfig = structuredClone(expectedConfig);
     updatedExpectedConfig["https://purl.imsglobal.org/spec/lti-tool-configuration"].messages = messages;
 
     // Create mock dependencies
-    const models = { };
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer)};
+    const models = {};
+    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
 
     // Spy the LTI 1.3 utility function to send registration to the LMS
     const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").resolves();
-    
+
     // Create instance
     const controller = new LTIRegistrationController(
       updatedConfig,
@@ -388,32 +360,34 @@ describe("/controllers/lti-register.js", () => {
     const updatedConfig = { ...registrationConfig, navigation: true };
 
     // Expected messages for nagivation enabled
-    const messages = [{
-      type: "LtiResourceLinkRequest",
-      target_link_url:"http://localhost:3000/lti/provider/launch",
-      label: "Test LTI Tool",
-      icon_uri: "http://localhost:3000/icon.png",
-      // custom_parameters
-      placements: ["https://canvas.instructure.com/lti/course_navigation"],
-      // roles
-      supported_types: ["ltiResourceLink"],
-      "https://canvas.instructure.com/lti/course_navigation/default_enabled": false,
-      "https://canvas.instructure.com/lti/visibility": "members",
-      "https://canvas.instructure.com/lti/display_type": "new_window",
-    }];
+    const messages = [
+      {
+        type: "LtiResourceLinkRequest",
+        target_link_url: "http://localhost:3000/lti/provider/launch",
+        label: "Test LTI Tool",
+        icon_uri: "http://localhost:3000/icon.png",
+        // custom_parameters
+        placements: ["https://canvas.instructure.com/lti/course_navigation"],
+        // roles
+        supported_types: ["ltiResourceLink"],
+        "https://canvas.instructure.com/lti/course_navigation/default_enabled": false,
+        "https://canvas.instructure.com/lti/visibility": "members",
+        "https://canvas.instructure.com/lti/display_type": "new_window",
+      },
+    ];
     const updatedExpectedConfig = structuredClone(expectedConfig);
     updatedExpectedConfig["https://purl.imsglobal.org/spec/lti-tool-configuration"].messages = messages;
 
     // Create mock dependencies
-    const models = { };
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer)};
+    const models = {};
+    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
 
     // Spy the LTI 1.3 utility function to send registration to the LMS
     const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").resolves();
-    
+
     // Create instance
     const controller = new LTIRegistrationController(
       updatedConfig,
@@ -438,15 +412,15 @@ describe("/controllers/lti-register.js", () => {
 
   it("should fail when getting LMS details fails", async () => {
     // Create mock dependencies
-    const models = { };
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer)};
+    const models = {};
+    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
 
     // Stub the LTI 1.3 utility function to return a failed launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").rejects(new Error("Failed to get LMS details"));
 
     // Spy the LTI 1.3 utility function to send registration to the LMS
     const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").resolves();
-    
+
     // Create instance
     const controller = new LTIRegistrationController(
       registrationConfig,
@@ -471,15 +445,15 @@ describe("/controllers/lti-register.js", () => {
 
   it("should fail when creating consumer fails", async () => {
     // Create mock dependencies
-    const models = { };
-    const consumer_controller = { createConsumer: sinon.stub().resolves(null)};
+    const models = {};
+    const consumer_controller = { createConsumer: sinon.stub().resolves(null) };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
 
     // Spy the LTI 1.3 utility function to send registration to the LMS
     const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").resolves();
-    
+
     // Create instance
     const controller = new LTIRegistrationController(
       registrationConfig,
@@ -504,15 +478,17 @@ describe("/controllers/lti-register.js", () => {
 
   it("should fail when sending registration response fails", async () => {
     // Create mock dependencies
-    const models = { };
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer)};
+    const models = {};
+    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
 
     // Spy the LTI 1.3 utility function to send registration to the LMS and return an error
-    const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").rejects(new Error("Failed to send registration response"));
-    
+    const registrationSpy = sinon
+      .stub(LTI13Utils.prototype, "sendRegistrationResponse")
+      .rejects(new Error("Failed to send registration response"));
+
     // Create instance
     const controller = new LTIRegistrationController(
       registrationConfig,
@@ -537,8 +513,8 @@ describe("/controllers/lti-register.js", () => {
 
   it("should fail when sending registration response fails and log error json", async () => {
     // Create mock dependencies
-    const models = { };
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer)};
+    const models = {};
+    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
@@ -549,7 +525,7 @@ describe("/controllers/lti-register.js", () => {
       json: sinon.stub().resolves({ error: "Invalid registration data" }),
     };
     const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").rejects(err);
-    
+
     // Create instance
     const controller = new LTIRegistrationController(
       registrationConfig,
@@ -571,5 +547,4 @@ describe("/controllers/lti-register.js", () => {
     // Assert that the registration response was sent to the LMS and error was logged
     expect(registrationSpy.calledOnce).to.be.true;
   });
-
 });

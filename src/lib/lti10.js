@@ -48,10 +48,7 @@ class LTI10Utils {
     // LTI SPECIFIC THINGS
     // #######################
     // Body must include lti_message_type
-    if (
-      !body.lti_message_type ||
-      body.lti_message_type !== "basic-lti-launch-request"
-    ) {
+    if (!body.lti_message_type || body.lti_message_type !== "basic-lti-launch-request") {
       throw new Error("Validation Error: Invalid LTI Message Type: " + body.lti_message_type);
     }
     // Body must include lti_version
@@ -67,10 +64,7 @@ class LTI10Utils {
       throw new Error("Validation Error: Invalid OAuth Version: " + body.oauth_version);
     }
     // Body must include oauth_signature_method
-    if (
-      !body.oauth_signature_method ||
-      body.oauth_signature_method !== "HMAC-SHA1"
-    ) {
+    if (!body.oauth_signature_method || body.oauth_signature_method !== "HMAC-SHA1") {
       throw new Error("Validation Error: Invalid OAuth Signature Method: " + body.oauth_signature_method);
     }
     // Body must include oauth_consumer_key
@@ -94,10 +88,7 @@ class LTI10Utils {
     const requestTime = parseInt(body.oauth_timestamp);
     if (currentTime + 60 < requestTime || currentTime > requestTime + 600) {
       throw new Error(
-        "Validation Error: OAuth Timestamp Invalid! Timestamp: " +
-          requestTime +
-          " | Current: " +
-          currentTime,
+        "Validation Error: OAuth Timestamp Invalid! Timestamp: " + requestTime + " | Current: " + currentTime,
       );
     }
     // Body must include oauth_nonce
@@ -118,9 +109,7 @@ class LTI10Utils {
     // #######################
     // VALIDATE OAUTH SIGNATURE
     // #######################
-    const consumerKey = await this.#ConsumerKeyModel.findByPk(
-      body.oauth_consumer_key,
-    );
+    const consumerKey = await this.#ConsumerKeyModel.findByPk(body.oauth_consumer_key);
     if (!consumerKey) {
       throw new Error("Validation Error: Unable to find secret for consumer key: " + body.oauth_consumer_key);
     }
@@ -140,7 +129,7 @@ class LTI10Utils {
         "Validation Error: Invalid OAuth Signature!: Computed: " +
           computedSignature +
           " | Provided: " +
-          oauth_signature
+          oauth_signature,
       );
     }
 
@@ -231,9 +220,7 @@ class LTI10Utils {
       //     ordering.  If two or more parameters share the same name, they
       //     are sorted by their value.
       .sort(function (a, b) {
-        return (
-          LTI10Utils.#compare(a[0], b[0]) || LTI10Utils.#compare(a[1], b[1])
-        );
+        return LTI10Utils.#compare(a[0], b[0]) || LTI10Utils.#compare(a[1], b[1]);
       })
       // 3.  The name of each parameter is concatenated to its corresponding
       //     value using an "=" character (ASCII code 61) as a separator, even
@@ -271,8 +258,7 @@ class LTI10Utils {
     // OAuth Headers
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("OAuth ")) {
-      this.#logger.lti("Missing or invalid OAuth header");
-      return false;
+      throw new Error("Validation Error: Missing or Invalid Authorization Header");
     }
 
     // Trim leading "OAuth " and split headers by comma
@@ -283,9 +269,7 @@ class LTI10Utils {
     for (let i = 0; i < authHeaders.length; i++) {
       const [key, value] = authHeaders[i].split("=");
       if (key && value) {
-        oauthHeaders[key.trim()] = decodeURIComponent(
-          value.trim().replace(/"/g, ""),
-        );
+        oauthHeaders[key.trim()] = decodeURIComponent(value.trim().replace(/"/g, ""));
       }
     }
 
@@ -293,10 +277,7 @@ class LTI10Utils {
     if (!oauthHeaders["oauth_consumer_key"]) {
       throw new Error("Validation Error: OAuth Consumer Key Missing");
     }
-    if (
-      !oauthHeaders["oauth_version"] ||
-      oauthHeaders["oauth_version"] !== "1.0"
-    ) {
+    if (!oauthHeaders["oauth_version"] || oauthHeaders["oauth_version"] !== "1.0") {
       throw new Error("Validation Error: Invalid OAuth Version: " + oauthHeaders["oauth_version"]);
     }
     if (!oauthHeaders["oauth_signature_method"]) {
@@ -315,10 +296,7 @@ class LTI10Utils {
     const requestTime = parseInt(oauthHeaders["oauth_timestamp"]);
     if (currentTime + 60 < requestTime || currentTime > requestTime + 600) {
       throw new Error(
-        "Validation Error: OAuth Timestamp Invalid! Timestamp: " +
-          requestTime +
-          " | Current: " +
-          currentTime,
+        "Validation Error: OAuth Timestamp Invalid! Timestamp: " + requestTime + " | Current: " + currentTime,
       );
     }
 
@@ -341,10 +319,7 @@ class LTI10Utils {
     if (!oauthHeaders["oauth_body_hash"]) {
       throw new Error("Validation Error: Missing OAuth Body Hash");
     }
-    if (
-      oauthHeaders["oauth_body_hash"] !==
-      crypto.createHash("sha1").update(req.rawBody).digest("base64")
-    ) {
+    if (oauthHeaders["oauth_body_hash"] !== crypto.createHash("sha1").update(req.rawBody).digest("base64")) {
       throw new Error("Validation Error: Invalid OAuth Body Hash");
     }
 
@@ -403,13 +378,7 @@ class LTI10Utils {
       oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
       oauth_nonce: crypto.randomBytes(16).toString("hex"),
     };
-    const signature = this.oauth_sign(
-      "HMAC-SHA1",
-      "POST",
-      url,
-      oauthHeaders,
-      secret,
-    );
+    const signature = this.oauth_sign("HMAC-SHA1", "POST", url, oauthHeaders, secret);
     oauthHeaders["oauth_signature"] = signature;
     const headerString =
       "OAuth " +
@@ -434,7 +403,7 @@ class LTI10Utils {
   async postOutcome(lms_grade_id, score, consumer_key, url) {
     /**
      * Example LTI 1.0 Outcome Service Request Body
-     * 
+     *
      * <?xml version="1.0" encoding="UTF-8"?>
      * <imsx_POXEnvelopeRequest xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">
      * <imsx_POXHeader>
@@ -459,7 +428,7 @@ class LTI10Utils {
      *   </replaceResultRequest>
      * </imsx_POXBody>
      * </imsx_POXEnvelopeRequest>
-    */
+     */
 
     // Build XML Envelope
     const envelope = {
@@ -503,12 +472,7 @@ class LTI10Utils {
     }
 
     // Sign Body
-    const authHeader = await this.signOauthBody(
-      content,
-      providerKey.key,
-      providerKey.secret,
-      url,
-    );
+    const authHeader = await this.signOauthBody(content, providerKey.key, providerKey.secret, url);
 
     this.#logger.lti("Posting grade to LTI 1.0 Outcome Service at " + url);
     this.#logger.silly(authHeader);
@@ -530,7 +494,10 @@ class LTI10Utils {
     this.#logger.silly("Response XML: " + JSON.stringify(responseXml, null, 2));
 
     if (response && response.status === 200) {
-      if (responseXml.imsx_POXEnvelopeResponse.imsx_POXHeader.imsx_POXResponseHeaderInfo.imsx_statusInfo.imsx_codeMajor === "success") {
+      if (
+        responseXml.imsx_POXEnvelopeResponse.imsx_POXHeader.imsx_POXResponseHeaderInfo.imsx_statusInfo
+          .imsx_codeMajor === "success"
+      ) {
         this.#logger.lti("Grade posted successfully");
         return true;
       } else {
@@ -539,6 +506,207 @@ class LTI10Utils {
     } else {
       throw new Error("Failed to post grade: HTTP " + response.status + " - " + response.statusText);
     }
+  }
+
+  /**
+   * Build an XML Response to a Basic Outcomes Request
+   *
+   * @param {string} codeMajor - the code major for the response (e.g. "success", "unsupported", "processing_error")
+   * @param {string} severity - the severity of the response (e.g. "status", "error", "fatal")
+   * @param {string} description - a human readable description of the response
+   * @param {Object} providerKey - the provider key object containing the key and secret for signing
+   * @param {string} providerKey.key - the provider key
+   * @param {string} providerKey.secret - the provider secret
+   * @param {string} url - the original request URL
+   * @param {string} messageIdentifier - a unique identifier for the message (optional, will be generated if not provided)
+   * @param {string} operation - the operation to respond to (e.g. "replaceResult", "readResult", "deleteResult")
+   * @param {Object} body - the body of the response, which will be included in the appropriate place based on the operation
+   * @returns {string} the XML response body
+   */
+  async buildResponse(
+    codeMajor,
+    severity,
+    description,
+    providerKey,
+    url,
+    messageIdentifier,
+    operation = null,
+    body = null,
+  ) {
+    /**
+     * Example LTI 1.0 Outcome Service Response Body for Errors
+     *
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <imsx_POXEnvelopeResponse xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">
+     * <imsx_POXHeader>
+     *   <imsx_POXResponseHeaderInfo>
+     *     <imsx_version>V1.0</imsx_version>
+     *     <imsx_messageIdentifier>4560</imsx_messageIdentifier>
+     *     <imsx_statusInfo>
+     *       <imsx_codeMajor>unsupported</imsx_codeMajor>
+     *       <imsx_severity>status</imsx_severity>
+     *       <imsx_description>readPerson is not supported</imsx_description>
+     *       <imsx_messageRefIdentifier>999999123</imsx_messageRefIdentifier>
+     *       <imsx_operationRefIdentifier>readPerson</imsx_operationRefIdentifier>
+     *     </imsx_statusInfo>
+     *   </imsx_POXResponseHeaderInfo>
+     * </imsx_POXHeader>
+     * <imsx_POXBody/>
+     * </imsx_POXEnvelopeResponse>
+     *
+     * Example LTI 1.0 Outcome Service Response Body for Success
+     *
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <imsx_POXEnvelopeResponse xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">
+     * <imsx_POXHeader>
+     *   <imsx_POXResponseHeaderInfo>
+     *     <imsx_version>V1.0</imsx_version>
+     *     <imsx_messageIdentifier>4560</imsx_messageIdentifier>
+     *     <imsx_statusInfo>
+     *       <imsx_codeMajor>success</imsx_codeMajor>
+     *       <imsx_severity>status</imsx_severity>
+     *       <imsx_description>Score for 3124567 is now 0.92</imsx_description>
+     *       <imsx_messageRefIdentifier>999999123</imsx_messageRefIdentifier>
+     *       <imsx_operationRefIdentifier>replaceResult</imsx_operationRefIdentifier>
+     *     </imsx_statusInfo>
+     *   </imsx_POXResponseHeaderInfo>
+     * </imsx_POXHeader>
+     * <imsx_POXBody>
+     *   <replaceResultResponse />
+     * </imsx_POXBody>
+     * </imsx_POXEnvelopeResponse>
+     */
+
+    // Build XML Envelope
+    const result = {
+      imsx_POXEnvelopeResponse: {
+        $: {
+          xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0",
+        },
+        imsx_POXHeader: {
+          imsx_POXResponseHeaderInfo: {
+            imsx_version: "V1.0",
+            imsx_messageIdentifier: nanoid(),
+            imsx_statusInfo: {
+              imsx_codeMajor: codeMajor,
+              imsx_severity: severity,
+              imsx_description: description,
+              imsx_messageRefIdentifier: messageIdentifier || "unknown",
+              imsx_operationRefIdentifier: operation || "unknown",
+            },
+          },
+        },
+        imsx_POXBody: body || {},
+      },
+    };
+
+    // Convert to XML
+    const builder = new xml2js.Builder();
+    const content = builder.buildObject(result);
+    let headers = null;
+    if (providerKey && url) {
+      headers = await this.signOauthBody(content, providerKey.key, providerKey.secret, url);
+    }
+    return {
+      content: content,
+      headers: headers,
+    };
+  }
+
+  /**
+   * Validate a Basic Outcomes Request
+   *
+   * @param {Object} req - Express request object
+   * @throws {Error} if the request is not a valid Basic Outcomes Request
+   * @returns {Object} an object containing the message ID and body of the request if valid
+   */
+  validateBasicOutcomesRequest(req) {
+    // Check Envelope
+    if (
+      !req.body["imsx_poxenveloperequest"] ||
+      req.body["imsx_poxenveloperequest"]["$"]["xmlns"] != "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0"
+    ) {
+      throw new Error("Invalid Envelope Request");
+    }
+    // Get Envelope
+    const envelope = req.body["imsx_poxenveloperequest"];
+
+    // Check Header
+    if (!envelope["imsx_poxheader"]) {
+      throw new Error("Invalid Envelope Header");
+    }
+
+    const header = envelope["imsx_poxheader"];
+    if (!header["imsx_poxrequestheaderinfo"]) {
+      throw new Error("Invalid Envelope Header Info");
+    }
+
+    const headerinfo = header["imsx_poxrequestheaderinfo"];
+    if (!headerinfo["imsx_version"] || headerinfo["imsx_version"] !== "V1.0") {
+      throw new Error("Invalid Envelope Version");
+    }
+    if (!headerinfo["imsx_messageidentifier"] || headerinfo["imsx_messageidentifier"].length === 0) {
+      throw new Error("Invalid Envelope Message Identifier");
+    }
+
+    // Check Body
+    if (!envelope["imsx_poxbody"]) {
+      throw new Error("Invalid Envelope Body");
+    }
+
+    return {
+      message_id: headerinfo["imsx_messageidentifier"],
+      body: envelope["imsx_poxbody"],
+    };
+  }
+
+  /**
+   * Validate a Basic Outcomes Replace Result Request
+   *
+   * @param {Object} request - The replace result request body extracted from the envelope
+   * @throws {Error} if the request is not a valid Basic Outcomes Replace Result Request
+   * @returns {Object} an object containing the score and sourcedIdValue if the request is valid
+   */
+  validateReplaceResultRequest(request) {
+    // Parse Message
+    if (!request["resultrecord"]) {
+      throw new Error("Missing Result Record");
+    }
+
+    // Check Result Record
+    const resultRecord = request["resultrecord"];
+    if (!resultRecord["result"]) {
+      throw new Error("Missing Result");
+    }
+
+    // Check Result
+    const result = resultRecord["result"];
+    if (!result["resultscore"]) {
+      throw new Error("Missing Result Score");
+    }
+    if (!result["resultscore"]["textstring"] || result["resultscore"]["textstring"].length === 0) {
+      throw new Error("Missing Result Score Value");
+    }
+
+    // Check Score
+    const score = result["resultscore"]["textstring"];
+    if (isNaN(score)) {
+      throw new Error("Invalid Result Score Value: " + score);
+    }
+
+    // Check Source ID
+    if (!resultRecord["sourcedguid"]) {
+      throw new Error("Missing Result Source ID");
+    }
+    const sourcedId = resultRecord["sourcedguid"];
+    if (!sourcedId["sourcedid"] || sourcedId["sourcedid"].length === 0) {
+      throw new Error("Missing Result Source ID Value");
+    }
+
+    return {
+      score,
+      sourcedIdValue: sourcedId["sourcedid"],
+    };
   }
 }
 

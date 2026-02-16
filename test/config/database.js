@@ -10,7 +10,6 @@ import sinon from "sinon";
 // Load module under test
 import configureDatabase from "../../src/config/database.js";
 
-
 // Modify Object.prototype for BDD style assertions
 should();
 

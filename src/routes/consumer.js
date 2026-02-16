@@ -41,7 +41,7 @@ export default function setupConsumerRoutes(LTIConsumerController, logger) {
    *     tags: [lti-consumer]
    */
   router.all("/grade", async function (req, res, next) {
-    logger.lti("Grade Passback Request Received");
+    logger.lti("LTI Basic Outcomes Request Received");
     logger.silly(JSON.stringify(req.params, null, 2));
     logger.silly(JSON.stringify(req.query, null, 2));
     logger.silly(JSON.stringify(req.body, null, 2));

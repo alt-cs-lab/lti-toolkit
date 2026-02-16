@@ -15,7 +15,7 @@ class ProviderController {
    * @param {Object} models the database models
    * @param {Object} transaction the database transaction function
    */
-  constructor(models, transaction){
+  constructor(models, transaction) {
     this.#ProviderModel = models.Provider;
     this.#ProviderKeyModel = models.ProviderKey;
     this.#transaction = transaction;
@@ -134,20 +134,26 @@ class ProviderController {
   async createProvider(data) {
     let provider = null;
     await this.#transaction(async (t) => {
-      provider = await this.#ProviderModel.create({
-        name: data.name,
-        lti13: data.lti13 || false,
-        key: data.key,
-        launch_url: data.launch_url,
-        domain: data.domain,
-        custom: data.custom,
-        use_section: data.use_section || false,
-      }, { transaction: t });
+      provider = await this.#ProviderModel.create(
+        {
+          name: data.name,
+          lti13: data.lti13 || false,
+          key: data.key,
+          launch_url: data.launch_url,
+          domain: data.domain,
+          custom: data.custom,
+          use_section: data.use_section || false,
+        },
+        { transaction: t },
+      );
       // Generate keys for the provider
-      await this.#ProviderKeyModel.create({
-        key: provider.key,
-        secret: data.secret,
-      }, { transaction: t });
+      await this.#ProviderKeyModel.create(
+        {
+          key: provider.key,
+          secret: data.secret,
+        },
+        { transaction: t },
+      );
     });
     return provider;
   }

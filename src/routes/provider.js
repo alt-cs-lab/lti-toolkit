@@ -13,18 +13,14 @@
 import express from "express";
 import nunjucks from "nunjucks";
 
-export default function setupProviderRoutes(
-  LTILaunchController,
-  LTIRegistrationController,
-  logger,
-) {
+export default function setupProviderRoutes(LTILaunchController, LTIRegistrationController, logger) {
   // Create Express router
   const router = express.Router();
 
   /**
    * LTI Launch Target
-   * 
-   * All LTI launch requests (1.0 and 1.3) will be sent to this endpoint. 
+   *
+   * All LTI launch requests (1.0 and 1.3) will be sent to this endpoint.
    * The controller will determine the version and handle accordingly.
    * This endpoint also handles LTI 1.3 deeplink requests.
    *

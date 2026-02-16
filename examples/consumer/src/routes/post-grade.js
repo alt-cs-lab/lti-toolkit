@@ -15,24 +15,9 @@
  * @param {number} score the score to post (0.0 - 1.0)
  * @param {Object} req the Express request object
  */
-async function postGradeHandler(
-  providerKey,
-  contextKey,
-  resourceKey,
-  userKey,
-  gradebookKey,
-  score,
-  req,
-) {
+async function postGradeHandler(providerKey, contextKey, resourceKey, userKey, gradebookKey, score, req) {
   // Store grade in the local data store
-  updateLocalDataStoreWithGrade(
-    req,
-    contextKey,
-    resourceKey,
-    userKey,
-    gradebookKey,
-    score,
-  );
+  updateLocalDataStoreWithGrade(req, contextKey, resourceKey, userKey, gradebookKey, score);
 
   // No need to return anything; library assumes success here
 }
@@ -48,14 +33,7 @@ async function postGradeHandler(
  * @param {string} gradebookKey the gradebook key
  * @param {number} score the score to post (0.0 - 1.0)
  */
-function updateLocalDataStoreWithGrade(
-  req,
-  contextKey,
-  resourceKey,
-  userKey,
-  gradebookKey,
-  score,
-) {
+function updateLocalDataStoreWithGrade(req, contextKey, resourceKey, userKey, gradebookKey, score) {
   // This is a placeholder function for updating a local data store
   // In a real application, you would implement logic to store
   // relevant course and grade data in your database or other storage system
@@ -86,9 +64,7 @@ function updateLocalDataStoreWithGrade(
   }
 
   // Store grade
-  courses[contextKey].assignments[resourceKey].users[userKey].grades[
-    gradebookKey
-  ] = {
+  courses[contextKey].assignments[resourceKey].users[userKey].grades[gradebookKey] = {
     score: score,
   };
 }

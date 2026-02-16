@@ -45,10 +45,8 @@ const ltiLaunch = {
   context_label: "TESTLABEL",
   context_title: "Test Course",
   ext_lti_assignment_id: nanoid(),
-  launch_presentation_return_url:
-    "https://canvas.instructure.com/courses/1/assignments",
-  lis_outcome_service_url:
-    "https://canvas.instructure.com//api/lti/v1/tools/6/grade_passback",
+  launch_presentation_return_url: "https://canvas.instructure.com/courses/1/assignments",
+  lis_outcome_service_url: "https://canvas.instructure.com//api/lti/v1/tools/6/grade_passback",
   lis_person_contact_email_primary: "canvasstudent@russfeld.me",
   lis_person_name_family: "Student",
   lis_person_name_full: "Test Student",
@@ -113,21 +111,18 @@ const requireBody = (state) => {
  * Fail on Invalid Attribute
  */
 const failOnInvalidAttribute = (state, body, attribute, bad_value) => {
-  it(
-    "should fail when attribute " + attribute + " is set to " + bad_value,
-    (done) => {
-      const updatedBody = { ...body };
-      updatedBody[attribute] = bad_value;
-      const req = {
-        body: updatedBody,
-        method: "POST",
-      };
-      state.lti10.validate10(req).then((result) => {
-        assert.isNotOk(result);
-        done();
-      });
-    },
-  );
+  it("should fail when attribute " + attribute + " is set to " + bad_value, (done) => {
+    const updatedBody = { ...body };
+    updatedBody[attribute] = bad_value;
+    const req = {
+      body: updatedBody,
+      method: "POST",
+    };
+    state.lti10.validate10(req).then((result) => {
+      assert.isNotOk(result);
+      done();
+    });
+  });
 };
 
 /**
@@ -235,50 +230,20 @@ describe("LTI 1.0 Utility", () => {
   describe("validate10", () => {
     succeedOnValidSignature(state, signedBody(ltiLaunch));
     requireBody(state);
-    failOnInvalidAttribute(
-      state,
-      ltiLaunch,
-      "lti_message_type",
-      "other-lti-launch-request",
-    );
+    failOnInvalidAttribute(state, ltiLaunch, "lti_message_type", "other-lti-launch-request");
     failOnInvalidAttribute(state, ltiLaunch, "lti_version", "LTI-1p3");
     failOnInvalidAttribute(state, ltiLaunch, "oauth_version", "2.0");
-    failOnInvalidAttribute(
-      state,
-      ltiLaunch,
-      "oauth_signature_method",
-      "HMAC-SHA256",
-    );
+    failOnInvalidAttribute(state, ltiLaunch, "oauth_signature_method", "HMAC-SHA256");
     failOnInvalidAttribute(state, ltiLaunch, "oauth_consumer_key", null);
     failOnInvalidAttribute(state, ltiLaunch, "oauth_signature", null);
-    failOnInvalidAttribute(
-      state,
-      ltiLaunch,
-      "oauth_callback",
-      "https://localhost",
-    );
+    failOnInvalidAttribute(state, ltiLaunch, "oauth_callback", "https://localhost");
     failOnInvalidAttribute(state, ltiLaunch, "oauth_timestamp", null);
     // Future Timestamp
-    failOnInvalidAttribute(
-      state,
-      ltiLaunch,
-      "oauth_timestamp",
-      Math.floor(Date.now() / 1000) + 70,
-    );
+    failOnInvalidAttribute(state, ltiLaunch, "oauth_timestamp", Math.floor(Date.now() / 1000) + 70);
     // Past Timestamp
-    failOnInvalidAttribute(
-      state,
-      ltiLaunch,
-      "oauth_timestamp",
-      Math.floor(Date.now() / 1000) - 610,
-    );
+    failOnInvalidAttribute(state, ltiLaunch, "oauth_timestamp", Math.floor(Date.now() / 1000) - 610);
     failOnInvalidAttribute(state, ltiLaunch, "oauth_nonce", null);
-    failOnInvalidAttribute(
-      state,
-      ltiLaunch,
-      "oauth_consumer_key",
-      "thisisatestkey" + "a",
-    );
+    failOnInvalidAttribute(state, ltiLaunch, "oauth_consumer_key", "thisisatestkey" + "a");
     failOnInvalidSignature(state, ltiLaunch);
     failOnDuplicateNonce(state, ltiLaunch);
   });

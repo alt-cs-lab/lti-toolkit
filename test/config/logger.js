@@ -58,26 +58,26 @@ describe("/config/logger.js", () => {
   // Test that the logger has the custom sequelizeErrors format
   it("should have the custom sequelizeErrors format", async () => {
     const logger = configureLogger();
-    
+
     // Test this by sending an error through the logger and checking the output
     const error = new Error("Test Sequelize Error");
     error.name = "SequelizeDatabaseError";
-    error.parent = { message: "Parent error message"}
-    error.sql = "SELECT * FROM test"
+    error.parent = { message: "Parent error message" };
+    error.sql = "SELECT * FROM test";
     error.parameters = { id: 1 };
-    
+
     // Capture the log output
     let loggedMessage;
     logger.on("data", (log) => {
       loggedMessage = log.message;
     });
-    
+
     // Log the error (using silly instead of error to ensure it gets processed but isn't visible in the console during testing)
     logger.silly(error);
-    
+
     // Wait for the log to be processed
     await new Promise((resolve) => setTimeout(resolve, 100));
-    
+
     // Assertions
     expect(loggedMessage).to.include("Test Sequelize Error");
     expect(loggedMessage).to.include("Parent error message");
@@ -102,19 +102,19 @@ describe("/config/logger.js", () => {
     }
 
     function a() {
-        b();
+      b();
     }
-    
+
     try {
       a();
     } catch (error) {
       // Log the error (using silly instead of error to ensure it gets processed but isn't visible in the console during testing)
       logger.silly(error);
     }
-    
+
     // Wait for the log to be processed
     await new Promise((resolve) => setTimeout(resolve, 100));
-    
+
     // Assertions
     expect(loggedMessage).to.include("Test Stack Error");
     expect(loggedStack).to.include("at b");
@@ -138,10 +138,10 @@ describe("/config/logger.js", () => {
 
     // Log the error (using silly instead of error to ensure it gets processed but isn't visible in the console during testing)
     logger.silly(error);
-    
+
     // Wait for the log to be processed
     await new Promise((resolve) => setTimeout(resolve, 100));
-    
+
     // Assertions
     expect(loggedMessage).to.include("Test No Stack Error");
     expect(loggedStack).to.be.undefined;

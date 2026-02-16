@@ -11,8 +11,8 @@ import crypto from "crypto";
 class ConsumerController {
   // Private Attributes
   #ConsumerModel;
-  #ConsumerKeyModel
-  #transaction
+  #ConsumerKeyModel;
+  #transaction;
 
   /**
    * Consumer Controller
@@ -189,7 +189,6 @@ class ConsumerController {
     let consumerkey = null;
 
     await this.#transaction(async (t) => {
-
       // Remove old key and secret for the consumer
       await this.#ConsumerKeyModel.destroy({
         where: {
@@ -208,12 +207,15 @@ class ConsumerController {
       const { publicKey, privateKey } = await this.#generateKeys();
 
       // Save the new key, secret, and keys for the consumer
-      consumerkey = await this.#ConsumerKeyModel.create({
-        key: newKey,
-        secret: newSecret,
-        public: publicKey,
-        private: privateKey,
-      }, { transaction: t });
+      consumerkey = await this.#ConsumerKeyModel.create(
+        {
+          key: newKey,
+          secret: newSecret,
+          public: publicKey,
+          private: privateKey,
+        },
+        { transaction: t },
+      );
     });
 
     return consumerkey;
@@ -221,7 +223,7 @@ class ConsumerController {
 
   /**
    * Get all public keys for all consumers
-   * 
+   *
    * @return {Array} an array of objects containing the key and public key for each consumer
    */
   async getAllKeys() {

@@ -42,8 +42,7 @@ const authRequestData = {
   login_hint: loginHint,
   client_id: "10000000000001",
   lti_deployment_id: "thisisatestkey",
-  target_link_uri: new URL("/lti/provider/launch", "http://localhost:3000")
-    .href,
+  target_link_uri: new URL("/lti/provider/launch", "http://localhost:3000").href,
   lti_message_hint: ltiMessageHint,
   lti_storage_target: "post_message_forwarding",
 };
@@ -83,8 +82,7 @@ const redirectBody = {
 };
 
 const sampleJwt = {
-  "https://purl.imsglobal.org/spec/lti/claim/message_type":
-    "LtiResourceLinkRequest",
+  "https://purl.imsglobal.org/spec/lti/claim/message_type": "LtiResourceLinkRequest",
   "https://purl.imsglobal.org/spec/lti/claim/version": "1.3.0",
   "https://purl.imsglobal.org/spec/lti/claim/resource_link": {
     id: nanoid(),
@@ -109,10 +107,8 @@ const sampleJwt = {
   iss: "https://canvas.instructure.com/",
   nonce: nonce,
   sub: nanoid(),
-  "https://purl.imsglobal.org/spec/lti/claim/target_link_uri": new URL(
-    "/lti/provider/launch",
-    "http://localhost:3000",
-  ).href,
+  "https://purl.imsglobal.org/spec/lti/claim/target_link_uri": new URL("/lti/provider/launch", "http://localhost:3000")
+    .href,
   picture: "https://placehold.co/64x64",
   email: "canvasstudent@russfeld.me",
   name: "Test Student",
@@ -168,9 +164,7 @@ const validAuthRquest = (state, body) => {
         result.should.have.property("form");
         result.form.should.shallowDeepEqual(authRequestForm);
         result.should.have.property("url");
-        result.url.should.equal(
-          "https://canvas.instructure.com/api/lti/authorize_redirect",
-        );
+        result.url.should.equal("https://canvas.instructure.com/api/lti/authorize_redirect");
         result.should.have.property("name");
         done();
       })
@@ -184,20 +178,17 @@ const validAuthRquest = (state, body) => {
  * Fail Auth on Invalid Attribute
  */
 const failOnInvalidAttribute = (state, body, attribute, bad_value) => {
-  it(
-    "should fail when attribute " + attribute + " is set to " + bad_value,
-    (done) => {
-      const updatedBody = { ...body };
-      updatedBody[attribute] = bad_value;
-      const req = {
-        body: updatedBody,
-      };
-      state.lti13.authRequest(req).then((result) => {
-        assert.isNotOk(result);
-        done();
-      });
-    },
-  );
+  it("should fail when attribute " + attribute + " is set to " + bad_value, (done) => {
+    const updatedBody = { ...body };
+    updatedBody[attribute] = bad_value;
+    const req = {
+      body: updatedBody,
+    };
+    state.lti13.authRequest(req).then((result) => {
+      assert.isNotOk(result);
+      done();
+    });
+  });
 };
 
 /**
@@ -229,51 +220,40 @@ const validRedirectRequest = (state, body) => {
  * Fail Redirect on Invalid Attribute
  */
 const redirectFailOnInvalidAttribute = (state, body, attribute, bad_value) => {
-  it(
-    "should fail when attribute " + attribute + " is set to " + bad_value,
-    (done) => {
-      const updatedBody = { ...body };
-      updatedBody[attribute] = bad_value;
-      const req = {
-        body: updatedBody,
-      };
-      state.lti13.launchRequest(req).then((result) => {
-        assert.isNotOk(result);
-        done();
-      });
-    },
-  );
+  it("should fail when attribute " + attribute + " is set to " + bad_value, (done) => {
+    const updatedBody = { ...body };
+    updatedBody[attribute] = bad_value;
+    const req = {
+      body: updatedBody,
+    };
+    state.lti13.launchRequest(req).then((result) => {
+      assert.isNotOk(result);
+      done();
+    });
+  });
 };
 
 /**
  * Fail Redirect on Invalid JWT Attribute
  */
-const redirectFailOnInvalidJWTAttribute = (
-  state,
-  jwt,
-  attribute,
-  bad_value,
-) => {
-  it(
-    "should fail when JWT attribute " + attribute + " is set to " + bad_value,
-    (done) => {
-      const updatedJwt = { ...jwt };
-      updatedJwt[attribute] = bad_value;
-      const body = signedBody(updatedJwt);
-      const req = {
-        body: body,
-      };
-      state.lti13
-        .launchRequest(req)
-        .then((result) => {
-          assert.isNotOk(result);
-          done();
-        })
-        .catch((error) => {
-          done(error);
-        });
-    },
-  );
+const redirectFailOnInvalidJWTAttribute = (state, jwt, attribute, bad_value) => {
+  it("should fail when JWT attribute " + attribute + " is set to " + bad_value, (done) => {
+    const updatedJwt = { ...jwt };
+    updatedJwt[attribute] = bad_value;
+    const body = signedBody(updatedJwt);
+    const req = {
+      body: body,
+    };
+    state.lti13
+      .launchRequest(req)
+      .then((result) => {
+        assert.isNotOk(result);
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      });
+  });
 };
 
 /**
@@ -333,9 +313,7 @@ describe("LTI 1.3 Utility", () => {
         },
       })
       .resolves(null);
-    state.stub2 = sinon
-      .stub(lti.models.Consumer, "findByPk")
-      .resolves(testConsumer);
+    state.stub2 = sinon.stub(lti.models.Consumer, "findByPk").resolves(testConsumer);
     state.stub1 = sinon.stub(lti.models.ConsumerKey, "findOne").resolves({
       key: "thisisatestkey",
       secret: "thisisatestsecret",
@@ -349,18 +327,8 @@ describe("LTI 1.3 Utility", () => {
     validAuthRquest(state, authRequestData);
     failOnInvalidAttribute(state, authRequestData, "iss", null);
     failOnInvalidAttribute(state, authRequestData, "login_hint", null);
-    failOnInvalidAttribute(
-      state,
-      authRequestData,
-      "client_id",
-      "10000000000001" + "a",
-    );
-    failOnInvalidAttribute(
-      state,
-      authRequestData,
-      "lti_deployment_id",
-      "thisisatestkey" + "a",
-    );
+    failOnInvalidAttribute(state, authRequestData, "client_id", "10000000000001" + "a");
+    failOnInvalidAttribute(state, authRequestData, "lti_deployment_id", "thisisatestkey" + "a");
     failOnInvalidAttribute(
       state,
       authRequestData,
@@ -383,46 +351,16 @@ describe("LTI 1.3 Utility", () => {
 
     validRedirectRequest(state, signedBody(sampleJwt));
     redirectFailOnInvalidAttribute(state, redirectBody, "state", null);
-    redirectFailOnInvalidAttribute(
-      state,
-      redirectBody,
-      "state",
-      "thisisbadstate",
-    );
+    redirectFailOnInvalidAttribute(state, redirectBody, "state", "thisisbadstate");
     redirectFailOnInvalidAttribute(state, redirectBody, "id_token", null);
-    redirectFailOnInvalidJWTAttribute(
-      state,
-      sampleJwt,
-      "aud",
-      "10000000000001" + "a",
-    );
-    redirectFailOnInvalidJWTAttribute(
-      state,
-      sampleJwt,
-      "iss",
-      "https://notcanvas.instructure.com/",
-    );
+    redirectFailOnInvalidJWTAttribute(state, sampleJwt, "aud", "10000000000001" + "a");
+    redirectFailOnInvalidJWTAttribute(state, sampleJwt, "iss", "https://notcanvas.instructure.com/");
     redirectFailOnInvalidJWTAttribute(state, sampleJwt, "nonce", nanoid());
     // Token Expired 10 seconds ago
-    redirectFailOnInvalidJWTAttribute(
-      state,
-      sampleJwt,
-      "exp",
-      Math.floor(Date.now() / 1000) - 10,
-    );
+    redirectFailOnInvalidJWTAttribute(state, sampleJwt, "exp", Math.floor(Date.now() / 1000) - 10);
     // Check LTI Claims
     const baseUrl = "https://purl.imsglobal.org/spec/lti/claim/";
-    redirectFailOnInvalidJWTAttribute(
-      state,
-      sampleJwt,
-      baseUrl + "message_type",
-      "LtiOtherLinkRequest",
-    );
-    redirectFailOnInvalidJWTAttribute(
-      state,
-      sampleJwt,
-      baseUrl + "version",
-      "1.0.0",
-    );
+    redirectFailOnInvalidJWTAttribute(state, sampleJwt, baseUrl + "message_type", "LtiOtherLinkRequest");
+    redirectFailOnInvalidJWTAttribute(state, sampleJwt, baseUrl + "version", "1.0.0");
   });
 });

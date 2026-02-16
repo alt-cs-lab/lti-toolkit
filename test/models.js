@@ -37,8 +37,7 @@ const shouldInitializeExpiration = (state) => {
     });
     state.lti.test.initializeExpiration();
     interval.calledOnce.should.be.true;
-    interval.calledOnceWithMatch(sinon.match.func, 5 * 60 * 1000).should.be
-      .true;
+    interval.calledOnceWithMatch(sinon.match.func, 5 * 60 * 1000).should.be.true;
     spy.calledOnce.should.be.true;
     done();
   });
@@ -127,11 +126,7 @@ const consumerShouldSetKey = (state) => {
 
 // Test Fixtures
 const now = new Date().toISOString().slice(0, 23).replace("T", " ") + " +00:00";
-const old =
-  new Date(Date.now() - 1000 * 60 * 20)
-    .toISOString()
-    .slice(0, 23)
-    .replace("T", " ") + " +00:00";
+const old = new Date(Date.now() - 1000 * 60 * 20).toISOString().slice(0, 23).replace("T", " ") + " +00:00";
 
 const nonces = [
   {

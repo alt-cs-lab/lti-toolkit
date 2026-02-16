@@ -16,7 +16,7 @@ class LTILaunchController {
   #LTI10Utils;
   #LTI13Utils;
   #logger;
-  #provider_config
+  #provider_config;
   #ConsumerController;
 
   /**
@@ -29,28 +29,14 @@ class LTILaunchController {
    * @param {Object} consumer_controller the consumer controller instance (optional, used for generating LTI 1.0 form data)
    * @returns {LTILaunchController} an instance of the LTI Launch Controller
    */
-  constructor(
-    provider,
-    models,
-    logger,
-    domain_name,
-    consumer_controller,
-  ) {
+  constructor(provider, models, logger, domain_name, consumer_controller) {
     this.#provider_config = provider;
     this.#logger = logger;
     this.#ConsumerController = consumer_controller;
 
     // Create LTI Utilities
-    this.#LTI10Utils = new LTI10Utils(
-      models,
-      logger,
-      domain_name,
-    );
-    this.#LTI13Utils = new LTI13Utils(
-      models,
-      logger,
-      domain_name,
-    );
+    this.#LTI10Utils = new LTI10Utils(models, logger, domain_name);
+    this.#LTI13Utils = new LTI13Utils(models, logger, domain_name);
   }
 
   /**
@@ -67,9 +53,7 @@ class LTILaunchController {
     } else if (req.body && req.body.oauth_consumer_key) {
       return await this.#launch10(req);
     } else {
-      throw new Error(
-        "Launch Error: Missing id_token or oauth_consumer_key",
-      );
+      throw new Error("Launch Error: Missing id_token or oauth_consumer_key");
     }
   }
 
@@ -192,11 +176,8 @@ class LTILaunchController {
         custom: launchResult[baseUrl + "custom"],
       };
       return await this.#launch(launchData, consumer, req);
-    } else if (
-      launchResult[baseUrl + "message_type"] === "LtiDeepLinkingRequest"
-    ) {
-      const dlUrl =
-        "https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings";
+    } else if (launchResult[baseUrl + "message_type"] === "LtiDeepLinkingRequest") {
+      const dlUrl = "https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings";
       const deeplinkData = {
         launch_type: "lti1.3deeplink",
         tool_consumer_key: launchResult.key,

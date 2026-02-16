@@ -29,26 +29,14 @@ async function AdminConfigHandler(req, res) {
   };
 
   // Check if any required fields are missing
-  const requiredFields = [
-    "client_id",
-    "platform_id",
-    "deployment_id",
-    "keyset_url",
-    "token_url",
-    "auth_url",
-  ];
-  const missingFields = requiredFields.filter(
-    (field) => !data[field] || data[field].trim() === "",
-  );
+  const requiredFields = ["client_id", "platform_id", "deployment_id", "keyset_url", "token_url", "auth_url"];
+  const missingFields = requiredFields.filter((field) => !data[field] || data[field].trim() === "");
   if (missingFields.length > 0) {
     error = "Missing required fields: " + missingFields.join(", ");
   } else {
     // Update Consumer
     try {
-      const returnValue = await lti.controllers.consumer.updateConsumer(
-        1,
-        data,
-      );
+      const returnValue = await lti.controllers.consumer.updateConsumer(1, data);
       if (!returnValue) {
         throw new Error("Consumer not found");
       }
@@ -64,8 +52,7 @@ async function AdminConfigHandler(req, res) {
   const consumers = await lti.controllers.consumer.getAll();
 
   // Get LMS Domain
-  const lmsDomain =
-    process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
+  const lmsDomain = process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
 
   res.render("admin.njk", {
     title: "LTI Tool Provider - Admin Configuration View",

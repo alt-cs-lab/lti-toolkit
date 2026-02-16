@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>239/239</span>
+                <span class='fraction'>237/237</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>239/239</span>
+                <span class='fraction'>237/237</span>
             </div>
         
             
@@ -299,9 +299,7 @@
 <a name='L234'></a><a href='#L234'>234</a>
 <a name='L235'></a><a href='#L235'>235</a>
 <a name='L236'></a><a href='#L236'>236</a>
-<a name='L237'></a><a href='#L237'>237</a>
-<a name='L238'></a><a href='#L238'>238</a>
-<a name='L239'></a><a href='#L239'>239</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L237'></a><a href='#L237'>237</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -477,11 +475,9 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -622,7 +618,7 @@ class LTIRegistrationController {
   &lt;blti:title&gt;${this.#provider_config.title}&lt;/blti:title&gt; \
   &lt;blti:description&gt;${this.#provider_config.description}&lt;/blti:description&gt; \
   &lt;blti:icon&gt;${this.#provider_config.icon_url}&lt;/blti:icon&gt; \
-  &lt;blti:launch_url&gt;${this.#domain_name}${this.#provider_config.route_prefix}/launch&lt;/blti:launch_url&gt; \
+  &lt;blti:launch_url&gt;${new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href}&lt;/blti:launch_url&gt; \
   ${custom} \
   &lt;blti:extensions platform="canvas.instructure.com"&gt; \
     &lt;lticm:property name="tool_id"&gt;${this.#provider_config.tool_id}&lt;/lticm:property&gt; \
@@ -704,8 +700,7 @@ class LTIRegistrationController {
     if (this.#provider_config.handleDeeplink) {
       messages.push({
         type: "LtiDeepLinkingRequest",
-        target_link_url:
-          this.#domain_name + this.#provider_config.route_prefix + "/launch",
+        target_link_url: new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href,
         label: this.#provider_config.title,
         icon_uri: this.#provider_config.icon_url,
         // custom_parameters
@@ -721,8 +716,7 @@ class LTIRegistrationController {
     if (this.#provider_config.navigation) {
       messages.push({
         type: "LtiResourceLinkRequest",
-        target_link_url:
-          this.#domain_name + this.#provider_config.route_prefix + "/launch",
+        target_link_url: new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href,
         label: this.#provider_config.title,
         icon_uri: this.#provider_config.icon_url,
         // custom_parameters
@@ -741,21 +735,21 @@ class LTIRegistrationController {
       response_types: ["id_token"],
       grant_types: ["implicit", "client_credentials"],
       initiate_login_uri:
-        this.#domain_name + this.#provider_config.route_prefix + "/login",
+        new URL(`${this.#provider_config.route_prefix}/login`, this.#domain_name).href,
       redirect_uris: [
-        this.#domain_name + this.#provider_config.route_prefix + "/launch",
+        new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href,
       ],
       client_name: this.#provider_config.title,
       logo_uri: this.#provider_config.icon_url,
       token_endpoint_auth_method: "private_key_jwt",
-      jwks_uri: this.#domain_name + this.#provider_config.route_prefix + "/jwks",
+      jwks_uri: new URL(`${this.#provider_config.route_prefix}/jwks`, this.#domain_name).href,
       contacts: [this.#admin_email],
       scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score ",
       "https://purl.imsglobal.org/spec/lti-tool-configuration": {
         domain: domain,
         description: this.#provider_config.description,
         target_link_uri:
-          this.#domain_name + this.#provider_config.route_prefix + "/launch",
+          new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href,
         custom_parameters: this.#provider_config.custom_params,
         claims: claims,
         messages: messages,
@@ -784,7 +778,7 @@ export default LTIRegistrationController;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-02-14T17:01:04.739Z
+                at 2026-02-16T21:48:00.567Z
             </div>
         <script src="../prettify.js"></script>
         <script>

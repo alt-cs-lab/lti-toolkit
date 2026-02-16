@@ -116,36 +116,20 @@ export default async function LtiToolkit(config) {
   // Add Provider and Consumer Controllers if configured
   if (config.consumer) {
     // Provider Controller to add/remove providers
-    const ProviderControllerInstance = new ProviderController(
-      modelConfig.models,
-      config.logger,
-      config.database,
-    );
+    const ProviderControllerInstance = new ProviderController(modelConfig.models, config.logger, config.database);
     returnObj.controllers.provider = ProviderControllerInstance;
   }
   if (config.provider) {
     // Consumer Controller to add/remove consumers
-    const ConsumerControllerInstance = new ConsumerController(
-      modelConfig.models,
-      config.logger,
-      config.database,
-    );
+    const ConsumerControllerInstance = new ConsumerController(modelConfig.models, config.logger, config.database);
     returnObj.controllers.consumer = ConsumerControllerInstance;
   }
 
   // Set up single LTI Consumer if configured
   if (config.provider && config.provider.key && config.provider.secret) {
     // Clear existing consumers and keys
-    await config.database.queryInterface.bulkDelete(
-      "lti_consumer_keys",
-      {},
-      { truncate: true },
-    );
-    await config.database.queryInterface.bulkDelete(
-      "lti_consumers",
-      {},
-      { truncate: true },
-    );
+    await config.database.queryInterface.bulkDelete("lti_consumer_keys", {}, { truncate: true });
+    await config.database.queryInterface.bulkDelete("lti_consumers", {}, { truncate: true });
 
     // Create consumer and key
     returnObj.controllers.consumer.createConsumer({
@@ -154,9 +138,7 @@ export default async function LtiToolkit(config) {
       secret: config.provider.secret,
       lti13: false,
     });
-    config.logger.info(
-      "Added Single LTI Consumer for Provider Key: " + config.provider.key,
-    );
+    config.logger.info("Added Single LTI Consumer for Provider Key: " + config.provider.key);
   }
 
   // Setup LTI Controller
@@ -174,18 +156,12 @@ export default async function LtiToolkit(config) {
   // Add Routers
   if (config.consumer) {
     // Consumer Routes
-    const consumerRouter = await setupConsumerRoutes(
-      LTIControllerInstance,
-      config.logger,
-    );
+    const consumerRouter = await setupConsumerRoutes(LTIControllerInstance, config.logger);
     returnObj.routers.consumer = consumerRouter;
   }
   if (config.provider) {
     // Provider Routes
-    const providerRouter = await setupProviderRoutes(
-      LTIControllerInstance,
-      config.logger,
-    );
+    const providerRouter = await setupProviderRoutes(LTIControllerInstance, config.logger);
     returnObj.routers.provider = providerRouter;
   }
 
@@ -211,9 +187,7 @@ function validateConfig(config) {
   }
   // Check for provider and consumer functions
   if (!config.provider && !config.consumer) {
-    throw new Error(
-      "At least one of provider or consumer configuration is required",
-    );
+    throw new Error("At least one of provider or consumer configuration is required");
   }
 }
 
@@ -227,56 +201,33 @@ function validateConfig(config) {
 function validateProviderConfig(providerConfig) {
   if (providerConfig && typeof providerConfig === "object") {
     if (typeof providerConfig.handleLaunch !== "function") {
-      throw new Error(
-        "provider.handleLaunch function is required in Provider configuration",
-      );
+      throw new Error("provider.handleLaunch function is required in Provider configuration");
     }
     if (!providerConfig.title || typeof providerConfig.title !== "string") {
       providerConfig.title = "LTI Toolkit";
     }
-    if (
-      !providerConfig.description ||
-      typeof providerConfig.description !== "string"
-    ) {
+    if (!providerConfig.description || typeof providerConfig.description !== "string") {
       providerConfig.description = "LTI Toolkit for LTI Tool Providers";
     }
-    if (
-      !providerConfig.route_prefix ||
-      typeof providerConfig.route_prefix !== "string"
-    ) {
+    if (!providerConfig.route_prefix || typeof providerConfig.route_prefix !== "string") {
       providerConfig.route_prefix = "/lti/provider";
     }
-    if (
-      !providerConfig.icon_url ||
-      typeof providerConfig.icon_url !== "string"
-    ) {
+    if (!providerConfig.icon_url || typeof providerConfig.icon_url !== "string") {
       providerConfig.icon_url = "https://placehold.co/64x64.png";
     }
-    if (
-      !providerConfig.custom_params ||
-      typeof providerConfig.custom_params !== "object"
-    ) {
+    if (!providerConfig.custom_params || typeof providerConfig.custom_params !== "object") {
       providerConfig.custom_params = {};
     }
     if (!providerConfig.tool_id || typeof providerConfig.tool_id !== "string") {
       providerConfig.tool_id = "lti_toolkit";
     }
-    if (
-      !providerConfig.privacy_level ||
-      typeof providerConfig.privacy_level !== "string"
-    ) {
+    if (!providerConfig.privacy_level || typeof providerConfig.privacy_level !== "string") {
       providerConfig.privacy_level = "public";
     }
-    if (
-      !providerConfig.handleDeeplink ||
-      typeof providerConfig.handleDeeplink !== "function"
-    ) {
+    if (!providerConfig.handleDeeplink || typeof providerConfig.handleDeeplink !== "function") {
       providerConfig.handleDeeplink = null;
     }
-    if (
-      !providerConfig.navigation ||
-      typeof providerConfig.navigation !== "boolean"
-    ) {
+    if (!providerConfig.navigation || typeof providerConfig.navigation !== "boolean") {
       providerConfig.navigation = true;
     }
   } else {
@@ -295,42 +246,21 @@ function validateProviderConfig(providerConfig) {
 function validateConsumerConfig(consumerConfig) {
   if (consumerConfig && typeof consumerConfig === "object") {
     if (typeof consumerConfig.postProviderGrade !== "function") {
-      throw new Error(
-        "consumer.postProviderGrade function is required in Consumer configuration",
-      );
+      throw new Error("consumer.postProviderGrade function is required in Consumer configuration");
     }
-    if (
-      !consumerConfig.deployment_name ||
-      typeof consumerConfig.deployment_name !== "string"
-    ) {
-      throw new Error(
-        "A valid deployment name is required in Consumer configuration",
-      );
+    if (!consumerConfig.deployment_name || typeof consumerConfig.deployment_name !== "string") {
+      throw new Error("A valid deployment name is required in Consumer configuration");
     }
-    if (
-      !consumerConfig.deployment_id ||
-      typeof consumerConfig.deployment_id !== "string"
-    ) {
-      throw new Error(
-        "A valid deployment ID is required in Consumer configuration",
-      );
+    if (!consumerConfig.deployment_id || typeof consumerConfig.deployment_id !== "string") {
+      throw new Error("A valid deployment ID is required in Consumer configuration");
     }
-    if (
-      !consumerConfig.product_name ||
-      typeof consumerConfig.product_name !== "string"
-    ) {
+    if (!consumerConfig.product_name || typeof consumerConfig.product_name !== "string") {
       consumerConfig.product_name = "lti-toolkit";
     }
-    if (
-      !consumerConfig.product_version ||
-      typeof consumerConfig.product_version !== "string"
-    ) {
+    if (!consumerConfig.product_version || typeof consumerConfig.product_version !== "string") {
       consumerConfig.product_version = "cloud";
     }
-    if (
-      !consumerConfig.route_prefix ||
-      typeof consumerConfig.route_prefix !== "string"
-    ) {
+    if (!consumerConfig.route_prefix || typeof consumerConfig.route_prefix !== "string") {
       consumerConfig.route_prefix = "/lti/consumer";
     }
   } else {

@@ -26,12 +26,12 @@ describe("/controllers/lti-provider.js", () => {
 
   it("should create an LTIProviderController instance with the correct properties", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
-    
+    const provider = {};
+    const models = {};
+
     // Call the function under test
     const controller = new LTIProviderController(provider, models, logger, domain_name);
-    
+
     // Assertions
     expect(controller).to.be.an.instanceOf(LTIProviderController);
   });
@@ -43,32 +43,44 @@ describe("/controllers/lti-provider.js", () => {
     lms_grade_id: "grade123",
     score: "0.85",
     user_lis13_id: "user123",
-  }
+  };
 
   it("should have a postGrade method that posts a grade", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
+    const provider = {};
+    const models = {};
 
     // Stub the LTI10Utils and LTI13Utils postGrade methods
     sinon.stub(LTI10Utils.prototype, "postOutcome").resolves(true);
-    
+
     // Create controller instance
     const controller = new LTIProviderController(provider, models, logger, domain_name);
 
     // Call the function under test
-    await controller.postGrade(gradeObject);
+    await controller.postGrade(
+      gradeObject.consumer_key,
+      gradeObject.grade_url,
+      gradeObject.lms_grade_id,
+      gradeObject.score,
+      gradeObject.user_lis13_id,
+    );
 
     // Assertions
     expect(LTI10Utils.prototype.postOutcome.calledOnce).to.be.true;
-    expect(LTI10Utils.prototype.postOutcome.calledWith(gradeObject.lms_grade_id, gradeObject.score, gradeObject.consumer_key, gradeObject.grade_url)).to.be.true;
-
+    expect(
+      LTI10Utils.prototype.postOutcome.calledWith(
+        gradeObject.lms_grade_id,
+        gradeObject.score,
+        gradeObject.consumer_key,
+        gradeObject.grade_url,
+      ),
+    ).to.be.true;
   });
 
   it("should have a postGrade method that posts a grade with debug info", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
+    const provider = {};
+    const models = {};
 
     const gradeObjectWithDebug = {
       ...gradeObject,
@@ -82,33 +94,43 @@ describe("/controllers/lti-provider.js", () => {
 
     // Stub the LTI10Utils and LTI13Utils postGrade methods
     sinon.stub(LTI10Utils.prototype, "postOutcome").resolves(true);
-    
+
     // Create controller instance
     const controller = new LTIProviderController(provider, models, logger, domain_name);
 
     // Call the function under test
-    await controller.postGrade(gradeObjectWithDebug);
+    await controller.postGrade(
+      gradeObject.consumer_key,
+      gradeObject.grade_url,
+      gradeObject.lms_grade_id,
+      gradeObject.score,
+      gradeObject.user_lis13_id,
+      gradeObjectWithDebug.debug,
+    );
 
     // Assertions
     expect(LTI10Utils.prototype.postOutcome.calledOnce).to.be.true;
-    expect(LTI10Utils.prototype.postOutcome.calledWith(gradeObjectWithDebug.lms_grade_id, gradeObjectWithDebug.score, gradeObjectWithDebug.consumer_key, gradeObjectWithDebug.grade_url)).to.be.true;
-
+    expect(
+      LTI10Utils.prototype.postOutcome.calledWith(
+        gradeObjectWithDebug.lms_grade_id,
+        gradeObjectWithDebug.score,
+        gradeObjectWithDebug.consumer_key,
+        gradeObjectWithDebug.grade_url,
+      ),
+    ).to.be.true;
   });
 
   it("should throw an error if grade URL is missing when posting a grade", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
+    const provider = {};
+    const models = {};
 
     // Create controller instance
     const controller = new LTIProviderController(provider, models, logger, domain_name);
 
     // Call the function under test with missing information
     try {
-      await controller.postGrade({
-        consumer_key: "test_consumer_key",
-        score: "0.85",
-      });
+      await controller.postGrade("test_consumer_key", null, null, "0.85", null);
       throw new Error("Expected postGrade to throw an error due to missing information");
     } catch (err) {
       expect(err.message).to.equal("Post Grade: Grade post does not have a grade URL");
@@ -117,40 +139,29 @@ describe("/controllers/lti-provider.js", () => {
 
   it("should throw an error if score is missing or invalid when posting a grade", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
+    const provider = {};
+    const models = {};
 
     // Create controller instance
     const controller = new LTIProviderController(provider, models, logger, domain_name);
 
     // Call the function under test with missing information
     try {
-      await controller.postGrade({
-        consumer_key: "test_consumer_key",
-        grade_url: "http://example.com/grade",
-      });
+      await controller.postGrade("test_consumer_key", "http://example.com/grade", null, null, null);
       throw new Error("Expected postGrade to throw an error due to missing score");
     } catch (err) {
       expect(err.message).to.equal("Post Grade: Grade post does not have a valid score");
     }
 
     try {
-      await controller.postGrade({
-        consumer_key: "test_consumer_key",
-        grade_url: "http://example.com/grade",
-        score: -0.5,
-      });
+      await controller.postGrade("test_consumer_key", "http://example.com/grade", null, -0.5, null);
       throw new Error("Expected postGrade to throw an error due to invalid score");
     } catch (err) {
       expect(err.message).to.equal("Post Grade: Grade post does not have a valid score");
     }
 
     try {
-      await controller.postGrade({
-        consumer_key: "test_consumer_key",
-        grade_url: "http://example.com/grade",
-        score: 1.5,
-      });
+      await controller.postGrade("test_consumer_key", "http://example.com/grade", null, 1.5, null);
       throw new Error("Expected postGrade to throw an error due to invalid score");
     } catch (err) {
       expect(err.message).to.equal("Post Grade: Grade post does not have a valid score");
@@ -159,64 +170,51 @@ describe("/controllers/lti-provider.js", () => {
 
   it("should throw an error if neither LMS grade ID nor user LTI 1.3 ID is provided when posting a grade", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
+    const provider = {};
+    const models = {};
 
     // Create controller instance
     const controller = new LTIProviderController(provider, models, logger, domain_name);
 
     // Call the function under test with missing information
     try {
-      await controller.postGrade({
-        consumer_key: "test_consumer_key",
-        grade_url: "http://example.com/grade",
-        score: "0.85",
-      });
+      await controller.postGrade("test_consumer_key", "http://example.com/grade", null, 0.85, null);
       throw new Error("Expected postGrade to throw an error due to missing LMS grade ID and user LTI 1.3 ID");
     } catch (err) {
-      expect(err.message).to.equal("Post Grade: Grade post must have either an LMS grade ID (for LTI 1.0) or a user LTI 1.3 ID (for LTI 1.3)");
+      expect(err.message).to.equal(
+        "Post Grade: Grade post must have either an LMS grade ID (for LTI 1.0) or a user LTI 1.3 ID (for LTI 1.3)",
+      );
     }
-
   });
 
   it("should throw an error when posting a grade with missing consumer key", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
+    const provider = {};
+    const models = {};
 
     // Create controller instance
     const controller = new LTIProviderController(provider, models, logger, domain_name);
 
     // Call the function under test with missing information
     try {
-      await controller.postGrade({
-        grade_url: "http://example.com/grade",
-        score: "0.85",
-        lms_grade_id: "grade123",
-      });
+      await controller.postGrade(null, "http://example.com/grade", "grade123", 0.85, null);
       throw new Error("Expected postGrade to throw an error due to missing consumer key");
     } catch (err) {
       expect(err.message).to.equal("Post Grade: Consumer Key is required to post grade");
     }
-
   });
 
   it("should throw an error when posting a grade with invalid score", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
+    const provider = {};
+    const models = {};
 
     // Create controller instance
     const controller = new LTIProviderController(provider, models, logger, domain_name);
 
     // Call the function under test with invalid score
     try {
-      await controller.postGrade({
-        consumer_key: "test_consumer_key",
-        grade_url: "http://example.com/grade",
-        score: "invalid_score",
-        lms_grade_id: "grade123",
-      });
+      await controller.postGrade("test_consumer_key", "http://example.com/grade", "grade123", "invalid_score", null);
       throw new Error("Expected postGrade to throw an error due to invalid score");
     } catch (err) {
       expect(err.message).to.equal("Post Grade: Grade post does not have a valid score");
@@ -225,27 +223,23 @@ describe("/controllers/lti-provider.js", () => {
 
   it("should work correctly when posting a grade with valid information for LTI 1.3", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
+    const provider = {};
+    const models = {};
 
     // Stub the LTI13Utils postGrade method
     sinon.stub(LTI13Utils.prototype, "postAGSGrade").resolves(true);
 
     // Create controller instance
     const controller = new LTIProviderController(provider, models, logger, domain_name);
-    
+
     // Call the function under test with valid information
-    await controller.postGrade({
-      consumer_key: "test_consumer_key",
-      grade_url: "http://example.com/grade",
-      score: 0.85,
-      user_lis13_id: "user123",
-    });
+    await controller.postGrade("test_consumer_key", "http://example.com/grade", null, 0.85, "user123");
 
     // Assertions
     expect(LTI13Utils.prototype.postAGSGrade.calledOnce).to.be.true;
-    expect(LTI13Utils.prototype.postAGSGrade.calledWith("user123", 0.85, "test_consumer_key", "http://example.com/grade")).to.be.true;
-
+    expect(
+      LTI13Utils.prototype.postAGSGrade.calledWith("user123", 0.85, "test_consumer_key", "http://example.com/grade"),
+    ).to.be.true;
   });
 
   const testConsumer = {
@@ -253,7 +247,7 @@ describe("/controllers/lti-provider.js", () => {
     platform_id: "test_platform_id",
     deployment_id: "test_deployment_id",
     key: "test_key",
-  }
+  };
 
   const testResponse = {
     iss: "test_consumer_key",
@@ -273,73 +267,80 @@ describe("/controllers/lti-provider.js", () => {
           custom_id: "test_id",
         },
       },
-    ]
-  }
+    ],
+  };
 
   it("should create a deep link URL with the correct parameters", async () => {
-     // Create mock dependencies
-     const provider = { route_prefix: "/lti/provider" };
-     const models = { };
-     const res = sinon.stub();
+    // Create mock dependencies
+    const provider = { route_prefix: "/lti/provider" };
+    const models = {};
+    const res = sinon.stub();
 
-     // Stub the LTI13Utils createDeepLinkUrl method
-     sinon.stub(LTI13Utils.prototype, "sendDeepLinkResponse").resolves();
+    // Stub the LTI13Utils createDeepLinkUrl method
+    sinon.stub(LTI13Utils.prototype, "sendDeepLinkResponse").resolves();
 
-     // Create controller instance
-     const controller = new LTIProviderController(provider, models, logger, domain_name);
+    // Create controller instance
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
 
-     // Call the function under test
-     await controller.createDeepLink(res, testConsumer, "http://example.com/return", "test_id", "Test Title");
+    // Call the function under test
+    await controller.createDeepLink(res, testConsumer, "http://example.com/return", "test_id", "Test Title");
 
-      // Assertions
-      expect(LTI13Utils.prototype.sendDeepLinkResponse.calledOnce).to.be.true;
-      expect(LTI13Utils.prototype.sendDeepLinkResponse.calledWith(res, sinon.match.object, "http://example.com/return", "test_key")).to.be.true;
-      expect(LTI13Utils.prototype.sendDeepLinkResponse.firstCall.args[1]).to.deep.include(testResponse);
+    // Assertions
+    expect(LTI13Utils.prototype.sendDeepLinkResponse.calledOnce).to.be.true;
+    expect(
+      LTI13Utils.prototype.sendDeepLinkResponse.calledWith(
+        res,
+        sinon.match.object,
+        "http://example.com/return",
+        "test_key",
+      ),
+    ).to.be.true;
+    expect(LTI13Utils.prototype.sendDeepLinkResponse.firstCall.args[1]).to.deep.include(testResponse);
   });
 
   it("should throw an error if required information is missing when creating a deep link", async () => {
-     // Create mock dependencies
-     const provider = { route_prefix: "/lti/provider" };
-     const models = { };
-     const res = sinon.stub();
+    // Create mock dependencies
+    const provider = { route_prefix: "/lti/provider" };
+    const models = {};
+    const res = sinon.stub();
 
-     // Create controller instance
-     const controller = new LTIProviderController(provider, models, logger, domain_name);
+    // Create controller instance
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
 
-     // Call the function under test with missing information
-     try {
-       await controller.createDeepLink(null, testConsumer, "http://example.com/return", "test_id", "Test Title");
-       throw new Error("Expected createDeepLink to throw an error due to missing response object");
-     } catch (err) {
-       expect(err.message).to.equal("Create Deep Link: Response object is required");
-     }
+    // Call the function under test with missing information
+    try {
+      await controller.createDeepLink(null, testConsumer, "http://example.com/return", "test_id", "Test Title");
+      throw new Error("Expected createDeepLink to throw an error due to missing response object");
+    } catch (err) {
+      expect(err.message).to.equal("Create Deep Link: Response object is required");
+    }
 
-     try {
-       await controller.createDeepLink(res, null, "http://example.com/return", "test_id", "Test Title");
-       throw new Error("Expected createDeepLink to throw an error due to missing consumer");
-     } catch (err) {
-       expect(err.message).to.equal("Create Deep Link: Consumer is required");
-     }
+    try {
+      await controller.createDeepLink(res, null, "http://example.com/return", "test_id", "Test Title");
+      throw new Error("Expected createDeepLink to throw an error due to missing consumer");
+    } catch (err) {
+      expect(err.message).to.equal("Create Deep Link: Consumer is required");
+    }
 
-     try {
-       await controller.createDeepLink(res, testConsumer, null, "test_id", "Test Title");
-       throw new Error("Expected createDeepLink to throw an error due to missing return URL");
-     } catch (err) {
-       expect(err.message).to.equal("Create Deep Link: Return URL is required");
-     }
+    try {
+      await controller.createDeepLink(res, testConsumer, null, "test_id", "Test Title");
+      throw new Error("Expected createDeepLink to throw an error due to missing return URL");
+    } catch (err) {
+      expect(err.message).to.equal("Create Deep Link: Return URL is required");
+    }
 
-     try {
-       await controller.createDeepLink(res, testConsumer, "http://example.com/return", null, "Test Title");
-       throw new Error("Expected createDeepLink to throw an error due to missing resource ID");
-     } catch (err) {
-       expect(err.message).to.equal("Create Deep Link: Resource ID is required");
-     }
+    try {
+      await controller.createDeepLink(res, testConsumer, "http://example.com/return", null, "Test Title");
+      throw new Error("Expected createDeepLink to throw an error due to missing resource ID");
+    } catch (err) {
+      expect(err.message).to.equal("Create Deep Link: Resource ID is required");
+    }
 
-     try {
-       await controller.createDeepLink(res, testConsumer, "http://example.com/return", "test_id", null);
-       throw new Error("Expected createDeepLink to throw an error due to missing resource title");
-     } catch (err) {
-       expect(err.message).to.equal("Create Deep Link: Resource title is required");
-     }
+    try {
+      await controller.createDeepLink(res, testConsumer, "http://example.com/return", "test_id", null);
+      throw new Error("Expected createDeepLink to throw an error due to missing resource title");
+    } catch (err) {
+      expect(err.message).to.equal("Create Deep Link: Resource title is required");
+    }
   });
 });

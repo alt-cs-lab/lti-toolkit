@@ -10,7 +10,7 @@ import LTI13Utils from "../lib/lti13.js";
 class LTIRegistrationController {
   // Private fields
   #LTI13Utils;
-  #provider_config
+  #provider_config;
   #logger;
   #domain_name;
   #admin_email;
@@ -18,7 +18,7 @@ class LTIRegistrationController {
 
   /**
    * LTI Registration Controller
-   * 
+   *
    * @param {Object} provider_config - the provider configuration object from the main config file
    * @param {Object} models - the LTI toolkit models
    * @param {Object} logger - the logger instance
@@ -34,13 +34,8 @@ class LTIRegistrationController {
     this.#ConsumerController = consumer_controller;
 
     // Create LTI Utilities
-    this.#LTI13Utils = new LTI13Utils(
-      models,
-      logger,
-      domain_name,
-    );
+    this.#LTI13Utils = new LTI13Utils(models, logger, domain_name);
   }
-
 
   /**
    * Get an LTI 1.0 Configuration XML
@@ -59,7 +54,7 @@ class LTIRegistrationController {
       }
       custom = `<blti:custom> \n    ${custom}</blti:custom>\n`;
     }
-    
+
     // Check for navigation link
     let extras = "";
     if (this.#provider_config.navigation) {
@@ -81,7 +76,7 @@ class LTIRegistrationController {
   <blti:title>${this.#provider_config.title}</blti:title> \
   <blti:description>${this.#provider_config.description}</blti:description> \
   <blti:icon>${this.#provider_config.icon_url}</blti:icon> \
-  <blti:launch_url>${this.#domain_name}${this.#provider_config.route_prefix}/launch</blti:launch_url> \
+  <blti:launch_url>${new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href}</blti:launch_url> \
   ${custom} \
   <blti:extensions platform="canvas.instructure.com"> \
     <lticm:property name="tool_id">${this.#provider_config.tool_id}</lticm:property> \
@@ -104,7 +99,7 @@ class LTIRegistrationController {
   async dynamicRegistration(query) {
     // Get details from LMS
     const lmsDetails = await this.#LTI13Utils.getLMSDetails(query);
-    
+
     // Get Consumer information based on LMS details
     const confURL = "https://purl.imsglobal.org/spec/lti-platform-configuration";
     const canvasURL = "https://canvas.instructure.com/lti/";
@@ -141,15 +136,7 @@ class LTIRegistrationController {
     // Get claims based on configured privacy level
     let claims = [];
     if (this.#provider_config.privacy_level === "public") {
-      claims = [
-        "iss",
-        "sub",
-        "name",
-        "given_name",
-        "family_name",
-        "email",
-        "picture",
-      ];
+      claims = ["iss", "sub", "name", "given_name", "family_name", "email", "picture"];
     } else if (this.#provider_config.privacy_level === "name_only") {
       claims = ["iss", "sub", "name"];
     } else if (this.#provider_config.privacy_level === "email_only") {
@@ -163,8 +150,7 @@ class LTIRegistrationController {
     if (this.#provider_config.handleDeeplink) {
       messages.push({
         type: "LtiDeepLinkingRequest",
-        target_link_url:
-          this.#domain_name + this.#provider_config.route_prefix + "/launch",
+        target_link_url: new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href,
         label: this.#provider_config.title,
         icon_uri: this.#provider_config.icon_url,
         // custom_parameters
@@ -180,8 +166,7 @@ class LTIRegistrationController {
     if (this.#provider_config.navigation) {
       messages.push({
         type: "LtiResourceLinkRequest",
-        target_link_url:
-          this.#domain_name + this.#provider_config.route_prefix + "/launch",
+        target_link_url: new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href,
         label: this.#provider_config.title,
         icon_uri: this.#provider_config.icon_url,
         // custom_parameters
@@ -199,22 +184,18 @@ class LTIRegistrationController {
       application_type: "web",
       response_types: ["id_token"],
       grant_types: ["implicit", "client_credentials"],
-      initiate_login_uri:
-        this.#domain_name + this.#provider_config.route_prefix + "/login",
-      redirect_uris: [
-        this.#domain_name + this.#provider_config.route_prefix + "/launch",
-      ],
+      initiate_login_uri: new URL(`${this.#provider_config.route_prefix}/login`, this.#domain_name).href,
+      redirect_uris: [new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href],
       client_name: this.#provider_config.title,
       logo_uri: this.#provider_config.icon_url,
       token_endpoint_auth_method: "private_key_jwt",
-      jwks_uri: this.#domain_name + this.#provider_config.route_prefix + "/jwks",
+      jwks_uri: new URL(`${this.#provider_config.route_prefix}/jwks`, this.#domain_name).href,
       contacts: [this.#admin_email],
       scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score ",
       "https://purl.imsglobal.org/spec/lti-tool-configuration": {
         domain: domain,
         description: this.#provider_config.description,
-        target_link_uri:
-          this.#domain_name + this.#provider_config.route_prefix + "/launch",
+        target_link_uri: new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href,
         custom_parameters: this.#provider_config.custom_params,
         claims: claims,
         messages: messages,
@@ -223,17 +204,19 @@ class LTIRegistrationController {
 
     // try to send config to LMS and get response
     try {
-      await this.#LTI13Utils.sendRegistrationResponse(config, lmsDetails.registration_endpoint, createdConsumer, query.registration_token);
-    } catch (error) {
-      this.#logger.error(
-        "Error registering LTI 1.3 configuration with LMS: " + error.message,
+      await this.#LTI13Utils.sendRegistrationResponse(
+        config,
+        lmsDetails.registration_endpoint,
+        createdConsumer,
+        query.registration_token,
       );
+    } catch (error) {
+      this.#logger.error("Error registering LTI 1.3 configuration with LMS: " + error.message);
       const body = error.response ? await error.response.json() : null;
       this.#logger.error("Response Body: " + JSON.stringify(body, null, 2));
       throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS");
     }
   }
-
 }
 
 export default LTIRegistrationController;

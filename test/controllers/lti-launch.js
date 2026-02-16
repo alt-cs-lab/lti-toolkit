@@ -31,10 +31,10 @@ describe("/controllers/lti-launch.js", () => {
     const provider = { handleLaunch: handleLaunchStub };
     const models = { ConsumerKey: { findOne: sinon.stub(), findAll: sinon.stub() } };
     const consumer_controller = { createConsumer: sinon.stub() };
-    
+
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
-    
+
     // Assertions
     expect(controller).to.be.an.instanceOf(LTILaunchController);
   });
@@ -44,8 +44,8 @@ describe("/controllers/lti-launch.js", () => {
     body: {
       oauth_consumer_key: "test-key",
       // Other LTI 1.0 parameters would go here
-    }
-  }
+    },
+  };
 
   const testLTILaunchResult = {
     oauth_consumer_key: "test-key",
@@ -69,35 +69,35 @@ describe("/controllers/lti-launch.js", () => {
     lis_person_name_given: "Test",
     lis_person_name_family: "User",
     user_image: "http://localhost:3000/user-image.png",
-    roles: "Instructor,Student"
-  }
+    roles: "Instructor,Student",
+  };
 
   const testLTILaunchData = {
     launch_type: "lti1.0",
-      tool_consumer_key: testLTILaunchResult.oauth_consumer_key,
-      course_id: testLTILaunchResult.context_id,
-      course_label: testLTILaunchResult.context_label,
-      course_name: testLTILaunchResult.context_title,
-      assignment_id: testLTILaunchResult.resource_link_id,
-      assignment_lti_id: testLTILaunchResult.ext_lti_assignment_id,
-      assignment_name: testLTILaunchResult.resource_link_title,
-      return_url: testLTILaunchResult.launch_presentation_return_url,
-      outcome_url: testLTILaunchResult.lis_outcome_service_url,
-      outcome_id: testLTILaunchResult.lis_result_sourcedid,
-      outcome_ags: null,
-      user_lis_id: testLTILaunchResult.user_id,
-      user_lis13_id: null,
-      user_email: testLTILaunchResult.lis_person_contact_email_primary,
-      user_name: testLTILaunchResult.lis_person_name_full,
-      user_given_name: testLTILaunchResult.lis_person_name_given,
-      user_family_name: testLTILaunchResult.lis_person_name_family,
-      user_image: testLTILaunchResult.user_image,
-      user_roles: testLTILaunchResult.roles,
-      custom: {
-        custom_one: testLTILaunchResult.custom_one,
-        custom_two: testLTILaunchResult.custom_two
-      },
-  }
+    tool_consumer_key: testLTILaunchResult.oauth_consumer_key,
+    course_id: testLTILaunchResult.context_id,
+    course_label: testLTILaunchResult.context_label,
+    course_name: testLTILaunchResult.context_title,
+    assignment_id: testLTILaunchResult.resource_link_id,
+    assignment_lti_id: testLTILaunchResult.ext_lti_assignment_id,
+    assignment_name: testLTILaunchResult.resource_link_title,
+    return_url: testLTILaunchResult.launch_presentation_return_url,
+    outcome_url: testLTILaunchResult.lis_outcome_service_url,
+    outcome_id: testLTILaunchResult.lis_result_sourcedid,
+    outcome_ags: null,
+    user_lis_id: testLTILaunchResult.user_id,
+    user_lis13_id: null,
+    user_email: testLTILaunchResult.lis_person_contact_email_primary,
+    user_name: testLTILaunchResult.lis_person_name_full,
+    user_given_name: testLTILaunchResult.lis_person_name_given,
+    user_family_name: testLTILaunchResult.lis_person_name_family,
+    user_image: testLTILaunchResult.user_image,
+    user_roles: testLTILaunchResult.roles,
+    custom: {
+      custom_one: testLTILaunchResult.custom_one,
+      custom_two: testLTILaunchResult.custom_two,
+    },
+  };
 
   const consumerProductStub = {
     tc_product: "Old Product",
@@ -105,8 +105,8 @@ describe("/controllers/lti-launch.js", () => {
     tc_guid: "old-guid",
     tc_name: "Old Consumer",
     set: sinon.stub().resolves(),
-    save: sinon.stub().resolves()
-  }
+    save: sinon.stub().resolves(),
+  };
 
   it("should fail if key and id token are both missing in the launch request", async () => {
     // Create mock dependencies
@@ -133,19 +133,21 @@ describe("/controllers/lti-launch.js", () => {
 
     // Stub the LTI 1.0 utility function to return a successful launch response
     sinon.stub(LTI10Utils.prototype, "validate10").resolves(testLTILaunchResult);
-    
+
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
     const result = await controller.launch(testLLTI10LaunchRequest);
-    
+
     // Assertions
     // LMS Product information should be updated
-    expect(consumerProductStub.set.calledWith({
-      tc_product: "Test Product",
-      tc_version: "1.0",
-      tc_guid: "test-guid",
-      tc_name: "Test Consumer"
-    })).to.be.true;
+    expect(
+      consumerProductStub.set.calledWith({
+        tc_product: "Test Product",
+        tc_version: "1.0",
+        tc_guid: "test-guid",
+        tc_name: "Test Consumer",
+      }),
+    ).to.be.true;
     expect(consumerProductStub.save.calledOnce).to.be.true;
     expect(handleLaunchStub.calledOnce).to.be.true;
     // Check Launch Handler Params
@@ -167,7 +169,7 @@ describe("/controllers/lti-launch.js", () => {
 
     // Stub the LTI 1.0 utility function to return false for an invalid launch
     sinon.stub(LTI10Utils.prototype, "validate10").throws(new Error("Invalid LTI 1.0 Launch Request"));
-    
+
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
 
@@ -212,14 +214,14 @@ describe("/controllers/lti-launch.js", () => {
 
     // Stub the LTI 1.0 utility function to return a successful launch response
     sinon.stub(LTI10Utils.prototype, "validate10").resolves(testLTILaunchResult);
-    
+
     // Spy on the logger
     const loggerSpy = sinon.spy(logger, "warn");
 
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
     await controller.launch(testLLTI10LaunchRequest);
-    
+
     // Assertions
     expect(loggerSpy.calledWith("Tool Consumer Data Changed!")).to.be.true;
     expect(loggerSpy.calledWithMatch(/Old: /)).to.be.true;
@@ -235,14 +237,16 @@ describe("/controllers/lti-launch.js", () => {
     const provider = { handleLaunch: handleLaunchStub };
 
     const models = { ConsumerKey: { findOne: sinon.stub(), findAll: sinon.stub() } };
-    const consumer_controller = { getByKey: sinon.stub().resolves({
-      tc_product: "Test Product",
-      tc_version: "1.0",
-      tc_guid: "test-guid",
-      tc_name: "Test Consumer",
-      set: sinon.stub().resolves(),
-      save: sinon.stub().resolves()
-    }) };
+    const consumer_controller = {
+      getByKey: sinon.stub().resolves({
+        tc_product: "Test Product",
+        tc_version: "1.0",
+        tc_guid: "test-guid",
+        tc_name: "Test Consumer",
+        set: sinon.stub().resolves(),
+        save: sinon.stub().resolves(),
+      }),
+    };
 
     // Stub the LTI 1.0 utility function to return a successful launch response
     sinon.stub(LTI10Utils.prototype, "validate10").resolves(testLTILaunchResult);
@@ -253,7 +257,7 @@ describe("/controllers/lti-launch.js", () => {
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
     await controller.launch(testLLTI10LaunchRequest);
-    
+
     // Assertions
     expect(loggerSpy.calledWith("Tool Consumer Data Changed!")).to.be.false;
 
@@ -271,7 +275,7 @@ describe("/controllers/lti-launch.js", () => {
 
     // Stub the LTI 1.0 utility function to return a successful launch response
     sinon.stub(LTI10Utils.prototype, "validate10").resolves(testLTILaunchResult);
-    
+
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
 
@@ -293,8 +297,8 @@ describe("/controllers/lti-launch.js", () => {
     body: {
       id_token: "id-token",
       // Other LTI 1.3 parameters would go here
-    }
-  }
+    },
+  };
 
   const baseUrl = "https://purl.imsglobal.org/spec/lti/claim/";
   const agsUrl = "https://purl.imsglobal.org/spec/lti-ags/claim/";
@@ -307,12 +311,12 @@ describe("/controllers/lti-launch.js", () => {
       product_family_code: "Test Product",
       version: "1.3",
       guid: "test-guid",
-      name: "Test Consumer"
+      name: "Test Consumer",
     },
     [baseUrl + "context"]: {
       id: "test-context-id",
       label: "Test Context Label",
-      title: "Test Context Title"
+      title: "Test Context Title",
     },
     [baseUrl + "lti1p1"]: {
       resource_link_id: "test-resource-link-id",
@@ -320,14 +324,14 @@ describe("/controllers/lti-launch.js", () => {
     },
     [baseUrl + "resource_link"]: {
       id: "test-resource-link-id",
-      title: "Test Resource Link Title"
+      title: "Test Resource Link Title",
     },
     [baseUrl + "launch_presentation"]: {
-      return_url: "http://localhost:3000/return"
+      return_url: "http://localhost:3000/return",
     },
     [agsUrl + "endpoint"]: {
       lineitem: "http://localhost:3000/grade",
-      lineitems: "http://localhost:3000/grades"
+      lineitems: "http://localhost:3000/grades",
     },
     sub: "test-user-id",
     email: "user@localhost.tld",
@@ -335,12 +339,13 @@ describe("/controllers/lti-launch.js", () => {
     given_name: "Test",
     family_name: "User",
     picture: "http://localhost:3000/user-image.png",
-    roles: "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor,http://purl.imsglobal.org/vocab/lis/v2/membership#Student",
+    roles:
+      "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor,http://purl.imsglobal.org/vocab/lis/v2/membership#Student",
     custom: {
       custom_one: "Custom Value 1",
-      custom_two: "Custom Value 2"
-    }
-  }
+      custom_two: "Custom Value 2",
+    },
+  };
 
   const testLTI13LaunchData = {
     launch_type: "lti1.3",
@@ -364,7 +369,7 @@ describe("/controllers/lti-launch.js", () => {
     user_image: testLTI13LaunchResult.picture,
     user_roles: testLTI13LaunchResult[baseUrl + "roles"],
     custom: testLTI13LaunchResult[baseUrl + "custom"],
-  }
+  };
 
   const consumerProduct13Stub = {
     tc_product: "Old Product",
@@ -372,8 +377,8 @@ describe("/controllers/lti-launch.js", () => {
     tc_guid: "old-guid",
     tc_name: "Old Consumer",
     set: sinon.stub().resolves(),
-    save: sinon.stub().resolves()
-  }
+    save: sinon.stub().resolves(),
+  };
 
   const testLTI13DeeplinkingResult = {
     key: "test-key",
@@ -382,18 +387,18 @@ describe("/controllers/lti-launch.js", () => {
       product_family_code: "Test Product",
       version: "1.3",
       guid: "test-guid",
-      name: "Test Consumer"
+      name: "Test Consumer",
     },
     [baseUrl + "context"]: {
       id: "test-context-id",
       label: "Test Context Label",
-      title: "Test Context Title"
+      title: "Test Context Title",
     },
     [baseUrl + "lti1p1"]: {
       user_id: "test-user-id",
     },
     [baseUrl + "launch_presentation"]: {
-      return_url: "http://localhost:3000/return"
+      return_url: "http://localhost:3000/return",
     },
     sub: "test-user-id",
     email: "user@localhost.tld",
@@ -401,15 +406,16 @@ describe("/controllers/lti-launch.js", () => {
     given_name: "Test",
     family_name: "User",
     picture: "http://localhost:3000/user-image.png",
-    roles: "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor,http://purl.imsglobal.org/vocab/lis/v2/membership#Student",
+    roles:
+      "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor,http://purl.imsglobal.org/vocab/lis/v2/membership#Student",
     custom: {
       custom_one: "Custom Value 1",
-      custom_two: "Custom Value 2"
+      custom_two: "Custom Value 2",
     },
     [dlUrl]: {
-      deep_link_return_url: "http://localhost:3000/deeplink-return"
-    }
-  }
+      deep_link_return_url: "http://localhost:3000/deeplink-return",
+    },
+  };
 
   const handleDeeplink13Stub = sinon.stub().resolves("/redirectURL");
 
@@ -429,17 +435,17 @@ describe("/controllers/lti-launch.js", () => {
     user_image: testLTI13DeeplinkingResult.picture,
     user_roles: testLTI13DeeplinkingResult[baseUrl + "roles"],
     custom: testLTI13DeeplinkingResult[baseUrl + "custom"],
-    deep_link_return_url: testLTI13DeeplinkingResult[dlUrl]?.deep_link_return_url
-  }
+    deep_link_return_url: testLTI13DeeplinkingResult[dlUrl]?.deep_link_return_url,
+  };
 
-    const consumerProduct13DLStub = {
+  const consumerProduct13DLStub = {
     tc_product: "Old Product",
     tc_version: "0.1",
     tc_guid: "old-guid",
     tc_name: "Old Consumer",
     set: sinon.stub().resolves(),
-    save: sinon.stub().resolves()
-  }
+    save: sinon.stub().resolves(),
+  };
 
   it("should handle a complete LTI 1.3 launch request properly", async () => {
     // Create mock dependencies
@@ -450,19 +456,21 @@ describe("/controllers/lti-launch.js", () => {
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "launchRequest").resolves(testLTI13LaunchResult);
-    
+
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
     const result = await controller.launch(testLLTI13LaunchRequest);
-    
+
     // Assertions
     // LMS Product information should be updated
-    expect(consumerProduct13Stub.set.calledWith({
-      tc_product: "Test Product",
-      tc_version: "1.3",
-      tc_guid: "test-guid",
-      tc_name: "Test Consumer"
-    })).to.be.true;
+    expect(
+      consumerProduct13Stub.set.calledWith({
+        tc_product: "Test Product",
+        tc_version: "1.3",
+        tc_guid: "test-guid",
+        tc_name: "Test Consumer",
+      }),
+    ).to.be.true;
     expect(consumerProduct13Stub.save.calledOnce).to.be.true;
     expect(handleLaunch13Stub.calledOnce).to.be.true;
     // Check Launch Handler Params
@@ -484,7 +492,7 @@ describe("/controllers/lti-launch.js", () => {
 
     // Stub the LTI 1.3 utility function to return false for an invalid launch
     sinon.stub(LTI13Utils.prototype, "launchRequest").throws(new Error("Invalid LTI 1.3 Launch Request"));
-    
+
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
 
@@ -529,14 +537,14 @@ describe("/controllers/lti-launch.js", () => {
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "launchRequest").resolves(testLTI13LaunchResult);
-    
+
     // Spy on the logger
     const loggerSpy = sinon.spy(logger, "warn");
 
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
     await controller.launch(testLLTI13LaunchRequest);
-    
+
     // Assertions
     expect(loggerSpy.calledWith("Tool Consumer Data Changed!")).to.be.true;
     expect(loggerSpy.calledWithMatch(/Old: /)).to.be.true;
@@ -552,14 +560,16 @@ describe("/controllers/lti-launch.js", () => {
     const provider = { handleLaunch: handleLaunch13Stub };
 
     const models = { ConsumerKey: { findOne: sinon.stub(), findAll: sinon.stub() } };
-    const consumer_controller = { getByKey: sinon.stub().resolves({
-      tc_product: "Test Product",
-      tc_version: "1.3",
-      tc_guid: "test-guid",
-      tc_name: "Test Consumer",
-      set: sinon.stub().resolves(),
-      save: sinon.stub().resolves()
-    }) };
+    const consumer_controller = {
+      getByKey: sinon.stub().resolves({
+        tc_product: "Test Product",
+        tc_version: "1.3",
+        tc_guid: "test-guid",
+        tc_name: "Test Consumer",
+        set: sinon.stub().resolves(),
+        save: sinon.stub().resolves(),
+      }),
+    };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "launchRequest").resolves(testLTI13LaunchResult);
@@ -570,7 +580,7 @@ describe("/controllers/lti-launch.js", () => {
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
     await controller.launch(testLLTI13LaunchRequest);
-    
+
     // Assertions
     expect(loggerSpy.calledWith("Tool Consumer Data Changed!")).to.be.false;
 
@@ -588,7 +598,7 @@ describe("/controllers/lti-launch.js", () => {
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "launchRequest").resolves(testLTI13LaunchResult);
-    
+
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
 
@@ -616,15 +626,17 @@ describe("/controllers/lti-launch.js", () => {
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
     const result = await controller.launch(testLLTI13LaunchRequest);
-    
+
     // Assertions
     // LMS Product information should be updated
-    expect(consumerProduct13DLStub.set.calledWith({
-      tc_product: "Test Product",
-      tc_version: "1.3",
-      tc_guid: "test-guid",
-      tc_name: "Test Consumer"
-    })).to.be.true;
+    expect(
+      consumerProduct13DLStub.set.calledWith({
+        tc_product: "Test Product",
+        tc_version: "1.3",
+        tc_guid: "test-guid",
+        tc_name: "Test Consumer",
+      }),
+    ).to.be.true;
     expect(consumerProduct13DLStub.save.calledOnce).to.be.true;
     expect(handleDeeplink13Stub.calledOnce).to.be.true;
     // Check Launch Handler Params
@@ -647,7 +659,7 @@ describe("/controllers/lti-launch.js", () => {
     // Stub the LTI 1.3 utility function to return a launch response with an invalid message type
     sinon.stub(LTI13Utils.prototype, "launchRequest").resolves({
       ...testLTI13LaunchResult,
-      [baseUrl + "message_type"]: "InvalidMessageType"
+      [baseUrl + "message_type"]: "InvalidMessageType",
     });
 
     // Call the function under test
@@ -673,7 +685,7 @@ describe("/controllers/lti-launch.js", () => {
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "launchRequest").resolves(testLTI13DeeplinkingResult);
-    
+
     // Call the function under test
     const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
 
@@ -690,7 +702,9 @@ describe("/controllers/lti-launch.js", () => {
 
   it("should fail if no handleLaunch function is defined on the provider for LTI 1.3 messages", async () => {
     // Create mock dependencies
-    const provider = { /* No handleLaunch function */ };
+    const provider = {
+      /* No handleLaunch function */
+    };
 
     const models = { ConsumerKey: { findOne: sinon.stub(), findAll: sinon.stub() } };
     const consumer_controller = { getByKey: sinon.stub().resolves(consumerProduct13Stub) };
@@ -714,7 +728,9 @@ describe("/controllers/lti-launch.js", () => {
 
   it("should fail if no handleDeeplink function is defined on the provider for LTI 1.3 deep linking messages", async () => {
     // Create mock dependencies
-    const provider = { /* No handleDeeplink function */ };
+    const provider = {
+      /* No handleDeeplink function */
+    };
 
     const models = { ConsumerKey: { findOne: sinon.stub(), findAll: sinon.stub() } };
     const consumer_controller = { getByKey: sinon.stub().resolves(consumerProduct13DLStub) };
@@ -739,12 +755,12 @@ describe("/controllers/lti-launch.js", () => {
   // LTI 1.3 Login Tests
   it("should handle a complete LTI 1.3 login request properly", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
-    const consumer_controller = { };
+    const provider = {};
+    const models = {};
+    const consumer_controller = {};
     const authForm = {
-      attribute: "value"
-    }
+      attribute: "value",
+    };
 
     // Stub the LTI 1.3 utility function to return a deep linking launch response
     sinon.stub(LTI13Utils.prototype, "authRequest").resolves(authForm);
@@ -754,9 +770,9 @@ describe("/controllers/lti-launch.js", () => {
     const result = await controller.login13({
       body: {
         id_token: "id-token",
-      }
+      },
     });
-    
+
     // Assertions
     expect(LTI13Utils.prototype.authRequest.calledOnce).to.be.true;
     expect(result).to.deep.equal(authForm);
@@ -767,9 +783,9 @@ describe("/controllers/lti-launch.js", () => {
 
   it("should fail if the LTI 1.3 login request is invalid", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
-    const consumer_controller = { };
+    const provider = {};
+    const models = {};
+    const consumer_controller = {};
 
     // Stub the LTI 1.3 utility function to throw an error for an invalid login request
     sinon.stub(LTI13Utils.prototype, "authRequest").throws(new Error("Invalid LTI 1.3 Login Request"));
@@ -781,7 +797,7 @@ describe("/controllers/lti-launch.js", () => {
       await controller.login13({
         body: {
           id_token: "id-token",
-        }
+        },
       });
       throw new Error("Expected error was not thrown");
     } catch (err) {
@@ -794,18 +810,20 @@ describe("/controllers/lti-launch.js", () => {
 
   it("should return an array of JWKS keys for all consumers", async () => {
     // Create mock dependencies
-    const provider = { };
-    const models = { };
-    const consumer_controller = { getAllKeys: sinon.stub().resolves([
-      {
-        key: "consumer1",
-        public: "public-key-1"
-      },
-      {
-        key: "consumer2",
-        public: "public-key-2"
-      }
-    ]) };
+    const provider = {};
+    const models = {};
+    const consumer_controller = {
+      getAllKeys: sinon.stub().resolves([
+        {
+          key: "consumer1",
+          public: "public-key-1",
+        },
+        {
+          key: "consumer2",
+          public: "public-key-2",
+        },
+      ]),
+    };
 
     // Mock crypto module to return a dummy JWKS key for each consumer
     sinon.stub(crypto, "createPublicKey").callsFake((publicKey) => {
@@ -813,9 +831,9 @@ describe("/controllers/lti-launch.js", () => {
         export: sinon.stub().returns({
           key: `exported-${publicKey}`,
           kty: "RSA",
-          kid: `kid-${publicKey}`
-        })
-      }
+          kid: `kid-${publicKey}`,
+        }),
+      };
     });
 
     // Call the function under test
@@ -832,15 +850,15 @@ describe("/controllers/lti-launch.js", () => {
         kty: "RSA",
         kid: "consumer1",
         alg: "RS256",
-        use: "sig"
+        use: "sig",
       },
       {
         key: "exported-public-key-2",
         kty: "RSA",
         kid: "consumer2",
         alg: "RS256",
-        use: "sig"
-      }
+        use: "sig",
+      },
     ]);
 
     // Restore the stubbed method

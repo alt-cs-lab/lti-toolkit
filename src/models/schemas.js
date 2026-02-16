@@ -379,11 +379,4 @@ const ProviderKeySchema = {
   },
 };
 
-export {
-  ConsumerSchema,
-  ConsumerKeySchema,
-  ConsumerLoginSchema,
-  OauthNonceSchema,
-  ProviderSchema,
-  ProviderKeySchema,
-};
+export { ConsumerSchema, ConsumerKeySchema, ConsumerLoginSchema, OauthNonceSchema, ProviderSchema, ProviderKeySchema };
