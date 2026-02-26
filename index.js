@@ -18,9 +18,12 @@ import setupProviderRoutes from "./src/routes/provider.js";
 import setupConsumerRoutes from "./src/routes/consumer.js";
 
 // Import controllers
-import LTIToolkitController from "./src/controllers/lti.js";
 import ProviderController from "./src/controllers/provider.js";
 import ConsumerController from "./src/controllers/consumer.js";
+import LTIConsumerController from "./src/controllers/lti-consumer.js";
+import LTIProviderController from "./src/controllers/lti-provider.js";
+import LTILaunchController from "./src/controllers/lti-launch.js";
+import LTIRegisterController from "./src/controllers/lti-register.js";
 
 /**
  * LTI Toolkit - A toolkit for building LTI (Learning Tools Interoperability) applications.
@@ -100,8 +103,7 @@ export default async function LtiToolkit(config) {
   // Build return object
   const returnObj = {
     routers: {},
-    controllers: {},
-    models: modelConfig.models,
+    controllers: {}
   };
 
   // Add Testing Utilities if in test mode
@@ -110,18 +112,19 @@ export default async function LtiToolkit(config) {
       // Expose for testing
       initializeExpiration: modelConfig.initializeExpiration,
       db: config.database,
+      models: modelConfig.models,
     };
   }
 
   // Add Provider and Consumer Controllers if configured
   if (config.consumer) {
     // Provider Controller to add/remove providers
-    const ProviderControllerInstance = new ProviderController(modelConfig.models, config.logger, config.database);
+    const ProviderControllerInstance = new ProviderController(modelConfig.models, config.database);
     returnObj.controllers.provider = ProviderControllerInstance;
   }
   if (config.provider) {
     // Consumer Controller to add/remove consumers
-    const ConsumerControllerInstance = new ConsumerController(modelConfig.models, config.logger, config.database);
+    const ConsumerControllerInstance = new ConsumerController(modelConfig.models, config.database);
     returnObj.controllers.consumer = ConsumerControllerInstance;
   }
 
@@ -141,27 +144,34 @@ export default async function LtiToolkit(config) {
     config.logger.info("Added Single LTI Consumer for Provider Key: " + config.provider.key);
   }
 
-  // Setup LTI Controller
-  const LTIControllerInstance = new LTIToolkitController(
-    config.provider,
-    config.consumer,
-    modelConfig.models,
-    config.logger,
-    config.domain_name,
-    config.admin_email,
-    returnObj.controllers.consumer,
-  );
-  returnObj.controllers.lti = LTIControllerInstance;
+  // Setup LTI Controllers
+  const LTIConsumerControllerInstance = new LTIConsumerController(
+    config.consumer, modelConfig.models, config.logger, config.domain_name, config.admin_email);
+
+  const LTIProviderControllerInstance = new LTIProviderController(
+    config.provider, modelConfig.models, config.logger, config.domain_name);
+
+  const LTILaunchControllerInstance = new LTILaunchController(
+    config.provider, modelConfig.models, config.logger, config.domain_name, returnObj.controllers.consumer)
+
+  const LTIRegisterControllerInstance = new LTIRegisterController(
+    config.provider, modelConfig.models, config.logger, config.domain_name, config.admin_email, returnObj.controllers.consumer);
+
+  
+  returnObj.controllers.lti = {
+    provider: LTIProviderControllerInstance,
+    consumer: LTIConsumerControllerInstance,
+  };
 
   // Add Routers
   if (config.consumer) {
     // Consumer Routes
-    const consumerRouter = await setupConsumerRoutes(LTIControllerInstance, config.logger);
+    const consumerRouter = await setupConsumerRoutes(LTIConsumerControllerInstance, config.logger);
     returnObj.routers.consumer = consumerRouter;
   }
   if (config.provider) {
     // Provider Routes
-    const providerRouter = await setupProviderRoutes(LTIControllerInstance, config.logger);
+    const providerRouter = await setupProviderRoutes(LTILaunchControllerInstance, LTIRegisterControllerInstance, config.logger);
     returnObj.routers.provider = providerRouter;
   }
 

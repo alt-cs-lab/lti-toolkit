@@ -40,8 +40,6 @@ async function InstructorGradeHandler(req, res) {
     // Post grade back to the LTI Provider
     // Build Grade Object
     const gradeObject = {
-      // LTI Consumer ID
-      consumer_id: consumer.id,
       // LTI 1.0 Outcome Information
       grade_url: assignments[assignmentId].grade_url,
       lms_grade_id: assignments[assignmentId].grades[userId].outcome_id,
@@ -65,13 +63,24 @@ async function InstructorGradeHandler(req, res) {
         assignment_id: assignmentId + "(" + assignments[assignmentId].lti_id + ")",
       },
     };
-    if (lti.controllers.lti.postGrade(gradeObject)) {
-      message = `Successfully posted grade of ${grade} back to the LMS.`;
+    try {
+      if (lti.controllers.lti.provider.postGrade(
+        consumer.key,
+        gradeObject.grade_url,
+        gradeObject.lms_grade_id,
+        gradeObject.score,
+        gradeObject.user_lis13_id,
+        gradeObject.debug,
+      )) {
+        message = `Successfully posted grade of ${grade} back to the LMS.`;
 
-      // Record grade in local data store
-      assignments[assignmentId].grades[userId].score = grade;
-    } else {
-      error = "Failed to post grade back to the LMS.";
+        // Record grade in local data store
+        assignments[assignmentId].grades[userId].score = grade;
+      } else {
+        error = "Failed to post grade back to the LMS.";
+      }
+    } catch (err) {
+      error = "Error posting grade back to the LMS: " + err.message;
     }
   }
 

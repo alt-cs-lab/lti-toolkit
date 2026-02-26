@@ -12,18 +12,18 @@ class ConsumerController {
   // Private Attributes
   #ConsumerModel;
   #ConsumerKeyModel;
-  #transaction;
+  #database;
 
   /**
    * Consumer Controller
    *
    * @param {Object} models the database models
-   * @param {Object} transaction the database transaction function
+   * @param {Object} database the database instance
    */
-  constructor(models, transaction) {
+  constructor(models, database) {
     this.#ConsumerModel = models.Consumer;
     this.#ConsumerKeyModel = models.ConsumerKey;
-    this.#transaction = transaction;
+    this.#database = database;
   }
 
   /**
@@ -70,7 +70,7 @@ class ConsumerController {
    */
   async createConsumer(data) {
     let consumer = null;
-    await this.#transaction(async (t) => {
+    await this.#database.transaction(async (t) => {
       consumer = await this.#ConsumerModel.create(
         {
           name: data.name,
@@ -135,7 +135,7 @@ class ConsumerController {
     if (!consumer) {
       return null;
     }
-    await this.#transaction(async (t) => {
+    await this.#database.transaction(async (t) => {
       // Delete the consumer key
       await this.#ConsumerKeyModel.destroy({
         where: {
@@ -188,7 +188,7 @@ class ConsumerController {
 
     let consumerkey = null;
 
-    await this.#transaction(async (t) => {
+    await this.#database.transaction(async (t) => {
       // Remove old key and secret for the consumer
       await this.#ConsumerKeyModel.destroy({
         where: {

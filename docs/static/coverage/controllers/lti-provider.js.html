@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>169/169</span>
+                <span class='fraction'>156/156</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>169/169</span>
+                <span class='fraction'>156/156</span>
             </div>
         
             
@@ -219,19 +219,7 @@
 <a name='L154'></a><a href='#L154'>154</a>
 <a name='L155'></a><a href='#L155'>155</a>
 <a name='L156'></a><a href='#L156'>156</a>
-<a name='L157'></a><a href='#L157'>157</a>
-<a name='L158'></a><a href='#L158'>158</a>
-<a name='L159'></a><a href='#L159'>159</a>
-<a name='L160'></a><a href='#L160'>160</a>
-<a name='L161'></a><a href='#L161'>161</a>
-<a name='L162'></a><a href='#L162'>162</a>
-<a name='L163'></a><a href='#L163'>163</a>
-<a name='L164'></a><a href='#L164'>164</a>
-<a name='L165'></a><a href='#L165'>165</a>
-<a name='L166'></a><a href='#L166'>166</a>
-<a name='L167'></a><a href='#L167'>167</a>
-<a name='L168'></a><a href='#L168'>168</a>
-<a name='L169'></a><a href='#L169'>169</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L157'></a><a href='#L157'>157</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -245,14 +233,6 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
@@ -328,16 +308,13 @@
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -394,12 +371,11 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * @file LTI Provider Controller
  * @author Russell Feldhausen &lt;russfeld@ksu.edu&gt;
  * @exports LTIProviderController an LTI Controller instance
@@ -422,7 +398,7 @@ class LTIProviderController {
 &nbsp;
   /**
    * LTI Provider Controller
-   * 
+   *
    * @param {Object} provider_config - the provider configuration object from the main config file
    * @param {Object} models - the LTI toolkit models
    * @param {Object} logger - the logger instance
@@ -434,85 +410,74 @@ class LTIProviderController {
     this.#domain_name = domain_name;
 &nbsp;
     // Create LTI Utilities
-    this.#LTI10Utils = new LTI10Utils(
-      models,
-      logger,
-      domain_name,
-    );
+    this.#LTI10Utils = new LTI10Utils(models, logger, domain_name);
 &nbsp;
-    this.#LTI13Utils = new LTI13Utils(
-      models,
-      logger,
-      domain_name,
-    );
-  } 
+    this.#LTI13Utils = new LTI13Utils(models, logger, domain_name);
+  }
 &nbsp;
   /**
-     * Post a grade to a consumer
-     *
-     * @param {Integer} [consumer_key] - the consumer key
-     * @param {String} [grade_url] - the grade post URL
-     * @param {String} [lms_grade_id] - the LMS grade ID (for LTI 1.0 Basic Outcomes)
-     * @param {String} [score] - the score to post (0.0 to 1.0)
-     * @param {String} [user_lis13_id] - the user LTI 1.3 ID (for LTI 1.3)
-     * @param {Object} [debug] - debugging information (optional)
-     * @param {String} [debug.user] - the user (for debugging)
-     * @param {String} [debug.user_id] - the user ID (for debugging)
-     * @param {String} [debug.assignment] - the assignment (for debugging)
-     * @param {String} [debug.assignment_id] - the assignment ID (for debugging)
-     * @return {boolean} true if the grade was posted successfully, false otherwise
-     * @throws {Error} if required information is missing or if posting fails
-     */
-    async postGrade(consumer_key, grade_url, lms_grade_id, score, user_lis13_id, debug) {
-      // build debug log if not provided
-      debug = {
-        user: debug?.user || "Unknown User",
-        user_id: debug?.user_id || "Unknown User ID",
-        assignment: debug?.assignment || "Unknown Assignment",
-        assignment_id: debug?.assignment_id || "Unknown Assignment ID",
-      };
-      this.#logger.lti(
-        "Posting grade for user " +
-          debug.user +
-          " (" +
-          debug.user_id +
-          ") to assignment " +
-          debug.assignment +
-          " (" +
-          debug.assignment_id +
-          ")",
+   * Post a grade to a consumer
+   *
+   * @param {Integer} [consumer_key] - the consumer key
+   * @param {String} [grade_url] - the grade post URL
+   * @param {String} [lms_grade_id] - the LMS grade ID (for LTI 1.0 Basic Outcomes)
+   * @param {String} [score] - the score to post (0.0 to 1.0)
+   * @param {String} [user_lis13_id] - the user LTI 1.3 ID (for LTI 1.3)
+   * @param {Object} [debug] - debugging information (optional)
+   * @param {String} [debug.user] - the user (for debugging)
+   * @param {String} [debug.user_id] - the user ID (for debugging)
+   * @param {String} [debug.assignment] - the assignment (for debugging)
+   * @param {String} [debug.assignment_id] - the assignment ID (for debugging)
+   * @return {boolean} true if the grade was posted successfully, false otherwise
+   * @throws {Error} if required information is missing or if posting fails
+   */
+  async postGrade(consumer_key, grade_url, lms_grade_id, score, user_lis13_id, debug) {
+    // build debug log if not provided
+    debug = {
+      user: debug?.user || "Unknown User",
+      user_id: debug?.user_id || "Unknown User ID",
+      assignment: debug?.assignment || "Unknown Assignment",
+      assignment_id: debug?.assignment_id || "Unknown Assignment ID",
+    };
+    this.#logger.lti(
+      "Posting grade for user " +
+        debug.user +
+        " (" +
+        debug.user_id +
+        ") to assignment " +
+        debug.assignment +
+        " (" +
+        debug.assignment_id +
+        ")",
+    );
+&nbsp;
+    // Validate input
+    if (!consumer_key) {
+      throw new Error("Post Grade: Consumer Key is required to post grade");
+    }
+    if (!grade_url) {
+      throw new Error("Post Grade: Grade post does not have a grade URL");
+    }
+    if (score === undefined || score === null || isNaN(score) || score &lt; 0 || score &gt; 1) {
+      throw new Error("Post Grade: Grade post does not have a valid score");
+    }
+    if (!lms_grade_id &amp;&amp; !user_lis13_id) {
+      throw new Error(
+        "Post Grade: Grade post must have either an LMS grade ID (for LTI 1.0) or a user LTI 1.3 ID (for LTI 1.3)",
       );
-&nbsp;
-      // Validate input
-      if (!consumer_key) {
-        throw new Error("Post Grade: Consumer Key is required to post grade");
-      }
-      if (!grade_url) {
-        throw new Error("Post Grade: Grade post does not have a grade URL");
-      }
-      if (score === undefined || score === null || isNaN(score) || score &lt; 0 || score &gt; 1) {
-        throw new Error("Post Grade: Grade post does not have a valid score");
-      }
-      if (!lms_grade_id &amp;&amp; !user_lis13_id) {
-        throw new Error("Post Grade: Grade post must have either an LMS grade ID (for LTI 1.0) or a user LTI 1.3 ID (for LTI 1.3)");
-      }
-&nbsp;
-      // Switch between LTI 1.0 and LTI 1.3
-      if (lms_grade_id) {
-        // Has Grade ID, expecting Basic Outcomes
-        return await this.#LTI10Utils.postOutcome(
-          lms_grade_id,
-          score,
-          consumer_key,
-          grade_url,
-        );
-      } else {
-        // No Grade ID, expecting LTI 1.3 Assignment and Grade Services (AGS)
-        return await this.#LTI13Utils.postAGSGrade(user_lis13_id, score, consumer_key, grade_url);
-      }
     }
 &nbsp;
-    /**
+    // Switch between LTI 1.0 and LTI 1.3
+    if (lms_grade_id) {
+      // Has Grade ID, expecting Basic Outcomes
+      return await this.#LTI10Utils.postOutcome(lms_grade_id, score, consumer_key, grade_url);
+    } else {
+      // No Grade ID, expecting LTI 1.3 Assignment and Grade Services (AGS)
+      return await this.#LTI13Utils.postAGSGrade(user_lis13_id, score, consumer_key, grade_url);
+    }
+  }
+&nbsp;
+  /**
    * LTI 1.3 Deeplink Selection Handler
    *
    * @param {Object} res the Express response object
@@ -543,10 +508,8 @@ class LTIProviderController {
       iss: consumer.client_id,
       aud: consumer.platform_id,
       nonce: nanoid(),
-      "https://purl.imsglobal.org/spec/lti/claim/deployment_id":
-        consumer.deployment_id,
-      "https://purl.imsglobal.org/spec/lti/claim/message_type":
-        "LtiDeepLinkingResponse",
+      "https://purl.imsglobal.org/spec/lti/claim/deployment_id": consumer.deployment_id,
+      "https://purl.imsglobal.org/spec/lti/claim/message_type": "LtiDeepLinkingResponse",
       "https://purl.imsglobal.org/spec/lti/claim/version": "1.3.0",
       "https://purl.imsglobal.org/spec/lti-dl/claim/content_items": [
         {
@@ -567,14 +530,15 @@ class LTIProviderController {
   }
 }
 &nbsp;
-export default LTIProviderController;</pre></td></tr></table></pre>
+export default LTIProviderController;
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-02-16T21:48:00.567Z
+                at 2026-02-18T01:59:21.715Z
             </div>
         <script src="../prettify.js"></script>
         <script>

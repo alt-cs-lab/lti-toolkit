@@ -14,14 +14,16 @@ import ProviderController from "../../src/controllers/provider.js";
 should();
 
 describe("/controllers/provider.js", () => {
-  const transaction = async (callback) => await callback();
+  const database = {
+    transaction: async (callback) => await callback(),
+  }
 
   it("should create a ProviderController instance with the correct properties", async () => {
     // Create stubs for dependencies
     const models = { Provider: {}, ProviderKey: {} };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
 
     // Assertions
     expect(controller).to.be.an.instanceOf(ProviderController);
@@ -37,7 +39,7 @@ describe("/controllers/provider.js", () => {
     const models = { Provider: { findAll: sinon.stub().resolves(providers) } };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.getAll();
 
     // Assertions
@@ -52,7 +54,7 @@ describe("/controllers/provider.js", () => {
     const models = { Provider: { findByPk: sinon.stub().resolves(provider) } };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.getById(1);
 
     // Assertions
@@ -67,7 +69,7 @@ describe("/controllers/provider.js", () => {
     const models = { Provider: { findOne: sinon.stub().resolves(provider) } };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.getByKey("test-key");
 
     // Assertions
@@ -86,7 +88,7 @@ describe("/controllers/provider.js", () => {
     };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.getSecret(1);
 
     // Assertions
@@ -100,7 +102,7 @@ describe("/controllers/provider.js", () => {
     const models = { Provider: { findByPk: sinon.stub().resolves(null) } };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.getSecret(1);
 
     // Assertions
@@ -117,7 +119,7 @@ describe("/controllers/provider.js", () => {
     };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.getSecret(1);
 
     // Assertions
@@ -147,7 +149,7 @@ describe("/controllers/provider.js", () => {
     };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.updateProvider(1, { ...updatedProvider, secret: "updated-secret" });
 
     // Assertions
@@ -173,7 +175,7 @@ describe("/controllers/provider.js", () => {
     };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.updateProvider(1, { ...updatedProvider, key: "test-key" });
 
     // Assertions
@@ -188,7 +190,7 @@ describe("/controllers/provider.js", () => {
     const models = { Provider: { findByPk: sinon.stub().resolves(null) } };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.updateProvider(1, updatedProvider);
 
     // Assertions
@@ -215,7 +217,7 @@ describe("/controllers/provider.js", () => {
     };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.createProvider({ ...newProvider, secret: "new-secret" });
 
     // Assertions
@@ -240,7 +242,7 @@ describe("/controllers/provider.js", () => {
     };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.deleteProvider(1);
 
     // Assertions
@@ -257,7 +259,7 @@ describe("/controllers/provider.js", () => {
     const models = { Provider: { findByPk: sinon.stub().resolves(null) } };
 
     // Call the function under test
-    const controller = new ProviderController(models, transaction);
+    const controller = new ProviderController(models, database);
     const result = await controller.deleteProvider(1);
 
     // Assertions

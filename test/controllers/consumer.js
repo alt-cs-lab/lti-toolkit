@@ -14,14 +14,16 @@ import ConsumerController from "../../src/controllers/consumer.js";
 should();
 
 describe("/controllers/consumer.js", () => {
-  const transaction = async (callback) => await callback();
+  const database = {
+    transaction: async (callback) => await callback(),
+  }
 
   it("should create a ConsumerController instance with the correct properties", async () => {
     // Create mock dependencies
     const models = { Consumer: {}, ConsumerKey: {} };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Assertions
     expect(controller).to.be.an.instanceOf(ConsumerController);
@@ -38,7 +40,7 @@ describe("/controllers/consumer.js", () => {
     const models = { Consumer: { findAll: sinon.stub().resolves(consumerFixtures) } };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.getAll();
@@ -53,7 +55,7 @@ describe("/controllers/consumer.js", () => {
     const models = { Consumer: { findByPk: sinon.stub().resolves(consumerFixtures[0]) } };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.getById(1);
@@ -68,7 +70,7 @@ describe("/controllers/consumer.js", () => {
     const models = { Consumer: { findOne: sinon.stub().resolves(consumerFixtures[0]) } };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.getByKey("test-key");
@@ -103,7 +105,7 @@ describe("/controllers/consumer.js", () => {
     };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.createConsumer(fullConsumerData);
@@ -126,7 +128,7 @@ describe("/controllers/consumer.js", () => {
     };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     await controller.createConsumer({ secret: "thisisasecret", ...fullConsumerData });
@@ -164,7 +166,7 @@ describe("/controllers/consumer.js", () => {
     const models = { Consumer: { findByPk: sinon.stub().resolves(mockConsumer) } };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.updateConsumer(3, updateConsumerData);
@@ -182,7 +184,7 @@ describe("/controllers/consumer.js", () => {
     const models = { Consumer: { findByPk: sinon.stub().resolves(mockConsumer) } };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test with an attempt to change the key
     const result = await controller.updateConsumer(3, { ...updateConsumerData, key: "new-key" });
@@ -199,7 +201,7 @@ describe("/controllers/consumer.js", () => {
     const models = { Consumer: { findByPk: sinon.stub().resolves(null) } };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.updateConsumer(999, updateConsumerData);
@@ -220,7 +222,7 @@ describe("/controllers/consumer.js", () => {
     };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.deleteConsumer(3);
@@ -238,7 +240,7 @@ describe("/controllers/consumer.js", () => {
     const models = { Consumer: { findByPk: sinon.stub().resolves(null) } };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.deleteConsumer(999);
@@ -257,7 +259,7 @@ describe("/controllers/consumer.js", () => {
     };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.getSecret(3);
@@ -274,7 +276,7 @@ describe("/controllers/consumer.js", () => {
     const models = { Consumer: { findByPk: sinon.stub().resolves(null) }, ConsumerKey: { findOne: sinon.stub() } };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.getSecret(999);
@@ -293,7 +295,7 @@ describe("/controllers/consumer.js", () => {
     };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.getSecret(3);
@@ -318,7 +320,7 @@ describe("/controllers/consumer.js", () => {
     };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     await controller.updateSecret(3, "new-key", "new-secret");
@@ -349,7 +351,7 @@ describe("/controllers/consumer.js", () => {
     };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.updateSecret(999, "new-key", "new-secret");
@@ -371,7 +373,7 @@ describe("/controllers/consumer.js", () => {
     };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test without providing key and secret
     await controller.updateSecret(3);
@@ -405,7 +407,7 @@ describe("/controllers/consumer.js", () => {
     const models = { ConsumerKey: { findAll: sinon.stub().resolves(consumerKeys) } };
 
     // Create instance of ConsumerController
-    const controller = new ConsumerController(models, transaction);
+    const controller = new ConsumerController(models, database);
 
     // Call method under test
     const result = await controller.getAllKeys();

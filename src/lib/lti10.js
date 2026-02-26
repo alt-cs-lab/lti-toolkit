@@ -15,6 +15,7 @@ class LTI10Utils {
   // Private Attributes
   #OauthNonceModel;
   #ConsumerKeyModel;
+  #ProviderKeyModel;
   #logger;
   #domain_name;
 
@@ -27,6 +28,7 @@ class LTI10Utils {
   constructor(models, logger, domain_name) {
     this.#OauthNonceModel = models.OauthNonce;
     this.#ConsumerKeyModel = models.ConsumerKey;
+    this.#ProviderKeyModel = models.ProviderKey;
     this.#logger = logger;
     this.#domain_name = domain_name;
   }
@@ -41,109 +43,26 @@ class LTI10Utils {
 
     // Body must not be empty
     if (!body) {
-      throw new Error("Validation Error: Empty Body");
+      throw new Error("Validation Error: Request Body Missing");
     }
+
+    // Validate OAuth Parameters
+    await this.#validateOauthParams(body, req.method, req.originalUrl, this.#ConsumerKeyModel);
 
     // #######################
     // LTI SPECIFIC THINGS
     // #######################
     // Body must include lti_message_type
     if (!body.lti_message_type || body.lti_message_type !== "basic-lti-launch-request") {
-      throw new Error("Validation Error: Invalid LTI Message Type: " + body.lti_message_type);
+      throw new Error("Validation Error: Invalid LTI Message Type");
     }
     // Body must include lti_version
     if (!body.lti_version || body.lti_version !== "LTI-1p0") {
-      throw new Error("Validation Error: Invalid LTI Version: " + body.lti_version);
-    }
-
-    // #######################
-    // OAUTH SPECIFIC THINGS
-    // #######################
-    // Body must include oauth_version
-    if (!body.oauth_version || body.oauth_version !== "1.0") {
-      throw new Error("Validation Error: Invalid OAuth Version: " + body.oauth_version);
-    }
-    // Body must include oauth_signature_method
-    if (!body.oauth_signature_method || body.oauth_signature_method !== "HMAC-SHA1") {
-      throw new Error("Validation Error: Invalid OAuth Signature Method: " + body.oauth_signature_method);
-    }
-    // Body must include oauth_consumer_key
-    if (!body.oauth_consumer_key) {
-      throw new Error("Validation Error: OAuth Consumer Key Missing");
-    }
-    // Body must include oauth_signature
-    if (!body.oauth_signature) {
-      throw new Error("Validation Error: OAuth Signature Missing");
-    }
-    // Body must include oauth_callback
-    if (!body.oauth_callback || body.oauth_callback !== "about:blank") {
-      throw new Error("Validation Error: Invalid OAuth Callback: " + body.oauth_callback);
-    }
-    // Body must include oauth_timestamp
-    if (!body.oauth_timestamp) {
-      throw new Error("Validation Error: OAuth Timestamp Missing");
-    }
-    // Timestamp must be recent (allow 1 minute into future and 10 minutes into past)
-    const currentTime = Math.floor(Date.now() / 1000);
-    const requestTime = parseInt(body.oauth_timestamp);
-    if (currentTime + 60 < requestTime || currentTime > requestTime + 600) {
-      throw new Error(
-        "Validation Error: OAuth Timestamp Invalid! Timestamp: " + requestTime + " | Current: " + currentTime,
-      );
-    }
-    // Body must include oauth_nonce
-    if (!body.oauth_nonce) {
-      throw new Error("Validation Error: OAuth Nonce Missing");
-    }
-    // Nonce must be unique
-    const nonceLookup = await this.#OauthNonceModel.findOne({
-      where: {
-        key: body.oauth_consumer_key,
-        nonce: body.oauth_nonce,
-      },
-    });
-    if (nonceLookup) {
-      throw new Error("Validation Error: Duplicate OAuth Nonce Detected " + body.oauth_nonce);
-    }
-
-    // #######################
-    // VALIDATE OAUTH SIGNATURE
-    // #######################
-    const consumerKey = await this.#ConsumerKeyModel.findByPk(body.oauth_consumer_key);
-    if (!consumerKey) {
-      throw new Error("Validation Error: Unable to find secret for consumer key: " + body.oauth_consumer_key);
-    }
-    // Extract signature from body
-    const { oauth_signature, ...signedParams } = req.body;
-    // Compute signature
-    const computedSignature = this.oauth_sign(
-      body.oauth_signature_method,
-      req.method,
-      req.originalUrl,
-      signedParams,
-      consumerKey.secret,
-    );
-    // Compare extracted signature to computed
-    if (computedSignature !== oauth_signature) {
-      throw new Error(
-        "Validation Error: Invalid OAuth Signature!: Computed: " +
-          computedSignature +
-          " | Provided: " +
-          oauth_signature,
-      );
-    }
-
-    // Store Nonce
-    const nonceCreated = await this.models.OauthNonce.create({
-      key: body.oauth_consumer_key,
-      nonce: body.oauth_nonce,
-    });
-    if (!nonceCreated || nonceCreated.nonce != body.oauth_nonce) {
-      throw new Error("Validation Error: Unable to save OAuth Nonce - Aborting!");
+      throw new Error("Validation Error: Invalid LTI Version");
     }
 
     // Return validated payload to controller
-    return signedParams;
+    return body;
   }
 
   /**
@@ -165,10 +84,6 @@ class LTI10Utils {
    */
   oauth_sign(method, http_method, base_uri, params, secret) {
     // Currently only HMAC-SHA1 signature supported
-    if (method !== "HMAC-SHA1") {
-      throw new Error("Only HMAC-SHA1 Supported for OAuth Signature Method");
-    }
-
     // Compute OAuth Signature
     // Part 1 - HTTP method in uppercase
     const part1 = LTI10Utils.#rfc3986(http_method.toUpperCase());
@@ -214,12 +129,14 @@ class LTI10Utils {
     const normalized = Object.entries(params)
       // 1.  First, the name and value of each parameter are encoded
       .map(function (key) {
+        /* c8 ignore next */
         return [LTI10Utils.#rfc3986(key[0]), LTI10Utils.#rfc3986(key[1] || "")];
       })
       // 2.  The parameters are sorted by name, using ascending byte value
       //     ordering.  If two or more parameters share the same name, they
       //     are sorted by their value.
       .sort(function (a, b) {
+        /* c8 ignore next */
         return LTI10Utils.#compare(a[0], b[0]) || LTI10Utils.#compare(a[1], b[1]);
       })
       // 3.  The name of each parameter is concatenated to its corresponding
@@ -245,6 +162,7 @@ class LTI10Utils {
    * @returns {number} the sort order
    */
   static #compare(a, b) {
+    /* c8 ignore next */
     return a > b ? 1 : a < b ? -1 : 0;
   }
 
@@ -252,13 +170,17 @@ class LTI10Utils {
    * Validate OAuth body signed message
    *
    * @param {Object} req - Express request object
-   * @returns {Object} the validated key and secret, or false if validation fails
+   * @returns {Object} the validated key and secret
+   * @throws {Error} if the request is not valid
    */
   async validateOauthBody(req) {
     // OAuth Headers
     const authHeader = req.headers["authorization"];
-    if (!authHeader || !authHeader.startsWith("OAuth ")) {
-      throw new Error("Validation Error: Missing or Invalid Authorization Header");
+    if (!authHeader) {
+      throw new Error("Validation Error: Missing Authorization Header");
+    }
+    if(!authHeader.startsWith("OAuth ")) {
+      throw new Error("Validation Error: Invalid Authorization Header Format");
     }
 
     // Trim leading "OAuth " and split headers by comma
@@ -273,91 +195,122 @@ class LTI10Utils {
       }
     }
 
-    // Check required OAuth headers
-    if (!oauthHeaders["oauth_consumer_key"]) {
-      throw new Error("Validation Error: OAuth Consumer Key Missing");
-    }
-    if (!oauthHeaders["oauth_version"] || oauthHeaders["oauth_version"] !== "1.0") {
-      throw new Error("Validation Error: Invalid OAuth Version: " + oauthHeaders["oauth_version"]);
-    }
-    if (!oauthHeaders["oauth_signature_method"]) {
-      throw new Error("Validation Error: Missing OAuth Signature Method");
-    }
-    if (!oauthHeaders["oauth_signature"]) {
-      throw new Error("Validation Error: Missing OAuth Signature");
-    }
+    // Validate required OAuth Headers
+    const providerKey = await this.#validateOauthParams(oauthHeaders, req.method, req.originalUrl, this.#ProviderKeyModel);
 
-    // Check Timestamp
-    if (!oauthHeaders["oauth_timestamp"]) {
-      throw new Error("Validation Error: Missing OAuth Timestamp");
-    }
-    // Timestamp must be recent (allow 1 minute into future and 10 minutes into past)
-    const currentTime = Math.floor(Date.now() / 1000);
-    const requestTime = parseInt(oauthHeaders["oauth_timestamp"]);
-    if (currentTime + 60 < requestTime || currentTime > requestTime + 600) {
-      throw new Error(
-        "Validation Error: OAuth Timestamp Invalid! Timestamp: " + requestTime + " | Current: " + currentTime,
-      );
-    }
-
-    // Check Nonce
-    if (!oauthHeaders["oauth_nonce"]) {
-      throw new Error("Validation Error: Missing OAuth Nonce");
-    }
-    // Nonce must be unique
-    const nonceLookup = await this.models.OauthNonce.findOne({
-      where: {
-        key: oauthHeaders["oauth_consumer_key"],
-        nonce: oauthHeaders["oauth_nonce"],
-      },
-    });
-    if (nonceLookup) {
-      throw new Error("Validation Error: Duplicate OAuth Nonce Detected " + oauthHeaders["oauth_nonce"]);
-    }
-
-    // Extract and validate hash
+    // #######################
+    // Validate Body Hash
+    // #######################
     if (!oauthHeaders["oauth_body_hash"]) {
       throw new Error("Validation Error: Missing OAuth Body Hash");
+    }
+    if(!req.rawBody) {
+      throw new Error("Validation Error: Raw Body Missing");
+    }
+    if(typeof req.rawBody !== "string") {
+      throw new Error("Validation Error: Invalid Raw Body Format");
     }
     if (oauthHeaders["oauth_body_hash"] !== crypto.createHash("sha1").update(req.rawBody).digest("base64")) {
       throw new Error("Validation Error: Invalid OAuth Body Hash");
     }
 
-    // Find secret for key
-    const providerKey = await this.models.ProviderKey.findOne({
-      where: { key: oauthHeaders["oauth_consumer_key"] },
+    return providerKey
+  }
+
+  /**
+   * Validate OAuth Parameters
+   * 
+   * @param {Object} body OAuth params
+   * @param {String} method HTTP method (GET or POST)
+   * @param {String} url the URL for the request
+   * @param {Object} KeyModel the database model for consumer keys
+   * @returns {Object} the consumer key object if validation is successful
+   * @throws Error if parameters are not validated
+   */
+  async #validateOauthParams(body, method, url, KeyModel) {
+     // #######################
+    // OAUTH SPECIFIC THINGS
+    // #######################
+    // Body must include oauth_version
+    if (!body.oauth_version || body.oauth_version !== "1.0") {
+      throw new Error("Validation Error: Invalid OAuth Version");
+    }
+    // Body must include oauth_signature_method
+    if (!body.oauth_signature_method || body.oauth_signature_method !== "HMAC-SHA1") {
+      throw new Error("Validation Error: Invalid OAuth Signature Method");
+    }
+    // Body must include oauth_consumer_key
+    if (!body.oauth_consumer_key) {
+      throw new Error("Validation Error: OAuth Consumer Key Missing");
+    }
+    // Body must include oauth_signature
+    if (!body.oauth_signature) {
+      throw new Error("Validation Error: OAuth Signature Missing");
+    }
+    // Body must include oauth_callback
+    if (!body.oauth_callback || body.oauth_callback !== "about:blank") {
+      throw new Error("Validation Error: Invalid OAuth Callback: " + body.oauth_callback);
+    }
+    // Body must include oauth_timestamp
+    if (!body.oauth_timestamp) {
+      throw new Error("Validation Error: OAuth Timestamp Missing");
+    }
+    // Timestamp must be recent (allow 1 minute into future and 10 minutes into past)
+    const currentTime = Math.floor(Date.now() / 1000);
+    const requestTime = parseInt(body.oauth_timestamp);
+    if (currentTime + 60 < requestTime || currentTime > requestTime + 600) {
+      throw new Error("Validation Error: OAuth Timestamp Invalid!");
+    }
+    // Body must include oauth_nonce
+    if (!body.oauth_nonce) {
+      throw new Error("Validation Error: OAuth Nonce Missing");
+    }
+    // Nonce must be unique
+    const nonceLookup = await this.#OauthNonceModel.findOne({
+      where: {
+        key: body.oauth_consumer_key,
+        nonce: body.oauth_nonce,
+      },
     });
-    if (!providerKey) {
-      throw new Error("Validation Error: Invalid OAuth Consumer Key");
+    if (nonceLookup) {
+      throw new Error("Validation Error: Duplicate OAuth Nonce Detected");
     }
 
-    // Check signature using headers
-    const headersNoSignature = { ...oauthHeaders };
-    delete headersNoSignature["oauth_signature"];
-    const signature = this.oauth_sign(
-      headersNoSignature["oauth_signature_method"],
-      "POST",
-      req.originalUrl,
-      headersNoSignature,
-      providerKey.secret,
+    // #######################
+    // VALIDATE OAUTH SIGNATURE
+    // #######################
+    const consumerKey = await KeyModel.findByPk(body.oauth_consumer_key, {attributes: ["key", "secret"]});
+    if (!consumerKey) {
+      throw new Error("Validation Error: Invalid Consumer Key");
+    }
+    // Extract signature from body
+    const { oauth_signature, ...signedParams } = body;
+    // Compute signature
+    const computedSignature = this.oauth_sign(
+      body.oauth_signature_method,
+      method,
+      url,
+      signedParams,
+      consumerKey.secret,
     );
-    if (signature !== oauthHeaders["oauth_signature"]) {
-      throw new Error("Validation Error: Invalid OAuth Signature");
+    // Compare extracted signature to computed
+    if (computedSignature !== oauth_signature) {
+      throw new Error(
+        "Validation Error: Invalid OAuth Signature");
     }
 
     // Store Nonce
-    const nonceCreated = await this.models.OauthNonce.create({
-      key: oauthHeaders["oauth_consumer_key"],
-      nonce: oauthHeaders["oauth_nonce"],
+    const nonceCreated = await this.#OauthNonceModel.create({
+      key: body.oauth_consumer_key,
+      nonce: body.oauth_nonce,
     });
-    if (!nonceCreated || nonceCreated.nonce != oauthHeaders["oauth_nonce"]) {
-      throw new Error("Validation Error: Unable to save OAuth Nonce");
+    if (!nonceCreated || nonceCreated.nonce != body.oauth_nonce) {
+      throw new Error("Validation Error: Unable to save OAuth Nonce - Aborting!");
     }
-    return {
-      key: providerKey.key,
-      secret: providerKey.secret,
-    };
+
+    return consumerKey;
   }
+
 
   /**
    * Sign OAuth Body
@@ -365,10 +318,11 @@ class LTI10Utils {
    * @param {String} body - the body to sign
    * @param {String} key - the key for signing
    * @param {String} secret - the secret for signing
+   * @param {String} method - the HTTP method for the request
    * @param {String} url - the URL for the request
    * @returns {String} the OAuth headers
    */
-  async signOauthBody(body, key, secret, url) {
+  async #signOauthBody(body, key, secret, method, url) {
     const bodyHash = crypto.createHash("sha1").update(body).digest("base64");
     const oauthHeaders = {
       oauth_consumer_key: key,
@@ -378,7 +332,7 @@ class LTI10Utils {
       oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
       oauth_nonce: crypto.randomBytes(16).toString("hex"),
     };
-    const signature = this.oauth_sign("HMAC-SHA1", "POST", url, oauthHeaders, secret);
+    const signature = this.oauth_sign("HMAC-SHA1", method, url, oauthHeaders, secret);
     oauthHeaders["oauth_signature"] = signature;
     const headerString =
       "OAuth " +
@@ -463,16 +417,15 @@ class LTI10Utils {
     const content = builder.buildObject(envelope);
 
     // Get Key and Secret for Consumer
-    const providerKey = await this.#ConsumerKeyModel.findOne({
-      where: { key: consumer_key },
+    const providerKey = await this.#ConsumerKeyModel.findByPk(consumer_key, {
       attributes: ["key", "secret"],
     });
     if (!providerKey) {
-      throw new Error("Cannot find secret for consumer key: " + consumer_key);
+      throw new Error("Error: Invalid Consumer Key");
     }
 
     // Sign Body
-    const authHeader = await this.signOauthBody(content, providerKey.key, providerKey.secret, url);
+    const authHeader = await this.#signOauthBody(content, providerKey.key, providerKey.secret, "POST", url);
 
     this.#logger.lti("Posting grade to LTI 1.0 Outcome Service at " + url);
     this.#logger.silly(authHeader);
@@ -487,13 +440,12 @@ class LTI10Utils {
       body: content,
     });
 
-    // parse response.text to xml
-    const responseText = await response.text();
-    const parser = new xml2js.Parser({ explicitArray: false, trim: true });
-    const responseXml = await parser.parseStringPromise(responseText);
-    this.#logger.silly("Response XML: " + JSON.stringify(responseXml, null, 2));
-
     if (response && response.status === 200) {
+      // parse response.text to xml and check for success
+      const responseText = await response.text();
+      const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+      const responseXml = await parser.parseStringPromise(responseText);
+      this.#logger.silly("Response XML: " + JSON.stringify(responseXml, null, 2));
       if (
         responseXml.imsx_POXEnvelopeResponse.imsx_POXHeader.imsx_POXResponseHeaderInfo.imsx_statusInfo
           .imsx_codeMajor === "success"
@@ -529,9 +481,9 @@ class LTI10Utils {
     description,
     providerKey,
     url,
-    messageIdentifier,
+    messageIdentifier = null,
     operation = null,
-    body = null,
+    body = {},
   ) {
     /**
      * Example LTI 1.0 Outcome Service Response Body for Errors
@@ -596,7 +548,7 @@ class LTI10Utils {
             },
           },
         },
-        imsx_POXBody: body || {},
+        imsx_POXBody: body,
       },
     };
 
@@ -605,7 +557,7 @@ class LTI10Utils {
     const content = builder.buildObject(result);
     let headers = null;
     if (providerKey && url) {
-      headers = await this.signOauthBody(content, providerKey.key, providerKey.secret, url);
+      headers = await this.#signOauthBody(content, providerKey.key, providerKey.secret, "POST", url);
     }
     return {
       content: content,
@@ -621,37 +573,38 @@ class LTI10Utils {
    * @returns {Object} an object containing the message ID and body of the request if valid
    */
   validateBasicOutcomesRequest(req) {
+
     // Check Envelope
     if (
       !req.body["imsx_poxenveloperequest"] ||
       req.body["imsx_poxenveloperequest"]["$"]["xmlns"] != "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0"
     ) {
-      throw new Error("Invalid Envelope Request");
+      throw new Error("Basic Outcomes: Invalid Envelope Request");
     }
     // Get Envelope
     const envelope = req.body["imsx_poxenveloperequest"];
 
     // Check Header
     if (!envelope["imsx_poxheader"]) {
-      throw new Error("Invalid Envelope Header");
+      throw new Error("Basic Outcomes: Invalid Envelope Header");
     }
 
     const header = envelope["imsx_poxheader"];
     if (!header["imsx_poxrequestheaderinfo"]) {
-      throw new Error("Invalid Envelope Header Info");
+      throw new Error("Basic Outcomes: Invalid Envelope Header Info");
     }
 
     const headerinfo = header["imsx_poxrequestheaderinfo"];
     if (!headerinfo["imsx_version"] || headerinfo["imsx_version"] !== "V1.0") {
-      throw new Error("Invalid Envelope Version");
+      throw new Error("Basic Outcomes: Invalid Envelope Version");
     }
     if (!headerinfo["imsx_messageidentifier"] || headerinfo["imsx_messageidentifier"].length === 0) {
-      throw new Error("Invalid Envelope Message Identifier");
+      throw new Error("Basic Outcomes: Invalid Envelope Message Identifier");
     }
 
     // Check Body
     if (!envelope["imsx_poxbody"]) {
-      throw new Error("Invalid Envelope Body");
+      throw new Error("Basic Outcomes: Invalid Envelope Body");
     }
 
     return {
@@ -670,37 +623,37 @@ class LTI10Utils {
   validateReplaceResultRequest(request) {
     // Parse Message
     if (!request["resultrecord"]) {
-      throw new Error("Missing Result Record");
+      throw new Error("Replace Result: Missing Result Record");
     }
 
     // Check Result Record
     const resultRecord = request["resultrecord"];
     if (!resultRecord["result"]) {
-      throw new Error("Missing Result");
+      throw new Error("Replace Result: Missing Result");
     }
 
     // Check Result
     const result = resultRecord["result"];
     if (!result["resultscore"]) {
-      throw new Error("Missing Result Score");
+      throw new Error("Replace Result: Missing Result Score");
     }
     if (!result["resultscore"]["textstring"] || result["resultscore"]["textstring"].length === 0) {
-      throw new Error("Missing Result Score Value");
+      throw new Error("Replace Result: Missing Result Score Value");
     }
 
     // Check Score
     const score = result["resultscore"]["textstring"];
     if (isNaN(score)) {
-      throw new Error("Invalid Result Score Value: " + score);
+      throw new Error("Replace Result: Invalid Result Score Value: " + score);
     }
 
     // Check Source ID
     if (!resultRecord["sourcedguid"]) {
-      throw new Error("Missing Result Source ID");
+      throw new Error("Replace Result: Missing Result Source ID");
     }
     const sourcedId = resultRecord["sourcedguid"];
     if (!sourcedId["sourcedid"] || sourcedId["sourcedid"].length === 0) {
-      throw new Error("Missing Result Source ID Value");
+      throw new Error("Replace Result: Missing Result Source ID Value");
     }
 
     return {

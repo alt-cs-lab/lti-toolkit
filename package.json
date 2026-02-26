@@ -42,6 +42,7 @@
     "chai": "^6.0.1",
     "chai-json-schema-ajv": "^5.2.4",
     "chai-shallow-deep-equal": "^1.4.6",
+    "chai-string": "^2.0.0",
     "eslint": "^9.36.0",
     "jsdoc": "^4.0.4",
     "mocha": "^11.7.2",

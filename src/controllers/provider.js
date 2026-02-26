@@ -8,17 +8,17 @@ class ProviderController {
   // Private Attributes
   #ProviderModel;
   #ProviderKeyModel;
-  #transaction;
+  #database;
 
   /**
    * Provider Controller
    * @param {Object} models the database models
-   * @param {Object} transaction the database transaction function
+   * @param {Object} database the database instance
    */
-  constructor(models, transaction) {
+  constructor(models, database) {
     this.#ProviderModel = models.Provider;
     this.#ProviderKeyModel = models.ProviderKey;
-    this.#transaction = transaction;
+    this.#database = database;
   }
 
   /**
@@ -88,7 +88,7 @@ class ProviderController {
    */
   async updateProvider(id, data) {
     let provider = null;
-    await this.#transaction(async (t) => {
+    await this.#database.transaction(async (t) => {
       provider = await this.#ProviderModel.findByPk(id);
       if (!provider) {
         return null;
@@ -133,7 +133,7 @@ class ProviderController {
    */
   async createProvider(data) {
     let provider = null;
-    await this.#transaction(async (t) => {
+    await this.#database.transaction(async (t) => {
       provider = await this.#ProviderModel.create(
         {
           name: data.name,
@@ -169,7 +169,7 @@ class ProviderController {
     if (!provider) {
       return null;
     }
-    await this.#transaction(async (t) => {
+    await this.#database.transaction(async (t) => {
       // Delete the provider key
       await this.#ProviderKeyModel.destroy({
         where: {
