@@ -103,7 +103,7 @@ export default async function LtiToolkit(config) {
   // Build return object
   const returnObj = {
     routers: {},
-    controllers: {}
+    controllers: {},
   };
 
   // Add Testing Utilities if in test mode
@@ -146,18 +146,37 @@ export default async function LtiToolkit(config) {
 
   // Setup LTI Controllers
   const LTIConsumerControllerInstance = new LTIConsumerController(
-    config.consumer, modelConfig.models, config.logger, config.domain_name, config.admin_email);
+    config.consumer,
+    modelConfig.models,
+    config.logger,
+    config.domain_name,
+    config.admin_email,
+  );
 
   const LTIProviderControllerInstance = new LTIProviderController(
-    config.provider, modelConfig.models, config.logger, config.domain_name);
+    config.provider,
+    modelConfig.models,
+    config.logger,
+    config.domain_name,
+  );
 
   const LTILaunchControllerInstance = new LTILaunchController(
-    config.provider, modelConfig.models, config.logger, config.domain_name, returnObj.controllers.consumer)
+    config.provider,
+    modelConfig.models,
+    config.logger,
+    config.domain_name,
+    returnObj.controllers.consumer,
+  );
 
   const LTIRegisterControllerInstance = new LTIRegisterController(
-    config.provider, modelConfig.models, config.logger, config.domain_name, config.admin_email, returnObj.controllers.consumer);
+    config.provider,
+    modelConfig.models,
+    config.logger,
+    config.domain_name,
+    config.admin_email,
+    returnObj.controllers.consumer,
+  );
 
-  
   returnObj.controllers.lti = {
     provider: LTIProviderControllerInstance,
     consumer: LTIConsumerControllerInstance,
@@ -171,7 +190,11 @@ export default async function LtiToolkit(config) {
   }
   if (config.provider) {
     // Provider Routes
-    const providerRouter = await setupProviderRoutes(LTILaunchControllerInstance, LTIRegisterControllerInstance, config.logger);
+    const providerRouter = await setupProviderRoutes(
+      LTILaunchControllerInstance,
+      LTIRegisterControllerInstance,
+      config.logger,
+    );
     returnObj.routers.provider = providerRouter;
   }
 

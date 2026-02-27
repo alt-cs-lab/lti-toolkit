@@ -179,7 +179,7 @@ class LTI10Utils {
     if (!authHeader) {
       throw new Error("Validation Error: Missing Authorization Header");
     }
-    if(!authHeader.startsWith("OAuth ")) {
+    if (!authHeader.startsWith("OAuth ")) {
       throw new Error("Validation Error: Invalid Authorization Header Format");
     }
 
@@ -196,7 +196,12 @@ class LTI10Utils {
     }
 
     // Validate required OAuth Headers
-    const providerKey = await this.#validateOauthParams(oauthHeaders, req.method, req.originalUrl, this.#ProviderKeyModel);
+    const providerKey = await this.#validateOauthParams(
+      oauthHeaders,
+      req.method,
+      req.originalUrl,
+      this.#ProviderKeyModel,
+    );
 
     // #######################
     // Validate Body Hash
@@ -204,22 +209,22 @@ class LTI10Utils {
     if (!oauthHeaders["oauth_body_hash"]) {
       throw new Error("Validation Error: Missing OAuth Body Hash");
     }
-    if(!req.rawBody) {
+    if (!req.rawBody) {
       throw new Error("Validation Error: Raw Body Missing");
     }
-    if(typeof req.rawBody !== "string") {
+    if (typeof req.rawBody !== "string") {
       throw new Error("Validation Error: Invalid Raw Body Format");
     }
     if (oauthHeaders["oauth_body_hash"] !== crypto.createHash("sha1").update(req.rawBody).digest("base64")) {
       throw new Error("Validation Error: Invalid OAuth Body Hash");
     }
 
-    return providerKey
+    return providerKey;
   }
 
   /**
    * Validate OAuth Parameters
-   * 
+   *
    * @param {Object} body OAuth params
    * @param {String} method HTTP method (GET or POST)
    * @param {String} url the URL for the request
@@ -228,7 +233,7 @@ class LTI10Utils {
    * @throws Error if parameters are not validated
    */
   async #validateOauthParams(body, method, url, KeyModel) {
-     // #######################
+    // #######################
     // OAUTH SPECIFIC THINGS
     // #######################
     // Body must include oauth_version
@@ -279,7 +284,7 @@ class LTI10Utils {
     // #######################
     // VALIDATE OAUTH SIGNATURE
     // #######################
-    const consumerKey = await KeyModel.findByPk(body.oauth_consumer_key, {attributes: ["key", "secret"]});
+    const consumerKey = await KeyModel.findByPk(body.oauth_consumer_key, { attributes: ["key", "secret"] });
     if (!consumerKey) {
       throw new Error("Validation Error: Invalid Consumer Key");
     }
@@ -295,8 +300,7 @@ class LTI10Utils {
     );
     // Compare extracted signature to computed
     if (computedSignature !== oauth_signature) {
-      throw new Error(
-        "Validation Error: Invalid OAuth Signature");
+      throw new Error("Validation Error: Invalid OAuth Signature");
     }
 
     // Store Nonce
@@ -310,7 +314,6 @@ class LTI10Utils {
 
     return consumerKey;
   }
-
 
   /**
    * Sign OAuth Body
@@ -573,7 +576,6 @@ class LTI10Utils {
    * @returns {Object} an object containing the message ID and body of the request if valid
    */
   validateBasicOutcomesRequest(req) {
-
     // Check Envelope
     if (
       !req.body["imsx_poxenveloperequest"] ||

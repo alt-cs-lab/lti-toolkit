@@ -45,6 +45,30 @@ class LTI13Utils {
     // merge query and body into single object to handle GET and POST
     const params = { ...req.query, ...req.body };
 
+    // #######################
+    // OAUTH SPECIFIC THINGS
+    // #######################
+    // iss must be provided
+    if (!params.iss) {
+      throw new Error("Login: No LTI Issuer Provided");
+    }
+    // login_hint must be provided
+    if (!params.login_hint) {
+      throw new Error("Login: No LTI Login Hint Provided");
+    }
+
+    // #######################
+    // LTI SPECIFIC THINGS
+    // #######################
+    // LTI Client ID required?
+    if (!params.client_id) {
+      throw new Error("Login: No LTI Client ID Provided");
+    }
+    // LTI Deployment ID required?
+    if (!params.lti_deployment_id) {
+      throw new Error("Login: No LTI Deployment ID Provided");
+    }
+
     // find consumer using client_id and deployment_id
     const consumer = await this.#ConsumerModel.findOne({
       where: {
@@ -54,41 +78,16 @@ class LTI13Utils {
     });
 
     if (!consumer) {
-      throw new Error("Login: Consumer not found for client_id: " + params.client_id + " and deployment_id: " + params.lti_deployment_id);
+      throw new Error(
+        "Login: Consumer not found for client_id: " +
+          params.client_id +
+          " and deployment_id: " +
+          params.lti_deployment_id,
+      );
     }
 
-    // #######################
-    // OAUTH SPECIFIC THINGS
-    // #######################
-    // iss must be provided
-    if (!params.iss) {
-      throw new Error("Login: No LTI Issuer Provided in Login Request");
-    }
-    // login_hint must be provided
-    if (!params.login_hint) {
-      throw new Error("Login: No LTI Login Hint Provided in Login Request");
-    }
-
-    // #######################
-    // LTI SPECIFIC THINGS
-    // #######################
-    // LTI Client ID must match if provided
-    if (params.client_id) {
-      if (params.client_id !== consumer.client_id) {
-        throw new Error("Login: Invalid LTI Client ID: " + params.client_id);
-      }
-    }
-    // LTI Deployment ID must match if provided
-    if (params.lti_deployment_id) {
-      if (params.lti_deployment_id !== consumer.deployment_id) {
-        throw new Error("Login: Invalid LTI Deployment ID: " + params.lti_deployment_id);
-      }
-    }
     // LTI Target URI must match
-    if (
-      !params.target_link_uri ||
-      params.target_link_uri !== new URL("/lti/provider/launch", this.#domain_name).href
-    ) {
+    if (!params.target_link_uri || params.target_link_uri !== new URL("/lti/provider/launch", this.#domain_name).href) {
       throw new Error("Login: Invalid LTI Target Link URI: " + params.target_link_uri);
     }
 
@@ -105,7 +104,7 @@ class LTI13Utils {
       keyset_url: consumer.keyset_url,
     });
     if (!login) {
-      throw new Error("Login: Unable to save Login State - Aborting!");
+      throw new Error("Login: Unable to save Login State");
     }
 
     // Build Return Request Object
@@ -232,31 +231,25 @@ class LTI13Utils {
     this.#logger.lti("Requesting access token for Consumer " + consumer_key);
     const consumer = await this.#ConsumerModel.findOne({ where: { key: consumer_key } });
     if (!consumer) {
-      this.#logger.lti("Consumer not found");
-      return null;
+      throw new Error("Access Token: Consumer not found");
     }
     if (!consumer.lti13) {
-      this.#logger.lti("Consumer token requested but consumer does not support LTI 1.3");
-      return null;
+      throw new Error("Access Token: Consumer does not support LTI 1.3");
     }
     if (!consumer.client_id) {
-      this.#logger.lti("Consumer client ID not set");
-      return null;
+      throw new Error("Access Token: Consumer client ID not set");
     }
     if (!consumer.token_url) {
-      this.#logger.lti("Consumer token URL not set");
-      return null;
+      throw new Error("Access Token: Consumer token URL not set");
     }
     if (!consumer.platform_id) {
-      this.#logger.lti("Consumer platform ID not set");
-      return null;
+      throw new Error("Access Token: Consumer platform ID not set");
     }
     const key = await this.#ConsumerKeyModel.findOne({
       where: { key: consumer.key },
     });
     if (!key) {
-      this.#logger.lti("Consumer key not found");
-      return null;
+      throw new Error("Access Token: Consumer key not found");
     }
     const token = {
       sub: consumer.client_id,
@@ -278,21 +271,20 @@ class LTI13Utils {
     };
     this.#logger.lti("Sending Access Token Request to " + consumer.token_url);
     this.#logger.silly(JSON.stringify(request, null, 2));
+    let result;
     try {
-      const result = await ky
+      result = await ky
         .post(consumer.token_url, {
           json: request,
         })
         .json();
-      if (!result || !result.access_token) {
-        this.#logger.lti("Unable to get access token from " + consumer.token_url);
-        return null;
-      }
-      return result;
     } catch (error) {
-      this.#logger.lti("Error requesting access token: " + error.message);
-      return null;
+      throw new Error("Error requesting access token: " + error.message);
     }
+    if (!result || !result.access_token) {
+      throw new Error("Access Token: Unable to get access token from " + consumer.token_url);
+    }
+    return result;
   }
 
   /**
@@ -361,7 +353,7 @@ class LTI13Utils {
       attributes: ["private"],
     });
     if (!key) {
-      throw new Error("Consumer key not found");
+      throw new Error("Tool Token: Consumer key not found");
     }
     const privateKey = crypto.createPrivateKey(key.private);
     const jwt = await jsonwebtoken.sign(data, privateKey, {
@@ -394,44 +386,55 @@ class LTI13Utils {
     this.#logger.lti("Sending LTI 1.3 Configuration to LMS");
     this.#logger.silly(JSON.stringify(config, null, 2));
 
+    let response;
+
     try {
-      const response = await ky.post(endpoint, {
+      response = await ky.post(endpoint, {
         json: config,
         headers: headers,
       });
-
-      // Parse response
-      if (response && response.status === 200) {
-        // Get response JSON
-        const responseData = await response.json();
-
-        // Update consumer with client_id and deployment_id from response
-        consumer.client_id = responseData.client_id;
-
-        // Some platforms return deployment_id at the top level, others return it under the lti-tool-configuration claim, so check both places
-        consumer.deployment_id =
-          responseData.deployment_id ||
-          responseData["https://purl.imsglobal.org/spec/lti-tool-configuration"].deployment_id;
-
-        // Save updated consumer
-        await consumer.save();
-
-        this.#logger.lti("LTI 1.3 Configuration registered successfully with LMS");
-        this.#logger.silly(JSON.stringify(responseData, null, 2));
-        return config;
-      } else {
-        this.#logger.lti("Failed to register LTI 1.3 configuration with LMS");
-        this.#logger.silly(JSON.stringify(await response.json(), null, 2));
-        throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS");
-      }
     } catch (error) {
       this.#logger.lti("Error sending registration response: " + error.message);
       if (error.response) {
         this.#logger.lti("Response Status: " + error.response.status);
         this.#logger.silly(JSON.stringify(await error.response.json(), null, 2));
       }
+      throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS: " + error.message);
+    }
+
+    // Parse response
+    let responseData
+    if (response && response.status === 200) {
+      // Get response JSON
+      responseData = await response.json();
+    } else {
+      this.#logger.lti("Failed to register LTI 1.3 configuration with LMS");
+      this.#logger.silly(JSON.stringify(await response.json(), null, 2));
       throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS");
     }
+
+    // Validate response data
+    if (!responseData.client_id) {
+      throw new Error("Dynamic Registration: No client_id returned in registration response");
+    }
+    if (!responseData.deployment_id && !responseData["https://purl.imsglobal.org/spec/lti-tool-configuration"].deployment_id) {
+      throw new Error("Dynamic Registration: No deployment_id returned in registration response");
+    }
+
+    // Update consumer with client_id and deployment_id from response
+    consumer.client_id = responseData.client_id;
+
+    // Some platforms return deployment_id at the top level, others return it under the lti-tool-configuration claim, so check both places
+    consumer.deployment_id =
+      responseData.deployment_id ||
+      responseData["https://purl.imsglobal.org/spec/lti-tool-configuration"].deployment_id;
+
+    // Save updated consumer
+    await consumer.save();
+
+    this.#logger.lti("LTI 1.3 Configuration registered successfully with LMS");
+    this.#logger.silly(JSON.stringify(responseData, null, 2));
+    return config;
   }
 
   /**

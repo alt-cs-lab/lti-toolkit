@@ -48,26 +48,21 @@ const domain_name = "http://localhost:3000";
  * @param {Object} body - the LTI launch request to sign
  * @returns the signed LTI launch request
  */
-const signedBody = function(body) {
+const signedBody = function (body) {
   const newBody = { ...body };
   delete newBody.oauth_signature;
-  const signature = hmacsign(
-    "POST",
-    new URL("/lti/provider/launch", domain_name).href,
-    newBody,
-    "thisisatestsecret",
-  );
+  const signature = hmacsign("POST", new URL("/lti/provider/launch", domain_name).href, newBody, "thisisatestsecret");
   newBody.oauth_signature = signature;
   return newBody;
 };
 
 /**
  * Build OAuth Header Auth String for testing
- * 
+ *
  * @param {Object} body - the LTI launch request body to build the header from
  * @returns the OAuth header string
  */
-const buildOAuthHeader = function(body) {
+const buildOAuthHeader = function (body) {
   let header = "OAuth ";
   for (const key in body) {
     header += `${encodeURIComponent(key)}="${encodeURIComponent(body[key])}", `;
@@ -76,7 +71,6 @@ const buildOAuthHeader = function(body) {
 };
 
 describe("/lib/lti10.js", function () {
-
   describe("validate10", function () {
     it("should validate a valid LTI 1.0 launch request", async function () {
       // Mock Library Dependencies
@@ -94,8 +88,8 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -143,8 +137,8 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -160,7 +154,6 @@ describe("/lib/lti10.js", function () {
         expect(err).to.be.an("error");
         expect(err.message).to.equal("Validation Error: Invalid OAuth Signature");
       }
-
     });
 
     it("should reject an LTI 1.0 launch request with a reused nonce", async function () {
@@ -179,8 +172,8 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -214,8 +207,8 @@ describe("/lib/lti10.js", function () {
           findByPk: sinon.stub().resolves(null),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -252,8 +245,8 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -288,8 +281,8 @@ describe("/lib/lti10.js", function () {
           findByPk: sinon.stub().resolves(null),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -327,8 +320,8 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -366,8 +359,8 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -405,8 +398,8 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -426,7 +419,6 @@ describe("/lib/lti10.js", function () {
         expect(err).to.be.an("error");
         expect(err.message).to.equal("Validation Error: Invalid OAuth Signature Method");
       }
-
     });
 
     it("should reject an LTI 1.0 launch request with unsupported signature method", async function () {
@@ -445,8 +437,8 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -467,7 +459,7 @@ describe("/lib/lti10.js", function () {
         expect(err.message).to.equal("Validation Error: Invalid OAuth Signature Method");
       }
     });
-    
+
     it("should reject an LTI 1.0 launch request with missing OAuth version", async function () {
       // Mock Library Dependencies
       const models = {
@@ -484,8 +476,8 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -523,8 +515,8 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -553,7 +545,7 @@ describe("/lib/lti10.js", function () {
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
-      
+
       // Call the function to test with a missing body
       try {
         await lti10Utils.validate10({
@@ -583,8 +575,8 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
-      
+      const logger = {};
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
@@ -623,7 +615,7 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -647,7 +639,7 @@ describe("/lib/lti10.js", function () {
       }
     });
 
-    it('should reject an LTI 1.0 launch request with an invalid LTI version', async function () {
+    it("should reject an LTI 1.0 launch request with an invalid LTI version", async function () {
       // Mock Library Dependencies
       const models = {
         OauthNonce: {
@@ -663,7 +655,7 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -687,7 +679,6 @@ describe("/lib/lti10.js", function () {
       }
     });
 
-
     it("should reject an LTI 1.0 launch request with missing LTI Version", async function () {
       // Mock Library Dependencies
       const models = {
@@ -704,7 +695,7 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -744,7 +735,7 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -783,7 +774,7 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -822,7 +813,7 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -859,7 +850,7 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -905,7 +896,7 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Stub Crypto Library for consistent testing
       sinon.stub(crypto, "createHash").returns({
@@ -917,7 +908,7 @@ describe("/lib/lti10.js", function () {
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
       // Create a valid signature for the test launch
-      const body = signedBody({oauth_body_hash: "thisisatestbodyhash", ...ltiLaunch});
+      const body = signedBody({ oauth_body_hash: "thisisatestbodyhash", ...ltiLaunch });
 
       // Build the OAuth header for testing
       const oauthHeader = buildOAuthHeader(body);
@@ -930,8 +921,8 @@ describe("/lib/lti10.js", function () {
         rawBody: "thisisatestbody",
         method: "POST",
         originalUrl: new URL("/lti/provider/launch", domain_name).href,
-      })
-      
+      });
+
       expect(result).to.be.an("object");
 
       // Assert that the nonce was checked and stored
@@ -972,7 +963,7 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Stub Crypto Library for consistent testing
       sinon.stub(crypto, "createHash").returns({
@@ -984,7 +975,7 @@ describe("/lib/lti10.js", function () {
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
       // Create a valid signature for the test launch but with an invalid body hash
-      const body = signedBody({oauth_body_hash: "invalidbodyhash", ...ltiLaunch});
+      const body = signedBody({ oauth_body_hash: "invalidbodyhash", ...ltiLaunch });
 
       // Build the OAuth header for testing
       const oauthHeader = buildOAuthHeader(body);
@@ -1028,7 +1019,7 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1079,13 +1070,13 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
       // Create a valid signature for the test launch but with a non-string body hash
-      const body = signedBody({oauth_body_hash: 12345, ...ltiLaunch});
+      const body = signedBody({ oauth_body_hash: 12345, ...ltiLaunch });
 
       // Build the OAuth header for testing
       const oauthHeader = buildOAuthHeader(body);
@@ -1129,13 +1120,13 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
       // Create a valid signature for the test launch
-      const body = signedBody({oauth_body_hash: "thisisatestbodyhash", ...ltiLaunch});
+      const body = signedBody({ oauth_body_hash: "thisisatestbodyhash", ...ltiLaunch });
 
       // Build the OAuth header for testing
       const oauthHeader = buildOAuthHeader(body);
@@ -1179,13 +1170,13 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 
       // Create a valid signature for the test launch
-      const body = signedBody({oauth_body_hash: "thisisatestbodyhash", ...ltiLaunch});
+      const body = signedBody({ oauth_body_hash: "thisisatestbodyhash", ...ltiLaunch });
 
       // Build the OAuth header for testing
       const oauthHeader = buildOAuthHeader(body);
@@ -1209,7 +1200,7 @@ describe("/lib/lti10.js", function () {
     it("should reject an OAuth body signed message with a missing Authorization header", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1232,7 +1223,7 @@ describe("/lib/lti10.js", function () {
     it("should reject an OAuth body signed message with an invalid Authorization header format", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1269,7 +1260,7 @@ describe("/lib/lti10.js", function () {
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
-      }
+      };
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1277,7 +1268,8 @@ describe("/lib/lti10.js", function () {
       // Stub the HTTP request through ky
       sinon.stub(ky, "post").resolves({
         status: 200,
-        text: sinon.stub().resolves("<imsx_POXEnvelopeResponse>\n\
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
             <imsx_POXHeader>\n\
               <imsx_POXResponseHeaderInfo>\n\
                 <imsx_statusInfo>\n\
@@ -1285,7 +1277,8 @@ describe("/lib/lti10.js", function () {
                 </imsx_statusInfo>\n\
               </imsx_POXResponseHeaderInfo>\n\
             </imsx_POXHeader>\n\
-          </imsx_POXEnvelopeResponse>"),
+          </imsx_POXEnvelopeResponse>",
+        ),
       });
 
       // Call the function to test
@@ -1297,13 +1290,17 @@ describe("/lib/lti10.js", function () {
       sinon.assert.calledWith(models.ConsumerKey.findByPk, "thisisatestkey");
 
       // Assert that the HTTP request was made with the correct parameters
-      sinon.assert.calledWith(ky.post, "http://example.com/grade", sinon.match({
-        headers: {
-          "Content-Type": "application/xml",
-          "Authorization": sinon.match.string,
-        },
-        body: sinon.match.string,
-      }));
+      sinon.assert.calledWith(
+        ky.post,
+        "http://example.com/grade",
+        sinon.match({
+          headers: {
+            "Content-Type": "application/xml",
+            Authorization: sinon.match.string,
+          },
+          body: sinon.match.string,
+        }),
+      );
 
       const body = ky.post.getCall(0).args[1].body;
       expect(body).to.include("<sourcedId>thisisagradeid</sourcedId>");
@@ -1317,7 +1314,7 @@ describe("/lib/lti10.js", function () {
           findByPk: sinon.stub().resolves(null), // Simulate invalid consumer key
         },
       };
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1345,7 +1342,7 @@ describe("/lib/lti10.js", function () {
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
-      }
+      };
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1353,7 +1350,8 @@ describe("/lib/lti10.js", function () {
       // Stub the HTTP request through ky to return a non-success response
       sinon.stub(ky, "post").resolves({
         status: 200,
-        text: sinon.stub().resolves("<imsx_POXEnvelopeResponse>\n\
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
             <imsx_POXHeader>\n\
               <imsx_POXResponseHeaderInfo>\n\
                 <imsx_statusInfo>\n\
@@ -1361,7 +1359,8 @@ describe("/lib/lti10.js", function () {
                 </imsx_statusInfo>\n\
               </imsx_POXResponseHeaderInfo>\n\
             </imsx_POXHeader>\n\
-          </imsx_POXEnvelopeResponse>"),
+          </imsx_POXEnvelopeResponse>",
+        ),
       });
 
       // Call the function to test with a non-success response from the LMS
@@ -1387,7 +1386,7 @@ describe("/lib/lti10.js", function () {
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
-      }
+      };
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1413,7 +1412,7 @@ describe("/lib/lti10.js", function () {
     it("should build a valid LTI 1.0 response", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1437,7 +1436,7 @@ describe("/lib/lti10.js", function () {
       expect(result).to.be.a("object");
       expect(result).to.have.property("content");
       expect(result).to.have.property("headers");
-      expect(result.headers).to.startWith("OAuth oauth_consumer_key=\"thisisatestkey\"");
+      expect(result.headers).to.startWith('OAuth oauth_consumer_key="thisisatestkey"');
       expect(result.content).to.include("<imsx_codeMajor>success</imsx_codeMajor>");
       expect(result.content).to.include("<imsx_severity>status</imsx_severity>");
       expect(result.content).to.include("<imsx_description>Description</imsx_description>");
@@ -1449,7 +1448,7 @@ describe("/lib/lti10.js", function () {
     it("should build a valid LTI 1.0 response with missing optional parameters", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1473,7 +1472,7 @@ describe("/lib/lti10.js", function () {
       expect(result).to.be.a("object");
       expect(result).to.have.property("content");
       expect(result).to.have.property("headers");
-      expect(result.headers).to.startWith("OAuth oauth_consumer_key=\"thisisatestkey\"");
+      expect(result.headers).to.startWith('OAuth oauth_consumer_key="thisisatestkey"');
       expect(result.content).to.include("<imsx_codeMajor>success</imsx_codeMajor>");
       expect(result.content).to.include("<imsx_severity>status</imsx_severity>");
       expect(result.content).to.include("<imsx_description>Description</imsx_description>");
@@ -1484,26 +1483,25 @@ describe("/lib/lti10.js", function () {
   });
 
   const basicOutcomesRequest = {
-    "imsx_poxenveloperequest": {
-      "$": {
-        "xmlns": "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0",
+    imsx_poxenveloperequest: {
+      $: {
+        xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0",
       },
-      "imsx_poxheader": 
-      {
-        "imsx_poxrequestheaderinfo": {
-          "imsx_version": "V1.0",
-          "imsx_messageidentifier": "123456789",
+      imsx_poxheader: {
+        imsx_poxrequestheaderinfo: {
+          imsx_version: "V1.0",
+          imsx_messageidentifier: "123456789",
         },
       },
-      "imsx_poxbody": "body"
-    }
-  }
+      imsx_poxbody: "body",
+    },
+  };
 
   describe("validateBasicOutcomesRequest", function () {
     it("should validate a valid basic outcomes request", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1522,7 +1520,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a basic outcomes request with an invalid body structure", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1544,7 +1542,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a basic outcomes request with an incorrect xmlns attribute", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1568,7 +1566,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a basic outcomes request with a missing header", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1592,7 +1590,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a basic outcomes request with a missing header info", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1616,7 +1614,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a basic outcomes request with a missing imsx_version", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1640,7 +1638,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a basic outcomes request with an invalid imsx_version", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1664,7 +1662,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a basic outcomes request with a missing message identifier", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1688,7 +1686,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a basic outcomes request with an invalid message identifier", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1712,7 +1710,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a basic outcomes request with a missing body", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1732,7 +1730,6 @@ describe("/lib/lti10.js", function () {
         expect(err.message).to.equal("Basic Outcomes: Invalid Envelope Body");
       }
     });
-
   });
 
   const replaceResultRequest = {
@@ -1740,19 +1737,19 @@ describe("/lib/lti10.js", function () {
       result: {
         resultscore: {
           textstring: "0.95",
-        }
+        },
       },
       sourcedguid: {
         sourcedid: "thisisagradeid",
-      }
-    }
-  }
+      },
+    },
+  };
 
   describe("validateReplaceResultRequest", function () {
     it("should validate a valid replace result request", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1769,7 +1766,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a replace result request with a missing score", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1791,7 +1788,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a replace result request with a missing sourcedId", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1813,7 +1810,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a replace result request with an invalid score value", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1835,7 +1832,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a replace result request with a missing resultrecord", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1857,7 +1854,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a replace result request with a missing result", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1879,7 +1876,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a replace result request with a missing result score", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1901,7 +1898,7 @@ describe("/lib/lti10.js", function () {
     it("should reject a replace result request with a missing sourcedguid", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {}
+      const logger = {};
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1919,6 +1916,5 @@ describe("/lib/lti10.js", function () {
         expect(err.message).to.equal("Replace Result: Missing Result Source ID");
       }
     });
-
   });
 });

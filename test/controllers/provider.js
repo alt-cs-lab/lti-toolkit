@@ -16,7 +16,7 @@ should();
 describe("/controllers/provider.js", () => {
   const database = {
     transaction: async (callback) => await callback(),
-  }
+  };
 
   it("should create a ProviderController instance with the correct properties", async () => {
     // Create stubs for dependencies

@@ -16,7 +16,7 @@ should();
 describe("/controllers/consumer.js", () => {
   const database = {
     transaction: async (callback) => await callback(),
-  }
+  };
 
   it("should create a ConsumerController instance with the correct properties", async () => {
     // Create mock dependencies
