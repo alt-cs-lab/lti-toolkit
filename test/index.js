@@ -79,7 +79,7 @@ const shouldSuccessfullyInitializeWithConfig = (config, message) => {
       const instance = await LTIToolkit(config);
       instance.should.exist;
     } catch (error) {
-      throw new Error("Initialization failed with valid configuration: " + error.message);
+      throw new Error("Initialization failed with valid configuration: " + error.message, { cause: error });
     }
   });
 };
@@ -235,7 +235,7 @@ describe("Index", () => {
         instance.controllers.lti.should.have.property("provider");
         instance.controllers.lti.provider.should.be.an("object");
       } catch (error) {
-        throw new Error("Initialization failed with valid configuration: " + error.message);
+        throw new Error("Initialization failed with valid configuration: " + error.message, { cause: error });
       }
     });
 
@@ -277,7 +277,7 @@ describe("Index", () => {
         key.key.should.equal("test-provider-key");
         key.secret.should.equal("test-provider-secret");
       } catch (error) {
-        throw new Error("Initialization failed with valid configuration: " + error.message);
+        throw new Error("Initialization failed with valid configuration: " + error.message, { cause: error });
       }
     });
 
@@ -309,7 +309,7 @@ describe("Index", () => {
         instance.controllers.lti.should.have.property("consumer");
         instance.controllers.lti.consumer.should.be.an("object");
       } catch (error) {
-        throw new Error("Initialization failed with valid configuration: " + error.message);
+        throw new Error("Initialization failed with valid configuration: " + error.message, { cause: error });
       }
     });
   });
@@ -367,7 +367,7 @@ describe("Index", () => {
         const instance = await LTIToolkit(customLoggerConfig);
         instance.should.exist;
       } catch (error) {
-        throw new Error("Initialization failed with valid custom log level: " + error.message);
+        throw new Error("Initialization failed with valid custom log level: " + error.message, { cause: error });
       }
     });
   });
@@ -387,7 +387,7 @@ describe("Index", () => {
         instance.should.have.property("test");
         instance.test.should.have.property("initializeExpiration");
       } catch (error) {
-        throw new Error("Failed to initialize in-memory database: " + error.message);
+        throw new Error("Failed to initialize in-memory database: " + error.message, { cause: error });
       }
     });
 
@@ -403,7 +403,9 @@ describe("Index", () => {
         });
         instance.should.exist;
       } catch (error) {
-        throw new Error("Failed to initialize database with provided configuration: " + error.message);
+        throw new Error("Failed to initialize database with provided configuration: " + error.message, {
+          cause: error,
+        });
       }
     });
 
@@ -436,7 +438,7 @@ describe("Index", () => {
         });
         instance.should.exist;
       } catch (error) {
-        throw new Error("Failed to initialize with custom Sequelize instance: " + error.message);
+        throw new Error("Failed to initialize with custom Sequelize instance: " + error.message, { cause: error });
       }
     });
   });

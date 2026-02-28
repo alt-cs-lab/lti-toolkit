@@ -50,7 +50,7 @@ import LTIRegisterController from "./src/controllers/lti-register.js";
  * @param {string|None} [config.provider.tool_id] - Optional tool ID for configuration XML (e.g., "lti_toolkit")
  * @param {string|None} [config.provider.privacy_level] - Optional privacy level for configuration XML (e.g., "public")
  * @param {string|None} [config.provider.handleDeeplink] - Optional LTI 1.3 Deeplink Handler
- * @param {boolean|None} [config.provider.Navigation] - Optional show LTI tool in course navigation
+ * @param {boolean|None} [config.provider.navigation] - Optional show LTI tool in course navigation
  * @param {Object|None} [config.consumer] - LTI Consumer Configuration
  * @param {Function} [config.consumer.postProviderGrade] - Required function to handle posting grades to the provider
  * @param {string} [config.consumer.product_name] - Optional Product name (e.g., "lti-toolkit")
@@ -100,7 +100,7 @@ export default async function LtiToolkit(config) {
   };
 
   // Add Testing Utilities if in test mode
-  if (config.test) {
+  if (config.test === true) {
     returnObj.test = {
       // Expose for testing
       initializeExpiration: modelConfig.initializeExpiration,

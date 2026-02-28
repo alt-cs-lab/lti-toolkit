@@ -104,7 +104,8 @@ Required settings:
 * **LTI 1.0 Tool Provider Domain** - the domain for the LTI Tool Provider
 * **Use Sections?** - enable if the LTI Tool Provider requires special section configuration
   * Currently this does nothing in the library itself, but may be useful for applications implementing LTI Tool Consumer functionality
-* **LTI 1.0 Custom Values** - set custom values for the LTI 1.0 Launch Request (currently unsupported)
+* **LTI 1.0 Custom Values** - set custom values for the LTI 1.0 Launch Requests from this Provider
+  * These must in a quoted JSON format, e.g. `"key1": "value1", "key2": "value2"`
 * **LTI 1.0 Enabled** - enable LTI 1.3 Tool Providers (currently unsupported)
 
 An example configuration for connecting to [PrairieLearn](https://www.prairielearn.com/) is shown below:
@@ -133,28 +134,39 @@ async function ProviderConfigHandler(req, res) {
     secret: req.body.secret,
     launch_url: req.body.launch_url,
     domain: req.body.domain,
-    // custom values are unsupported in this example
     custom: "",
     // use_section is optional
     use_section: req.body.use_section === "true",
   };
 
-  // Check if any required fields are missing
-  const requiredFields = ["name", "key", "secret", "launch_url", "domain"];
-  const missingFields = requiredFields.filter(
-    (field) => !data[field] || data[field].trim() === "",
-  );
-  if (missingFields.length > 0) {
-    error = "Missing required fields: " + missingFields.join(", ");
-  } else {
-    // Create Provider
+  // Handle Custom Parameters
+  if (req.body.custom) {
     try {
-      await lti.controllers.provider.createProvider(data);
+      // Parse custom parameters as JSON to check format
+      const customParams = JSON.parse("{" + req.body.custom + "}");
+      // Convert custom parameters to string format for storage
+      data.custom = JSON.stringify(customParams);
     } catch (err) {
-      error = "Failed to create provider: " + err.message;
+      error = "Invalid custom parameters: " + err.message;
     }
-    if (!error) {
-      message = "Successfully created provider.";
+  }
+
+  if(!error) {
+    // Check if any required fields are missing
+    const requiredFields = ["name", "key", "secret", "launch_url", "domain"];
+    const missingFields = requiredFields.filter((field) => !data[field] || data[field].trim() === "");
+    if (missingFields.length > 0) {
+      error = "Missing required fields: " + missingFields.join(", ");
+    } else {
+      // Create Provider
+      try {
+        await lti.controllers.provider.createProvider(data);
+      } catch (err) {
+        error = "Failed to create provider: " + err.message;
+      }
+      if (!error) {
+        message = "Successfully created provider.";
+      }
     }
   }
 
@@ -164,9 +176,7 @@ async function ProviderConfigHandler(req, res) {
   // Get secrets for each provider and convert to JSON-friendly format
   const providerData = [];
   for (const provider of providers) {
-    const providerSecret = await lti.controllers.provider.getSecret(
-      provider.id,
-    );
+    const providerSecret = await lti.controllers.provider.getSecret(provider.id);
     providerData.push({ ...provider.toJSON(), secret: providerSecret });
   }
 
@@ -205,12 +215,13 @@ For all of the items listed below, the **key** values should not be the sequenti
   * **Family Name** - the family name, sometimes referred to as the last name or surname, of the user
 * **Launch Type** - currently this tool only supports launching as either an "Instructor" or "Learner" role
 * **Gradebook Key** - a uniquely identifiable key for the gradebook line item. This can be used to differentiate between individual launches to the same LTI Tool Provider, or to differentiate between launches to different LTI Tool Providers using the same context and resource keys.
+* **Custom** - a quoted JSON list of custom parameters to include with the launch (e.g. `"key1": "value1", "key2": "value2"`). These will be added to the parameters configured in the Provider. If two custom parameters have the same key, then the parameters from the launch will override those from the Provider. 
 
 This sample application provides default values for all of these options in the form to configure the launch. 
 
 ![LTI 1.0 Launch Configuration](images/ltilaunch.png)
 
-Once the launch is configured, click the "Submit" button to prepare the LTI 1.0 Launch page. This is handled by the `provider-launch` handler in the demo application. In short, it collects all of the form data and constructs the parameters for the `generateLTI10FormData` function in the LTI controller:
+Once the launch is configured, click the "Submit" button to prepare the LTI 1.0 Launch page. This is handled by the `provider-launch` handler in the demo application. In short, it collects all of the form data and constructs the parameters for the `generateLTI10LaunchFormData` function in the LTI Consumer controller:
 
 ```js {title="src/routes/provider-launch.js"}
 /**
@@ -258,7 +269,46 @@ async function ProviderLaunchHandler(req, res) {
     },
     manager: req.body.manager === "true",
     gradebook_id: req.body.gradebook_id,
+    custom: {}
   };
+
+  // Handle custom parameters
+  if(req.body.custom) {
+    try {
+      const customParams = JSON.parse("{" + req.body.custom + "}");
+      data.custom = customParams;
+    } catch (err) {
+      error = "Invalid custom parameters: " + err.message;
+
+      // Render provider view
+      res.render("provider.njk", {
+        title: `LTI Tool Consumer - Provider: ${provider.name}`,
+        provider: providerData,
+        error: error,
+        message: message,
+      });
+      return
+    }
+  }
+
+  if(provider.custom) {
+    try {
+      const providerCustom = JSON.parse(provider.custom);
+      // merge provider custom parameters with launch custom parameters, giving precedence to launch parameters
+      data.custom = { ...providerCustom, ...data.custom };
+    } catch (err) {
+      error = "Invalid provider custom parameters: " + err.message;
+
+      // Render provider view
+      res.render("provider.njk", {
+        title: `LTI Tool Consumer - Provider: ${provider.name}`,
+        provider: providerData,
+        error: error,
+        message: message,
+      });
+      return
+    }
+  }
 
   // Check if any required fields are missing
   const requiredFields = [
@@ -284,9 +334,7 @@ async function ProviderLaunchHandler(req, res) {
         return true;
       }
     }
-    return (
-      value === undefined || value === null || value.toString().trim() === ""
-    );
+    return value === undefined || value === null || value.toString().trim() === "";
   });
   if (missingFields.length > 0) {
     error = "Missing required fields: " + missingFields.join(", ");
@@ -303,7 +351,7 @@ async function ProviderLaunchHandler(req, res) {
     updateDataStoreWithLaunch(data, providerData, req);
 
     // Create LTI Launch
-    const launch = lti.controllers.lti.generateLTI10FormData(
+    const launch = lti.controllers.lti.consumer.generateLTI10LaunchFormData(
       providerData.key,
       providerData.secret,
       providerData.launch_url,
@@ -313,6 +361,7 @@ async function ProviderLaunchHandler(req, res) {
       data.user,
       data.manager,
       data.gradebook_id,
+      data.custom,
     );
 
     // Render template
@@ -323,7 +372,7 @@ async function ProviderLaunchHandler(req, res) {
 }
 ```
 
-The `generateLTI10FormData` function returns an object with 2 attributes:
+The `generateLTI10LaunchFormData` function returns an object with 2 attributes:
 * `action` : the LTI Launch URL to send the request to
 * `fields` : a set of fields to be sent in the LTI Launch
 
@@ -368,8 +417,8 @@ Using the settings configured above, an LTI Launch page would contain the follow
   "fields": {
     "oauth_consumer_key": <redacted>,
     "oauth_signature_method": "HMAC-SHA1",
-    "oauth_timestamp": "1769290880",
-    "oauth_nonce": "URY5gH_jRTpDDTsCH2MXP",
+    "oauth_timestamp": "1772312184",
+    "oauth_nonce": "R3_jO02t8_eBZz1EzpwXW",
     "oauth_version": "1.0",
     "context_id": "contextkey",
     "context_label": "LTI 101",
@@ -377,7 +426,7 @@ Using the settings configured above, an LTI Launch page would contain the follow
     "launch_presentation_document_target": "iframe",
     "launch_presentation_locale": "en",
     "launch_presentation_return_url": "/provider/1",
-    "lis_outcome_service_url": "https://ltidemo.home.russfeld.me/lti/consumer/grade_passback",
+    "lis_outcome_service_url": "https://ltidemo.home.russfeld.me/lti/consumer/grade",
     "lis_result_sourcedid": "contextkey:resourcekey:userkey:gradebookkey",
     "lis_person_contact_email_primary": "user@domain.tld",
     "lis_person_name_family": "FamilyName",
@@ -395,6 +444,9 @@ Using the settings configured above, an LTI Launch page would contain the follow
     "tool_consumer_instance_guid": "deployment-001",
     "tool_consumer_instance_name": "LTI Toolkit Demo",
     "user_id": "userkey",
+    "custom_key1": "value1",
+    "custom_key2": "override",
+    "custom_key3": "value3",
     "oauth_signature": <redacted>
   },
   "action": "https://pl.home.russfeld.me/pl/lti"
@@ -407,9 +459,9 @@ The resulting page:
 
 Click the button to launch the LTI 1.0 Tool Provider.
 
-## Handling Grade Passback
+## Handling Basic Outcomes Grade Passback
 
-At any time, the LTI 1.0 Tool Provider may provide updated grade information to our example program. That is received at the `grade_passback` route in the LTI Consumer Router, and then sent to the `postProviderGrade` function provided in the toolkit configuration as shown above. For this example program, this is handled in the `post-grade` handler:
+At any time, the LTI 1.0 Tool Provider may provide updated grade information to our example program. That is received at the `grade` route in the LTI Consumer Router, and then sent to the `postProviderGrade` function provided in the toolkit configuration as shown above. For this example program, this is handled in the `post-grade` handler:
 
 ```js {title="src/routes/post-grade.js"}
 /**
@@ -442,7 +494,11 @@ async function postGradeHandler(
     score,
   );
 
-  // No need to return anything; library assumes success here
+  // Return success response
+  return {
+    success: true,
+    message: "Grade posted successfully",
+  }
 }
 ```
 

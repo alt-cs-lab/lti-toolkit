@@ -195,6 +195,8 @@ class LTI10Utils {
       }
     }
 
+    this.#logger.silly("OAuth Headers: " + JSON.stringify(oauthHeaders, null, 2));
+
     // Validate required OAuth Headers
     const providerKey = await this.#validateOauthParams(
       oauthHeaders,
@@ -252,8 +254,8 @@ class LTI10Utils {
     if (!body.oauth_signature) {
       throw new Error("Validation Error: OAuth Signature Missing");
     }
-    // Body must include oauth_callback
-    if (!body.oauth_callback || body.oauth_callback !== "about:blank") {
+    // If included, oauth_callback must be "about:blank"
+    if (body.oauth_callback && body.oauth_callback !== "about:blank") {
       throw new Error("Validation Error: Invalid OAuth Callback: " + body.oauth_callback);
     }
     // Body must include oauth_timestamp

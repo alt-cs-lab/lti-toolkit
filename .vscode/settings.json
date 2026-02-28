@@ -6,5 +6,9 @@
     "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .oxlint*, oxlint*, .prettier*, prettier*, .editorconfig",
     ".env": ".env*"
   },
-  "github.copilot.advanced": {}
+  "github.copilot.advanced": {},
+  "cSpell.enabledFileTypes": {
+    "markdown": true
+  },
+  "cSpell.words": ["Instructure"]
 }

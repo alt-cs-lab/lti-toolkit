@@ -81,8 +81,7 @@ This table stores information about LTI Tool Providers connected to this system.
 * `launch_url` - {{% badge %}}LTI 1.0{{% /badge %}} the launch URL for LTI 1.0 connections to the LTI Tool Provider
 * `domain` - {{% badge %}}LTI 1.0{{% /badge %}} the base domain name of the LTI Tool Provider
 * `custom` - {{% badge %}}LTI 1.0{{% /badge %}} custom launch variables provided as part of the LTI 1.0 connection to the LTI Tool Provider
-  * **Custom Variables are not currently implemented**
-* `use_section` - {{% badge %}}Both{{% /badge %}} flag for some LTI Tool Providers that require special handling. This is not implemenetd within this library but may be handy for other uses.
+* `use_section` - {{% badge %}}Both{{% /badge %}} flag for some LTI Tool Providers that require special handling. This is not implemented within this library but may be handy for other uses.
 * `createdAt` - {{% badge %}}Auto{{% /badge %}} creation timestamp
 * `updatedAt` - {{% badge %}}Auto{{% /badge %}} last updated timestamp
 

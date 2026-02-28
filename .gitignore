@@ -68,3 +68,6 @@ examples/dev
 
 # coverage temp
 docs/static/coverage/tmp
+
+# Default DB
+lti-toolkit.db

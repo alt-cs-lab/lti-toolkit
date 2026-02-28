@@ -861,9 +861,7 @@ describe("/controllers/lti-consumer.js", () => {
     expect(buildResponseStub.calledOnce).to.be.true;
     expect(buildResponseStub.firstCall.args[0]).to.equal("success");
     expect(buildResponseStub.firstCall.args[1]).to.equal("status");
-    expect(buildResponseStub.firstCall.args[2]).to.equal(
-      "Score for context_key:resource_key:user_key:gradebook_key is now 0.95",
-    );
+    expect(buildResponseStub.firstCall.args[2]).to.equal("Grade posted successfully");
     expect(buildResponseStub.firstCall.args[3]).to.deep.equal(mockKeys);
     expect(buildResponseStub.firstCall.args[4]).to.equal("http://localhost:3000/lti/consumer/grade");
     expect(buildResponseStub.firstCall.args[5]).to.equal("test_message_id");

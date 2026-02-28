@@ -176,8 +176,8 @@ class LTIConsumerController {
     this.#logger.lti("Handling Basic Outcomes Request");
 
     let providerKey = null;
-    let message_id = null;
-    let body = null;
+    let message_id;
+    let body;
     try {
       // Validate the request and get the provider key
       providerKey = await this.#LTI10Utils.validateOauthBody(req);
@@ -243,8 +243,8 @@ class LTIConsumerController {
   async replaceResultRequest(request, providerKey, url, message_id, req) {
     this.#logger.lti("Handling Replace Result Request");
 
-    let score = null;
-    let sourcedIdValue = null;
+    let score;
+    let sourcedIdValue;
     try {
       // Validate the request
       const values = this.#LTI10Utils.validateReplaceResultRequest(request);
@@ -293,7 +293,7 @@ class LTIConsumerController {
       req,
     );
 
-    if (!gradeResult.success) {
+    if (!gradeResult || !gradeResult.success) {
       this.#logger.lti("Failed to Post Grade: " + gradeResult.message);
       return this.#LTI10Utils.buildResponse(
         "failure",
@@ -308,7 +308,7 @@ class LTIConsumerController {
       return this.#LTI10Utils.buildResponse(
         "success",
         "status",
-        `Score for ${sourcedIdValue} is now ${score}`,
+        gradeResult.message,
         providerKey,
         url,
         message_id,

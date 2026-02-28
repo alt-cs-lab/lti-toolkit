@@ -14,7 +14,7 @@ import lti from "../configs/lti.js";
  * @param {Object} res - the Express response object
  */
 async function ProviderLaunchHandler(req, res) {
-  let error = null;
+  let error;
   let message = null;
 
   const providerId = req.params.id;
@@ -52,7 +52,46 @@ async function ProviderLaunchHandler(req, res) {
     },
     manager: req.body.manager === "true",
     gradebook_id: req.body.gradebook_id,
+    custom: {},
   };
+
+  // Handle custom parameters
+  if (req.body.custom) {
+    try {
+      const customParams = JSON.parse("{" + req.body.custom + "}");
+      data.custom = customParams;
+    } catch (err) {
+      error = "Invalid custom parameters: " + err.message;
+
+      // Render provider view
+      res.render("provider.njk", {
+        title: `LTI Tool Consumer - Provider: ${provider.name}`,
+        provider: providerData,
+        error: error,
+        message: message,
+      });
+      return;
+    }
+  }
+
+  if (provider.custom) {
+    try {
+      const providerCustom = JSON.parse(provider.custom);
+      // merge provider custom parameters with launch custom parameters, giving precedence to launch parameters
+      data.custom = { ...providerCustom, ...data.custom };
+    } catch (err) {
+      error = "Invalid provider custom parameters: " + err.message;
+
+      // Render provider view
+      res.render("provider.njk", {
+        title: `LTI Tool Consumer - Provider: ${provider.name}`,
+        provider: providerData,
+        error: error,
+        message: message,
+      });
+      return;
+    }
+  }
 
   // Check if any required fields are missing
   const requiredFields = [
@@ -95,7 +134,7 @@ async function ProviderLaunchHandler(req, res) {
     updateDataStoreWithLaunch(data, providerData, req);
 
     // Create LTI Launch
-    const launch = lti.controllers.lti.generateLTI10FormData(
+    const launch = lti.controllers.lti.consumer.generateLTI10LaunchFormData(
       providerData.key,
       providerData.secret,
       providerData.launch_url,
@@ -105,6 +144,7 @@ async function ProviderLaunchHandler(req, res) {
       data.user,
       data.manager,
       data.gradebook_id,
+      data.custom,
     );
 
     // Render template

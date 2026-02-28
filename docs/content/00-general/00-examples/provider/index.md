@@ -16,7 +16,7 @@ SESSION_SECRET=your_session_secret
 
 # Log Level
 # One of error warn info http verbose lti debug sql silly
-LOG_LEVEL=lti
+LOG_LEVEL=silly
 
 # Application Domain Name
 DOMAIN_NAME=https://ltidemo.home.russfeld.me
@@ -59,7 +59,7 @@ To access the rest of the application, students and teachers should use the assi
 
 ## LTI Toolkit Configuration
 
-The `src/configs/lti.js` file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Provider:
+The `src/configs/lti.js` file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Provider as well an LTI 1.3 Tool Provider with Dynamic Registration and Deep Linking configured:
 
 ```js {title="src/configs/lti.js"}
 /**
@@ -74,6 +74,9 @@ import LTIToolkit from "lti-toolkit";
 // LTI Launch Handler
 import LTILaunch from "../routes/lti-launch.js";
 
+// LTI Deeplink Handler
+import LTIDeepLink from "../routes/deeplink-launch.js";
+
 // Initialize LTI Toolkit
 const lti = await LTIToolkit({
   // Domain name for this application
@@ -87,17 +90,21 @@ const lti = await LTIToolkit({
   provider: {
     // Incoming LTI Launch Handler
     handleLaunch: LTILaunch,
-    // LTI 1.0 Consumer Key and Shared Secret
-    // for single LTI consumer setup
+    // // LTI 1.0 Consumer Key and Shared Secret
+    // // for single LTI consumer setup
     key: process.env.LTI_CONSUMER_KEY,
     secret: process.env.LTI_CONSUMER_SECRET,
+    // Enable Deeplinking
+    handleDeeplink: LTIDeepLink,
+    // Enable Course Navigation Link
+    navigation: true,
   },
 });
 
 export default lti;
 ```
 
-It configures a default LTI 1.0 Tool Provider using the domain, key and secret provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library to the `LTILaunch` function provided by one of the routes as the handler for incoming LTI Launch Requests.
+It configures a default LTI 1.0 Tool Provider using the domain, key and secret provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library to the `LTILaunch` function provided by one of the routes as the handler for incoming LTI Launch Requests, and the `LTIDeepLink` function to handle LTI Deeplink requests. It also configures the LTI 1.0 configuration XML and LTI 1.3 Dynamic Registration process to add the tool to the course navigation menu in Canvas.
 
 ## Integrating Application Routes
 
@@ -235,11 +242,13 @@ function updateDataStore(launchData, isStudent, req) {
   }
   if (isStudent) {
     const userName = launchData.user_name;
+    const userEmail = launchData.user_email;
     const userId = launchData.user_lis_id;
     const userId13 = launchData.user_lis13_id;
     const outcomeId = launchData.outcome_id;
-    assignments[assignmentId].grades[userId] = {
+    assignments[assignmentId].grades[userEmail] = {
       name: userName,
+      email: userEmail,
       lis_id: userId,
       lis13_id: userId13,
       outcome_id: outcomeId,
@@ -278,8 +287,6 @@ async function StudentGradeHandler(req, res) {
     // Post grade back to the LTI Provider
     // Build Grade Object
     const gradeObject = {
-      // LTI Consumer ID
-      consumer_id: consumer.id,
       // LTI 1.0 Outcome Information
       grade_url: launchData.outcome_url,
       lms_grade_id: launchData.outcome_id,
@@ -296,16 +303,28 @@ async function StudentGradeHandler(req, res) {
         // Assignment Name
         assignment: launchData.assignment_name,
         // Assignment ID (LTI 1.0 and LTI 1.3)
-        assignment_id:
-          launchData.assignment_id + "(" + launchData.assignment_lti_id + ")",
+        assignment_id: launchData.assignment_id + "(" + launchData.assignment_lti_id + ")",
       },
     };
-    if (lti.controllers.lti.postGrade(gradeObject)) {
-      message = `Successfully posted grade of ${grade} back to the LMS.`;
-      // Record grade in local data store
-      updateDataStoreWithGrade(launchData, grade, req);
-    } else {
-      error = "Failed to post grade back to the LMS.";
+    try {
+      if (
+        lti.controllers.lti.provider.postGrade(
+          consumer.key,
+          gradeObject.grade_url,
+          gradeObject.lms_grade_id,
+          gradeObject.score,
+          gradeObject.user_lis13_id,
+          gradeObject.debug,
+        )
+      ) {
+        message = `Successfully posted grade of ${grade} back to the LMS.`;
+        // Record grade in local data store
+        updateDataStoreWithGrade(launchData, grade, req);
+      } else {
+        error = "Failed to post grade back to the LMS.";
+      }
+    } catch (err) {
+      error = "Error posting grade back to the LMS: " + err.message;
     }
   }
 
@@ -360,8 +379,6 @@ async function InstructorGradeHandler(req, res) {
     // Post grade back to the LTI Provider
     // Build Grade Object
     const gradeObject = {
-      // LTI Consumer ID
-      consumer_id: consumer.id,
       // LTI 1.0 Outcome Information
       grade_url: assignments[assignmentId].grade_url,
       lms_grade_id: assignments[assignmentId].grades[userId].outcome_id,
@@ -382,17 +399,29 @@ async function InstructorGradeHandler(req, res) {
         // Assignment Name
         assignment: assignments[assignmentId].name,
         // Assignment ID (LTI 1.0 and LTI 1.3)
-        assignment_id:
-          assignmentId + "(" + assignments[assignmentId].lti_id + ")",
+        assignment_id: assignmentId + "(" + assignments[assignmentId].lti_id + ")",
       },
     };
-    if (lti.controllers.lti.postGrade(gradeObject)) {
-      message = `Successfully posted grade of ${grade} back to the LMS.`;
+    try {
+      if (
+        lti.controllers.lti.provider.postGrade(
+          consumer.key,
+          gradeObject.grade_url,
+          gradeObject.lms_grade_id,
+          gradeObject.score,
+          gradeObject.user_lis13_id,
+          gradeObject.debug,
+        )
+      ) {
+        message = `Successfully posted grade of ${grade} back to the LMS.`;
 
-      // Record grade in local data store
-      assignments[assignmentId].grades[userId].score = grade;
-    } else {
-      error = "Failed to post grade back to the LMS.";
+        // Record grade in local data store
+        assignments[assignmentId].grades[userId].score = grade;
+      } else {
+        error = "Failed to post grade back to the LMS.";
+      }
+    } catch (err) {
+      error = "Error posting grade back to the LMS: " + err.message;
     }
   }
 
@@ -589,3 +618,89 @@ Be aware that, by providing both a `key` and `secret` as part of the `provider` 
 
 {{% /notice %}}
 
+## LTI Deep Link Handler
+
+The LTI Deep Link Handler function will receive three parameters:
+
+* `deeplinkData` - an instance of the [LTI Launch Data]({{% relref "02-lti/06-lti-deeplink/" %}})
+* `consumer` - a Sequelize instance of an [LTI Consumer]({{% relref "00-general/01-database/#lti-consumers" %}}) from the database
+* `req` - the incoming Express request object
+
+In the example project, we use the following LTI Deep Link Handler:
+
+```js {title="src/routes/lti-launch.js"}
+/**
+ * Handle an incoming LTI Deeplink Request
+ *
+ * @param {Object} deeplinkData - an LTI Deep Link Data object
+ * @param {Object} consumer - the LTI consumer object
+ * @param {Object} req - the Express request object
+ * @returns {String} a URL to redirect the user to after launch
+ */
+async function LTIDeepLink(deeplinkData, consumer, req) {
+  // Enable logging to console
+  // (this data also appears at the bottom of each template page)
+  // console.log("LTI Launch Data:", launchData);
+  // console.log("LTI Consumer:", consumer.toJSON());
+
+  // We will store the LTI Launch Data and Consumer in the session for later use
+  req.session.ltiDeeplinkData = deeplinkData;
+  req.session.ltiConsumer = consumer.toJSON();
+
+  // Determine if the user is a teacher or student
+  const isStudent = parseRoles(deeplinkData);
+
+  // Redirect user based on role
+  if (isStudent) {
+    // Students should not reach this, so redirecting to an error URL that will 404
+    return "/error";
+  } else {
+    return "/deeplink";
+  }
+}
+```
+
+This code uses the same method to parse the user roles as the LTI Launch Handler described above. Since we don't want students to access this URL, we return an invalid URL `/error` if a student reaches this page accidentally.
+
+The user will be presented with a page to select a resource to provide back to the LMS. Currently, this page just contains a simple form:
+
+![Deeplink Select](images/lti13deeplink1.png)
+
+In a production system, this form might show all of the available assignments to choose from. For this example form, we'll simply ask for an assignment title and a unique ID to use for this assignment. So, we'll enter the ID `deeplink-id-123` and submit this form:
+
+![Deeplink Select With ID](images/lti13deeplink2.png)
+
+Behind the scenes, the handler in `deeplink-select.js` will send this data back to the LMS using the `lti.controllers.lti.provider.createDeepLink` method:
+
+```js {title="src/routes/deeplink-select.js"}
+/**
+ * Handle LTI Deeplink Select Postback
+ *
+ * @param {Object} req - the Express request object
+ * @param {Object} res - the Express response object
+ */
+async function DeepLinkSelect(req, res) {
+  // Get LTI Launch Data and Consumer from session
+  const deeplinkData = req.session.ltiDeeplinkData;
+  const consumer = req.session.ltiConsumer;
+
+  // Get ID and title from form submission
+  const id = req.body.id;
+  const title = req.body.title;
+
+  // Submit Deeplink Selection
+  await lti.controllers.lti.provider.createDeepLink(res, consumer, deeplinkData.deep_link_return_url, id, title);
+}
+```
+
+This requires the original return URL from the Deep Link launch data as well as information about the consumer.
+
+Once submitted, we'll see that the URL is set to the default Launch URL, but with no additional information. However, behind the scenes, the LMS will store that ID for later. 
+
+![Deeplink Selected With URL](images/lti13deeplink3.png)
+
+Now, when that assignment is launched via the LMS, we'll see that the ID we provided in the Deep Link form is passed along as a custom ID in the launch data:
+
+![Deeplink Launch with ID](images/lti13deeplink4.png)
+
+This is the simplest way to associated a selected deep link launch back to a particular assignment ID. 

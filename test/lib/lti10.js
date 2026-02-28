@@ -719,45 +719,6 @@ describe("/lib/lti10.js", function () {
       }
     });
 
-    it("should reject an LTI 1.0 launch request with missing OAuth Callback", async function () {
-      // Mock Library Dependencies
-      const models = {
-        OauthNonce: {
-          findOne: sinon.stub().resolves(null),
-          create: sinon.stub().resolves({
-            nonce: ltiLaunch.oauth_nonce,
-          }),
-        },
-        ConsumerKey: {
-          findByPk: sinon.stub().resolves({
-            key: "thisisatestkey",
-            secret: "thisisatestsecret",
-          }),
-        },
-      };
-      const logger = {};
-
-      // Instantiate library
-      const lti10Utils = new LTI10Utils(models, logger, domain_name);
-
-      // Create a valid signature for the test launch
-      const body = signedBody(ltiLaunch);
-      delete body.oauth_callback;
-
-      // Call the function to test with a missing OAuth callback
-      try {
-        await lti10Utils.validate10({
-          body: body,
-          method: "POST",
-          originalUrl: new URL("/lti/provider/launch", domain_name).href,
-        });
-        throw new Error("Expected validate10 to throw an error for missing OAuth callback");
-      } catch (err) {
-        expect(err).to.be.an("error");
-        expect(err.message).to.equal("Validation Error: Invalid OAuth Callback: undefined");
-      }
-    });
-
     it("should reject an LTI 1.0 launch request with an invalid OAuth Callback", async function () {
       // Mock Library Dependencies
       const models = {
@@ -896,7 +857,9 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
 
       // Stub Crypto Library for consistent testing
       sinon.stub(crypto, "createHash").returns({
@@ -963,7 +926,9 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
 
       // Stub Crypto Library for consistent testing
       sinon.stub(crypto, "createHash").returns({
@@ -1019,7 +984,9 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1070,7 +1037,9 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1120,7 +1089,9 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1170,7 +1141,9 @@ describe("/lib/lti10.js", function () {
           }),
         },
       };
-      const logger = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1200,7 +1173,9 @@ describe("/lib/lti10.js", function () {
     it("should reject an OAuth body signed message with a missing Authorization header", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
@@ -1223,7 +1198,9 @@ describe("/lib/lti10.js", function () {
     it("should reject an OAuth body signed message with an invalid Authorization header format", async function () {
       // Mock Library Dependencies
       const models = {};
-      const logger = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
 
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);

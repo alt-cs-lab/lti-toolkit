@@ -19,7 +19,11 @@ async function postGradeHandler(providerKey, contextKey, resourceKey, userKey, g
   // Store grade in the local data store
   updateLocalDataStoreWithGrade(req, contextKey, resourceKey, userKey, gradebookKey, score);
 
-  // No need to return anything; library assumes success here
+  // Return success response
+  return {
+    success: true,
+    message: "Grade posted successfully",
+  };
 }
 
 /**

@@ -26,26 +26,39 @@ async function ProviderConfigHandler(req, res) {
     secret: req.body.secret,
     launch_url: req.body.launch_url,
     domain: req.body.domain,
-    // custom values are unsupported in this example
     custom: "",
     // use_section is optional
     use_section: req.body.use_section === "true",
   };
 
-  // Check if any required fields are missing
-  const requiredFields = ["name", "key", "secret", "launch_url", "domain"];
-  const missingFields = requiredFields.filter((field) => !data[field] || data[field].trim() === "");
-  if (missingFields.length > 0) {
-    error = "Missing required fields: " + missingFields.join(", ");
-  } else {
-    // Create Provider
+  // Handle Custom Parameters
+  if (req.body.custom) {
     try {
-      await lti.controllers.provider.createProvider(data);
+      // Parse custom parameters as JSON to check format
+      const customParams = JSON.parse("{" + req.body.custom + "}");
+      // Convert custom parameters to string format for storage
+      data.custom = JSON.stringify(customParams);
     } catch (err) {
-      error = "Failed to create provider: " + err.message;
+      error = "Invalid custom parameters: " + err.message;
     }
-    if (!error) {
-      message = "Successfully created provider.";
+  }
+
+  if (!error) {
+    // Check if any required fields are missing
+    const requiredFields = ["name", "key", "secret", "launch_url", "domain"];
+    const missingFields = requiredFields.filter((field) => !data[field] || data[field].trim() === "");
+    if (missingFields.length > 0) {
+      error = "Missing required fields: " + missingFields.join(", ");
+    } else {
+      // Create Provider
+      try {
+        await lti.controllers.provider.createProvider(data);
+      } catch (err) {
+        error = "Failed to create provider: " + err.message;
+      }
+      if (!error) {
+        message = "Successfully created provider.";
+      }
     }
   }
 

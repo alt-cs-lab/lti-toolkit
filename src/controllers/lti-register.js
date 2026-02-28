@@ -214,7 +214,7 @@ class LTIRegistrationController {
       this.#logger.error("Error registering LTI 1.3 configuration with LMS: " + error.message);
       const body = error.response ? await error.response.json() : null;
       this.#logger.error("Response Body: " + JSON.stringify(body, null, 2));
-      throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS");
+      throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS", { cause: error });
     }
   }
 }

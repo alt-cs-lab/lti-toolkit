@@ -239,8 +239,8 @@ class ConsumerController {
    * @return {Object} the generated keys
    */
   async #generateKeys() {
-    let publicKey = null;
-    let privateKey = null;
+    let publicKey;
+    let privateKey;
     ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
       modulusLength: 4096,
       publicKeyEncoding: {
