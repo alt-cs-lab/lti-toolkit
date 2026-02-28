@@ -6,55 +6,55 @@
     <meta name="generator" content="Hugo 0.148.1">
     <meta name="generator" content="Relearn 8.0.0">
     <meta name="description" content="This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.
-Limitations
-Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted within the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Supports all Canvas privacy levels in LTI Launch Requests to Tool Providers Supports test students from Canvas in LTI Launch Requests Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:">
+Features
+Act as an LTI 1.0 and LTI 1.3 Tool Provider (Learning Tool) connected to Canvas LMS Act as an LTI 1.0 Tool Consumer (LMS) connected to other LTI 1.0 Tool Providers Receive Grades from LTI 1.0 Tool Provider Pass Simple Grades to LTI 1.0 or LTI 1.3 Tool Consumer Supports all Canvas privacy levels in LTI Launch Requests to LTI 1.0 Tool Providers Supports test students from Canvas in LTI 1.0 and LTI 1.3 Launch Requests Handles LTI 1.3 Dynamic Registration and Deep Linking as a Tool Provider Provides LTI 1.0 XML Configuration as a Tool Provider Limitations">
     <meta name="author" content="K-State ALT&#43;CS Lab">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <meta name="twitter:title" content="LTI-Toolkit :: LTI Toolkit">
     <meta name="twitter:description" content="This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.
-Limitations
-Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted within the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Supports all Canvas privacy levels in LTI Launch Requests to Tool Providers Supports test students from Canvas in LTI Launch Requests Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:">
+Features
+Act as an LTI 1.0 and LTI 1.3 Tool Provider (Learning Tool) connected to Canvas LMS Act as an LTI 1.0 Tool Consumer (LMS) connected to other LTI 1.0 Tool Providers Receive Grades from LTI 1.0 Tool Provider Pass Simple Grades to LTI 1.0 or LTI 1.3 Tool Consumer Supports all Canvas privacy levels in LTI Launch Requests to LTI 1.0 Tool Providers Supports test students from Canvas in LTI 1.0 and LTI 1.3 Launch Requests Handles LTI 1.3 Dynamic Registration and Deep Linking as a Tool Provider Provides LTI 1.0 XML Configuration as a Tool Provider Limitations">
     <meta property="og:url" content="https://alt.cs.ksu.edu/lti-toolkit/index.html">
     <meta property="og:site_name" content="LTI Toolkit">
     <meta property="og:title" content="LTI-Toolkit :: LTI Toolkit">
     <meta property="og:description" content="This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.
-Limitations
-Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted within the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Supports all Canvas privacy levels in LTI Launch Requests to Tool Providers Supports test students from Canvas in LTI Launch Requests Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:">
+Features
+Act as an LTI 1.0 and LTI 1.3 Tool Provider (Learning Tool) connected to Canvas LMS Act as an LTI 1.0 Tool Consumer (LMS) connected to other LTI 1.0 Tool Providers Receive Grades from LTI 1.0 Tool Provider Pass Simple Grades to LTI 1.0 or LTI 1.3 Tool Consumer Supports all Canvas privacy levels in LTI Launch Requests to LTI 1.0 Tool Providers Supports test students from Canvas in LTI 1.0 and LTI 1.3 Launch Requests Handles LTI 1.3 Dynamic Registration and Deep Linking as a Tool Provider Provides LTI 1.0 XML Configuration as a Tool Provider Limitations">
     <meta property="og:locale" content="en_us">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <meta itemprop="name" content="LTI-Toolkit :: LTI Toolkit">
     <meta itemprop="description" content="This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.
-Limitations
-Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case) Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient) LTI 1.3 is not implemeneted within the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time) LTI 1.0 connections to external LTI Tool Providers don’t currently support custom variables Supports all Canvas privacy levels in LTI Launch Requests to Tool Providers Supports test students from Canvas in LTI Launch Requests Not currently tested or certified against the 1EdTech LTI Certification Tool Not currently tested against LTI Tool Consumers other than Instructure Canvas Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted Getting Started The package is currently not published to NPM but can be installed directly from GitHub:">
-    <meta itemprop="dateModified" content="2026-02-06T22:09:48+00:00">
-    <meta itemprop="wordCount" content="1271">
+Features
+Act as an LTI 1.0 and LTI 1.3 Tool Provider (Learning Tool) connected to Canvas LMS Act as an LTI 1.0 Tool Consumer (LMS) connected to other LTI 1.0 Tool Providers Receive Grades from LTI 1.0 Tool Provider Pass Simple Grades to LTI 1.0 or LTI 1.3 Tool Consumer Supports all Canvas privacy levels in LTI Launch Requests to LTI 1.0 Tool Providers Supports test students from Canvas in LTI 1.0 and LTI 1.3 Launch Requests Handles LTI 1.3 Dynamic Registration and Deep Linking as a Tool Provider Provides LTI 1.0 XML Configuration as a Tool Provider Limitations">
+    <meta itemprop="dateModified" content="2026-02-28T21:29:20+00:00">
+    <meta itemprop="wordCount" content="1947">
     <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <title>LTI-Toolkit :: LTI Toolkit</title>
     <link href="/lti-toolkit/index.xml" rel="alternate" type="application/rss+xml" title="LTI-Toolkit :: LTI Toolkit">
     <link href="/lti-toolkit/index.print.html" rel="alternate" type="text/html" title="LTI-Toolkit :: LTI Toolkit">
     <link href="/lti-toolkit/index.lti.js" rel="alternate" type="text/javascript" title="LTI-Toolkit :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1772303208" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1772303208" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1772303208" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1772303208" defer></script>
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1772314383" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1772314383" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1772314383" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1772314383" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1772303208";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1772314383";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1772303208" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1772303208" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1772303208" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1772303208" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1772314383" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1772314383" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1772314383" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1772314383" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1772303208" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1772303208" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1772303208" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1772303208" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-html.min.css?1772303208" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1772314383" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1772314383" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1772314383" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1772314383" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-html.min.css?1772314383" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -113,7 +113,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1772303208" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1772314383" rel="stylesheet">
   </head>
   <body class="mobile-support html" data-url="/lti-toolkit/index.html">
     <div id="R-body" class="default-animation">
@@ -172,14 +172,23 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <h1 id="lti-toolkit">LTI-Toolkit</h1>
 
 <p>This project is yet another toolkit for developing <a href="https://www.1edtech.org/standards/lti" rel="external" target="_blank">LTI (Learning Tools Interoperability)</a> applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.</p>
+<p><strong>Features</strong></p>
+<ul>
+<li>Act as an LTI 1.0 and LTI 1.3 Tool Provider (Learning Tool) connected to Canvas LMS</li>
+<li>Act as an LTI 1.0 Tool Consumer (LMS) connected to other LTI 1.0 Tool Providers</li>
+<li>Receive Grades from LTI 1.0 Tool Provider</li>
+<li>Pass Simple Grades to LTI 1.0 or LTI 1.3 Tool Consumer</li>
+<li>Supports all Canvas privacy levels in LTI Launch Requests to LTI 1.0 Tool Providers</li>
+<li>Supports test students from Canvas in LTI 1.0 and LTI 1.3 Launch Requests</li>
+<li>Handles LTI 1.3 Dynamic Registration and Deep Linking as a Tool Provider</li>
+<li>Provides LTI 1.0 XML Configuration as a Tool Provider</li>
+</ul>
 <p><strong>Limitations</strong></p>
 <ul>
+<li>Does not fully support LTI 1.3 AGS (Advanced Grade Service)</li>
 <li>Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case)</li>
 <li>Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient)</li>
-<li>LTI 1.3 is not implemeneted within the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time)</li>
-<li>LTI 1.0 connections to external LTI Tool Providers don&rsquo;t currently support custom variables</li>
-<li>Supports all Canvas privacy levels in LTI Launch Requests to Tool Providers</li>
-<li>Supports test students from Canvas in LTI Launch Requests</li>
+<li>LTI 1.3 is not implemented within the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time)</li>
 <li>Not currently tested or certified against the <a href="https://build.1edtech.org/" rel="external" target="_blank">1EdTech LTI Certification Tool</a></li>
 <li>Not currently tested against LTI Tool Consumers other than <a href="https://www.instructure.com/solutions/learning-management/k12" rel="external" target="_blank">Instructure Canvas</a></li>
 <li>Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted</li>
@@ -193,7 +202,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// Import LTI Toolkit
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">LTIToolkit</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;lti-toolkit&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// LTI Launch Handler Function
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Import your own LTI Launch Handler Function
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">LTILaunch</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;../routes/lti-launch.js&#34;</span>;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">// Initialize LTI Toolkit
@@ -210,7 +219,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Incoming LTI Launch Handler Function
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">handleLaunch</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">LTILaunch</span>,
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI 1.0 Consumer Key and Shared Secret 
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// for single LTI consumer setup
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// for single LTI 1.0 Consumer setup
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">key</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;your_lti_key&#34;</span>,
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">secret</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;your_lti_secret&#34;</span>
 </span></span><span style="display:flex;"><span>  }
@@ -236,6 +245,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// -OR-
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Logger Object
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// An external instance of Winston (or similar) for unified logging
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Must have the following log levels: error warn info http verbose lti debug sql silly
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Default: built-in Winston instance
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">logger</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">winston_instance</span>,
 </span></span><span style="display:flex;"><span>
@@ -294,6 +304,14 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Privacy Level
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// For Canvas, one of &#34;public&#34; or &#34;anonymous&#34;
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">privacy_level</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;public&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Boolean to show LTI Tool in course navigation menu in Canvas
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">navigation</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// OPTIONAL Information for LTI 1.3 DeepLinking
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// User-provided function to handle LTI Deeplink Requests
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Params: LTI Deeplink Data, LTI Consumer Sequelize Object, and Express request
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Return: URL string to redirect browser to after successful launch
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">handleDeeplink</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">LTIDeeplinkHandler</span>
 </span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// OPTIONAL
@@ -347,76 +365,165 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Tool Provider router
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Returned if provider is configured
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">provider</span><span style="color:#f92672">:</span> {
-</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/launch10&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/config10&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/launch13&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/redirect13&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/login13/:key&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/key13&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/deeplink13&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/editor13&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/navigate13&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI 1.0 and 1.3 Launch and Deeplink Target
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#e6db74">&#34;/launch&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI 1.0 Configuration XML
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#e6db74">&#34;/config.xml&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI 1.3 OAuth Login Target
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#e6db74">&#34;/login&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI 1.3 Keyset Target
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#e6db74">&#34;/jwks&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI 1.3 Dynamic Registration Target
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#e6db74">&#34;/register&#34;</span>,
 </span></span><span style="display:flex;"><span>    },
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Tool Consumer Router
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Returned if consumer is configured
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">consumer</span><span style="color:#f92672">:</span> {
-</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/grade_passback&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// LTI 1.0 Basic Outcomes Target
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#e6db74">&#34;/grade&#34;</span>
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>  },
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Controller Interfaces
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">controllers</span><span style="color:#f92672">:</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Controller Instance
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">lti</span><span style="color:#f92672">:</span> {
-</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Generate LTI 1.0 Form Data to connect to
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// external LTI Tool Provider
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">generateLTI10FormData</span>(),
-</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Post Grade back to LTI Tool Consumer
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">postGrade</span>()
-</span></span><span style="display:flex;"><span>    },
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Provider Controller Instance
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Returned if provider is configured
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">provider</span><span style="color:#f92672">:</span> {
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getAll</span>(),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getById</span>(<span style="color:#a6e22e">id</span>),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getByKey</span>(<span style="color:#a6e22e">key</span>),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getSecret</span>(<span style="color:#a6e22e">id</span>),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">updateProvider</span>(<span style="color:#a6e22e">id</span>, <span style="color:#a6e22e">data</span>),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">createProvider</span>(<span style="color:#a6e22e">data</span>),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">deleteProvider</span>(<span style="color:#a6e22e">id</span>)
-</span></span><span style="display:flex;"><span>    },
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Coonsumer Controller Instance
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Returned if consumer is configured
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// (As an LMS Consumer, you are talking to Providers)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">provider</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Get All Providers
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">getAll</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Get a Provider by Database ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">getById</span>(<span style="color:#a6e22e">id</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Get a Provider by Key
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">getByKey</span>(<span style="color:#a6e22e">key</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Get the secrets for a Provider by ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">getSecret</span>(<span style="color:#a6e22e">id</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Update a Provider
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">updateProvider</span>(<span style="color:#a6e22e">id</span>, <span style="color:#a6e22e">data</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Create a new Provider
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">createProvider</span>(<span style="color:#a6e22e">data</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Delete a Provider
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">deleteProvider</span>(<span style="color:#a6e22e">id</span>)
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Consumer Controller Instance
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Returned if provider is configured
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// (As an LMS Provider, you are talking to Consumers)
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">consumer</span><span style="color:#f92672">:</span> {
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getAll</span>(),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getById</span>(<span style="color:#a6e22e">id</span>),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getByKey</span>(<span style="color:#a6e22e">key</span>)
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">createConsumer</span>(<span style="color:#a6e22e">data</span>),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">updateConsumer</span>(<span style="color:#a6e22e">id</span>, <span style="color:#a6e22e">data</span>),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">deleteConsumer</span>(<span style="color:#a6e22e">id</span>),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">getSecret</span>(<span style="color:#a6e22e">id</span>),
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">updateSecret</span>(<span style="color:#a6e22e">id</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Get all Consumers
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">getAll</span>(),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Get a Consumer by Database ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">getById</span>(<span style="color:#a6e22e">id</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Get a Consumer by Key
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">getByKey</span>(<span style="color:#a6e22e">key</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Create a new Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">createConsumer</span>(<span style="color:#a6e22e">data</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Update a Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">updateConsumer</span>(<span style="color:#a6e22e">id</span>, <span style="color:#a6e22e">data</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Delete a Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">deleteConsumer</span>(<span style="color:#a6e22e">id</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Get the secrets for a Consumer by ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">getSecret</span>(<span style="color:#a6e22e">id</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Update the secrets for a Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">updateSecret</span>(<span style="color:#a6e22e">id</span>)
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>  },
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Sequelize Database Models
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">models</span><span style="color:#f92672">:</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">OauthNonce</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Consumer</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ConsumerKey</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ConsumerLogin</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Provider</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ProviderKey</span>,
-</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// LTI Specific Controllers
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">lti</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Consumer Controller
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Contains methods for acting as an LTI Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">consumer</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Generate an LTI 1.0 Launch Form
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">generateLTI10LaunchFormData</span>(
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// LTI Consumer Key
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">key</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// LTI Consumer Secret
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">secret</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// LTI Launch URL
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">url</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Return URL back to the LTI Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">ret_url</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// LTI Context (Course)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">context</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">key</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">label</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">name</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// LTI Resource (Assignment)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">resource</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">key</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">name</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// LTI User
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">user</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">key</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">email</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">family_name</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">given_name</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">name</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">image</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Boolean: True if user is LTI Course Manager (Instructor), False Otherwise
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">manager</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Gradebook ID for Basic Outcomes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">gradebook_key</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// LTI 1.0 Custom Variables
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">custom</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e">// custom variable names and values
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
+</span></span><span style="display:flex;"><span>      ),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Handle a Basic Outcomes Request
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// NOT MEANT FOR EXTERNAL USE
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// (This is called from the LTI Consumer Router)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">basicOutcomesHandler</span>(<span style="color:#a6e22e">req</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Handle a Basic Outcomes Replace Result Request
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// NOT MEANT FOR EXTERNAL USE
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// (This is called from the basicOutcomesHandler function)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">replaceResultRequest</span>(<span style="color:#a6e22e">request</span>, <span style="color:#a6e22e">providerKey</span>, <span style="color:#a6e22e">url</span>, <span style="color:#a6e22e">message_id</span>, <span style="color:#a6e22e">req</span>),
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI Provider Controller
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Contains methods for acting as an LTI Provider
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">provider</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Post a Grade to an LTI Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">postGrade</span>(
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// LTI Consumer Key
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">consumer_key</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// LTI Grade URL from the original launch
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">grade_url</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// LMS Grade ID for LTI 1.0 Basic Outcomes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">lms_grade_id</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// User Score (float between 0.0 and 1.0)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">score</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// User&#39;s LTI 1.3 ID (for LTI 1.3 AGS)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">user_lis13_id</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Debugging data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">debug</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">user</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">user_id</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">assignment</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">assignment_id</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>      ),
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Create a Deeplink Response
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">createDeepLink</span>(
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Express response object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">res</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// LTI Consumer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">consumer</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Return URL to send data to
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">return_url</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// ID of the resource to be created
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// This will be sent back as a custom variable
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// with name &#34;custom_id&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">id</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Title of the resource
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">title</span>
+</span></span><span style="display:flex;"><span>      )
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Test Utilities
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Returned if test mode is configured
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">test</span><span style="color:#f92672">:</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Utility function to initialize expiration of logins and nonces
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">initializeExpiration</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Sequelize Database instsance
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">db</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI 1.0 Utilities
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">lti10</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LTI 1.3 Utilities
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">lti13</span>,
 </span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <h2 id="dependencies">Dependencies</h2>
@@ -424,7 +531,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <ul>
 <li><a href="https://nodejs.org/en/blog/release/v22.11.0" rel="external" target="_blank">Node.js 22 LTS</a> - developed and tested using Node 22 LTS</li>
 <li><a href="https://www.npmjs.com/package/express" rel="external" target="_blank">express</a> - core web framework for handling routing and parsing</li>
-<li><a href="https://www.npmjs.com/package/express-xml-bodyparser" rel="external" target="_blank">express-xml-bodyparser</a> - parse incoming XML bodies (LTI 1.0 grade passback)</li>
+<li><a href="https://www.npmjs.com/package/express-xml-bodyparser" rel="external" target="_blank">express-xml-bodyparser</a> - parse incoming XML bodies (LTI 1.0 Basic Outcomes)</li>
 <li><a href="https://www.npmjs.com/package/jsonwebtoken" rel="external" target="_blank">jsonwebtoken</a> - used to decode LTI 1.3 authentication tokens</li>
 <li><a href="https://www.npmjs.com/package/jwks-rsa" rel="external" target="_blank">jwks-rsa</a> - used to request and decode JWKS signing keys for LTI 1.3</li>
 <li><a href="https://www.npmjs.com/package/ky" rel="external" target="_blank">ky</a> - simple HTTP client for sending requests back to the LTI 1.3 Tool Consumer (LMS)</li>
@@ -436,6 +543,21 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <li><a href="https://www.npmjs.com/package/winston" rel="external" target="_blank">winston</a> - logging library</li>
 <li><a href="https://www.npmjs.com/package/xml2js" rel="external" target="_blank">xml2js</a> - XML parser for LTI 1.0 connections</li>
 </ul>
+
+<details open class=" box cstyle notices warning">
+  <summary class="box-label" tabindex="-1">
+    <i class="fa-fw fas fa-exclamation-triangle"></i> 
+    Known Vulnerabilities
+  </summary>
+  <div class="box-content">
+<p>As of February 28th, 2026, the following vulnerabilities in these libraries are known:</p>
+<ul>
+<li><code>umzug 3.8.2</code> currently depends on a vulnerable version of <code>ajv</code> through a chain of dependencies. <code>umzug</code> has not had a new release in a couple of years, and I suspect it is on the shelf while Sequelize 7.0 is developed. <a href="https://github.com/sequelize/umzug/issues/715" rel="external" target="_blank">GitHub Discussion</a>.</li>
+<li><code>mocha 11.7.5</code> currently depends on vulnerable versions of <code>diff</code> and <code>serialize-javascript</code>. <code>mocha 12.0</code> is in active beta and is only used for unit testing in this project, so it is not a release dependency.</li>
+<li><code>sqlite3 5.1.7</code> has been abandoned and depends on an old version of <code>tar</code>, but it currently is the default engine for <code>sequelize 6</code>. <code>sequelize 7</code> is under active development and includes a newly rewritten engine for SQLite. This issue can be mitigated in the meantime by using a different database engine (e.g. PostgreSQL) instead of SQLite.</li>
+</ul>
+  </div>
+</details>
 <h2 id="documentation">Documentation</h2>
 <p>This documentation site provides many useful guides for using this tool!</p>
 <ul>
@@ -455,7 +577,7 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
   <p class="theme-version-footer">8.0.0</p>
 <p>Last modified by:
               <i class='fa-fw fas fa-user'></i> Russell Feldhausen
-              <i class='fas fa-calendar'></i> <a href="https://github.com/alt-cs-lab/lti-toolkit/commit/69fcab10e88f3a08799a2b773601231c0dbcc6e2">Feb 6, 2026</a>
+              <i class='fas fa-calendar'></i> <a href="https://github.com/alt-cs-lab/lti-toolkit/commit/a911e64e11dc12e7e83df287261d5e4aa0c2855e">Feb 28, 2026</a>
 </p>
 
 </div>
@@ -548,8 +670,8 @@ Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered key
 <p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0; margin: .5rem auto" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.</a></p></div>
       </div>
     </aside>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1772303208" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1772303208" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1772303208" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1772314383" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1772314383" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1772314383" defer></script>
   </body>
 </html>
