@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/lti-register.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/lti-register.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file LTI Registration Controller
+ * @author Russell Feldhausen &lt;russfeld@ksu.edu>
+ * @exports LTIRegistrationController an LTI Controller instance
+ */
+
+// Import Utilities
+import LTI13Utils from "../lib/lti13.js";
+
+class LTIRegistrationController {
+  // Private fields
+  #LTI13Utils;
+  #provider_config;
+  #logger;
+  #domain_name;
+  #admin_email;
+  #ConsumerController;
+
+  /**
+   * LTI Registration Controller
+   *
+   * @param {Object} provider_config - the provider configuration object from the main config file
+   * @param {Object} models - the LTI toolkit models
+   * @param {Object} logger - the logger instance
+   * @param {string} domain_name - the domain name of the application (e.g., "https://example.com")
+   * @param {string} admin_email - the admin email address (e.g., "admin@domain.tld")
+   * @param {Object} consumer_controller - the consumer controller instance (used for database operations related to consumers)
+   */
+  constructor(provider_config, models, logger, domain_name, admin_email, consumer_controller) {
+    this.#provider_config = provider_config;
+    this.#logger = logger;
+    this.#domain_name = domain_name;
+    this.#admin_email = admin_email;
+    this.#ConsumerController = consumer_controller;
+
+    // Create LTI Utilities
+    this.#LTI13Utils = new LTI13Utils(models, logger, domain_name);
+  }
+
+  /**
+   * Get an LTI 1.0 Configuration XML
+   *
+   * @return {string} the LTI 1.0 configuration XML
+   */
+  async getLTI10Config() {
+    // remove https:// from domain name for domain property
+    const domain = this.#domain_name.replace(/^https?:\/\//, "");
+
+    // Build custom properties XML
+    let custom = "";
+    if (this.#provider_config.custom_params) {
+      for (const [key, value] of Object.entries(this.#provider_config.custom_params)) {
+        custom += `&lt;lticm:property name="${key}">${value}&lt;/lticm:property> \n    `;
+      }
+      custom = `&lt;blti:custom> \n    ${custom}&lt;/blti:custom>\n`;
+    }
+
+    // Check for navigation link
+    let extras = "";
+    if (this.#provider_config.navigation) {
+      extras += `      &lt;lticm:options name="course_navigation"> \
+      &lt;lticm:property name="default">disabled&lt;/lticm:property> \
+      &lt;lticm:property name="enabled">true&lt;/lticm:property> \
+      &lt;lticm:property name="windowTarget">_blank&lt;/lticm:property> \
+    &lt;/lticm:options>`;
+    }
+
+    // Build XML string
+    const xml_string = `&lt;?xml version="1.0" encoding="UTF-8"?> \
+&lt;cartridge_basiclti_link xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0" \
+  xmlns:blti = "http://www.imsglobal.org/xsd/imsbasiclti_v1p0" \
+  xmlns:lticm ="http://www.imsglobal.org/xsd/imslticm_v1p0" \
+  xmlns:lticp ="http://www.imsglobal.org/xsd/imslticp_v1p0" \
+  xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" \
+  xsi:schemaLocation = "http://www.imsglobal.org/xsd/imslticc_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticc_v1p0.xsd http://www.imsglobal.org/xsd/imsbasiclti_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd http://www.imsglobal.org/xsd/imslticm_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd http://www.imsglobal.org/xsd/imslticp_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd"> \
+  &lt;blti:title>${this.#provider_config.title}&lt;/blti:title> \
+  &lt;blti:description>${this.#provider_config.description}&lt;/blti:description> \
+  &lt;blti:icon>${this.#provider_config.icon_url}&lt;/blti:icon> \
+  &lt;blti:launch_url>${new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href}&lt;/blti:launch_url> \
+  ${custom} \
+  &lt;blti:extensions platform="canvas.instructure.com"> \
+    &lt;lticm:property name="tool_id">${this.#provider_config.tool_id}&lt;/lticm:property> \
+    &lt;lticm:property name="privacy_level">${this.#provider_config.privacy_level}&lt;/lticm:property> \
+    &lt;lticm:property name="domain">${domain}&lt;/lticm:property> \
+    ${extras} \
+  &lt;/blti:extensions> \
+  &lt;cartridge_bundle identifierref="BLTI001_Bundle"/> \
+  &lt;cartridge_icon identifierref="BLTI001_Icon"/> \
+&lt;/cartridge_basiclti_link>`;
+    return xml_string;
+  }
+
+  /**
+   * LTI 1.3 Dyanamic Registration Handler
+   *
+   * @param {Object} query - the query parameters from the request
+   * @throws {Error} if there is an error during the registration process
+   */
+  async dynamicRegistration(query) {
+    // Get details from LMS
+    const lmsDetails = await this.#LTI13Utils.getLMSDetails(query);
+
+    // Get Consumer information based on LMS details
+    const confURL = "https://purl.imsglobal.org/spec/lti-platform-configuration";
+    const canvasURL = "https://canvas.instructure.com/lti/";
+
+    // Set name based on product family
+    let name = lmsDetails[confURL]["product_family_code"];
+
+    // If Canvas, try to get account name for better identification of consumer
+    if (lmsDetails[confURL][canvasURL + "account_name"]) {
+      name = lmsDetails[confURL][canvasURL + "account_name"];
+    }
+
+    // Build consumer object for database
+    const consumer = {
+      name: name,
+      lti13: true,
+      // client_id and deployment_id will be updated after successful registration with LMS
+      client_id: null,
+      deployment_id: null,
+      platform_id: lmsDetails.issuer,
+      keyset_url: lmsDetails.jwks_uri,
+      token_url: lmsDetails.token_endpoint,
+      auth_url: lmsDetails.authorization_endpoint,
+    };
+
+    const createdConsumer = await this.#ConsumerController.createConsumer(consumer);
+    if (!createdConsumer) {
+      throw new Error("Dynamic Registration: Failed to create consumer");
+    }
+
+    // remove https:// from domain name for domain property
+    const domain = this.#domain_name.replace(/^https?:\/\//, "");
+
+    // Get claims based on configured privacy level
+    let claims = [];
+    if (this.#provider_config.privacy_level === "public") {
+      claims = ["iss", "sub", "name", "given_name", "family_name", "email", "picture"];
+    } else if (this.#provider_config.privacy_level === "name_only") {
+      claims = ["iss", "sub", "name"];
+    } else if (this.#provider_config.privacy_level === "email_only") {
+      claims = ["iss", "sub", "email"];
+    } else if (this.#provider_config.privacy_level === "anonymous") {
+      claims = ["iss", "sub"];
+    }
+
+    // Check for deep linking
+    const messages = [];
+    if (this.#provider_config.handleDeeplink) {
+      messages.push({
+        type: "LtiDeepLinkingRequest",
+        target_link_url: new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href,
+        label: this.#provider_config.title,
+        icon_uri: this.#provider_config.icon_url,
+        // custom_parameters
+        placements: ["https://canvas.instructure.com/lti/assignment_selection"],
+        // roles
+        supported_types: ["ltiResourceLink"],
+        "https://canvas.instructure.com/lti/visibility": "admins",
+        "https://canvas.instructure.com/lti/display_type": "new_window",
+      });
+    }
+
+    // Check for navigation link
+    if (this.#provider_config.navigation) {
+      messages.push({
+        type: "LtiResourceLinkRequest",
+        target_link_url: new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href,
+        label: this.#provider_config.title,
+        icon_uri: this.#provider_config.icon_url,
+        // custom_parameters
+        placements: ["https://canvas.instructure.com/lti/course_navigation"],
+        // roles
+        supported_types: ["ltiResourceLink"],
+        "https://canvas.instructure.com/lti/course_navigation/default_enabled": false,
+        "https://canvas.instructure.com/lti/visibility": "members",
+        "https://canvas.instructure.com/lti/display_type": "new_window",
+      });
+    }
+
+    // Build config object
+    const config = {
+      application_type: "web",
+      response_types: ["id_token"],
+      grant_types: ["implicit", "client_credentials"],
+      initiate_login_uri: new URL(`${this.#provider_config.route_prefix}/login`, this.#domain_name).href,
+      redirect_uris: [new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href],
+      client_name: this.#provider_config.title,
+      logo_uri: this.#provider_config.icon_url,
+      token_endpoint_auth_method: "private_key_jwt",
+      jwks_uri: new URL(`${this.#provider_config.route_prefix}/jwks`, this.#domain_name).href,
+      contacts: [this.#admin_email],
+      scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score ",
+      "https://purl.imsglobal.org/spec/lti-tool-configuration": {
+        domain: domain,
+        description: this.#provider_config.description,
+        target_link_uri: new URL(`${this.#provider_config.route_prefix}/launch`, this.#domain_name).href,
+        custom_parameters: this.#provider_config.custom_params,
+        claims: claims,
+        messages: messages,
+      },
+    };
+
+    // try to send config to LMS and get response
+    try {
+      await this.#LTI13Utils.sendRegistrationResponse(
+        config,
+        lmsDetails.registration_endpoint,
+        createdConsumer,
+        query.registration_token,
+      );
+    } catch (error) {
+      this.#logger.error("Error registering LTI 1.3 configuration with LMS: " + error.message);
+      const body = error.response ? await error.response.json() : null;
+      this.#logger.error("Response Body: " + JSON.stringify(body, null, 2));
+      throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS");
+    }
+  }
+}
+
+export default LTIRegistrationController;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti-consumer.module_js.html">controllers/lti-consumer.js</a></li><li><a href="controllers_lti-launch.module_js.html">controllers/lti-launch.js</a></li><li><a href="controllers_lti-provider.module_js.html">controllers/lti-provider.js</a></li><li><a href="controllers_lti-register.module_js.html">controllers/lti-register.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti-consumer.module_js-LTIConsumerController.html">LTIConsumerController</a></li><li><a href="controllers_lti-launch.module_js-LTILaunchController.html">LTILaunchController</a></li><li><a href="controllers_lti-provider.module_js-LTIProviderController.html">LTIProviderController</a></li><li><a href="controllers_lti-register.module_js-LTIRegistrationController.html">LTIRegistrationController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Feb 28 2026 18:26:31 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
