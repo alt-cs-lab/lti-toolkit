@@ -166,7 +166,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line21">line 21</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line29">line 29</a>
     </li></ul></dd>
     
 
@@ -222,7 +222,7 @@
     
 
     
-    <h4 class="name" id="authRequest"><span class="type-signature">(async) </span>authRequest<span class="signature">(req)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="authRequest"><span class="type-signature">(async) </span>authRequest<span class="signature">(req)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -323,7 +323,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line32">line 32</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line44">line 44</a>
     </li></ul></dd>
     
 
@@ -346,8 +346,59 @@
 
 
 
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        if the request is invalid or if an error occurs during validation
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
 
 
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    the validated token payload
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -483,7 +534,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line420">line 420</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line350">line 350</a>
     </li></ul></dd>
     
 
@@ -506,6 +557,35 @@
 
 
 
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        if the consumer key is not found or if there is an error signing the token
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
 
 
 <h5>Returns:</h5>
@@ -541,7 +621,7 @@
     
 
     
-    <h4 class="name" id="getAccessToken"><span class="type-signature">(async) </span>getAccessToken<span class="signature">(consumerID, scopes)</span><span class="type-signature"> &rarr; {string|null}</span></h4>
+    <h4 class="name" id="getAccessToken"><span class="type-signature">(async) </span>getAccessToken<span class="signature">(consumer_key, scopes)</span><span class="type-signature"> &rarr; {string|null}</span></h4>
     
 
     
@@ -585,7 +665,7 @@
 
         <tr>
             
-                <td class="name"><code>consumerID</code></td>
+                <td class="name"><code>consumer_key</code></td>
             
 
             <td class="type">
@@ -601,7 +681,7 @@
 
             
 
-            <td class="description last">the ID of the consumer</td>
+            <td class="description last">the key of the consumer</td>
         </tr>
 
     
@@ -665,7 +745,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line266">line 266</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line230">line 230</a>
     </li></ul></dd>
     
 
@@ -726,7 +806,7 @@
     
 
     
-    <h4 class="name" id="getLMSDetails"><span class="type-signature">(async) </span>getLMSDetails<span class="signature">(query)</span><span class="type-signature"> &rarr; {Object|null}</span></h4>
+    <h4 class="name" id="getLMSDetails"><span class="type-signature">(async) </span>getLMSDetails<span class="signature">(query)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -827,7 +907,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line344">line 344</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line297">line 297</a>
     </li></ul></dd>
     
 
@@ -850,6 +930,35 @@
 
 
 
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        if an error occurs during the request
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
 
 
 <h5>Returns:</h5>
@@ -868,9 +977,6 @@
     <dd>
         
 <span class="param-type">Object</span>
-|
-
-<span class="param-type">null</span>
 
 
     </dd>
@@ -989,7 +1095,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line159">line 159</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line141">line 141</a>
     </li></ul></dd>
     
 
@@ -1020,6 +1126,731 @@
 
 
         
+            
+
+    
+
+    
+    <h4 class="name" id="postAGSGrade"><span class="type-signature">(async) </span>postAGSGrade<span class="signature">(grade)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Post grade to LTI 1.3 AGS
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>grade</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the grade object containing the necessary information to post the grade</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line450">line 450</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        if required information is missing or if posting fails
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    true if the grade was posted successfully, false otherwise
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="sendDeepLinkResponse"><span class="type-signature">(async) </span>sendDeepLinkResponse<span class="signature">(res, data, return_url, consumer_key)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Send Deep Link Response
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the Express response object</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the data to include in the response</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>return_url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the URL to send the response to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>consumer_key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the key of the consumer to get an access token for</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line494">line 494</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        if the request fails
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    the response from the LMS
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="sendRegistrationResponse"><span class="type-signature">(async) </span>sendRegistrationResponse<span class="signature">(config, endpoint, consumer, token)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Send Dynamic Registration Response
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>config</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">the registration data to send to the LMS</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>endpoint</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">the registration endpoint to send the data to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>consumer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">the consumer object containing client_id and deployment_id to update after successful registration</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>token</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">an optional access token to include in the request for platforms that require it</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line377">line 377</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        if the registration fails
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    the response from the LMS
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
     
 
     
@@ -1035,13 +1866,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti.module_js.html">controllers/lti.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti.module_js-LTIToolkitController.html">LTIToolkitController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti-consumer.module_js.html">controllers/lti-consumer.js</a></li><li><a href="controllers_lti-launch.module_js.html">controllers/lti-launch.js</a></li><li><a href="controllers_lti-provider.module_js.html">controllers/lti-provider.js</a></li><li><a href="controllers_lti-register.module_js.html">controllers/lti-register.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti-consumer.module_js-LTIConsumerController.html">LTIConsumerController</a></li><li><a href="controllers_lti-launch.module_js-LTILaunchController.html">LTILaunchController</a></li><li><a href="controllers_lti-provider.module_js-LTIProviderController.html">LTIProviderController</a></li><li><a href="controllers_lti-register.module_js-LTIRegistrationController.html">LTIRegistrationController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Thu Feb 12 2026 19:41:40 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Feb 28 2026 18:26:31 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
