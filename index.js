@@ -297,7 +297,7 @@ function validateConsumerConfig(consumerConfig) {
 
 /**
  * Configure the logging system based on the provided configuration
- * 
+ *
  * @param {Object} logger - provider logger object
  * @param {string} logLevel - log level to use for the logger
  * @param {boolean} test - flag indicating if running in test mode
@@ -320,19 +320,19 @@ function validateLoggerConfig(logger, logLevel, test) {
   }
 
   // Check for required logger methods
-  if(!configuredLogger.error || typeof configuredLogger.error !== "function") {
+  if (!configuredLogger.error || typeof configuredLogger.error !== "function") {
     throw new Error("Logger is missing required method: error");
   }
-  if(!configuredLogger.info || typeof configuredLogger.info !== "function") {
+  if (!configuredLogger.info || typeof configuredLogger.info !== "function") {
     throw new Error("Logger is missing required method: info");
   }
-  if(!configuredLogger.lti || typeof configuredLogger.lti !== "function") {
+  if (!configuredLogger.lti || typeof configuredLogger.lti !== "function") {
     throw new Error("Logger is missing required method: lti");
   }
-  if(!configuredLogger.sql || typeof configuredLogger.sql !== "function") {
+  if (!configuredLogger.sql || typeof configuredLogger.sql !== "function") {
     throw new Error("Logger is missing required method: sql");
   }
-  if(!configuredLogger.warn || typeof configuredLogger.warn !== "function") {
+  if (!configuredLogger.warn || typeof configuredLogger.warn !== "function") {
     throw new Error("Logger is missing required method: warn");
   }
 
@@ -341,11 +341,11 @@ function validateLoggerConfig(logger, logLevel, test) {
 
 /**
  * Validate the database configuration and set defaults
- * 
- * @param {Object} database 
- * @param {string} db_storage 
- * @param {Object} logger 
- * @param {boolean} test 
+ *
+ * @param {Object} database
+ * @param {string} db_storage
+ * @param {Object} logger
+ * @param {boolean} test
  * @returns {Object} Configured database instance
  * @throws Will throw an error if the database configuration is invalid
  */
@@ -362,7 +362,7 @@ function validateDatabaseConfig(database, db_storage, logger, test) {
       configuredDatabase = configureDatabase(logger, db_storage);
     }
   } else {
-    if(!(database instanceof Sequelize)) {
+    if (!(database instanceof Sequelize)) {
       throw new Error("Provided database must be an instance of Sequelize");
     }
     configuredDatabase = database;

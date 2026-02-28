@@ -1373,69 +1373,53 @@ describe("/lib/lti13.js", function () {
   });
 
   const sampleConfig = {
-    "application_type": "web",
-    "response_types": ["id_token"],
-    "grant_types": ["implicit", "client_credentials"],
-    "initiate_login_uri": "https://example.com/lti/provider/login13",
-    "redirect_uris": [
-      "https://example.com/lti/provider/redirect13",
-    ],
-    "client_name": "LTI Toolkit",
-    "logo_uri": "https://example.com/icon.png",
-    "token_endpoint_auth_method": "private_key_jwt",
-    "jwks_uri": "https://example.com/lti/provider/key13",
-    "contacts": ["admin@example.com"],   
-    "scope": "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+    application_type: "web",
+    response_types: ["id_token"],
+    grant_types: ["implicit", "client_credentials"],
+    initiate_login_uri: "https://example.com/lti/provider/login13",
+    redirect_uris: ["https://example.com/lti/provider/redirect13"],
+    client_name: "LTI Toolkit",
+    logo_uri: "https://example.com/icon.png",
+    token_endpoint_auth_method: "private_key_jwt",
+    jwks_uri: "https://example.com/lti/provider/key13",
+    contacts: ["admin@example.com"],
+    scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
     "https://purl.imsglobal.org/spec/lti-tool-configuration": {
-      "domain": "ltidemo.home.russfeld.me",
-      "description": "LTI Demo Tool Description",
-      "target_link_uri": "https://example.com/lti/provider//launch13",
-      "custom_parameters": {
-        "custom_name": "custom_value"
+      domain: "ltidemo.home.russfeld.me",
+      description: "LTI Demo Tool Description",
+      target_link_uri: "https://example.com/lti/provider//launch13",
+      custom_parameters: {
+        custom_name: "custom_value",
       },
-      "claims": ["iss", "sub", "name", "given_name", "family_name", "email", "picture"],
-      "messages": []
-    }
-  }
+      claims: ["iss", "sub", "name", "given_name", "family_name", "email", "picture"],
+      messages: [],
+    },
+  };
 
   const sampleConfigResponse = {
-    "client_id": "10000000000005",
-    "application_type": "web",
-    "grant_types": [
-      "client_credentials",
-      "implicit"
-    ],
-    "initiate_login_uri": "https://ltidemo.home.russfeld.me/lti/provider/login13",
-    "redirect_uris": [
-      "https://ltidemo.home.russfeld.me/lti/provider/redirect13"
-    ],
-    "response_types": [
-      "id_token"
-    ],
-    "client_name": "LTI Toolkit",
-    "jwks_uri": "https://ltidemo.home.russfeld.me/lti/provider/key13",
-    "logo_uri": "https://placehold.co/64x64.png",
-    "token_endpoint_auth_method": "private_key_jwt",
-    "scope": "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+    client_id: "10000000000005",
+    application_type: "web",
+    grant_types: ["client_credentials", "implicit"],
+    initiate_login_uri: "https://ltidemo.home.russfeld.me/lti/provider/login13",
+    redirect_uris: ["https://ltidemo.home.russfeld.me/lti/provider/redirect13"],
+    response_types: ["id_token"],
+    client_name: "LTI Toolkit",
+    jwks_uri: "https://ltidemo.home.russfeld.me/lti/provider/key13",
+    logo_uri: "https://placehold.co/64x64.png",
+    token_endpoint_auth_method: "private_key_jwt",
+    scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
     "https://purl.imsglobal.org/spec/lti-tool-configuration": {
-      "domain": "ltidemo.home.russfeld.me",
-      "messages": [],
-      "claims": [
-        "iss",
-        "sub",
-        "name",
-        "given_name",
-        "family_name",
-        "email",
-        "picture"
-      ],
-      "target_link_uri": "https://ltidemo.home.russfeld.me/lti/provider/launch13",
-      "custom_parameters": {},
-      "description": "LTI Toolkit for LTI Tool Providers",
-      "https://canvas.instructure.com/lti/registration_config_url": "https://canvas.home.russfeld.me/api/lti/registrations/10000000000001/view"
+      domain: "ltidemo.home.russfeld.me",
+      messages: [],
+      claims: ["iss", "sub", "name", "given_name", "family_name", "email", "picture"],
+      target_link_uri: "https://ltidemo.home.russfeld.me/lti/provider/launch13",
+      custom_parameters: {},
+      description: "LTI Toolkit for LTI Tool Providers",
+      "https://canvas.instructure.com/lti/registration_config_url":
+        "https://canvas.home.russfeld.me/api/lti/registrations/10000000000001/view",
     },
-    "deployment_id": "9:8865aa05b4b79b64a91a86042e43af5ea8ae79eb"
-  }
+    deployment_id: "9:8865aa05b4b79b64a91a86042e43af5ea8ae79eb",
+  };
 
   describe("sendRegistrationResponse", function () {
     it("should send a registration response to the correct endpoint with the correct data", async function () {
@@ -1447,7 +1431,7 @@ describe("/lib/lti13.js", function () {
       };
       const consumer = {
         save: sinon.stub().resolves(),
-      }
+      };
 
       // Create instance of LTI13Utils
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
@@ -1463,21 +1447,20 @@ describe("/lib/lti13.js", function () {
         sampleConfig,
         "http://localhost:3000/lti/.well-known/openid-configuration",
         consumer,
-        "thisisatoken"
+        "thisisatoken",
       );
 
       // Assert the expected results
       expect(result).to.deep.equal(sampleConfig);
-      expect(ky.post.calledOnceWith(
-        "http://localhost:3000/lti/.well-known/openid-configuration",
-        {
+      expect(
+        ky.post.calledOnceWith("http://localhost:3000/lti/.well-known/openid-configuration", {
           json: sampleConfig,
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer thisisatoken"
+            Authorization: "Bearer thisisatoken",
           },
-        },
-      )).to.be.true;
+        }),
+      ).to.be.true;
       expect(consumer.save.calledOnce).to.be.true;
       expect(consumer.client_id).to.equal(sampleConfigResponse.client_id);
       expect(consumer.deployment_id).to.equal(sampleConfigResponse.deployment_id);
@@ -1495,7 +1478,7 @@ describe("/lib/lti13.js", function () {
       };
       const consumer = {
         save: sinon.stub().resolves(),
-      }
+      };
 
       // Create instance of LTI13Utils
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
@@ -1503,7 +1486,8 @@ describe("/lib/lti13.js", function () {
       // Stub ky to simulate registration response request
       const modifiedConfigResponse = JSON.parse(JSON.stringify(sampleConfigResponse)); // Deep copy
       delete modifiedConfigResponse.deployment_id;
-      modifiedConfigResponse["https://purl.imsglobal.org/spec/lti-tool-configuration"].deployment_id = "thisisanotherdeploymentid";
+      modifiedConfigResponse["https://purl.imsglobal.org/spec/lti-tool-configuration"].deployment_id =
+        "thisisanotherdeploymentid";
       sinon.stub(ky, "post").resolves({
         status: 200,
         json: sinon.stub().resolves(modifiedConfigResponse),
@@ -1514,21 +1498,20 @@ describe("/lib/lti13.js", function () {
         sampleConfig,
         "http://localhost:3000/lti/.well-known/openid-configuration",
         consumer,
-        "thisisatoken"
+        "thisisatoken",
       );
 
       // Assert the expected results
       expect(result).to.deep.equal(sampleConfig);
-      expect(ky.post.calledOnceWith(
-        "http://localhost:3000/lti/.well-known/openid-configuration",
-        {
+      expect(
+        ky.post.calledOnceWith("http://localhost:3000/lti/.well-known/openid-configuration", {
           json: sampleConfig,
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer thisisatoken"
+            Authorization: "Bearer thisisatoken",
           },
-        },
-      )).to.be.true;
+        }),
+      ).to.be.true;
       expect(consumer.save.calledOnce).to.be.true;
       expect(consumer.client_id).to.equal(sampleConfigResponse.client_id);
       expect(consumer.deployment_id).to.equal("thisisanotherdeploymentid");
@@ -1546,7 +1529,7 @@ describe("/lib/lti13.js", function () {
       };
       const consumer = {
         save: sinon.stub().resolves(),
-      }
+      };
 
       // Create instance of LTI13Utils
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
@@ -1560,11 +1543,13 @@ describe("/lib/lti13.js", function () {
           sampleConfig,
           "http://localhost:3000/lti/.well-known/openid-configuration",
           consumer,
-          "thisisatoken"
+          "thisisatoken",
         );
         throw new Error("Expected sendRegistrationResponse to throw an error");
       } catch (err) {
-        expect(err.message).to.equal("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS: Registration response request failed");
+        expect(err.message).to.equal(
+          "Dynamic Registration: Failed to register LTI 1.3 configuration with LMS: Registration response request failed",
+        );
       } finally {
         // Restore stubbed methods
         ky.post.restore();
@@ -1580,7 +1565,7 @@ describe("/lib/lti13.js", function () {
       };
       const consumer = {
         save: sinon.stub().resolves(),
-      }
+      };
 
       // Create instance of LTI13Utils
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
@@ -1600,7 +1585,7 @@ describe("/lib/lti13.js", function () {
           sampleConfig,
           "http://localhost:3000/lti/.well-known/openid-configuration",
           consumer,
-          "thisisatoken"
+          "thisisatoken",
         );
         throw new Error("Expected sendRegistrationResponse to throw an error");
       } catch (err) {
@@ -1620,7 +1605,7 @@ describe("/lib/lti13.js", function () {
       };
       const consumer = {
         save: sinon.stub().resolves(),
-      }
+      };
 
       // Create instance of LTI13Utils
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
@@ -1640,7 +1625,7 @@ describe("/lib/lti13.js", function () {
           sampleConfig,
           "http://localhost:3000/lti/.well-known/openid-configuration",
           consumer,
-          "thisisatoken"
+          "thisisatoken",
         );
         throw new Error("Expected sendRegistrationResponse to throw an error");
       } catch (err) {
@@ -1660,7 +1645,7 @@ describe("/lib/lti13.js", function () {
       };
       const consumer = {
         save: sinon.stub().resolves(),
-      }
+      };
 
       // Create instance of LTI13Utils
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
@@ -1676,20 +1661,19 @@ describe("/lib/lti13.js", function () {
         sampleConfig,
         "http://localhost:3000/lti/.well-known/openid-configuration",
         consumer,
-        null
+        null,
       );
 
       // Assert the expected results
       expect(result).to.deep.equal(sampleConfig);
-      expect(ky.post.calledOnceWith(
-        "http://localhost:3000/lti/.well-known/openid-configuration",
-        {
+      expect(
+        ky.post.calledOnceWith("http://localhost:3000/lti/.well-known/openid-configuration", {
           json: sampleConfig,
           headers: {
             "Content-Type": "application/json",
           },
-        },
-      )).to.be.true;
+        }),
+      ).to.be.true;
       expect(consumer.save.calledOnce).to.be.true;
       expect(consumer.client_id).to.equal(sampleConfigResponse.client_id);
       expect(consumer.deployment_id).to.equal(sampleConfigResponse.deployment_id);
@@ -1707,7 +1691,7 @@ describe("/lib/lti13.js", function () {
       };
       const consumer = {
         save: sinon.stub().resolves(),
-      }
+      };
 
       // Create instance of LTI13Utils
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
@@ -1724,7 +1708,7 @@ describe("/lib/lti13.js", function () {
           sampleConfig,
           "http://localhost:3000/lti/.well-known/openid-configuration",
           consumer,
-          "thisisatoken"
+          "thisisatoken",
         );
         throw new Error("Expected sendRegistrationResponse to throw an error");
       } catch (err) {
@@ -1744,7 +1728,7 @@ describe("/lib/lti13.js", function () {
       };
       const consumer = {
         save: sinon.stub().resolves(),
-      }
+      };
 
       // Create instance of LTI13Utils
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
@@ -1764,12 +1748,14 @@ describe("/lib/lti13.js", function () {
           sampleConfig,
           "http://localhost:3000/lti/.well-known/openid-configuration",
           consumer,
-          "thisisatoken"
+          "thisisatoken",
         );
         throw new Error("Expected sendRegistrationResponse to throw an error");
       } catch (err) {
         expect(logger.lti.calledWith("Response Status: 500")).to.be.true;
-        expect(err.message).to.equal("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS: Bad Request");
+        expect(err.message).to.equal(
+          "Dynamic Registration: Failed to register LTI 1.3 configuration with LMS: Bad Request",
+        );
       } finally {
         // Restore stubbed methods
         ky.post.restore();
@@ -1780,7 +1766,7 @@ describe("/lib/lti13.js", function () {
   describe("postAGSGrade", function () {
     it("should post a grade to the specified endpoint with the correct data and access token", async function () {
       // Mock Library Dependencies
-      const models = {}
+      const models = {};
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
@@ -1810,7 +1796,12 @@ describe("/lib/lti13.js", function () {
 
       // Assert the expected results
       expect(result).to.be.true;
-      expect(lti13Utils.getAccessToken.calledOnceWith("thisisaconsumerkey", "https://purl.imsglobal.org/spec/lti-ags/scope/score")).to.be.true;
+      expect(
+        lti13Utils.getAccessToken.calledOnceWith(
+          "thisisaconsumerkey",
+          "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+        ),
+      ).to.be.true;
       expect(ky.post.firstCall.args[0]).to.equal("http://localhost:3000/lti/ags/endpoint/scores");
       expect(ky.post.firstCall.args[1]).to.shallowDeepEqual({
         json: {
@@ -1822,7 +1813,7 @@ describe("/lib/lti13.js", function () {
         },
         headers: {
           "Content-Type": "application/vnd.ims.lis.v1.score+json",
-          "Authorization": "Bearer thisisatoken"
+          Authorization: "Bearer thisisatoken",
         },
       });
 
@@ -1833,7 +1824,7 @@ describe("/lib/lti13.js", function () {
 
     it("should throw an error if the response is not 200 OK", async function () {
       // Mock Library Dependencies
-      const models = {}
+      const models = {};
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
@@ -1864,7 +1855,7 @@ describe("/lib/lti13.js", function () {
         );
         throw new Error("Expected postAGSGrade to throw an error");
       } catch (err) {
-        expect(err.message).to.equal("Failed to post grade: \"Internal Server Error\"");
+        expect(err.message).to.equal('Failed to post grade: "Internal Server Error"');
       } finally {
         // Restore stubbed methods
         lti13Utils.getAccessToken.restore();
@@ -1876,7 +1867,7 @@ describe("/lib/lti13.js", function () {
   describe("sendDeepLinkResponse", function () {
     it("should send a deep linking response to the correct endpoint with the correct data and access token", async function () {
       // Mock Library Dependencies
-      const models = {}
+      const models = {};
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
@@ -1897,7 +1888,7 @@ describe("/lib/lti13.js", function () {
 
       // Call the method under test
       await lti13Utils.sendDeepLinkResponse(
-        res, 
+        res,
         "thisissomedata",
         "http://localhost:3000/lti/deep/link/endpoint",
         "thisisaconsumerkey",
@@ -1910,8 +1901,12 @@ describe("/lib/lti13.js", function () {
       expect(res.header.secondCall.args[0]).to.equal("Content-Security-Policy");
       expect(res.header.secondCall.args[1]).to.equal("form-action http://localhost:3000/lti/deep/link/endpoint");
       expect(res.status.calledOnceWith(200)).to.be.true;
-      expect(res.send.firstCall.args[0]).to.contain('<form method="POST" action="http://localhost:3000/lti/deep/link/endpoint">')
-      expect(res.send.firstCall.args[0]).to.contain('<input type="hidden" id="JWT" name="JWT" value="thisisatooltoken" />');
+      expect(res.send.firstCall.args[0]).to.contain(
+        '<form method="POST" action="http://localhost:3000/lti/deep/link/endpoint">',
+      );
+      expect(res.send.firstCall.args[0]).to.contain(
+        '<input type="hidden" id="JWT" name="JWT" value="thisisatooltoken" />',
+      );
     });
   });
 });

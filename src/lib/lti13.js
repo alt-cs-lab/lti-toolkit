@@ -403,7 +403,7 @@ class LTI13Utils {
     }
 
     // Parse response
-    let responseData
+    let responseData;
     if (response && response.status === 200) {
       // Get response JSON
       responseData = await response.json();
@@ -417,7 +417,10 @@ class LTI13Utils {
     if (!responseData.client_id) {
       throw new Error("Dynamic Registration: No client_id returned in registration response");
     }
-    if (!responseData.deployment_id && !responseData["https://purl.imsglobal.org/spec/lti-tool-configuration"].deployment_id) {
+    if (
+      !responseData.deployment_id &&
+      !responseData["https://purl.imsglobal.org/spec/lti-tool-configuration"].deployment_id
+    ) {
       throw new Error("Dynamic Registration: No deployment_id returned in registration response");
     }
 
