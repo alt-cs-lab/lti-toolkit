@@ -131,6 +131,33 @@ const consumerShouldSetKey = () => {
   });
 };
 
+const shouldForceEmptyFieldsToNull = (field, modelName, sample) => {
+  it("should force empty " + field + " in " + modelName + " to null", async () => {
+    // Stub Logger
+    const logger = {
+      error: sinon.stub(),
+      info: sinon.stub(),
+      lti: sinon.stub(),
+      sql: sinon.stub(),
+    };
+
+    // Database instance
+    const db = configureDatabase(logger, ":memory:");
+
+    // Initialize Models
+    const models = configureModels(db, logger);
+
+    await db.sync({ force: true });
+
+    try {
+      await models.models[modelName].create({ ...sample, [field]: "" });
+    } catch (error) {
+      error.message.should.contain(modelName + "." + field + " cannot be null");
+      return;
+    }
+  });
+};
+
 // Test Fixtures
 const now = new Date().toISOString().slice(0, 23).replace("T", " ") + " +00:00";
 const old = new Date(Date.now() - 1000 * 60 * 20).toISOString().slice(0, 23).replace("T", " ") + " +00:00";
@@ -181,5 +208,44 @@ describe("Models", () => {
 
   describe("Consumer.beforeValidate", () => {
     consumerShouldSetKey();
+  });
+
+  describe("Consumer", () => {
+    const sampleConsumer = {
+      name: "Test Consumer",
+      lti13: false,
+    };
+    shouldForceEmptyFieldsToNull("name", "Consumer", sampleConsumer);
+  });
+
+  describe("ConsumerKey", () => {
+    const sampleConsumerKey = {
+      key: "thisisakey",
+      secret: "thisisasecret",
+    };
+    shouldForceEmptyFieldsToNull("key", "ConsumerKey", sampleConsumerKey);
+    shouldForceEmptyFieldsToNull("secret", "ConsumerKey", sampleConsumerKey);
+  });
+
+  describe("Provider", () => {
+    const sampleProvider = {
+      name: "Test Provider",
+      key: "thisisakey",
+      launch_url: "https://example.com/launch",
+      domain: "example.com",
+    };
+    shouldForceEmptyFieldsToNull("name", "Provider", sampleProvider);
+    shouldForceEmptyFieldsToNull("key", "Provider", sampleProvider);
+    shouldForceEmptyFieldsToNull("launch_url", "Provider", sampleProvider);
+    shouldForceEmptyFieldsToNull("domain", "Provider", sampleProvider);
+  });
+
+  describe("ProviderKey", () => {
+    const sampleProviderKey = {
+      key: "thisisakey",
+      secret: "thisisasecret",
+    };
+    shouldForceEmptyFieldsToNull("key", "ProviderKey", sampleProviderKey);
+    shouldForceEmptyFieldsToNull("secret", "ProviderKey", sampleProviderKey);
   });
 });

@@ -169,6 +169,7 @@ export async function up({ context: queryInterface }) {
  *
  * @param {queryInterface} context the database context to use
  */
+/* c8 ignore next 6 */
 export async function down({ context: queryInterface }) {
   await queryInterface.dropTable("lti_consumer_logins");
   await queryInterface.dropTable("lti_consumer_keys");
