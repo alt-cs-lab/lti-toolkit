@@ -122,7 +122,7 @@ var relearn_lti_index = [
   {
     "breadcrumb": "",
     "description": "This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.\nFeatures\nAct as an LTI 1.0 and LTI 1.3 Tool Provider (Learning Tool) connected to Canvas LMS Act as an LTI 1.0 Tool Consumer (LMS) connected to other LTI 1.0 Tool Providers Receive Grades from LTI 1.0 Tool Provider Pass Simple Grades to LTI 1.0 or LTI 1.3 Tool Consumer Supports all Canvas privacy levels in LTI Launch Requests to LTI 1.0 Tool Providers Supports test students from Canvas in LTI 1.0 and LTI 1.3 Launch Requests Handles LTI 1.3 Dynamic Registration and Deep Linking as a Tool Provider Provides LTI 1.0 XML Configuration as a Tool Provider Limitations",
-    "modified": "2026-02-28T21:29:20+00:00",
+    "modified": "2026-04-10T19:34:23+00:00",
     "tags": [],
     "title": "LTI-Toolkit",
     "uri": "/lti-toolkit/index.html"
