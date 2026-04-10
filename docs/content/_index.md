@@ -134,8 +134,8 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     title: "LTI Toolkit",
     // Description
     description: "LTI Toolkit for LTI Tool Providers",
-    // Launch URL
-    launch_url: domain_name + "/lti/provider/launch10",
+    // Route Prefix
+    route_prefix: "/lti/provider",
     // Icon Url
     icon_url: "https://placehold.co/64x64.png",
     // Custom Parameters

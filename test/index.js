@@ -234,6 +234,9 @@ describe("Index", () => {
         instance.controllers.lti.should.be.an("object");
         instance.controllers.lti.should.have.property("provider");
         instance.controllers.lti.provider.should.be.an("object");
+        instance.controllers.should.have.property("consumer");
+        instance.controllers.consumer.should.be.an("object");
+        instance.models.should.have.property("Consumer");
       } catch (error) {
         throw new Error("Initialization failed with valid configuration: " + error.message, { cause: error });
       }
@@ -267,6 +270,9 @@ describe("Index", () => {
         instance.controllers.lti.should.be.an("object");
         instance.controllers.lti.should.have.property("provider");
         instance.controllers.lti.provider.should.be.an("object");
+        instance.controllers.should.have.property("consumer");
+        instance.controllers.consumer.should.be.an("object");
+        instance.models.should.have.property("Consumer");
 
         // Check that consumer exists with correct key and secret
         const consumer = await instance.controllers.consumer.getByKey("test-provider-key");
@@ -308,6 +314,9 @@ describe("Index", () => {
         instance.controllers.lti.should.be.an("object");
         instance.controllers.lti.should.have.property("consumer");
         instance.controllers.lti.consumer.should.be.an("object");
+        instance.controllers.should.have.property("provider");
+        instance.controllers.provider.should.be.an("object");
+        instance.models.should.have.property("Provider");
       } catch (error) {
         throw new Error("Initialization failed with valid configuration: " + error.message, { cause: error });
       }

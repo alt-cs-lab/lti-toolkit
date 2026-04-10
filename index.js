@@ -97,6 +97,7 @@ export default async function LtiToolkit(config) {
     controllers: {
       lti: {},
     },
+    models: {},
   };
 
   // Add Testing Utilities if in test mode
@@ -114,11 +115,13 @@ export default async function LtiToolkit(config) {
     // Provider Controller to add/remove providers
     const ProviderControllerInstance = new ProviderController(modelConfig.models, config.database);
     returnObj.controllers.provider = ProviderControllerInstance;
+    returnObj.models.Provider = modelConfig.models.Provider;
   }
   if (config.provider) {
     // Consumer Controller to add/remove consumers
     const ConsumerControllerInstance = new ConsumerController(modelConfig.models, config.database);
     returnObj.controllers.consumer = ConsumerControllerInstance;
+    returnObj.models.Consumer = modelConfig.models.Consumer;
   }
 
   // Set up single LTI Consumer if configured
