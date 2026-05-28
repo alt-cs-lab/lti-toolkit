@@ -33,6 +33,7 @@
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   // "remoteUser": "root"
 
+  // https://www.reddit.com/r/github/comments/1kdqbpk/comment/mqo4w9i/
   "mounts":[
     "source=/home/youboon2/.gnupg,target=/home/node/.gnupg,type=bind,consistency=cached"
   ]
