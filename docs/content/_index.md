@@ -398,11 +398,10 @@ Care has been taken to minimize the amount of dependencies but balanced against 
 
 {{% notice warning "Known Vulnerabilities" %}}
 
-As of February 28th, 2026, the following vulnerabilities in these libraries are known:
+As of May 28th, 2026, the following vulnerabilities in these libraries are known:
 
-* `umzug 3.8.2` currently depends on a vulnerable version of `ajv` through a chain of dependencies. `umzug` has not had a new release in a couple of years, and I suspect it is on the shelf while Sequelize 7.0 is developed. [GitHub Discussion](https://github.com/sequelize/umzug/issues/715).  
-* `mocha 11.7.5` currently depends on vulnerable versions of `diff` and `serialize-javascript`. `mocha 12.0` is in active beta and is only used for unit testing in this project, so it is not a release dependency.
-* `sqlite3 5.1.7` has been abandoned and depends on an old version of `tar`, but it currently is the default engine for `sequelize 6`. `sequelize 7` is under active development and includes a newly rewritten engine for SQLite. This issue can be mitigated in the meantime by using a different database engine (e.g. PostgreSQL) instead of SQLite. 
+* `mocha 11.7.6` currently depends on vulnerable versions of `diff` and `serialize-javascript`. `mocha 12.0` is in active beta and is only used for unit testing in this project, so it is not a release dependency.
+* `sequelize 6.37.8` uses an out of date version of `uuid`. See https://github.com/sequelize/sequelize/issues/18224 for discussion and resolution. `sequelize 7` is under active development and this library will migrate to that version in the future.
 
 {{% /notice %}}
 
