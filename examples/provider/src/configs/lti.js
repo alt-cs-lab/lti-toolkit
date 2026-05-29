@@ -28,8 +28,8 @@ const lti = await LTIToolkit({
     handleLaunch: LTILaunch,
     // // LTI 1.0 Consumer Key and Shared Secret
     // // for single LTI consumer setup
-    // key: process.env.LTI_CONSUMER_KEY,
-    // secret: process.env.LTI_CONSUMER_SECRET,
+    key: process.env.LTI_CONSUMER_KEY,
+    secret: process.env.LTI_CONSUMER_SECRET,
     // Enable Deeplinking
     handleDeeplink: LTIDeepLink,
     // Enable Course Navigation Link

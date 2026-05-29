@@ -11,13 +11,12 @@
   "author": "Russell Feldhausen <russfeld@ksu.edu>",
   "license": "MIT",
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.51.4",
+    "@dotenvx/dotenvx": "^1.69.1",
     "express": "^5.2.1",
-    "express-session": "^1.18.2",
-    "lti-toolkit": "github:alt-cs-lab/lti-toolkit",
+    "express-session": "^1.19.0",
     "nunjucks": "^3.2.4"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.14"
   }
 }
