@@ -25,6 +25,9 @@ async function ConsumerHandler(req, res) {
   // Get Secret
   const consumerSecret = await lti.controllers.consumer.getSecret(consumer.id);
 
+  // Get LMS Domain
+  const lmsDomain = process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
+
   // Formatted consumer including secret
   const consumerData = consumer.toJSON();
   consumerData.secret = consumerSecret.secret;
@@ -33,6 +36,7 @@ async function ConsumerHandler(req, res) {
   res.render("consumer.njk", {
     title: `LTI Tool Consumer - Consumer: ${consumer.name}`,
     consumer: consumerData,
+    lmsDomain: lmsDomain,
   });
 }
 

@@ -19,10 +19,13 @@
           <li><b>Key:</b> {{ provider.key }}</li>
           <li><b>Secret:</b> {{ provider.secret }}</li>
           <li><b>Custom: </b> {{ provider.custom }}</li>
+          <li><b>LTI 1.3: </b> {{ provider.lti13 }}</li>
+          <li><b>LTI 1.3 Client ID: </b> {{ provider.client_id }}</li>
+          <li><b>LTI 1.3 Deployment ID: </b> {{ provider.deployment_id }}</li>
         </ul>
         <hr />
         <h3>Configure Launch</h3>
-        <p>Provide information to configure an LTI 1.0 Launch Request</p>
+        <p>Provide information to configure an LTI Launch Request</p>
         <form method="POST" target="_blank" action="/provider/{{ provider.id }}/launch">
           <h4>Context (Course)</h4>
           <label for="context_key">Context Key</label><br>
@@ -61,7 +64,7 @@
           <label for="gradebook_id">Gradebook Key</label><br>
           <input type="text" id="gradebook_id" name="gradebook_id" value="gradebookkey" size="50">
           <h4>Custom</h4>
-          <label for="custom">LTI 1.0 Custom Values in JSON format (e.g. "key1": "value1", "key2": "value2")</label><br>
+          <label for="custom">LTI Custom Values in JSON format (e.g. "key1": "value1", "key2": "value2")</label><br>
           <input type="text" id="custom" name="custom" size="50">
           <br><br>
           <input type="submit" value="Submit">

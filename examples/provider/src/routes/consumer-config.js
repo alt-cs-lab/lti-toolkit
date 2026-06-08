@@ -1,5 +1,5 @@
 /**
- * @file LTI Admin Configuration Example
+ * @file LTI Consumer Configuration Example
  * @author Russell Feldhausen <russfeld@ksu.edu>
  * @exports AdminConfigHandler LTI Admin Configuration Launch Handler
  */
@@ -8,12 +8,12 @@
 import lti from "../configs/lti.js";
 
 /**
- * Handle LTI Admin Launch
+ * Handle LTI Consumer Configuration
  *
  * @param {Object} req - the Express request object
  * @param {Object} res - the Express response object
  */
-async function AdminConfigHandler(req, res) {
+async function ConsumerConfigHandler(req, res) {
   let error = null;
   let message = null;
 
@@ -36,7 +36,7 @@ async function AdminConfigHandler(req, res) {
   } else {
     // Update Consumer
     try {
-      const returnValue = await lti.controllers.consumer.updateConsumer(1, data);
+      const returnValue = await lti.controllers.consumer.updateConsumer(req.params.id, data);
       if (!returnValue) {
         throw new Error("Consumer not found");
       }
@@ -65,4 +65,4 @@ async function AdminConfigHandler(req, res) {
   });
 }
 
-export default AdminConfigHandler;
+export default ConsumerConfigHandler;

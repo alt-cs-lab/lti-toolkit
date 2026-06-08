@@ -133,19 +133,38 @@ async function ProviderLaunchHandler(req, res) {
     // Store launch data in local data store
     updateDataStoreWithLaunch(data, providerData, req);
 
-    // Create LTI Launch
-    const launch = lti.controllers.lti.consumer.generateLTI10LaunchFormData(
-      providerData.key,
-      providerData.secret,
-      providerData.launch_url,
-      "/provider/" + providerData.id,
-      data.context,
-      data.resource,
-      data.user,
-      data.manager,
-      data.gradebook_id,
-      data.custom,
-    );
+    let launch;
+
+    if (providerData.lti13) {
+      // Create LTI 1.3 Launch
+      launch = await lti.controllers.lti.consumer.generateLTI13LoginFormData(
+        providerData.key,
+        providerData.client_id,
+        providerData.deployment_id,
+        providerData.launch_url,
+        "/provider/" + providerData.id,
+        data.context,
+        data.resource,
+        data.user,
+        data.manager,
+        data.gradebook_id,
+        data.custom,
+      );
+    } else {
+      // Create LTI 1.0 Launch
+      launch = await lti.controllers.lti.consumer.generateLTI10LaunchFormData(
+        providerData.key,
+        providerData.secret,
+        providerData.launch_url,
+        "/provider/" + providerData.id,
+        data.context,
+        data.resource,
+        data.user,
+        data.manager,
+        data.gradebook_id,
+        data.custom,
+      );
+    }
 
     // Render template
     res.render("launch.njk", {

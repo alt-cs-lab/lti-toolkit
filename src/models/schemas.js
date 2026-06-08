@@ -283,6 +283,36 @@ const OauthNonceSchema = {
  *         use_section:
  *           type: boolean
  *           description: whether to use the section ID in the launch
+ *         client_id:
+ *           type: string
+ *           description: the LTI 1.3 client ID (LTI 1.3 only)
+ *         deployment_id:
+ *           type: string
+ *           description: the LTI 1.3 deployment ID (LTI 1.3 only)
+ *         keyset_url:
+ *           type: string
+ *           format: url
+ *           description: the URL to request the JWKS (LTI 1.3 only)
+ *         token_url:
+ *           type: string
+ *           format: url
+ *           description: the URL to request a token (LTI 1.3 only)
+ *         auth_url:
+ *           type: string
+ *           format: url
+ *           description: the URL to redirect to for authentication (LTI 1.3 only)
+ *         redirect_urls:
+ *           type: string
+ *           format: json
+ *           description: a JSON string of allowed redirect URLs (LTI 1.3 only)
+ *         scopes:
+ *           type: string
+ *           format: json
+ *           description: a JSON string of scopes to request (LTI 1.3 only)
+ *         claims:
+ *           type: string
+ *           format: json
+ *           description: a JSON string of claims to request (LTI 1.3 only)
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -349,6 +379,42 @@ const ProviderSchema = {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  use_section: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  client_id: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  deployment_id: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  keyset_url: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  token_url: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  auth_url: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  redirect_urls: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  scopes: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  claims: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
   createdAt: {
     type: Sequelize.DATE,
     allowNull: false,
@@ -377,6 +443,42 @@ const ProviderKeySchema = {
       this.setDataValue("secret", value === "" ? null : value);
     },
   },
+  public: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  private: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  }
 };
 
-export { ConsumerSchema, ConsumerKeySchema, ConsumerLoginSchema, OauthNonceSchema, ProviderSchema, ProviderKeySchema };
+const ProviderLoginSchema = {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  client_id: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  login_hint: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  data: {
+    type: Sequelize.JSON,
+    allowNull: true,
+  },
+  createdAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+  },
+};
+
+export { ConsumerSchema, ConsumerKeySchema, ConsumerLoginSchema, OauthNonceSchema, ProviderSchema, ProviderKeySchema, ProviderLoginSchema };

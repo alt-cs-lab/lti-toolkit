@@ -10,3 +10,4 @@ Limitations
 - LTI 1.0 connections to LTI Tool Providers don't currently support custom variables
 - Supports all Canvas privacy levels for connections to Tool Consumers
 - Supports test students in LTI 1.0 Launch Requests
+- Does not automatically rotate JWKS keys, but can be done manually

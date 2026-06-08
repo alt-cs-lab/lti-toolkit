@@ -6,17 +6,23 @@
 
 // Import Libraries
 import { nanoid } from "nanoid";
+import crypto from "crypto";
 
 // Import Utilities
 import LTI10Utils from "../lib/lti10.js";
+import LTI13Utils from "../lib/lti13.js";
 
 class LTIConsumerController {
   // Private fields
   #logger;
   #LTI10Utils;
+  #LTI13Utils;
   #consumer_config;
   #domain_name;
   #admin_email;
+  #ProviderModel;
+  #ProviderLoginModel;
+  #ProviderController;
 
   /**
    * LTI Consumer Controller
@@ -26,15 +32,20 @@ class LTIConsumerController {
    * @param {Object} logger - the logger instance
    * @param {string} domain_name - the domain name of the application (e.g., "https://example.com")
    * @param {string} admin_email - the email address of the administrator
+   * @param {Object} provider_controller - the provider controller instance
    */
-  constructor(consumer_config, models, logger, domain_name, admin_email) {
+  constructor(consumer_config, models, logger, domain_name, admin_email, provider_controller) {
     this.#logger = logger;
     this.#consumer_config = consumer_config;
     this.#domain_name = domain_name;
     this.#admin_email = admin_email;
+    this.#ProviderModel = models.Provider;
+    this.#ProviderLoginModel = models.ProviderLogin;
+    this.#ProviderController = provider_controller;
 
     // Create LTI Utilities
     this.#LTI10Utils = new LTI10Utils(models, logger, domain_name);
+    this.#LTI13Utils = new LTI13Utils(models, logger, domain_name);
   }
 
   /**
@@ -319,6 +330,224 @@ class LTIConsumerController {
       );
     }
   }
+
+  /**
+   * Generate LTI 1.3 Login Form Data
+   * 
+   * @param {string} key - the consumer key for the LTI tool
+   * @param {string} client_id - the client ID for the LTI tool
+   * @param {string} deployment_id - the deployment ID for the LTI tool
+   * @param {string} url - the URL to launch the LTI tool
+   * @param {string} ret_url - the return URL for the LTI tool
+   * @param {Object} context - the context for the LTI launch (course)
+   * @param {string} context.key - the context key (course ID)
+   * @param {string} context.label - the context label (course code)
+   * @param {string} context.name - the context name (course name)
+   * @param {Object} resource - the resource for the LTI launch (assignment or lesson)
+   * @param {string} resource.key - the resource key (assignment or lesson ID)
+   * @param {string} resource.name - the resource name (assignment or lesson name)
+   * @param {Object} user - the user launching the LTI tool
+   * @param {string} user.key - the user key (user ID)
+   * @param {string} user.email - the user's email address
+   * @param {string} user.family_name - the user's family name
+   * @param {string} user.given_name - the user's given name
+   * @param {string} user.name - the user's full name
+   * @param {string} user.image - the user's profile image URL
+   * @param {boolean} manager - true if the user is a course manager, else false
+   * @param {string} gradebook_key - the gradebook ID for the LTI launch
+   * @param {Object} custom - custom parameters to include in the launch (optional)
+   * @return {Object} an object containing the form fields and action URL for the LTI launch
+   */
+  async generateLTI13LoginFormData(
+    key,
+    client_id,
+    deployment_id,
+    url,
+    ret_url,
+    context,
+    resource,
+    user,
+    manager,
+    gradebook_key,
+    custom = null,
+  
+  ) {
+    // Validate Inputs
+    if (!key) {
+      throw new Error("Consumer Key is required to generate LTI 1.0 Launch Data");
+    }
+    if (!client_id) {
+      throw new Error("Client ID is required to generate LTI 1.3 Login Data");
+    }
+    if (!deployment_id) {
+      throw new Error("Deployment ID is required to generate LTI 1.3 Login Data");
+    }
+    if (!url) {
+      throw new Error("Launch URL is required to generate LTI 1.3 Login Data");
+    }
+    if (!ret_url) {
+      throw new Error("Return URL is required to generate LTI 1.0 Launch Data");
+    }
+    if (!context || !context.key || !context.label || !context.name) {
+      throw new Error("Context with key, label, and name is required to generate LTI 1.0 Launch Data");
+    }
+    if (!resource || !resource.key || !resource.name) {
+      throw new Error("Resource with key and name is required to generate LTI 1.0 Launch Data");
+    }
+    if (!user || !user.key || !user.email) {
+      throw new Error("User with key and email is required to generate LTI 1.0 Launch Data");
+    }
+    if (manager === undefined || manager === null || typeof manager !== "boolean") {
+      throw new Error("Manager status is required to generate LTI 1.0 Launch Data");
+    }
+    if (!gradebook_key) {
+      throw new Error("Gradebook Key is required to generate LTI 1.0 Launch Data");
+    }
+
+    // Find the Provider in the database
+    const provider = await this.#ProviderModel.findOne({
+      where: {
+        key: key,
+      },
+    });
+    if (!provider) {
+      throw new Error("No provider found with key " + key);
+    }
+    // Get auth URL for client
+    const auth_url = provider.auth_url;
+    if (!auth_url) {
+      throw new Error("No auth URL found for provider " + provider.name);
+    }
+    this.#logger.lti("Generating LTI 1.3 Login Data for Provider " + provider.name + " (" + key + ")");
+
+    // Build Login Message
+    const login = {
+      "iss": new URL("/", this.#domain_name).href,
+      "login_hint": nanoid(),
+      "client_id": client_id,
+      "lti_deployment_id": deployment_id,
+      "target_link_uri": url,
+      "lti_storage_target": "post_message_forwarding"
+    }
+    this.#logger.silly("Login Data: " + JSON.stringify(login, null, 2));
+
+    // Build Data to Store in DB
+    const loginData = {
+      key: key,
+      url: url,
+      deployment_id: deployment_id,
+      ret_url: ret_url,
+      context: context,
+      resource: resource,
+      user: user,
+      manager: manager,
+      gradebook_key: gradebook_key,
+      custom: custom,
+    };
+
+    // Store in DB
+    const loginCreated = await this.#ProviderLoginModel.create({
+      client_id: client_id,
+      login_hint: login.login_hint,
+      data: JSON.stringify(loginData),
+    });
+    if (!loginCreated || loginCreated.login_hint != login.login_hint) {
+      throw new Error("Validation Error: Unable to save LTI 1.3 Login - Aborting!");
+    }
+    this.#logger.silly("Login Created: " + JSON.stringify(loginCreated, null, 2));
+    return {
+      fields: login,
+      action: auth_url,
+    };
+  }
+
+  /**
+   * Handle incoming LTI 1.3 Auth Request
+   * 
+   * @param {Object} req - Express request object
+   * @return {Object} an object containing the form fields and action URL for the LTI launch
+   */
+  async authRequestHandler(req) {
+    const authRequest = await this.#LTI13Utils.validateAuthRequest(req);
+    // Build the launch JWT
+    const launchJWT = await this.#LTI13Utils.buildLaunchJWT(authRequest, this.#consumer_config);
+    // Return the launch data and action URL
+    return {
+      form: {
+        id_token: launchJWT,
+        state: authRequest.state,
+        lti_storage_target: "post_message_forwarding",
+      },
+      url: authRequest.loginState.data.url,
+    };
+  }
+
+  /**
+   * Generate the JWKS for tool providers
+   *
+   * @returns {Array} an array of JWKs for the tool providers
+   */
+  async generateProviderJWKS() {
+    const keys = await this.#ProviderController.getAllKeys();
+    const output = [];
+    keys.forEach((k) => {
+      if (k.public) {
+        const publicKey = crypto.createPublicKey(k.public);
+        const jwk = publicKey.export({ format: "jwk" });
+        jwk.kid = k.key;
+        jwk.alg = "RS256";
+        jwk.use = "sig";
+        output.push(jwk);
+      }
+    });
+    return output;
+  }
+
+  /**
+   * Handle LTI 1.3 Token Request
+   *
+   * @param {Object} req - Express request object
+   * @return {Object} an object containing the access token and token type
+   */
+  async tokenRequestHandler(req) {
+    const tokenResponse = await this.#LTI13Utils.validateTokenRequest(req);
+    return tokenResponse;
+  }
+
+  /**
+   * Handle LTI 1.3 AGS Grade Passback
+   * 
+   * @param {Object} req - Express request object
+   * @return {Object} an object containing the response status and message
+   */
+  async agsGradePassbackHandler(req) {
+    const gradeResult = await this.#LTI13Utils.validateAGSGradePassback(req);
+    this.#logger.lti("Grade Passback Result: " + JSON.stringify(gradeResult, null, 2));
+    // Post Provider Grade to Handler Function
+    const passbackResult = await this.#consumer_config.postProviderGrade(
+      req.lti13Token.kid,
+      req.params.context_key,
+      req.params.resource_key,
+      gradeResult.userId,
+      req.params.gradebook_key,
+      gradeResult.scoreGiven / gradeResult.scoreMaximum,
+      req,
+    );
+
+    if (!passbackResult || !passbackResult.success) {
+      this.#logger.lti("Failed to Post Grade: " + passbackResult.message);
+      return {
+        success: false,
+        message: "Failed to Post Grade: " + passbackResult.message,
+      };
+    } else {
+      return {
+        success: true,
+        message: passbackResult.message,
+      };
+    }
+  }
+
 }
 
 export default LTIConsumerController;

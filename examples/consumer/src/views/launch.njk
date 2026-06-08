@@ -6,7 +6,7 @@
   <body>
     <main>
         <h1>LTI Toolkit Example</h1>
-        <p>Click the button below to perform an LTI 1.0 Launch</p>
+        <p>Click the button below to perform an LTI Launch</p>
         <form method="POST" action="{{ launch.action }}">
           {% for attr, value in launch.fields %}
           <input type="hidden" id="{{ attr }}" name="{{ attr }}" value="{{ value }}" />

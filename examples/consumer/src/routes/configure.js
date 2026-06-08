@@ -20,8 +20,7 @@ async function ProviderConfigHandler(req, res) {
   // Get Form Data
   const data = {
     name: req.body.name,
-    // LTI 1.3 is not supported
-    lti13: false,
+    lti13: req.body.lti13 === "true",
     key: req.body.key,
     secret: req.body.secret,
     launch_url: req.body.launch_url,
@@ -29,6 +28,13 @@ async function ProviderConfigHandler(req, res) {
     custom: "",
     // use_section is optional
     use_section: req.body.use_section === "true",
+    // LTI 1.3 fields (optional)
+    keyset_url: req.body.keyset_url,
+    token_url: req.body.token_url,
+    auth_url: req.body.auth_url,
+    redirect_urls: req.body.redirect_urls,
+    scopes: req.body.scopes,
+    claims: req.body.claims,
   };
 
   // Handle Custom Parameters
@@ -43,9 +49,22 @@ async function ProviderConfigHandler(req, res) {
     }
   }
 
+  // Handle Redirect URLs (convert from comma-separated string to JSON array)
+  if (data.redirect_urls) {
+    try {
+      const redirectUrls = data.redirect_urls.split(",").map((url) => url.trim());
+      data.redirect_urls = JSON.stringify(redirectUrls);
+    } catch (err) {
+      error = "Invalid redirect URLs: " + err.message;
+    }
+  }
+
   if (!error) {
     // Check if any required fields are missing
     const requiredFields = ["name", "key", "secret", "launch_url", "domain"];
+    if (data.lti13) {
+      requiredFields.push("keyset_url", "token_url", "auth_url");
+    }
     const missingFields = requiredFields.filter((field) => !data[field] || data[field].trim() === "");
     if (missingFields.length > 0) {
       error = "Missing required fields: " + missingFields.join(", ");

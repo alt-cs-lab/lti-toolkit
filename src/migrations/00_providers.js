@@ -46,6 +46,10 @@ export async function up({ context: queryInterface }) {
       type: Sequelize.STRING,
       allowNull: true,
     },
+    use_section: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
     createdAt: {
       type: Sequelize.DATE,
       allowNull: false,

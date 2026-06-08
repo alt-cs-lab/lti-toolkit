@@ -34,7 +34,6 @@ class LTIProviderController {
 
     // Create LTI Utilities
     this.#LTI10Utils = new LTI10Utils(models, logger, domain_name);
-
     this.#LTI13Utils = new LTI13Utils(models, logger, domain_name);
   }
 

@@ -15,6 +15,7 @@ import {
   OauthNonceSchema,
   ProviderSchema,
   ProviderKeySchema,
+  ProviderLoginSchema
 } from "./schemas.js";
 
 export default function configureModels(database, logger) {
@@ -93,6 +94,18 @@ export default function configureModels(database, logger) {
     },
   );
 
+  // Create Provider Login Model
+  const ProviderLogin = database.define(
+    // Model Name
+    "ProviderLogin",
+    // Schema
+    ProviderLoginSchema,
+    // Other options
+    {
+      tableName: "lti_provider_logins",
+    },
+  );
+
   Consumer.beforeValidate((consumer) => {
     // Generate a unique key for the consumer
     if (consumer.isNewRecord && !consumer.key) {
@@ -116,6 +129,11 @@ export default function configureModels(database, logger) {
       }).then((count) => {
         logger.lti("Removed " + count + " Expired Consumer Logins");
       });
+      ProviderLogin.destroy({
+        where: { createdAt: { [Op.lte]: new Date(Date.now() - expireAfter) } },
+      }).then((count) => {
+        logger.lti("Removed " + count + " Expired Provider Logins");
+      });
       /* c8 ignore next 4 */
     } catch (error) {
       logger.error("Error Expiring Old OAuth Nonces & Login Sessions");
@@ -138,6 +156,7 @@ export default function configureModels(database, logger) {
       ConsumerLogin,
       Provider,
       ProviderKey,
+      ProviderLogin,
     },
     initializeExpiration,
   };

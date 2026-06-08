@@ -12,6 +12,7 @@ import express from "express";
 import nunjucks from "nunjucks";
 import path from "path";
 import session from "express-session";
+import morgan from "morgan";
 
 // Import LTI configuration
 import lti from "./configs/lti.js";
@@ -21,7 +22,7 @@ import { requireLTI } from "./middlewares/require-lti.js";
 import { requireDeeplink } from "./middlewares/require-deeplink.js";
 
 // Import Handlers
-import AdminConfigHandler from "./routes/admin-config.js";
+import ConsumerConfigHandler from "./routes/consumer-config.js";
 import AdminHandler from "./routes/admin.js";
 import IndexHandler from "./routes/index.js";
 import InstructorGradeHandler from "./routes/instructor-grade.js";
@@ -63,14 +64,17 @@ app.locals.dataStore = {
   courses: {},
 };
 
+// Add Logger
+app.use(morgan("dev"));
+
 // Add LTI Toolkit Routes
 app.use("/lti/provider", lti.routers.provider);
 
 // Add Handlers
 app.get("/", IndexHandler);
 app.get("/admin", AdminHandler);
-app.post("/admin/config", AdminConfigHandler);
 app.get("/consumer/:id", ConsumerHandler);
+app.post("/consumer/:id/config", ConsumerConfigHandler);
 app.get("/student", requireLTI, StudentHandler);
 app.post("/student/grade", requireLTI, StudentGradeHandler);
 app.get("/instructor", requireLTI, InstructorHandler);

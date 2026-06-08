@@ -453,6 +453,70 @@ This page documents the messages sent from an LMS to this tool acting as an LTI 
 }
 ```
 
+## Token Request
+
+When the LTI Tool Provider requests a token to access the API (used to submit grades via AGS).
+
+Token request sent to LMS:
+
+```json
+{
+  "grant_type": "client_credentials",
+  "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+  "client_assertion": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkpmVXJ3ZWVhU1FrQUFTTzAwNHc4OCJ9.eyJzdWIiOiIxMDAwMDAwMDAwMDAwMyIsImlzcyI6IjEwMDAwMDAwMDAwMDAzIiwiYXVkIjoiaHR0cHM6Ly9jYW52YXMuaG9tZS5ydXNzZmVsZC5tZS9sb2dpbi9vYXV0aDIvdG9rZW4iLCJqdGkiOiJ1dGVDRlpFUjBKRXJSTlpKeUdpYVkiLCJpYXQiOjE3ODA0MjM1NTgsImV4cCI6MTc4MDQyNzE1OH0.LLPMvGwCGpmz2IfzJEDU_SywlU-fQeTANEofJJ12UK6wQyHe8D0hRPrqEdVnXeKzOc5_kFgAZj5JqylQQQzu1KkGlWn3qQBZG-yGqySysew9sdzQbQ1YgxIfZNmUWZfbvYwhWhc3qLOCTpVfSTRcXaBWK6-SOOwmcN0XrCIkvttoHeHT39_wiGKF9jc4kWaSW3rs17zpVu0aKhGTTaHRccBK-qJtnIkVywa7_NLptn7jMTNi8Nzm30fguKOn1BZ3s_5Ez6rqCE-RxLbBMgrS4B7GRFfnW3BW-XuK1xkdT0cAHBg1CL2wavOZfUyakZoFPejygXlWz4LYvc6NsK_xKA-tH3YhshdY5FJELzIpeQuIWgcllFDw6mgIsQWj5-2F6yjf_bQOMopZvXF4s_hDi_7pLxIFF06kSsVjyu7SlUg7PrmVEb1WEq9v6SrHkhRcdk9u4omlDXbIAYurkaHXVVH1LZukrjBqrDOspXeYhLGja5lTIFXU4UHrHJfaaOp2WaLEAVsZ5YJ_gHYzdtEHctEmCiDT7-Z9ujxVFzg-E_ooXWx7LXQD78rTpTiLEM10Xv3rSSscLnbbYhokvfZQQ04SjbWum9elKPVLbdcQUvfNoXKJNB6hKzr7AuGt6DEOKjNQ9ITAALB0SaXcKDrKVBJ2buDBJJzYZCinGIWzn2U",
+  "scopes": "https://purl.imsglobal.org/spec/lti-ags/scope/score"
+}
+```
+
+Decuded JWT in request:
+
+```json
+{
+  "sub": "10000000000003",
+  "iss": "10000000000003",
+  "aud": "https://canvas.home.russfeld.me/login/oauth2/token",
+  "jti": "uteCFZER0JErRNZJyGiaY",
+  "iat": 1780423558,
+  "exp": 1780427158
+}
+```
+
+`sub` and `iss` are the LTI tool's Client ID
+
+## Token Response
+
+Canvas Responds with a Token that looks like this:
+
+```json
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NhbnZhcy5ob21lLnJ1c3NmZWxkLm1lIiwic3ViIjoiMTAwMDAwMDAwMDAwMDMiLCJhdWQiOlsiaHR0cHM6Ly9jYW52YXMuaG9tZS5ydXNzZmVsZC5tZS9sb2dpbi9vYXV0aDIvdG9rZW4iLCJjYW52YXMuaG9tZS5ydXNzZmVsZC5tZSJdLCJpYXQiOjE3ODA0MjM1NTgsImV4cCI6MTc4MDQyNzE1OCwianRpIjoiMzVkNWMzMGYtNjE0NC00Zjk0LTkxNzItMjlhYmMxOTA1YmEyIiwic2NvcGVzIjoiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9sdGktYWdzL3Njb3BlL3Njb3JlIiwiY2FudmFzLmluc3RydWN0dXJlLmNvbSI6eyJhY2NvdW50X3V1aWQiOiJUQ1dJUjZvdkU3eTZMT1dGc0Z6OVh6aTc1TkdtZk5kRmFaT3JUeGk1In19.zCYwUqVvN3FztaDbTbGhumNbGUzcGLQtmSnU65Y2ArM",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "scope": "https://purl.imsglobal.org/spec/lti-ags/scope/score"
+}
+```
+
+Decoded JWT in response:
+
+```json
+{
+  "iss": "https://canvas.home.russfeld.me",
+  "sub": "10000000000003",
+  "aud": [
+    "https://canvas.home.russfeld.me/login/oauth2/token",
+    "canvas.home.russfeld.me"
+  ],
+  "iat": 1780423558,
+  "exp": 1780427158,
+  "jti": "35d5c30f-6144-4f94-9172-29abc1905ba2",
+  "scopes": "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+  "canvas.instructure.com": {
+    "account_uuid": "TCWIR6ovE7y6LOWFsFz9Xzi75NGmfNdFaZOrTxi5"
+  }
+}
+```
+
+
 ## Helpful References:
 
 * https://www.imsglobal.org/spec/lti/v1p3

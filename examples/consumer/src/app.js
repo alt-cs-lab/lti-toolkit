@@ -12,6 +12,7 @@ import express from "express";
 import nunjucks from "nunjucks";
 import path from "path";
 import session from "express-session";
+import morgan from "morgan";
 
 // Import LTI configuration
 import lti from "./configs/lti.js";
@@ -53,6 +54,9 @@ app.set("view engine", "njk");
 app.locals.dataStore = {
   courses: {},
 };
+
+// Add Logger
+app.use(morgan("dev"));
 
 // Add LTI Toolkit Routes
 app.use("/lti/consumer", lti.routers.consumer);

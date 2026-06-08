@@ -149,10 +149,11 @@ export default async function LtiToolkit(config) {
       config.logger,
       config.domain_name,
       config.admin_email,
+      returnObj.controllers.provider,
     );
 
     // Consumer Routes
-    const consumerRouter = await setupConsumerRoutes(LTIConsumerControllerInstance, config.logger);
+    const consumerRouter = await setupConsumerRoutes(LTIConsumerControllerInstance, modelConfig.models.ProviderKey, config.logger);
     returnObj.routers.consumer = consumerRouter;
     returnObj.controllers.lti.consumer = LTIConsumerControllerInstance;
   }

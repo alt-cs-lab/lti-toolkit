@@ -414,7 +414,7 @@ The tool then sends a POST request to the LMS using the `registration_endpoint` 
   "https://purl.imsglobal.org/spec/lti-tool-configuration": {
     "domain": "ltidemo.home.russfeld.me",
     "description": "LTI Demo Tool Description",
-    "target_link_uri": "https://example.com/lti/provider//launch13",
+    "target_link_uri": "https://example.com/lti/provider/launch13",
     "custom_parameters": {
       "custom_name": "custom_value"
     },

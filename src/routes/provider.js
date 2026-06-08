@@ -149,7 +149,9 @@ export default function setupProviderRoutes(LTILaunchController, LTIRegistration
   router.get("/jwks", async function (req, res, next) {
     try {
       const keys = await LTILaunchController.generateConsumerJWKS();
-      res.json(keys);
+      res.json({
+        keys: keys
+      });
     } catch (err) {
       logger.lti(err);
       return res.status(500).send("Server Error");
