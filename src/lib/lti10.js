@@ -665,6 +665,105 @@ class LTI10Utils {
       sourcedIdValue: sourcedId["sourcedid"],
     };
   }
+
+  /**
+   * Validate an incoming LTI 1.0 XML Configuration Message
+   * 
+   * @param {string} xml - the XML string to validate
+   * @throws {Error} if the XML is not a valid LTI 1.0 Configuration Message
+   * @returns {Object} an object containing the configuration data
+   */
+  async validateConfigXML(xml) {
+    const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+    let config;
+    config = await parser.parseStringPromise(xml);
+    this.#logger.silly("Parsed LTI Configuration: " + JSON.stringify(config, null, 2));
+    /** Should look like this:
+     * <cartridge_basiclti_link 
+  xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0" 
+  xmlns:blti="http://www.imsglobal.org/xsd/imsbasiclti_v1p0" 
+  xmlns:lticm="http://www.imsglobal.org/xsd/imslticm_v1p0" 
+  xmlns:lticp="http://www.imsglobal.org/xsd/imslticp_v1p0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.imsglobal.org/xsd/imslticc_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticc_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imsbasiclti_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imslticm_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imslticp_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd"
+  >
+  <blti:title>LTI Toolkit</blti:title>
+  <blti:description>LTI Toolkit for LTI Tool Providers</blti:description>
+  <blti:icon>https://placehold.co/64x64.png</blti:icon>
+  <blti:launch_url>https://ltidemo.home.russfeld.me/lti/provider/launch10</blti:launch_url>
+  <blti:custom>
+    <lticm:property name="custom_name">custom_value</lticm:property>
+  </blti:custom>
+  <blti:extensions platform="canvas.instructure.com">
+    <lticm:property name="tool_id">lti_toolkit</lticm:property>
+    <lticm:property name="privacy_level">public</lticm:property>
+    <lticm:property name="domain">ltidemo.home.russfeld.me</lticm:property>
+  </blti:extensions>
+  <cartridge_bundle identifierref="BLTI001_Bundle"/>
+  <cartridge_icon identifierref="BLTI001_Icon"/>
+</cartridge_basiclti_link>
+     */
+    if (!config.cartridge_basiclti_link) {
+      throw new Error("Invalid LTI Configuration: Missing Root Element");
+    }
+    if (!config.cartridge_basiclti_link["$"] || !config.cartridge_basiclti_link["$"]["xmlns"]) {
+      throw new Error("Invalid LTI Configuration: Missing Namespace");
+    }
+    if (config.cartridge_basiclti_link["$"]["xmlns"] !== "http://www.imsglobal.org/xsd/imslticc_v1p0") {
+      throw new Error("Invalid LTI Configuration: Invalid Namespace");
+    }
+    if (!config.cartridge_basiclti_link["blti:title"]) {
+      throw new Error("Invalid LTI Configuration: Missing Title");
+    }
+    if (!config.cartridge_basiclti_link["blti:description"]) {
+      throw new Error("Invalid LTI Configuration: Missing Description");
+    }
+    if (!config.cartridge_basiclti_link["blti:icon"]) {
+      throw new Error("Invalid LTI Configuration: Missing Icon");
+    }
+    if (!config.cartridge_basiclti_link["blti:launch_url"]) {
+      throw new Error("Invalid LTI Configuration: Missing Launch URL");
+    }
+    // Build configuration object
+    const configuration = {
+      title: config.cartridge_basiclti_link["blti:title"],
+      description: config.cartridge_basiclti_link["blti:description"],
+      icon: config.cartridge_basiclti_link["blti:icon"],
+      launch_url: config.cartridge_basiclti_link["blti:launch_url"],
+      custom: {},
+      extensions: {},
+    };
+    if (config.cartridge_basiclti_link["blti:custom"] && config.cartridge_basiclti_link["blti:custom"]["lticm:property"]) {
+      const customProperties = config.cartridge_basiclti_link["blti:custom"]["lticm:property"];
+      if (Array.isArray(customProperties)) {
+        customProperties.forEach((prop) => {
+          configuration.custom[prop["$"]["name"]] = prop["_"];
+        });
+      } else {
+        configuration.custom[customProperties["$"]["name"]] = customProperties["_"];
+      }
+    }
+    if (config.cartridge_basiclti_link["blti:extensions"] && config.cartridge_basiclti_link["blti:extensions"]["lticm:property"]) {
+      const extensionProperties = config.cartridge_basiclti_link["blti:extensions"]["lticm:property"];
+      if (Array.isArray(extensionProperties)) {
+        extensionProperties.forEach((prop) => {
+          configuration.extensions[prop["$"]["name"]] = prop["_"];
+        });
+      } else {
+        configuration.extensions[extensionProperties["$"]["name"]] = extensionProperties["_"];
+      }
+    }
+    this.#logger.silly("Validated LTI Configuration: " + JSON.stringify(configuration, null, 2));
+    return configuration;
+  }
+
 }
 
 export default LTI10Utils;

@@ -52,7 +52,7 @@ Helpful references:
 
 #### Initial Request
 
-The process begins with the LMS sending a request to the dynamic configuration URL for the tool (`register13`). These are the query parameters received from Canvas sent in that POST request.
+The process begins with the LMS sending a request to the dynamic configuration URL for the tool (`register`). These are the query parameters received from Canvas sent in that POST request.
 
 ```json
 {

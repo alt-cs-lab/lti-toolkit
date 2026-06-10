@@ -127,6 +127,22 @@ export async function up({ context: queryInterface }) {
       allowNull: false,
     },
   });
+
+  await queryInterface.createTable("lti_provider_registrations", {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    token: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    url: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    }
+  });
 }
 
 /**
@@ -136,6 +152,7 @@ export async function up({ context: queryInterface }) {
  */
 /* c8 ignore next 4 */
 export async function down({ context: queryInterface }) {
+  await queryInterface.dropTable("lti_provider_registrations");
   await queryInterface.dropTable("lti_provider_logins");
 
   await Promise.all([

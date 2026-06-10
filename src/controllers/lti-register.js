@@ -112,6 +112,12 @@ class LTIRegistrationController {
       name = lmsDetails[confURL][canvasURL + "account_name"];
     }
 
+    // Check for duplicate name in database and append random string if duplicate exists
+    const existingConsumer = await this.#ConsumerController.getByName(name);
+    if (existingConsumer) {
+      name += " (" + Math.random().toString(36).substring(2, 8) + ")";
+    }
+
     // Build consumer object for database
     const consumer = {
       name: name,

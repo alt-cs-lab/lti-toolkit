@@ -481,4 +481,20 @@ const ProviderLoginSchema = {
   },
 };
 
-export { ConsumerSchema, ConsumerKeySchema, ConsumerLoginSchema, OauthNonceSchema, ProviderSchema, ProviderKeySchema, ProviderLoginSchema };
+const ProviderRegistrationSchema = {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  token: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  url: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  }
+};
+
+export { ConsumerSchema, ConsumerKeySchema, ConsumerLoginSchema, OauthNonceSchema, ProviderSchema, ProviderKeySchema, ProviderLoginSchema, ProviderRegistrationSchema };

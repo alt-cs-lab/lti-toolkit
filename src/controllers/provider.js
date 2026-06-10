@@ -63,6 +63,21 @@ class ProviderController {
   }
 
   /**
+   * Get a provider by name
+   *
+   * @param {string} name the name of the provider
+   * @return {Provider} the provider with the given name
+   */
+  async getByName(name) {
+    const provider = await this.#ProviderModel.findOne({
+      where: {
+        name: name,
+      },
+    });
+    return provider;
+  }
+
+  /**
    * Create a new provider
    *
    * @param {Object} data the provider data to create

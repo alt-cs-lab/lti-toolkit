@@ -23,6 +23,7 @@ import ConfigureProviderHandler from "./routes/configure.js";
 import GradeHandler from "./routes/grades.js";
 import ProviderHandler from "./routes/provider.js";
 import ProviderLaunchHandler from "./routes/provider-launch.js";
+import ProviderConfigXMLHandler from "./routes/configurexml.js";
 
 // Create Express application
 var app = express();
@@ -64,6 +65,7 @@ app.use("/lti/consumer", lti.routers.consumer);
 // Add Handlers
 app.get("/", IndexHandler);
 app.post("/configure", ConfigureProviderHandler);
+app.post("/configure/xml", ProviderConfigXMLHandler);
 app.get("/provider/:id", ProviderHandler);
 app.post("/provider/:id/launch", ProviderLaunchHandler);
 app.get("/grades", GradeHandler);

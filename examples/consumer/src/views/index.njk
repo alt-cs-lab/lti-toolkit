@@ -12,7 +12,7 @@
         {% if error %}
         <p style="color: red">{{ error }}
         {% endif %}
-        <p><a href="grades">View the gradebook</a></p>
+        <p><a href="/grades">View the gradebook</a></p>
         <hr />
         <p>Select or configure an LTI Tool Provider to perform an LTI Launch</p>
         <h2>LTI Tool Providers</h2>
@@ -22,7 +22,32 @@
         {% endfor %}
         </ul>
         <hr />
-        <h2>Add LTI Tool Provider</h2>
+        <h2>Add LTI 1.3 Tool Provider via Dynamic Registration</h2>
+        <form method="POST" action="/configure/dynamic">
+          <label for="url">LTI 1.3 Registration URL</label><br>
+          <input type="text" id="url" name="url" size="50">
+          <br><br>
+          <input type="submit" value="Submit">
+        </form>
+        <hr />
+        <h2>Add LTI 1.0 Tool Provider via XML</h2>
+        <form method="POST" action="/configure/xml">
+          <label for="url">LTI 1.0 Configuration XML URL</label><br>
+          <input type="text" id="url" name="url" size="50">
+          <br>
+          <label for="xml">LTI 1.0 Configuration XML</label><br>
+          <textarea id="xml" name="xml" rows="5" cols="80" placeholder="XML here"></textarea>
+          <br>
+          <label for="key">LTI 1.0 Shared Key</label><br>
+          <input type="text" id="key" name="key" size="50">
+          <br>
+          <label for="secret">LTI 1.0 Shared Secret</label><br>
+          <input type="text" id="secret" name="secret" size="50">
+          <br><br>
+          <input type="submit" value="Submit">
+        </form>
+        <hr />
+        <h2>Manually Add LTI Tool Provider</h2>
         <form method="POST" action="/configure">
           <label for="name">Provider Name</label><br>
           <input type="text" id="name" name="name" size="50">

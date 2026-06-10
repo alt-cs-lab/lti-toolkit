@@ -23,6 +23,7 @@ class LTIConsumerController {
   #ProviderModel;
   #ProviderLoginModel;
   #ProviderController;
+  #ProviderRegistrationModel;
 
   /**
    * LTI Consumer Controller
@@ -42,6 +43,7 @@ class LTIConsumerController {
     this.#ProviderModel = models.Provider;
     this.#ProviderLoginModel = models.ProviderLogin;
     this.#ProviderController = provider_controller;
+    this.#ProviderRegistrationModel = models.ProviderRegistration;
 
     // Create LTI Utilities
     this.#LTI10Utils = new LTI10Utils(models, logger, domain_name);
@@ -548,6 +550,176 @@ class LTIConsumerController {
     }
   }
 
+  /**
+   * Handle LTI 1.0 XML Registration Request
+   * 
+   * @param {Object} data - the data from the registration request (either XML or URL)
+   * @param {string} data.xml - the XML string containing the LTI 1.0 configuration (optional if URL is provided)
+   * @param {string} data.url - the URL to fetch the XML configuration from (optional if XML is provided)
+   * @param {string} data.key - the key to use for the new provider
+   * @param {string} data.secret - the secret to use for the new provider
+   * @return {Object} the created provider object
+   * @throws {Error} if the XML is invalid or if there is an error creating the provider
+   */
+  async lti10configxml(data) {
+    // data must include a key and secret field
+    if (!data.key) {
+      throw new Error("Invalid LTI 1.0 Configuration: Missing Key");
+    }
+    if (!data.secret) {
+      throw new Error("Invalid LTI 1.0 Configuration: Missing Secret");
+    }
+
+    // check if data contains an xml field or a url field
+    let xml;
+    if (data.url){
+      // fetch the XML from the URL
+      const response = await fetch(data.url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch XML from URL: " + data.url);
+      }
+      xml = await response.text();
+    } else {
+      xml = data.xml;
+    }
+
+    const config_data = await this.#LTI10Utils.validateConfigXML(xml);
+
+    // Check for duplicate name in database and append random string if duplicate exists
+    const existingConsumer = await this.#ProviderController.getByName(config_data.title);
+    if (existingConsumer) {
+      config_data.title += " (" + Math.random().toString(36).substring(2, 8) + ")";
+    }
+
+    // If valid, add the LTI tool to the database
+    const provider = await this.#ProviderController.createProvider({
+      name: config_data.title,
+      lti13: false,
+      key: data.key,
+      secret: data.secret,
+      launch_url: config_data.launch_url,
+      // infer domain from launch url wihtout https:// or any path (e.g., https://example.com/path -> example.com)
+      domain: config_data?.extensions?.domain || new URL(config_data.launch_url).hostname,
+      custom: config_data.custom ? JSON.stringify(config_data.custom) : null,
+      use_section: false,
+    });
+
+    return provider;
+  }
+
+  /**
+   * Handle LTI 1.3 Dynamic Registration Request
+   * 
+   * @param {string} url - the URL to fetch the registration configuration from
+   * @return {Object} the created provider object
+   * @throws {Error} if the configuration is invalid or if there is an error creating the provider
+   */
+  async lti13dynamicregistration(url) {
+    // Create provider registration token
+    const registrationToken = nanoid();
+    this.#logger.lti("Handling LTI 1.3 Dynamic Registration Request for URL " + url);
+
+    try {
+      const registration = await this.#ProviderRegistrationModel.create({
+        token: registrationToken,
+        url: url,
+      });
+      if (!registration) {
+        throw new Error("Failed to create LTI 1.3 Dynamic Registration Token");
+      }
+    } catch (err) {
+      this.#logger.lti("Failed to create LTI 1.3 Dynamic Registration Token");
+      this.#logger.lti(err);
+      throw new Error("Failed to create LTI 1.3 Dynamic Registration Token: " + err.message, err);
+    }
+
+    // Send GET request to the registration URL with the registration token
+    const response = await fetch(url, {
+      query: {
+        "registration_token": registrationToken,
+        "openid_configuration": new URL(this.consumer_config.route_prefix + "/openid-configuration", this.#domain_name).href,
+      },
+      method: "GET",
+      headers: {
+        "Content-Type": "text/html",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch registration configuration from URL: " + url);
+    }
+
+    const html = await response.html();
+    return html;
+  }
+
+  /**
+   * Get LTI 1.3 OpenID Configuration
+   * 
+   * @return {Object} the OpenID configuration object
+   */
+  getOpenIDConfiguration() {
+    const config = {
+      issuer: new URL("/", this.#domain_name).href,
+      authorization_endpoint: new URL(this.#consumer_config.route_prefix + "/login", this.#domain_name).href,
+      registration_endpoint: new URL(this.#consumer_config.route_prefix + "/register", this.#domain_name).href,
+      jwks_uri: new URL(this.#consumer_config.route_prefix + "/jwks", this.#domain_name).href,
+      token_endpoint: new URL(this.#consumer_config.route_prefix + "/token", this.#domain_name).href,
+      token_endpoint_auth_methods_supported: [
+        "private_key_jwt"
+      ],
+      token_endpoint_auth_signing_alg_values_supported: [
+        "RS256"
+      ],
+      scopes_supported: [
+        // TODO Add more scopes here?
+        "openid",
+        "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+    
+      ],
+      response_types_supported: [
+        "id_token"
+      ],
+      id_token_signing_alg_values_supported: [
+        "RS256"
+      ],
+      claims_supported: [
+        "sub",
+        "picture",
+        "email",
+        "name",
+        "given_name",
+        "family_name",
+        "locale"
+      ],
+      subject_types_supported: [
+        "public"
+      ],
+      authorization_server: this.#domain_name,
+      "https://purl.imsglobal.org/spec/lti-platform-configuration": {
+        product_family_code: this.#consumer_config.product_name,
+        version: this.#consumer_config.product_version
+      },
+      messages_supported: [
+        {
+          type: "LtiResourceLinkRequest",
+          placements: [
+            "ContentArea"
+          ]
+        },
+        {
+          type: "LtiDeepLinkingRequest",
+          placements: [
+            "ContentArea",
+            "RichTextEditor"
+          ]
+        },
+      ],
+      notice_types_supported: [],
+      variables: [],
+    }
+    return config;
+  };
 }
 
 export default LTIConsumerController;

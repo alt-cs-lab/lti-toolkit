@@ -63,6 +63,21 @@ class ConsumerController {
   }
 
   /**
+   * Get a consumer by name
+   *
+   * @param {string} name the name of the consumer
+   * @return {Consumer} the consumer with the given name
+   */
+  async getByName(name) {
+    const consumer = await this.#ConsumerModel.findOne({
+      where: {
+        name: name,
+      },
+    });
+    return consumer;
+  }
+
+  /**
    * Create a new consumer
    *
    * @param {Object} data the consumer data to create

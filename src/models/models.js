@@ -15,7 +15,8 @@ import {
   OauthNonceSchema,
   ProviderSchema,
   ProviderKeySchema,
-  ProviderLoginSchema
+  ProviderLoginSchema,
+  ProviderRegistrationSchema
 } from "./schemas.js";
 
 export default function configureModels(database, logger) {
@@ -106,6 +107,18 @@ export default function configureModels(database, logger) {
     },
   );
 
+  // Create Provider Registration Model
+  const ProviderRegistration = database.define(
+    // Model Name
+    "ProviderRegistration",
+    // Schema
+    ProviderRegistrationSchema,
+    // Other options
+    {
+      tableName: "lti_provider_registrations",
+    },
+  );
+
   Consumer.beforeValidate((consumer) => {
     // Generate a unique key for the consumer
     if (consumer.isNewRecord && !consumer.key) {
@@ -157,6 +170,7 @@ export default function configureModels(database, logger) {
       Provider,
       ProviderKey,
       ProviderLogin,
+      ProviderRegistration,
     },
     initializeExpiration,
   };

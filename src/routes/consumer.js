@@ -202,5 +202,50 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
     }
   });
 
+  /**
+   * LTI 1.3 OpenID Configuration URL
+   * 
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   *
+   * @swagger
+   * /lti/consumer/openid-configuration:
+   *   get:
+   *    summary: LTI 1.3 OpenID Configuration URL
+   */
+  router.get("/openid-configuration", async function (req, res, next) {
+    try {
+      const config = await LTIConsumerController.getOpenIDConfiguration();
+      res.json(config);
+    } catch (err) {
+      logger.lti(err);
+      return res.status(500).send("Server Error");
+    }
+  });
+
+  /**
+   * LTI 1.3 Dynamic Registration Handler
+   * 
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * 
+   * @swagger
+   * /lti/consumer/register:
+   *   post:
+   *    summary: LTI 1.3 Dynamic Registration Handler
+   *    description: LTI 1.3 Dynamic Registration Handler for processing dynamic registration requests from LMSs
+   *    tags: [lti-consumer]
+   */
+  router.post("/register", async function (req, res, next) {
+    logger.lti("LTI 1.3 Dynamic Registration Request Received");
+    logger.silly(JSON.stringify(req.params, null, 2));
+    logger.silly(JSON.stringify(req.query, null, 2));
+    logger.silly(JSON.stringify(req.body, null, 2));
+
+    // TODO HERE
+
+  });
   return router;
 }

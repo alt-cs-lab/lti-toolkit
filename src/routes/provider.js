@@ -236,7 +236,7 @@ export default function setupProviderRoutes(LTILaunchController, LTIRegistration
    *     tags: [lti-provider]
    */
   router.all("/register", async function (req, res, next) {
-    logger.lti("Login Request Received");
+    logger.lti("Register Request Received");
     logger.silly(JSON.stringify(req.params, null, 2));
     logger.silly(JSON.stringify(req.query, null, 2));
     logger.silly(JSON.stringify(req.body, null, 2));
