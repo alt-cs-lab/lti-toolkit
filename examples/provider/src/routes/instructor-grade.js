@@ -65,7 +65,7 @@ async function InstructorGradeHandler(req, res) {
     };
     try {
       if (
-        lti.controllers.lti.provider.postGrade(
+        await lti.controllers.lti.provider.postGrade(
           consumer.key,
           gradeObject.grade_url,
           gradeObject.lms_grade_id,

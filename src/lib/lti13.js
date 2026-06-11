@@ -721,7 +721,7 @@ class LTI13Utils {
 
     // Find Provider for key to get expected audience and issuer
     const provider = await this.#ProviderModel.findOne({
-      where: { key: decodedJwt.header.kid },
+      where: { client_id: decodedJwt.payload.iss },
     });
     if (!provider) {
       throw new Error("Token Request: No matching provider found for JWT kid");
@@ -766,7 +766,7 @@ class LTI13Utils {
 
     // Get private key for signing
     const local_key = await this.#ProviderKeyModel.findOne({
-      where: { key: decodedJwt.header.kid },
+      where: { key: provider.key },
     });
     if (!local_key) {
       throw new Error("Token Request: No matching key found for JWT kid");
@@ -777,7 +777,7 @@ class LTI13Utils {
     const jwt = await jsonwebtoken.sign(token, privateKey, {
       algorithm: "RS256",
       expiresIn: "1h",
-      keyid: decodedJwt.header.kid,
+      keyid: provider.key,
       issuer: new URL("/", this.#domain_name).href,
       subject: provider.client_id,
       audience: [

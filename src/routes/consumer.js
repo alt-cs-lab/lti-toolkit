@@ -244,7 +244,13 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
     logger.silly(JSON.stringify(req.query, null, 2));
     logger.silly(JSON.stringify(req.body, null, 2));
 
-    // TODO HERE
+    try {
+      const registrationResult = await LTIConsumerController.dynamicRegistrationHandler(req);
+      res.json(registrationResult);
+    } catch (err) {
+      logger.lti(err);
+      return res.status(400).json({ error: "Error processing dynamic registration request: " + err.message });
+    }
 
   });
   return router;

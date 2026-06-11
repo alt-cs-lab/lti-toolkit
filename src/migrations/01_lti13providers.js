@@ -41,14 +41,6 @@ export async function up({ context: queryInterface }) {
     ),
     queryInterface.addColumn(
       "lti_providers",
-      "token_url", 
-      {
-        type: Sequelize.STRING,
-        allowNull: true,
-      }
-    ),
-    queryInterface.addColumn(
-      "lti_providers",
       "auth_url", 
       {
         type: Sequelize.STRING,
@@ -80,6 +72,14 @@ export async function up({ context: queryInterface }) {
       }
     ),
   ]);
+
+  // make client_id unique across providers (this is needed for LTI 1.3 registration)
+  await queryInterface.addConstraint("lti_providers", {
+    fields: ["client_id"],
+    type: "unique",
+    name: "unique_client_id"
+  });
+
 
   await Promise.all([
     queryInterface.addColumn(
@@ -141,7 +141,15 @@ export async function up({ context: queryInterface }) {
     url: {
       type: Sequelize.STRING,
       allowNull: false,
-    }
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      allowNull: false,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      allowNull: false,
+    },
   });
 }
 

@@ -147,6 +147,11 @@ export default function configureModels(database, logger) {
       }).then((count) => {
         logger.lti("Removed " + count + " Expired Provider Logins");
       });
+      ProviderRegistration.destroy({
+        where: { createdAt: { [Op.lte]: new Date(Date.now() - expireAfter) } },
+      }).then((count) => {
+        logger.lti("Removed " + count + " Expired Provider Registrations");
+      });
       /* c8 ignore next 4 */
     } catch (error) {
       logger.error("Error Expiring Old OAuth Nonces & Login Sessions");

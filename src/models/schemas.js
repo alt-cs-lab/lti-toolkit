@@ -293,10 +293,6 @@ const OauthNonceSchema = {
  *           type: string
  *           format: url
  *           description: the URL to request the JWKS (LTI 1.3 only)
- *         token_url:
- *           type: string
- *           format: url
- *           description: the URL to request a token (LTI 1.3 only)
  *         auth_url:
  *           type: string
  *           format: url
@@ -386,16 +382,13 @@ const ProviderSchema = {
   client_id: {
     type: Sequelize.STRING,
     allowNull: true,
+    unique: true,
   },
   deployment_id: {
     type: Sequelize.STRING,
     allowNull: true,
   },
   keyset_url: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  token_url: {
     type: Sequelize.STRING,
     allowNull: true,
   },
@@ -494,7 +487,15 @@ const ProviderRegistrationSchema = {
   url: {
     type: Sequelize.STRING,
     allowNull: false,
-  }
+  },
+  createdAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+  },
 };
 
 export { ConsumerSchema, ConsumerKeySchema, ConsumerLoginSchema, OauthNonceSchema, ProviderSchema, ProviderKeySchema, ProviderLoginSchema, ProviderRegistrationSchema };

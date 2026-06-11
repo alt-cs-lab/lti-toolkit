@@ -634,11 +634,11 @@ class LTIConsumerController {
     }
 
     // Send GET request to the registration URL with the registration token
-    const response = await fetch(url, {
-      query: {
-        "registration_token": registrationToken,
-        "openid_configuration": new URL(this.consumer_config.route_prefix + "/openid-configuration", this.#domain_name).href,
-      },
+    const query = new URLSearchParams({
+      "registration_token": registrationToken,
+      "openid_configuration": new URL(this.#consumer_config.route_prefix + "/openid-configuration", this.#domain_name).href,
+    });
+    const response = await fetch(url + "?" + query.toString(), {
       method: "GET",
       headers: {
         "Content-Type": "text/html",
@@ -649,7 +649,7 @@ class LTIConsumerController {
       throw new Error("Failed to fetch registration configuration from URL: " + url);
     }
 
-    const html = await response.html();
+    const html = await response.text();
     return html;
   }
 
@@ -720,6 +720,89 @@ class LTIConsumerController {
     }
     return config;
   };
+
+  /**
+   * Process LTI 1.3 Dynamic Registration Request
+   * 
+   * @param {Object} req - Express request object
+   * @return {Object} the expected registration response object
+   */
+  async dynamicRegistrationHandler(req) {
+    // get access token from bearer header
+    const authHeader = req.headers["authorization"];
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new Error("Missing or invalid Authorization header");
+    }
+    const token = authHeader.substring(7);
+
+    // Validate the registration token and get the registration data
+    const registrationData = await this.#ProviderRegistrationModel.findOne({
+      where: {
+        token: token,
+      },
+    });
+    if (!registrationData) {
+      throw new Error("Invalid registration token");
+    }
+
+    // Check for required fields in the request body
+    if (!req.body.client_name) {
+      throw new Error("Missing required field: client_name");
+    }
+    if (!req.body.jwks_uri) {
+      throw new Error("Missing required field: jwks_uri");
+    }
+    if (!req.body.initiate_login_uri) {
+      throw new Error("Missing required field: initiate_login_uri");
+    }
+    if (!req.body["https://purl.imsglobal.org/spec/lti-tool-configuration"] || !req.body["https://purl.imsglobal.org/spec/lti-tool-configuration"].target_link_uri) {
+      throw new Error("Missing required field: https://purl.imsglobal.org/spec/lti-tool-configuration.target_link_uri");
+    }
+
+    // Build the provider configuration from the request body
+    const body = req.body;
+    const data = {
+      name: body.client_name,
+      lti13: true,
+      key: nanoid(),
+      secret: nanoid(),
+      launch_url: body["https://purl.imsglobal.org/spec/lti-tool-configuration"].target_link_uri,
+      domain:body["https://purl.imsglobal.org/spec/lti-tool-configuration"].domain || new URL(body["https://purl.imsglobal.org/spec/lti-tool-configuration"].target_link_uri).hostname,
+      custom: body["https://purl.imsglobal.org/spec/lti-tool-configuration"].custom_parameters ? JSON.stringify(body["https://purl.imsglobal.org/spec/lti-tool-configuration"].custom_parameters) : null,
+      use_section: false,
+      keyset_url: body.jwks_uri,
+      auth_url: body.initiate_login_uri,
+      redirect_urls: body.redirect_urls ? JSON.stringify(body.redirect_urls) : null,
+      scopes: body.scope ? JSON.stringify(body.scope) : null,
+      claims: body["https://purl.imsglobal.org/spec/lti-tool-configuration"].claims ? JSON.stringify(body["https://purl.imsglobal.org/spec/lti-tool-configuration"].claims) : null,
+    }
+
+    // Check for duplicate name in database and append random string if duplicate exists
+    const existingProvider = await this.#ProviderController.getByName(data.name);
+    if (existingProvider) {
+      data.name += " (" + Math.random().toString(36).substring(2, 8) + ")";
+    }
+
+    // Create the provider in the database
+    const provider = await this.#ProviderController.createProvider(data);
+    if (!provider) {
+      throw new Error("Failed to create provider from dynamic registration");
+    }
+
+    // Delete the registration token to prevent reuse
+    await this.#ProviderRegistrationModel.destroy({
+      where: {
+        token: token,
+      },
+    });
+
+    // TODO modify the response to include/remove the appropriate fields based on the registration request and the created provider
+
+    // Return the expected response object
+    body.client_id = provider.client_id;
+    body.deployment_id = provider.deployment_id;
+    return body;
+  }
 }
 
 export default LTIConsumerController;

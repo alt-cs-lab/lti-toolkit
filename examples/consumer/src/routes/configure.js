@@ -30,7 +30,6 @@ async function ProviderConfigHandler(req, res) {
     use_section: req.body.use_section === "true",
     // LTI 1.3 fields (optional)
     keyset_url: req.body.keyset_url,
-    token_url: req.body.token_url,
     auth_url: req.body.auth_url,
     redirect_urls: req.body.redirect_urls,
     scopes: req.body.scopes,
@@ -63,7 +62,7 @@ async function ProviderConfigHandler(req, res) {
     // Check if any required fields are missing
     const requiredFields = ["name", "key", "secret", "launch_url", "domain"];
     if (data.lti13) {
-      requiredFields.push("keyset_url", "token_url", "auth_url");
+      requiredFields.push("keyset_url", "auth_url");
     }
     const missingFields = requiredFields.filter((field) => !data[field] || data[field].trim() === "");
     if (missingFields.length > 0) {
