@@ -31,7 +31,7 @@ async function ProviderConfigDynamicHandler(req, res) {
     } else {
       // Create Provider
       try {
-        await lti.controllers.lti.consumer.lti13dynamicregistration(data.url)
+        await lti.controllers.lti.consumer.lti13dynamicregistration(data.url);
       } catch (err) {
         error = "Failed to create provider: " + err.message;
       }

@@ -16,7 +16,7 @@ import {
   ProviderSchema,
   ProviderKeySchema,
   ProviderLoginSchema,
-  ProviderRegistrationSchema
+  ProviderRegistrationSchema,
 } from "./schemas.js";
 
 export default function configureModels(database, logger) {

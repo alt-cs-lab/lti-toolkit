@@ -668,7 +668,7 @@ class LTI10Utils {
 
   /**
    * Validate an incoming LTI 1.0 XML Configuration Message
-   * 
+   *
    * @param {string} xml - the XML string to validate
    * @throws {Error} if the XML is not a valid LTI 1.0 Configuration Message
    * @returns {Object} an object containing the configuration data
@@ -740,7 +740,10 @@ class LTI10Utils {
       custom: {},
       extensions: {},
     };
-    if (config.cartridge_basiclti_link["blti:custom"] && config.cartridge_basiclti_link["blti:custom"]["lticm:property"]) {
+    if (
+      config.cartridge_basiclti_link["blti:custom"] &&
+      config.cartridge_basiclti_link["blti:custom"]["lticm:property"]
+    ) {
       const customProperties = config.cartridge_basiclti_link["blti:custom"]["lticm:property"];
       if (Array.isArray(customProperties)) {
         customProperties.forEach((prop) => {
@@ -750,7 +753,10 @@ class LTI10Utils {
         configuration.custom[customProperties["$"]["name"]] = customProperties["_"];
       }
     }
-    if (config.cartridge_basiclti_link["blti:extensions"] && config.cartridge_basiclti_link["blti:extensions"]["lticm:property"]) {
+    if (
+      config.cartridge_basiclti_link["blti:extensions"] &&
+      config.cartridge_basiclti_link["blti:extensions"]["lticm:property"]
+    ) {
       const extensionProperties = config.cartridge_basiclti_link["blti:extensions"]["lticm:property"];
       if (Array.isArray(extensionProperties)) {
         extensionProperties.forEach((prop) => {
@@ -763,7 +769,6 @@ class LTI10Utils {
     this.#logger.silly("Validated LTI Configuration: " + JSON.stringify(configuration, null, 2));
     return configuration;
   }
-
 }
 
 export default LTI10Utils;

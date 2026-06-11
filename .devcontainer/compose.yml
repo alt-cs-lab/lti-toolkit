@@ -34,7 +34,7 @@ services:
       # TLS Certificate Resolver
       - "traefik.http.routers.ltitool.tls.certresolver=letsencrypt"
       # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-       # Routing Rule
+      # Routing Rule
       - "traefik.http.routers.ltilms.rule=Host(`ltilms.home.russfeld.me`)"
       # Change Port
       - "traefik.http.services.ltilms.loadbalancer.server.port=3001"

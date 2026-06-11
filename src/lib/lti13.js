@@ -529,7 +529,7 @@ class LTI13Utils {
 
   /**
    * Validate Auth Request
-   * 
+   *
    * @param {Object} req the Express request object
    * @returns {Object} the validated auth request data
    * @throws {Error} if the request is invalid
@@ -565,9 +565,8 @@ class LTI13Utils {
     }
 
     // Find login state in database
-    const loginState = await this.#ProviderLoginModel.findOne({ where:
-        { client_id: params.client_id, 
-          login_hint: params.login_hint }
+    const loginState = await this.#ProviderLoginModel.findOne({
+      where: { client_id: params.client_id, login_hint: params.login_hint },
     });
     if (!loginState) {
       throw new Error("Auth Request: No matching login state found for client_id and login_hint");
@@ -582,10 +581,13 @@ class LTI13Utils {
       state: params.state,
       response_mode: params.response_mode,
       nonce: params.nonce,
-      loginState: { 
-        data: JSON.parse(loginState.toJSON().data)
-      } 
-    }
+      loginState: {
+        data: JSON.parse(loginState.toJSON().data),
+      },
+    };
+
+    // Remove login state to prevent replays
+    await loginState.destroy();
 
     this.#logger.lti("Validated Auth Request");
     this.#logger.silly(JSON.stringify(returnObj, null, 2));
@@ -596,68 +598,67 @@ class LTI13Utils {
 
   /**
    * Build an LTI 1.3 Launch JWT
-   * 
+   *
    * @param {Object} authRequest the validated auth request data
    * @returns {string} the signed JWT
    * @throws {Error} if there is an error signing the JWT
    */
   async buildLaunchJWT(authRequest, consumer_config) {
-    const data = authRequest.loginState.data
+    const data = authRequest.loginState.data;
     const launchData = {
       "https://purl.imsglobal.org/spec/lti/claim/message_type": "LtiResourceLinkRequest",
       "https://purl.imsglobal.org/spec/lti/claim/version": "1.3.0",
       "https://purl.imsglobal.org/spec/lti/claim/resource_link": {
-        "id": `${data.resource.key}`,
-        "title": `${data.resource.name}`
+        id: `${data.resource.key}`,
+        title: `${data.resource.name}`,
       },
       "https://purl.imsglobal.org/spec/lti-ags/claim/endpoint": {
-        "lineitem": new URL(`/lti/consumer/ags/${data.context.key}/${data.resource.key}/${data.gradebook_key}`, this.#domain_name).href,
-        "scope": [
-          "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
-        ],
+        lineitem: new URL(
+          `/lti/consumer/ags/${data.context.key}/${data.resource.key}/${data.gradebook_key}`,
+          this.#domain_name,
+        ).href,
+        scope: ["https://purl.imsglobal.org/spec/lti-ags/scope/lineitem"],
         // TODO unsure if this is needed?
         // "lineitems": new URL(`/lti/consumer/ags/${data.context.key}/line_items`, this.#domain_name).href,
       },
       "https://purl.imsglobal.org/spec/lti/claim/deployment_id": data.deployment_id,
-      "nonce": authRequest.nonce,
+      nonce: authRequest.nonce,
       "https://purl.imsglobal.org/spec/lti/claim/target_link_uri": data.url,
-      "picture": data.user.image,
-      "email": data.user.email,
-      "name": data.user.name,
-      "given_name": data.user.first_name,
-      "family_name": data.user.last_name,
+      picture: data.user.image,
+      email: data.user.email,
+      name: data.user.name,
+      given_name: data.user.first_name,
+      family_name: data.user.last_name,
       "https://purl.imsglobal.org/spec/lti/claim/context": {
-        "id": data.context.key,
-        "label": data.context.label,
-        "title": data.context.name,
-        "type": [
-          "http://purl.imsglobal.org/vocab/lis/v2/course#CourseOffering"
-        ]
+        id: data.context.key,
+        label: data.context.label,
+        title: data.context.name,
+        type: ["http://purl.imsglobal.org/vocab/lis/v2/course#CourseOffering"],
       },
       "https://purl.imsglobal.org/spec/lti/claim/tool_platform": {
-        "guid": consumer_config.deployment_id,
-        "name": consumer_config.deployment_name,
-        "version": consumer_config.platform_version,
-        "product_family_code": consumer_config.platform_name,
+        guid: consumer_config.deployment_id,
+        name: consumer_config.deployment_name,
+        version: consumer_config.platform_version,
+        product_family_code: consumer_config.platform_name,
       },
       "https://purl.imsglobal.org/spec/lti/claim/launch_presentation": {
-        "document_target": "iframe",
-        "return_url": data.ret_url,
-        "locale": "en"
+        document_target: "iframe",
+        return_url: data.ret_url,
+        locale: "en",
       },
-      "locale": "en",
+      locale: "en",
     };
     if (data.manager) {
       launchData["https://purl.imsglobal.org/spec/lti/claim/roles"] = [
         "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Instructor",
         "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor",
-        "http://purl.imsglobal.org/vocab/lis/v2/system/person#User"
+        "http://purl.imsglobal.org/vocab/lis/v2/system/person#User",
       ];
     } else {
       launchData["https://purl.imsglobal.org/spec/lti/claim/roles"] = [
         "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Student",
         "http://purl.imsglobal.org/vocab/lis/v2/membership#Learner",
-        "http://purl.imsglobal.org/vocab/lis/v2/system/person#User"
+        "http://purl.imsglobal.org/vocab/lis/v2/system/person#User",
       ];
     }
     if (data.custom) {
@@ -688,7 +689,7 @@ class LTI13Utils {
 
   /**
    * Validate LTI 1.3 Token Request
-   * 
+   *
    * @param {Object} req the Express request object
    * @returns {Object} the validated token request data
    * @throws {Error} if the request is invalid
@@ -701,7 +702,10 @@ class LTI13Utils {
     if (!params.grant_type || params.grant_type !== "client_credentials") {
       throw new Error("Token Request: Invalid or missing grant_type parameter");
     }
-    if (!params.client_assertion_type || params.client_assertion_type !== "urn:ietf:params:oauth:client-assertion-type:jwt-bearer") {
+    if (
+      !params.client_assertion_type ||
+      params.client_assertion_type !== "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+    ) {
       throw new Error("Token Request: Invalid or missing client_assertion_type parameter");
     }
     if (!params.client_assertion) {
@@ -748,8 +752,7 @@ class LTI13Utils {
         subject: provider.client_id,
       });
     } catch (error) {
-      throw new Error("Token Request: Unable to verify JWT: " + error.message, { cause: error
-      });
+      throw new Error("Token Request: Unable to verify JWT: " + error.message, { cause: error });
     }
 
     // Verify scopes - for simplicity, just check that the required score scope is present for now
@@ -761,8 +764,8 @@ class LTI13Utils {
 
     // Create and issue token
     const token = {
-      scopes: params.scopes
-    }
+      scopes: params.scopes,
+    };
 
     // Get private key for signing
     const local_key = await this.#ProviderKeyModel.findOne({
@@ -780,23 +783,20 @@ class LTI13Utils {
       keyid: provider.key,
       issuer: new URL("/", this.#domain_name).href,
       subject: provider.client_id,
-      audience: [
-        new URL("/lti/consumer/token", this.#domain_name).href,
-        this.#domain_name,
-      ],
-      jwtid: nanoid()
+      audience: [new URL("/lti/consumer/token", this.#domain_name).href, this.#domain_name],
+      jwtid: nanoid(),
     });
     return {
       access_token: jwt,
       token_type: "Bearer",
       expires_in: 3600,
-      scope: params.scopes
+      scope: params.scopes,
     };
   }
 
   /**
    * Validate AGS Grade Post Request
-   * 
+   *
    * @param {Object} req the Express request object
    * @returns {Object} the validated grade post data
    * @throws {Error} if the request is invalid
@@ -826,11 +826,15 @@ class LTI13Utils {
     }
 
     // Check scope of provided token - for simplicity, just check that the required score scope is present for now
-    if (!req.lti13Token || !req.lti13Token.scopes || !req.lti13Token.scopes.split(" ").includes("https://purl.imsglobal.org/spec/lti-ags/scope/score")) {
+    if (
+      !req.lti13Token ||
+      !req.lti13Token.scopes ||
+      !req.lti13Token.scopes.split(" ").includes("https://purl.imsglobal.org/spec/lti-ags/scope/score")
+    ) {
       throw new Error("Grade Post Request: Insufficient permissions for AGS grade post");
     }
 
-    try{
+    try {
       // parse scores to floats
       params.scoreGiven = parseFloat(params.scoreGiven);
       params.scoreMaximum = parseFloat(params.scoreMaximum);

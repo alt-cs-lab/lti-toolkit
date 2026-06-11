@@ -17,7 +17,7 @@ import nunjucks from "nunjucks";
 // Import middleware
 import setupLTI13TokenMiddleware from "../middlewares/lti13_token.js";
 
-export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyModel, logger) {
+export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger) {
   // Create Express router
   const router = express.Router();
 
@@ -32,14 +32,13 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
       normalizeTags: true,
     }),
   );
-  
+
   // Parse JSON body for custom body types used in LTI 1.3 AGS grade passback
-  router.use(express.json({
-    type: [
-      "application/json",
-      "application/vnd.ims.lis.v1.score+json"
-    ]
-  }));
+  router.use(
+    express.json({
+      type: ["application/json", "application/vnd.ims.lis.v1.score+json"],
+    }),
+  );
 
   /**
    * LTI 1.0 Grade Passback Target
@@ -61,7 +60,7 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
     logger.silly(JSON.stringify(req.query, null, 2));
     logger.silly(JSON.stringify(req.body, null, 2));
     try {
-      const result = await LTIConsumerController.basicOutcomesHandler(req);
+      const result = await LTILMSController.basicOutcomesHandler(req);
       logger.silly("Grade Passback XML Response:");
       logger.silly(result.content);
       res.type("application/xml");
@@ -77,7 +76,7 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
 
   /**
    * LTI 1.3 Auth Request Target
-   * 
+   *
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
@@ -95,7 +94,7 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
     logger.silly(JSON.stringify(req.query, null, 2));
     logger.silly(JSON.stringify(req.body, null, 2));
     try {
-      const authResult = await LTIConsumerController.authRequestHandler(req);
+      const authResult = await LTILMSController.authRequestHandler(req);
       res.header("Content-Type", "text/html");
       res.header("Content-Security-Policy", "form-action " + authResult.url);
       nunjucks.configure({ autoescape: true });
@@ -136,9 +135,9 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
    */
   router.get("/jwks", async function (req, res, next) {
     try {
-      const keys = await LTIConsumerController.generateProviderJWKS();
+      const keys = await LTILMSController.generateProviderJWKS();
       res.json({
-        keys: keys
+        keys: keys,
       });
     } catch (err) {
       logger.lti(err);
@@ -148,7 +147,7 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
 
   /**
    * LTI 1.3 Token URL
-   * 
+   *
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
@@ -166,7 +165,7 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
     logger.silly(JSON.stringify(req.query, null, 2));
     logger.silly(JSON.stringify(req.body, null, 2));
     try {
-      const tokenResult = await LTIConsumerController.tokenRequestHandler(req);
+      const tokenResult = await LTILMSController.tokenRequestHandler(req);
       res.json(tokenResult);
     } catch (err) {
       logger.lti(err);
@@ -176,11 +175,11 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
 
   /**
    * LTI 1.3 AGS Grade Passback
-   * 
+   *
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
-   * 
+   *
    * @swagger
    * /lti/consumer/ags/:context_key/:resource_key/:gradebook_key:
    *   post:
@@ -188,23 +187,27 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
    *    description: LTI 1.3 AGS Grade Passback Target for a specific line item
    *    tags: [lti-consumer]
    */
-  router.post("/ags/:context_key/:resource_key/:gradebook_key/scores", lti13TokenMiddleware, async function (req, res, next) {
-    logger.lti("LTI 1.3 AGS Grade Passback Request Received");
-    logger.silly(JSON.stringify(req.params, null, 2));
-    logger.silly(JSON.stringify(req.query, null, 2));
-    logger.silly(JSON.stringify(req.body, null, 2));
-    try {
-      const result = await LTIConsumerController.agsGradePassbackHandler(req);
-      res.status(200).json(result);
-    } catch (err) {
-      logger.lti(err);
-      return res.status(500).send("Error processing AGS grade passback");
-    }
-  });
+  router.post(
+    "/ags/:context_key/:resource_key/:gradebook_key/scores",
+    lti13TokenMiddleware,
+    async function (req, res, next) {
+      logger.lti("LTI 1.3 AGS Grade Passback Request Received");
+      logger.silly(JSON.stringify(req.params, null, 2));
+      logger.silly(JSON.stringify(req.query, null, 2));
+      logger.silly(JSON.stringify(req.body, null, 2));
+      try {
+        const result = await LTILMSController.agsGradePassbackHandler(req);
+        res.status(200).json(result);
+      } catch (err) {
+        logger.lti(err);
+        return res.status(500).send("Error processing AGS grade passback");
+      }
+    },
+  );
 
   /**
    * LTI 1.3 OpenID Configuration URL
-   * 
+   *
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
@@ -216,7 +219,7 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
    */
   router.get("/openid-configuration", async function (req, res, next) {
     try {
-      const config = await LTIConsumerController.getOpenIDConfiguration();
+      const config = await LTILMSController.getOpenIDConfiguration();
       res.json(config);
     } catch (err) {
       logger.lti(err);
@@ -226,11 +229,11 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
 
   /**
    * LTI 1.3 Dynamic Registration Handler
-   * 
+   *
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
-   * 
+   *
    * @swagger
    * /lti/consumer/register:
    *   post:
@@ -245,13 +248,12 @@ export default function setupConsumerRoutes(LTIConsumerController, ProviderKeyMo
     logger.silly(JSON.stringify(req.body, null, 2));
 
     try {
-      const registrationResult = await LTIConsumerController.dynamicRegistrationHandler(req);
+      const registrationResult = await LTILMSController.dynamicRegistrationHandler(req);
       res.json(registrationResult);
     } catch (err) {
       logger.lti(err);
       return res.status(400).json({ error: "Error processing dynamic registration request: " + err.message });
     }
-
   });
   return router;
 }

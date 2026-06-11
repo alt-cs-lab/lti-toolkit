@@ -24,16 +24,17 @@ describe("/routes/consumer.js", function () {
   describe("GET /grade", function () {
     it("should handle grade passback request and send XML response", async function () {
       // Mock controller
-      const LTIConsumerController = {
+      const LTILMSController = {
         basicOutcomesHandler: sinon.stub().resolves({
           content: "<xml>response</xml>",
           headers: "Bearer token123",
         }),
       };
+      const ProviderKeyModel = {};
 
       // Setup Express app with router
       const app = express();
-      app.use("/lti/consumer", setupConsumerRoutes(LTIConsumerController, logger));
+      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger));
 
       // Send request to route
       const res = await request(app)
@@ -42,8 +43,8 @@ describe("/routes/consumer.js", function () {
         .set("Content-Type", "application/xml");
 
       // Assert controller was called with parsed XML body
-      expect(LTIConsumerController.basicOutcomesHandler.calledOnce).to.be.true;
-      const handlerArg = LTIConsumerController.basicOutcomesHandler.getCall(0).args[0];
+      expect(LTILMSController.basicOutcomesHandler.calledOnce).to.be.true;
+      const handlerArg = LTILMSController.basicOutcomesHandler.getCall(0).args[0];
       expect(handlerArg).to.have.property("body");
       expect(handlerArg.body).to.deep.equal({ xml: "request" });
 
@@ -56,13 +57,14 @@ describe("/routes/consumer.js", function () {
 
     it("should handle errors in grade passback and send 500", async function () {
       // Mock controller that throws error
-      const LTIConsumerController = {
+      const LTILMSController = {
         basicOutcomesHandler: sinon.stub().rejects(new Error("Test error")),
       };
+      const ProviderKeyModel = {};
 
       // Setup Express app with router
       const app = express();
-      app.use("/lti/consumer", setupConsumerRoutes(LTIConsumerController, logger));
+      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger));
 
       // Send request to route
       const res = await request(app)
@@ -71,8 +73,8 @@ describe("/routes/consumer.js", function () {
         .set("Content-Type", "application/xml");
 
       // Assert controller was called with parsed XML body
-      expect(LTIConsumerController.basicOutcomesHandler.calledOnce).to.be.true;
-      const handlerArg = LTIConsumerController.basicOutcomesHandler.getCall(0).args[0];
+      expect(LTILMSController.basicOutcomesHandler.calledOnce).to.be.true;
+      const handlerArg = LTILMSController.basicOutcomesHandler.getCall(0).args[0];
       expect(handlerArg).to.have.property("body");
       expect(handlerArg.body).to.deep.equal({ xml: "request" });
 

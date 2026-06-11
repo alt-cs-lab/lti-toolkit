@@ -27,6 +27,7 @@ import LTIConsumerController from "./src/controllers/lti-consumer.js";
 import LTIProviderController from "./src/controllers/lti-provider.js";
 import LTILaunchController from "./src/controllers/lti-launch.js";
 import LTIRegisterController from "./src/controllers/lti-register.js";
+import LTILMSController from "./src/controllers/lti-lms.js";
 
 /**
  * LTI Toolkit - A toolkit for building LTI (Learning Tools Interoperability) applications.
@@ -152,8 +153,21 @@ export default async function LtiToolkit(config) {
       returnObj.controllers.provider,
     );
 
+    // LMS LTI Controller to handle other LMS functions like registration and key management
+    const LTILMSControllerInstance = new LTILMSController(
+      config.consumer,
+      modelConfig.models,
+      config.logger,
+      config.domain_name,
+      returnObj.controllers.provider,
+    );
+
     // Consumer Routes
-    const consumerRouter = await setupConsumerRoutes(LTIConsumerControllerInstance, modelConfig.models.ProviderKey, config.logger);
+    const consumerRouter = await setupConsumerRoutes(
+      LTILMSControllerInstance,
+      modelConfig.models.ProviderKey,
+      config.logger,
+    );
     returnObj.routers.consumer = consumerRouter;
     returnObj.controllers.lti.consumer = LTIConsumerControllerInstance;
   }

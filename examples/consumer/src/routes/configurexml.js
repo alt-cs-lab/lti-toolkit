@@ -37,7 +37,7 @@ async function ProviderConfigXMLHandler(req, res) {
     } else {
       // Create Provider
       try {
-        await lti.controllers.lti.consumer.lti10configxml(data)
+        await lti.controllers.lti.consumer.lti10configxml(data);
       } catch (err) {
         error = "Failed to create provider: " + err.message;
       }

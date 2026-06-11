@@ -148,7 +148,10 @@ describe("/controllers/lti-register.js", () => {
   it("should handle a successful LTI 1.3 dynamic registration", async () => {
     // Create mock dependencies
     const models = {};
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(createdConsumer),
+      getByName: sinon.stub().resolves(null),
+    };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
@@ -189,7 +192,10 @@ describe("/controllers/lti-register.js", () => {
 
     // Create mock dependencies
     const models = {};
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(createdConsumer),
+      getByName: sinon.stub().resolves(null),
+    };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
@@ -230,7 +236,10 @@ describe("/controllers/lti-register.js", () => {
 
     // Create mock dependencies
     const models = {};
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(createdConsumer),
+      getByName: sinon.stub().resolves(null),
+    };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
@@ -271,7 +280,10 @@ describe("/controllers/lti-register.js", () => {
 
     // Create mock dependencies
     const models = {};
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(createdConsumer),
+      getByName: sinon.stub().resolves(null),
+    };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
@@ -325,7 +337,10 @@ describe("/controllers/lti-register.js", () => {
 
     // Create mock dependencies
     const models = {};
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(createdConsumer),
+      getByName: sinon.stub().resolves(null),
+    };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
@@ -380,7 +395,10 @@ describe("/controllers/lti-register.js", () => {
 
     // Create mock dependencies
     const models = {};
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(createdConsumer),
+      getByName: sinon.stub().resolves(null),
+    };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
@@ -413,7 +431,10 @@ describe("/controllers/lti-register.js", () => {
   it("should fail when getting LMS details fails", async () => {
     // Create mock dependencies
     const models = {};
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(createdConsumer),
+      getByName: sinon.stub().resolves(null),
+    };
 
     // Stub the LTI 1.3 utility function to return a failed launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").rejects(new Error("Failed to get LMS details"));
@@ -446,7 +467,10 @@ describe("/controllers/lti-register.js", () => {
   it("should fail when creating consumer fails", async () => {
     // Create mock dependencies
     const models = {};
-    const consumer_controller = { createConsumer: sinon.stub().resolves(null) };
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(null),
+      getByName: sinon.stub().resolves(null),
+    };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
@@ -479,7 +503,10 @@ describe("/controllers/lti-register.js", () => {
   it("should fail when sending registration response fails", async () => {
     // Create mock dependencies
     const models = {};
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(createdConsumer),
+      getByName: sinon.stub().resolves(null),
+    };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
@@ -514,7 +541,10 @@ describe("/controllers/lti-register.js", () => {
   it("should fail when sending registration response fails and log error json", async () => {
     // Create mock dependencies
     const models = {};
-    const consumer_controller = { createConsumer: sinon.stub().resolves(createdConsumer) };
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(createdConsumer),
+      getByName: sinon.stub().resolves(null),
+    };
 
     // Stub the LTI 1.3 utility function to return a successful launch response
     sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);

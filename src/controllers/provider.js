@@ -8,7 +8,6 @@
 import { nanoid } from "nanoid";
 import crypto from "crypto";
 
-
 class ProviderController {
   // Private Attributes
   #ProviderModel;
@@ -100,8 +99,7 @@ class ProviderController {
           redirect_urls: data.redirect_urls,
           scopes: data.scopes,
           claims: data.claims,
-          client_id: nanoid(), // Generate client_id and deployment_id for LTI 1.3 providers (these can be updated later if needed)
-          deployment_id: nanoid()
+          // client_id and deployment_id will be generated automatically by the model hooks for LTI 1.3 providers
         },
         { transaction: t },
       );
@@ -119,7 +117,7 @@ class ProviderController {
     return provider;
   }
 
-    /**
+  /**
    * Update an existing provider
    *
    * @param {number} id the ID of the provider to update
@@ -173,7 +171,7 @@ class ProviderController {
     return true;
   }
 
-    /**
+  /**
    * Get the secret for an LTI provider
    *
    * @param {number} id the ID of the provider

@@ -150,7 +150,7 @@ export default function setupProviderRoutes(LTILaunchController, LTIRegistration
     try {
       const keys = await LTILaunchController.generateConsumerJWKS();
       res.json({
-        keys: keys
+        keys: keys,
       });
     } catch (err) {
       logger.lti(err);

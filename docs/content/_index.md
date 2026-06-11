@@ -7,19 +7,18 @@ This project is yet another toolkit for developing [LTI (Learning Tools Interope
 
 **Features**
  - Act as an LTI 1.0 and LTI 1.3 Tool Provider (Learning Tool) connected to Canvas LMS
- - Act as an LTI 1.0 Tool Consumer (LMS) connected to other LTI 1.0 Tool Providers
- - Receive Grades from LTI 1.0 Tool Provider
+ - Act as an LTI 1.0 and LTI 1.3 Tool Consumer (LMS) connected to other LTI Tool Providers
+ - Receive Grades from LTI 1.0 and LTI 1.3 Tool Providers
  - Pass Simple Grades to LTI 1.0 or LTI 1.3 Tool Consumer
- - Supports all Canvas privacy levels in LTI Launch Requests to LTI 1.0 Tool Providers
+ - Supports all Canvas privacy levels in LTI Launch Requests to LTI 1.0 and LTI 1.3 Tool Providers
  - Supports test students from Canvas in LTI 1.0 and LTI 1.3 Launch Requests
  - Handles LTI 1.3 Dynamic Registration and Deep Linking as a Tool Provider
  - Provides LTI 1.0 XML Configuration as a Tool Provider
 
 **Limitations**
- - Does not fully support LTI 1.3 AGS (Advanced Grade Service)
+ - Does not fully support all features of LTI 1.3 AGS (Advanced Grade Service) or DR (Dynamic Registration) but does enough to work with Canvas in most cases.
  - Only supports JWKS keyset URLs for LTI 1.3 connections, not manually entered keys. (This best supports the typical Canvas use-case)
  - Does not cache authentication keys received from LTI Consumers (LMSs) via LTI 1.3 - it will always request a new key (this is simple but inefficient)
- - LTI 1.3 is not implemented within the LTI Tool Consumer features (therefore, it can only connect to other LTI Tool Providers using LTI 1.0 at this time)
  - Not currently tested or certified against the [1EdTech LTI Certification Tool](https://build.1edtech.org/)
  - Not currently tested against LTI Tool Consumers other than [Instructure Canvas](https://www.instructure.com/solutions/learning-management/k12)
  - Does not currently send errors back to LTI Tool Provider when grades are received but cannot be posted
@@ -244,14 +243,20 @@ The initialized LTI Toolkit is a complex object containing the following items:
       getById(id),
       // Get a Provider by Key
       getByKey(key),
-      // Get the secrets for a Provider by ID
-      getSecret(id),
-      // Update a Provider
-      updateProvider(id, data),
+      // Get a Provider by name
+      getByName(name)
       // Create a new Provider
       createProvider(data),
+      // Update a Provider
+      updateProvider(id, data),
       // Delete a Provider
       deleteProvider(id)
+      // Get the secrets for a Provider by ID
+      getSecret(id),
+      // Update the secret for a Provider
+      updateSecret(id, key, secret)
+      // Get all public JWKS keys
+      getAllKeys()
     },
     // LTI Consumer Controller Instance
     // Returned if provider is configured
@@ -263,6 +268,8 @@ The initialized LTI Toolkit is a complex object containing the following items:
       getById(id),
       // Get a Consumer by Key
       getByKey(key)
+      // Get a Consumer by name
+      getByName(name)
       // Create a new Consumer
       createConsumer(data),
       // Update a Consumer
@@ -272,7 +279,9 @@ The initialized LTI Toolkit is a complex object containing the following items:
       // Get the secrets for a Consumer by ID
       getSecret(id),
       // Update the secrets for a Consumer
-      updateSecret(id)
+      updateSecret(id, key, secret)
+      // Get all public JWKS keys
+      getAllKeys()
     }
   },
   // LTI Specific Controllers
@@ -319,14 +328,58 @@ The initialized LTI Toolkit is a complex object containing the following items:
           // custom variable names and values
         }
       ),
-      // Handle a Basic Outcomes Request
-      // NOT MEANT FOR EXTERNAL USE
-      // (This is called from the LTI Consumer Router)
-      basicOutcomesHandler(req),
-      // Handle a Basic Outcomes Replace Result Request
-      // NOT MEANT FOR EXTERNAL USE
-      // (This is called from the basicOutcomesHandler function)
-      replaceResultRequest(request, providerKey, url, message_id, req),
+      // Generate an LTI 1.3 Launch Form
+      generateLTI13LaunchFormData(
+        // LTI Consumer Key
+        key,
+        // LTI Client ID
+        client_id,
+        // LTI Deployment ID
+        deployment_id,
+        // LTI Launch URL
+        url,
+        // Return URL back to the LTI Consumer
+        ret_url,
+        // LTI Context (Course)
+        context: {
+          key,
+          label,
+          name
+        }
+        // LTI Resource (Assignment)
+        resource: {
+          key,
+          name
+        }
+        // LTI User
+        user: {
+          key,
+          email,
+          family_name,
+          given_name,
+          name,
+          image
+        }
+        // Boolean: True if user is LTI Course Manager (Instructor), False Otherwise
+        manager,
+        // Gradebook ID for Basic Outcomes
+        gradebook_key,
+        // LTI 1.0 Custom Variables
+        custom: {
+          // custom variable names and values
+        }
+      ),
+      // Register an LTI 1.0 Tool Provider via XML
+      lti10configxml(
+        data: {
+          xml,  // one of xml or url must be provided
+          url,  // one of xml or url must be provided
+          key,
+          secret,
+        }
+      )
+      // Register an LTI 1.3 Tool Provider via Dynamic Registration
+      lti13dynamicregistration(url)
     },
     // LTI Provider Controller
     // Contains methods for acting as an LTI Provider
@@ -382,7 +435,7 @@ The initialized LTI Toolkit is a complex object containing the following items:
 
 Care has been taken to minimize the amount of dependencies but balanced against simplifying the code and using reasonable libraries where appropriate. The core dependencies are listed below:
 
-* [Node.js 22 LTS](https://nodejs.org/en/blog/release/v22.11.0) - developed and tested using Node 22 LTS
+* [Node.js 24 LTS](https://nodejs.org/en/blog/release/v24.13.0) - developed and tested using Node 24 LTS
 * [express](https://www.npmjs.com/package/express) - core web framework for handling routing and parsing
 * [express-xml-bodyparser](https://www.npmjs.com/package/express-xml-bodyparser) - parse incoming XML bodies (LTI 1.0 Basic Outcomes)
 * [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) - used to decode LTI 1.3 authentication tokens

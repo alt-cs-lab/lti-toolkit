@@ -58,6 +58,7 @@ export async function up({ context: queryInterface }) {
     client_id: {
       type: Sequelize.STRING,
       allowNull: true,
+      unique: true,
     },
     platform_id: {
       type: Sequelize.STRING,

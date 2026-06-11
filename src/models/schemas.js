@@ -443,21 +443,18 @@ const ProviderKeySchema = {
   private: {
     type: Sequelize.STRING,
     allowNull: true,
-  }
+  },
 };
 
 const ProviderLoginSchema = {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
   client_id: {
     type: Sequelize.STRING,
+    primaryKey: true,
     allowNull: false,
   },
   login_hint: {
     type: Sequelize.STRING,
+    primaryKey: true,
     allowNull: false,
   },
   data: {
@@ -475,13 +472,9 @@ const ProviderLoginSchema = {
 };
 
 const ProviderRegistrationSchema = {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
   token: {
     type: Sequelize.STRING,
+    primaryKey: true,
     allowNull: false,
   },
   url: {
@@ -498,4 +491,13 @@ const ProviderRegistrationSchema = {
   },
 };
 
-export { ConsumerSchema, ConsumerKeySchema, ConsumerLoginSchema, OauthNonceSchema, ProviderSchema, ProviderKeySchema, ProviderLoginSchema, ProviderRegistrationSchema };
+export {
+  ConsumerSchema,
+  ConsumerKeySchema,
+  ConsumerLoginSchema,
+  OauthNonceSchema,
+  ProviderSchema,
+  ProviderKeySchema,
+  ProviderLoginSchema,
+  ProviderRegistrationSchema,
+};
