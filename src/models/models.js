@@ -126,6 +126,14 @@ export default function configureModels(database, logger) {
     }
   });
 
+  Provider.beforeValidate((provider) => {
+    // Generate a unique client_id and deployment_id for the provider
+    if (provider.isNewRecord) {
+      provider.setDataValue("client_id", nanoid());
+      provider.setDataValue("deployment_id", nanoid());
+    }
+  });
+
   // Expiration Interval
   const expireAfter = 15 * 60 * 1000; // 15 minutes
   const checkExpire = 5 * 60 * 1000; // 5 minutess
