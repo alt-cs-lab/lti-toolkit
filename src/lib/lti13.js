@@ -20,6 +20,7 @@ class LTI13Utils {
   #ProviderLoginModel;
   #ProviderKeyModel;
   #ProviderModel;
+  #ProviderRegistrationModel;
   #logger;
   #domain_name;
 
@@ -36,6 +37,7 @@ class LTI13Utils {
     this.#ProviderLoginModel = models.ProviderLogin;
     this.#ProviderKeyModel = models.ProviderKey;
     this.#ProviderModel = models.Provider;
+    this.#ProviderRegistrationModel = models.ProviderRegistration;
     this.#logger = logger;
     this.#domain_name = domain_name;
   }
@@ -844,6 +846,52 @@ class LTI13Utils {
 
     // Return validated data
     return params;
+  }
+
+  /**
+   * Handle LTI 1.3 Dynamic Registration Request
+   * 
+   * @param {string} url the URL to fetch the registration configuration from
+   * @return {string} the HTML response to send back to the client
+   * @throws {Error} if the request is invalid or if there is an error during processing
+   */
+  async handleDynamicRegistrationRequest(url, route_prefix) {
+    // Create provider registration token
+    const registrationToken = nanoid();
+
+    try {
+      const registration = await this.#ProviderRegistrationModel.create({
+        token: registrationToken,
+        url: url,
+      });
+      if (!registration) {
+        throw new Error("Failed to create LTI 1.3 Dynamic Registration Token");
+      }
+    } catch (err) {
+      this.#logger.lti("Failed to create LTI 1.3 Dynamic Registration Token");
+      this.#logger.lti(err);
+      throw new Error("Failed to create LTI 1.3 Dynamic Registration Token: " + err.message, err);
+    }
+
+    // Send GET request to the registration URL with the registration token
+    const query = new URLSearchParams({
+      registration_token: registrationToken,
+      openid_configuration: new URL(route_prefix + "/openid-configuration", this.#domain_name)
+        .href,
+    });
+    const response = await ky.get(url + "?" + query.toString(), {
+      method: "GET",
+      headers: {
+        "Content-Type": "text/html",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch registration configuration from URL: " + url);
+    }
+
+    const html = await response.text();
+    return html;
   }
 }
 

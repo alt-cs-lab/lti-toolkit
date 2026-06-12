@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export default function setupLTI13TokenMiddleware(ProviderKeys, logger) {
+function setupLTI13TokenMiddleware(ProviderKeys, logger) {
   /**
    * Middleware to validate a JWT LTI 1.3 token issued by the lti13.js library.
    * Uses the `kid` from the token header to look up the signing key in ProviderKeys.
@@ -44,7 +44,7 @@ export default function setupLTI13TokenMiddleware(ProviderKeys, logger) {
 
       // Verify the token with the retrieved public key
       const verified = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
-
+      
       req.lti13Token = verified;
       next();
     } catch (err) {
@@ -62,3 +62,5 @@ export default function setupLTI13TokenMiddleware(ProviderKeys, logger) {
     }
   };
 }
+
+export default setupLTI13TokenMiddleware;

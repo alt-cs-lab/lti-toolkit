@@ -5,7 +5,6 @@
  */
 
 // Import Libraries
-import { nanoid } from "nanoid";
 import crypto from "crypto";
 
 // Import Utilities
@@ -274,10 +273,10 @@ class LTILMSController {
     );
 
     if (!passbackResult || !passbackResult.success) {
-      this.#logger.lti("Failed to Post Grade: " + passbackResult.message);
+      this.#logger.lti("Failed to Post Grade: " + passbackResult?.message);
       return {
         success: false,
-        message: "Failed to Post Grade: " + passbackResult.message,
+        message: "Failed to Post Grade: " + passbackResult?.message,
       };
     } else {
       return {
@@ -377,8 +376,6 @@ class LTILMSController {
     const data = {
       name: body.client_name,
       lti13: true,
-      key: nanoid(),
-      secret: nanoid(),
       launch_url: body["https://purl.imsglobal.org/spec/lti-tool-configuration"].target_link_uri,
       domain:
         body["https://purl.imsglobal.org/spec/lti-tool-configuration"].domain ||
@@ -390,7 +387,7 @@ class LTILMSController {
       keyset_url: body.jwks_uri,
       auth_url: body.initiate_login_uri,
       redirect_urls: body.redirect_urls ? JSON.stringify(body.redirect_urls) : null,
-      scopes: body.scope ? JSON.stringify(body.scope) : null,
+      scopes: body.scope ? JSON.stringify(body.scope.split(" ")) : null,
       claims: body["https://purl.imsglobal.org/spec/lti-tool-configuration"].claims
         ? JSON.stringify(body["https://purl.imsglobal.org/spec/lti-tool-configuration"].claims)
         : null,

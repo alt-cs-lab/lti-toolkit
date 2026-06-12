@@ -17,12 +17,13 @@ import nunjucks from "nunjucks";
 // Import middleware
 import setupLTI13TokenMiddleware from "../middlewares/lti13_token.js";
 
-export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger) {
+export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, dependencies = {}) {
   // Create Express router
   const router = express.Router();
 
   // Load middleware
-  const lti13TokenMiddleware = setupLTI13TokenMiddleware(ProviderKeyModel, logger);
+  const tokenMiddlewareFactory = dependencies.setupLTI13TokenMiddleware || setupLTI13TokenMiddleware;
+  const lti13TokenMiddleware = tokenMiddlewareFactory(ProviderKeyModel, logger);
 
   // Parse XML body for grade passback route
   router.use(
@@ -181,7 +182,7 @@ export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, 
    * @param {Function} next - Express next middleware function
    *
    * @swagger
-   * /lti/consumer/ags/:context_key/:resource_key/:gradebook_key:
+   * /lti/consumer/ags/:context_key/:resource_key/:gradebook_key/scores:
    *   post:
    *    summary: LTI 1.3 AGS Grade Passback
    *    description: LTI 1.3 AGS Grade Passback Target for a specific line item

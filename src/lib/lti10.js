@@ -673,7 +673,26 @@ class LTI10Utils {
    * @throws {Error} if the XML is not a valid LTI 1.0 Configuration Message
    * @returns {Object} an object containing the configuration data
    */
-  async validateConfigXML(xml) {
+  async validateConfigXML(xml, url) {
+    // Either XML or URL must be included
+    if (!xml && !url) {
+      throw new Error("Validation Error: Missing XML Configuration and URL");
+    }
+
+    // If URL is included, fetch XML from URL
+    if (url) {
+      try {
+        const response = await ky.get(url);
+        if (response && response.status === 200) {
+          xml = await response.text();
+        } else {
+          throw new Error("HTTP " + response.status + " - " + response.statusText);
+        }
+      } catch (error) {
+        throw new Error("Failed to fetch XML from URL: " + error.message, { cause: error });
+      }
+    }
+
     const parser = new xml2js.Parser({ explicitArray: false, trim: true });
     let config;
     config = await parser.parseStringPromise(xml);

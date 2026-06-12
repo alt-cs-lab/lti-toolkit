@@ -9,18 +9,19 @@ import { nanoid } from "nanoid";
 
 // Import Utilities
 import LTI10Utils from "../lib/lti10.js";
+import LTI13Utils from "../lib/lti13.js";
 
 class LTIConsumerController {
   // Private fields
   #logger;
   #LTI10Utils;
+  #LTI13Utils;
   #consumer_config;
   #domain_name;
   #admin_email;
   #ProviderModel;
   #ProviderLoginModel;
   #ProviderController;
-  #ProviderRegistrationModel;
 
   /**
    * LTI Consumer Controller
@@ -40,10 +41,10 @@ class LTIConsumerController {
     this.#ProviderModel = models.Provider;
     this.#ProviderLoginModel = models.ProviderLogin;
     this.#ProviderController = provider_controller;
-    this.#ProviderRegistrationModel = models.ProviderRegistration;
 
     // Create LTI Utilities
     this.#LTI10Utils = new LTI10Utils(models, logger, domain_name);
+    this.#LTI13Utils = new LTI13Utils(models, logger, domain_name);
   }
 
   /**
@@ -215,7 +216,7 @@ class LTIConsumerController {
   ) {
     // Validate Inputs
     if (!key) {
-      throw new Error("Consumer Key is required to generate LTI 1.0 Launch Data");
+      throw new Error("Consumer Key is required to generate LTI 1.3 Login Data");
     }
     if (!client_id) {
       throw new Error("Client ID is required to generate LTI 1.3 Login Data");
@@ -227,22 +228,22 @@ class LTIConsumerController {
       throw new Error("Launch URL is required to generate LTI 1.3 Login Data");
     }
     if (!ret_url) {
-      throw new Error("Return URL is required to generate LTI 1.0 Launch Data");
+      throw new Error("Return URL is required to generate LTI 1.3 Login Data");
     }
     if (!context || !context.key || !context.label || !context.name) {
-      throw new Error("Context with key, label, and name is required to generate LTI 1.0 Launch Data");
+      throw new Error("Context with key, label, and name is required to generate LTI 1.3 Login Data");
     }
     if (!resource || !resource.key || !resource.name) {
-      throw new Error("Resource with key and name is required to generate LTI 1.0 Launch Data");
+      throw new Error("Resource with key and name is required to generate LTI 1.3 Login Data");
     }
     if (!user || !user.key || !user.email) {
-      throw new Error("User with key and email is required to generate LTI 1.0 Launch Data");
+      throw new Error("User with key and email is required to generate LTI 1.3 Login Data");
     }
     if (manager === undefined || manager === null || typeof manager !== "boolean") {
-      throw new Error("Manager status is required to generate LTI 1.0 Launch Data");
+      throw new Error("Manager status is required to generate LTI 1.3 Login Data");
     }
     if (!gradebook_key) {
-      throw new Error("Gradebook Key is required to generate LTI 1.0 Launch Data");
+      throw new Error("Gradebook Key is required to generate LTI 1.3 Login Data");
     }
 
     // Find the Provider in the database
@@ -322,20 +323,7 @@ class LTIConsumerController {
       throw new Error("Invalid LTI 1.0 Configuration: Missing Secret");
     }
 
-    // check if data contains an xml field or a url field
-    let xml;
-    if (data.url) {
-      // fetch the XML from the URL
-      const response = await fetch(data.url);
-      if (!response.ok) {
-        throw new Error("Failed to fetch XML from URL: " + data.url);
-      }
-      xml = await response.text();
-    } else {
-      xml = data.xml;
-    }
-
-    const config_data = await this.#LTI10Utils.validateConfigXML(xml);
+    const config_data = await this.#LTI10Utils.validateConfigXML(data.xml, data.url);
 
     // Check for duplicate name in database and append random string if duplicate exists
     const existingConsumer = await this.#ProviderController.getByName(config_data.title);
@@ -367,43 +355,9 @@ class LTIConsumerController {
    * @throws {Error} if the configuration is invalid or if there is an error creating the provider
    */
   async lti13dynamicregistration(url) {
-    // Create provider registration token
-    const registrationToken = nanoid();
     this.#logger.lti("Handling LTI 1.3 Dynamic Registration Request for URL " + url);
 
-    try {
-      const registration = await this.#ProviderRegistrationModel.create({
-        token: registrationToken,
-        url: url,
-      });
-      if (!registration) {
-        throw new Error("Failed to create LTI 1.3 Dynamic Registration Token");
-      }
-    } catch (err) {
-      this.#logger.lti("Failed to create LTI 1.3 Dynamic Registration Token");
-      this.#logger.lti(err);
-      throw new Error("Failed to create LTI 1.3 Dynamic Registration Token: " + err.message, err);
-    }
-
-    // Send GET request to the registration URL with the registration token
-    const query = new URLSearchParams({
-      registration_token: registrationToken,
-      openid_configuration: new URL(this.#consumer_config.route_prefix + "/openid-configuration", this.#domain_name)
-        .href,
-    });
-    const response = await fetch(url + "?" + query.toString(), {
-      method: "GET",
-      headers: {
-        "Content-Type": "text/html",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch registration configuration from URL: " + url);
-    }
-
-    const html = await response.text();
-    return html;
+    return await this.#LTI13Utils.handleDynamicRegistrationRequest(url, this.#consumer_config.route_prefix);
   }
 }
 

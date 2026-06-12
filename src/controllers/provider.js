@@ -85,6 +85,12 @@ class ProviderController {
   async createProvider(data) {
     let provider = null;
     await this.#database.transaction(async (t) => {
+      if (!data.key) {
+        data.key = nanoid();
+      }
+      if (!data.secret) {
+        data.secret = nanoid();
+      }
       provider = await this.#ProviderModel.create(
         {
           name: data.name,

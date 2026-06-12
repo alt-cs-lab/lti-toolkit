@@ -59,7 +59,7 @@ const shouldExpireOldNonces = () => {
  * Check that old logins are expired
  */
 const shouldExpireOldLogins = () => {
-  it("should expire old logins", (done) => {
+  it("should expire old consumer logins", (done) => {
     // Stub Logger
     const logger = {
       error: sinon.stub(),
@@ -97,6 +97,88 @@ const shouldExpireOldLogins = () => {
 };
 
 /**
+ * Check that old provider logins are expired
+ */
+const shouldExpireOldProviderLogins = () => {
+  it("should expire old provider logins", (done) => {
+    // Stub Logger
+    const logger = {
+      error: sinon.stub(),
+      info: sinon.stub(),
+      lti: sinon.stub(),
+      sql: sinon.stub(),
+    };
+
+    // Database instance
+    const db = configureDatabase(logger, ":memory:");
+
+    // Initialize Models
+    const models = configureModels(db, logger);
+
+    db.sync({ force: true }).then(() => {
+      db.getQueryInterface()
+        .bulkInsert("lti_provider_logins", provider_logins)
+        .then(() => {
+          const clock = sinon.useFakeTimers({
+            now: new Date(),
+            shouldClearNativeTimers: true,
+          });
+          models.initializeExpiration();
+          clock.nextAsync().then(() => {
+            models.models.ProviderLogin.findAll().then((results) => {
+              results.length.should.equal(1); // Only the old hint should remain
+              results[0].login_hint.should.equal("hint1");
+              clock.restore();
+              done();
+            });
+          });
+        });
+    });
+  });
+};
+
+/**
+ * Check that old provider registrations are expired
+ */
+const shouldExpireOldProviderRegistrations = () => {
+  it("should expire old provider registrations", (done) => {
+    // Stub Logger
+    const logger = {
+      error: sinon.stub(),
+      info: sinon.stub(),
+      lti: sinon.stub(),
+      sql: sinon.stub(),
+    };
+
+    // Database instance
+    const db = configureDatabase(logger, ":memory:");
+
+    // Initialize Models
+    const models = configureModels(db, logger);
+
+    db.sync({ force: true }).then(() => {
+      db.getQueryInterface()
+        .bulkInsert("lti_provider_registrations", provider_registrations)
+        .then(() => {
+          const clock = sinon.useFakeTimers({
+            now: new Date(),
+            shouldClearNativeTimers: true,
+          });
+          models.initializeExpiration();
+          clock.nextAsync().then(() => {
+            models.models.ProviderRegistration.findAll().then((results) => {
+              results.length.should.equal(1); // Only the old token should remain
+              results[0].token.should.equal("token1");
+              clock.restore();
+              done();
+            });
+          });
+        });
+    });
+  });
+};
+
+/**
  * Creating a consumer should set a key for that consumer
  */
 const consumerShouldSetKey = () => {
@@ -122,6 +204,46 @@ const consumerShouldSetKey = () => {
         .then((createdConsumer) => {
           createdConsumer.key.should.exist;
           createdConsumer.key.length.should.be.greaterThan(0);
+          done();
+        })
+        .catch((error) => {
+          done(error);
+        });
+    });
+  });
+};
+
+/**
+ * Creating a provider should set a client ID and deployment ID for that provider
+ */
+const providerShouldSetClientID = () => {
+  it("should set a client ID for the provider", (done) => {
+    // Stub Logger
+    const logger = {
+      error: sinon.stub(),
+      info: sinon.stub(),
+      lti: sinon.stub(),
+      sql: sinon.stub(),
+    };
+
+    // Database instance
+    const db = configureDatabase(logger, ":memory:");
+
+    // Initialize Models
+    const models = configureModels(db, logger);
+
+    db.sync({ force: true }).then(() => {
+      models.models.Provider.create({
+        name: "Test Provider",
+        key: "test-key",
+        launch_url: "https://example.com/launch",
+        domain: "example.com",
+      })
+        .then((createdProvider) => {
+          createdProvider.client_id.should.exist;
+          createdProvider.client_id.length.should.be.greaterThan(0);
+          createdProvider.deployment_id.should.exist;
+          createdProvider.deployment_id.length.should.be.greaterThan(0);
           done();
         })
         .catch((error) => {
@@ -200,10 +322,42 @@ const logins = [
   },
 ];
 
+const provider_logins = [
+  {
+    client_id: "client1",
+    login_hint: "hint1",
+    createdAt: now,
+    updatedAt: now,
+  },
+  {
+    client_id: "client2",
+    login_hint: "hint2",
+    createdAt: old,
+    updatedAt: old,
+  },
+];
+
+const provider_registrations = [
+  {
+    token: "token1",
+    url: "https://example.com/register",
+    createdAt: now,
+    updatedAt: now,
+  },
+  {
+    token: "token2",
+    url: "https://example.com/register",
+    createdAt: old,
+    updatedAt: old,
+  },
+];
+
 describe("Models", () => {
   describe("initializeExpiration", () => {
     shouldExpireOldLogins();
     shouldExpireOldNonces();
+    shouldExpireOldProviderLogins();
+    shouldExpireOldProviderRegistrations();
   });
 
   describe("Consumer.beforeValidate", () => {
@@ -238,6 +392,10 @@ describe("Models", () => {
     shouldForceEmptyFieldsToNull("key", "Provider", sampleProvider);
     shouldForceEmptyFieldsToNull("launch_url", "Provider", sampleProvider);
     shouldForceEmptyFieldsToNull("domain", "Provider", sampleProvider);
+  });
+
+  describe("Provider.beforeValidate", () => {
+    providerShouldSetClientID();
   });
 
   describe("ProviderKey", () => {

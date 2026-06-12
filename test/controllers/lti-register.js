@@ -577,4 +577,39 @@ describe("/controllers/lti-register.js", () => {
     // Assert that the registration response was sent to the LMS and error was logged
     expect(registrationSpy.calledOnce).to.be.true;
   });
+
+  it("should rename the consumer if a consumer with the same name already exists", async () => {
+    // Create mock dependencies
+    const models = {};
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(createdConsumer),
+      getByName: sinon.stub().resolves({ id: "existing-consumer-id", name: "Test Account" }),
+    };
+
+    // Stub the LTI 1.3 utility function to return a successful launch response
+    sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
+
+    // Spy the LTI 1.3 utility function to send registration to the LMS
+    const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").resolves();
+
+    // Create instance
+    const controller = new LTIRegistrationController(
+      registrationConfig,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      consumer_controller,
+    );
+
+    // Call dynamic registration method
+    await controller.dynamicRegistration({ registration_token: "abcd1234" });
+
+    // Assert that the existing consumer was renamed and registration response was sent to the LMS
+    expect(consumer_controller.getByName.calledWith("Test Account")).to.be.true;
+    expect(consumer_controller.createConsumer.calledOnce).to.be.true;
+    const createArgs = consumer_controller.createConsumer.firstCall.args[0];
+    expect(createArgs.name).to.match(/^Test Account \(\w+\)$/); // Name should be "Test Account" followed by a random string in parentheses
+    expect(registrationSpy.calledOnce).to.be.true;
+  });
 });
