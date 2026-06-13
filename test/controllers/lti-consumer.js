@@ -591,8 +591,6 @@ describe("/controllers/lti-consumer.js", () => {
     }
   });
 
-
-
   it("should generate LTI 1.3 launch form data correctly", async () => {
     // Create mock dependencies
     const consumer = {
@@ -639,8 +637,8 @@ describe("/controllers/lti-consumer.js", () => {
         client_id: "test_client_id",
         lti_deployment_id: "test_deployment_id",
         target_link_uri: "http://example.com/launch",
-        lti_storage_target: "post_message_forwarding"
-      }
+        lti_storage_target: "post_message_forwarding",
+      },
     });
     const login_hint = formData.fields.login_hint;
     expect(models.Provider.findOne.calledOnce).to.be.true;
@@ -719,7 +717,7 @@ describe("/controllers/lti-consumer.js", () => {
       expect(err.message).to.equal("Client ID is required to generate LTI 1.3 Login Data");
     }
 
-     try {
+    try {
       await controller.generateLTI13LoginFormData(
         "test_consumer_key",
         "test_client_id",
@@ -738,7 +736,7 @@ describe("/controllers/lti-consumer.js", () => {
       expect(err.message).to.equal("Launch URL is required to generate LTI 1.3 Login Data");
     }
 
-     try {
+    try {
       await controller.generateLTI13LoginFormData(
         "test_consumer_key",
         "test_client_id",
@@ -757,7 +755,7 @@ describe("/controllers/lti-consumer.js", () => {
       expect(err.message).to.equal("Return URL is required to generate LTI 1.3 Login Data");
     }
 
-     try {
+    try {
       await controller.generateLTI13LoginFormData(
         "test_consumer_key",
         "test_client_id",
@@ -776,7 +774,7 @@ describe("/controllers/lti-consumer.js", () => {
       expect(err.message).to.equal("Context with key, label, and name is required to generate LTI 1.3 Login Data");
     }
 
-     try {
+    try {
       await controller.generateLTI13LoginFormData(
         "test_consumer_key",
         "test_client_id",
@@ -795,7 +793,7 @@ describe("/controllers/lti-consumer.js", () => {
       expect(err.message).to.equal("Resource with key and name is required to generate LTI 1.3 Login Data");
     }
 
-     try {
+    try {
       await controller.generateLTI13LoginFormData(
         "test_consumer_key",
         "test_client_id",
@@ -814,7 +812,7 @@ describe("/controllers/lti-consumer.js", () => {
       expect(err.message).to.equal("User with key and email is required to generate LTI 1.3 Login Data");
     }
 
-     try {
+    try {
       await controller.generateLTI13LoginFormData(
         "test_consumer_key",
         "test_client_id",
@@ -833,7 +831,7 @@ describe("/controllers/lti-consumer.js", () => {
       expect(err.message).to.equal("Manager status is required to generate LTI 1.3 Login Data");
     }
 
-     try {
+    try {
       await controller.generateLTI13LoginFormData(
         "test_consumer_key",
         "test_client_id",
@@ -850,7 +848,7 @@ describe("/controllers/lti-consumer.js", () => {
       throw new Error("Expected error for missing gradebook key");
     } catch (err) {
       expect(err.message).to.equal("Gradebook Key is required to generate LTI 1.3 Login Data");
-     }  
+    }
 
     try {
       await controller.generateLTI13LoginFormData(
@@ -869,8 +867,7 @@ describe("/controllers/lti-consumer.js", () => {
       throw new Error("Expected error for missing deployment ID");
     } catch (err) {
       expect(err.message).to.equal("Deployment ID is required to generate LTI 1.3 Login Data");
-     }  
-    
+    }
   });
 
   it("should throw an error if the Provider is not found in the database when generating LTI 1.3 login form data", async () => {
@@ -1052,7 +1049,7 @@ describe("/controllers/lti-consumer.js", () => {
       getByName: sinon.stub().resolves(null), // Simulate provider not found
       createProvider: sinon.stub().resolvesArg(0), // Echo back the created provider
     };
-    const models = {}
+    const models = {};
 
     // Stub LTI10Utils.validateConfigXML to return a known value
     const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
@@ -1066,9 +1063,16 @@ describe("/controllers/lti-consumer.js", () => {
         param2: "value2",
       },
     });
-    
+
     // Call the function under test
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email, provider_controller);
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
     const result = await controller.lti10configxml({
       xml: "<xml>Test LTI 1.0 Config</xml>",
       url: null,
@@ -1094,7 +1098,7 @@ describe("/controllers/lti-consumer.js", () => {
         param1: "value1",
         param2: "value2",
       }),
-      use_section: false
+      use_section: false,
     });
     expect(result).to.deep.equal({
       name: "Test Provider",
@@ -1107,7 +1111,7 @@ describe("/controllers/lti-consumer.js", () => {
         param1: "value1",
         param2: "value2",
       }),
-      use_section: false
+      use_section: false,
     });
 
     // Restore stubbed method
@@ -1131,7 +1135,7 @@ describe("/controllers/lti-consumer.js", () => {
       getByName: sinon.stub().resolves(existingProvider), // Simulate provider found
       createProvider: sinon.stub(), // Should not be called
     };
-    const models = {}
+    const models = {};
 
     // Stub LTI10Utils.validateConfigXML to return a known value
     const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
@@ -1145,16 +1149,23 @@ describe("/controllers/lti-consumer.js", () => {
         param2: "value2",
       },
     });
-    
+
     // Call the function under test
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email, provider_controller);
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
     await controller.lti10configxml({
       xml: "<xml>Test LTI 1.0 Config</xml>",
       url: null,
       key: "test_consumer_key",
       secret: "test_consumer_secret",
     });
-    
+
     // Assertions
     expect(validateConfigXMLStub.calledOnce).to.be.true;
     expect(validateConfigXMLStub.firstCall.args[0]).to.equal("<xml>Test LTI 1.0 Config</xml>");
@@ -1181,13 +1192,22 @@ describe("/controllers/lti-consumer.js", () => {
       getByName: sinon.stub(), // Should not be called
       createProvider: sinon.stub(), // Should not be called
     };
-    const models = {}
+    const models = {};
 
     // Stub LTI10Utils.validateConfigXML to throw an error
-    const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").throws(new Error("Invalid XML"));
-    
-    // Call the function under test    
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email, provider_controller);
+    const validateConfigXMLStub = sinon
+      .stub(LTI10Utils.prototype, "validateConfigXML")
+      .throws(new Error("Invalid XML"));
+
+    // Call the function under test
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
     try {
       await controller.lti10configxml({
         xml: "<xml>Invalid LTI 1.0 Config</xml>",
@@ -1199,7 +1219,7 @@ describe("/controllers/lti-consumer.js", () => {
     } catch (err) {
       expect(err.message).to.equal("Invalid XML");
     }
-     expect(validateConfigXMLStub.calledOnce).to.be.true;
+    expect(validateConfigXMLStub.calledOnce).to.be.true;
     expect(validateConfigXMLStub.firstCall.args[0]).to.equal("<xml>Invalid LTI 1.0 Config</xml>");
     expect(provider_controller.getByName.notCalled).to.be.true;
     expect(provider_controller.createProvider.notCalled).to.be.true;
@@ -1221,7 +1241,7 @@ describe("/controllers/lti-consumer.js", () => {
       getByName: sinon.stub().resolves(null), // Simulate provider not found
       createProvider: sinon.stub().rejects(new Error("Database error")), // Simulate database error
     };
-    const models = {}
+    const models = {};
 
     // Stub LTI10Utils.validateConfigXML to return a known value
     const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
@@ -1235,9 +1255,16 @@ describe("/controllers/lti-consumer.js", () => {
         param2: "value2",
       },
     });
-    
+
     // Call the function under test
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email, provider_controller);
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
     try {
       await controller.lti10configxml({
         xml: "<xml>Test LTI 1.0 Config</xml>",
@@ -1249,7 +1276,7 @@ describe("/controllers/lti-consumer.js", () => {
     } catch (err) {
       expect(err.message).to.equal("Database error");
     }
-     expect(validateConfigXMLStub.calledOnce).to.be.true;
+    expect(validateConfigXMLStub.calledOnce).to.be.true;
     expect(validateConfigXMLStub.firstCall.args[0]).to.equal("<xml>Test LTI 1.0 Config</xml>");
     expect(provider_controller.getByName.calledOnce).to.be.true;
     expect(provider_controller.getByName.firstCall.args[0]).to.equal("Test Provider");
@@ -1266,7 +1293,7 @@ describe("/controllers/lti-consumer.js", () => {
         param1: "value1",
         param2: "value2",
       }),
-      use_section: false
+      use_section: false,
     });
 
     // Restore stubbed method
@@ -1274,7 +1301,7 @@ describe("/controllers/lti-consumer.js", () => {
   });
 
   it("should throw an error if the key or secret is missing when registering using LTI 1.0 xml configuration", async () => {
-    // Create mock dependencies    
+    // Create mock dependencies
     const consumer = {
       route_prefix: "/lti/consumer",
       product_name: "Test LTI Consumer",
@@ -1286,10 +1313,17 @@ describe("/controllers/lti-consumer.js", () => {
       getByName: sinon.stub(), // Should not be called
       createProvider: sinon.stub(), // Should not be called
     };
-    const models = {}
+    const models = {};
 
     // Call the function under test
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email, provider_controller);
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
     try {
       await controller.lti10configxml({
         xml: "<xml>Test LTI 1.0 Config</xml>",
@@ -1328,7 +1362,7 @@ describe("/controllers/lti-consumer.js", () => {
       getByName: sinon.stub().resolves(null), // Simulate provider not found
       createProvider: sinon.stub().resolvesArg(0), // Echo back the created provider
     };
-    const models = {}
+    const models = {};
 
     // Stub LTI10Utils.validateConfigXML to return a known value without domain
     const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
@@ -1342,9 +1376,16 @@ describe("/controllers/lti-consumer.js", () => {
         param2: "value2",
       },
     });
-    
+
     // Call the function under test
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email, provider_controller);
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
     const result = await controller.lti10configxml({
       xml: "<xml>Test LTI 1.0 Config</xml>",
       url: null,
@@ -1370,7 +1411,7 @@ describe("/controllers/lti-consumer.js", () => {
         param1: "value1",
         param2: "value2",
       }),
-      use_section: false
+      use_section: false,
     });
     expect(result).to.deep.equal({
       name: "Test Provider",
@@ -1383,7 +1424,7 @@ describe("/controllers/lti-consumer.js", () => {
         param1: "value1",
         param2: "value2",
       }),
-      use_section: false
+      use_section: false,
     });
 
     // Restore stubbed method
@@ -1403,7 +1444,7 @@ describe("/controllers/lti-consumer.js", () => {
       getByName: sinon.stub().resolves(null), // Simulate provider not found
       createProvider: sinon.stub().resolvesArg(0), // Echo back the created provider
     };
-    const models = {}
+    const models = {};
 
     // Stub LTI10Utils.validateConfigXML to return a known value with empty custom parameters
     const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
@@ -1416,9 +1457,16 @@ describe("/controllers/lti-consumer.js", () => {
         // No custom parameters
       },
     });
-    
+
     // Call the function under test
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email, provider_controller);
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
     const result = await controller.lti10configxml({
       xml: "<xml>Test LTI 1.0 Config</xml>",
       url: null,
@@ -1441,7 +1489,7 @@ describe("/controllers/lti-consumer.js", () => {
       launch_url: "http://example.com/launch",
       domain: "example.com", // Domain should be extracted from launch URL
       custom: JSON.stringify({}), // Custom should be an empty object
-      use_section: false
+      use_section: false,
     });
     expect(result).to.deep.equal({
       name: "Test Provider",
@@ -1451,7 +1499,7 @@ describe("/controllers/lti-consumer.js", () => {
       launch_url: "http://example.com/launch",
       domain: "example.com", // Domain should be extracted from launch URL
       custom: JSON.stringify({}), // Custom should be an empty object
-      use_section: false
+      use_section: false,
     });
 
     // Restore stubbed method
@@ -1471,7 +1519,7 @@ describe("/controllers/lti-consumer.js", () => {
       getByName: sinon.stub().resolves(null), // Simulate provider not found
       createProvider: sinon.stub().resolvesArg(0), // Echo back the created provider
     };
-    const models = {}
+    const models = {};
 
     // Stub LTI10Utils.validateConfigXML to return a known value with empty custom parameters
     const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
@@ -1482,9 +1530,16 @@ describe("/controllers/lti-consumer.js", () => {
       },
       // No custom parameters provided
     });
-    
+
     // Call the function under test
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email, provider_controller);
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
     const result = await controller.lti10configxml({
       xml: "<xml>Test LTI 1.0 Config</xml>",
       url: null,
@@ -1507,7 +1562,7 @@ describe("/controllers/lti-consumer.js", () => {
       launch_url: "http://example.com/launch",
       domain: "example.com", // Domain should be extracted from launch URL
       custom: null, // Custom should be null when not provided
-      use_section: false
+      use_section: false,
     });
     expect(result).to.deep.equal({
       name: "Test Provider",
@@ -1517,13 +1572,12 @@ describe("/controllers/lti-consumer.js", () => {
       launch_url: "http://example.com/launch",
       domain: "example.com", // Domain should be extracted from launch URL
       custom: null, // Custom should be null when not provided
-      use_section: false
+      use_section: false,
     });
 
     // Restore stubbed method
     validateConfigXMLStub.restore();
   });
-
 
   it("should handle an LTI 1.3 dynamic registration URL", async () => {
     // Create mock dependencies
@@ -1538,13 +1592,22 @@ describe("/controllers/lti-consumer.js", () => {
       getByName: sinon.stub().resolves(null), // Simulate provider not found
       createProvider: sinon.stub().resolvesArg(0), // Echo back the created provider
     };
-    const models = {}
+    const models = {};
 
     // Stub LTI13Utils.handleDynamicRegistrationRequest to return a known value
-    const handleDynamicRegistrationRequestStub = sinon.stub(LTI13Utils.prototype, "handleDynamicRegistrationRequest").resolves("<html>Dynamic Registration Form</html>");
-    
+    const handleDynamicRegistrationRequestStub = sinon
+      .stub(LTI13Utils.prototype, "handleDynamicRegistrationRequest")
+      .resolves("<html>Dynamic Registration Form</html>");
+
     // Call the function under test
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email, provider_controller);
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
     const result = await controller.lti13dynamicregistration("https://example.com/registration");
 
     // Assertions

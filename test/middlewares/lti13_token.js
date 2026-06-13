@@ -161,7 +161,8 @@ describe("/middlewares/lti13_token.js", () => {
     // Assertions
     expect(logger.lti.calledOnce).to.be.true;
     expect(logger.error.calledWith("Error processing LTI 1.3 token:")).to.be.true;
-    expect(logger.error.calledWith(sinon.match.instanceOf(Error).and(sinon.match.has("message", "Database error")))).to.be.true;
+    expect(logger.error.calledWith(sinon.match.instanceOf(Error).and(sinon.match.has("message", "Database error")))).to
+      .be.true;
     expect(next.calledOnce).to.be.true;
     expect(next.firstCall.args[0]).to.be.an("error").with.property("message", "Database error");
   });
@@ -204,7 +205,10 @@ describe("/middlewares/lti13_token.js", () => {
     const middleware = lti13token(ProviderKeys, logger);
 
     // Create a valid JWT with a kid in the header that is already expired
-    const token = jwt.sign({ sub: "test", exp: Math.floor(Date.now() / 1000) - 60 }, "public-key", { algorithm: "HS256", header: { kid: "test-kid" } });
+    const token = jwt.sign({ sub: "test", exp: Math.floor(Date.now() / 1000) - 60 }, "public-key", {
+      algorithm: "HS256",
+      header: { kid: "test-kid" },
+    });
 
     // Stub jwt.verify to throw a TokenExpiredError
     sinon.stub(jwt, "verify").throws(new jwt.TokenExpiredError("jwt expired", new Date()));

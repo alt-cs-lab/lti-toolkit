@@ -1980,7 +1980,7 @@ describe("/lib/lti10.js", function () {
       } catch (err) {
         expect(err).to.be.an("error");
         expect(err.message).to.equal("Validation Error: Missing XML Configuration and URL");
-      } 
+      }
     });
 
     it("should throw an error if the XML is invalid", async function () {
@@ -2001,7 +2001,7 @@ describe("/lib/lti10.js", function () {
         expect(err).to.be.an("error");
         // catch assertion error from xml2js if the XML is not well-formed
         expect(err.message).to.match(/Unexpected end|Non-whitespace before first tag|Invalid character/);
-      } 
+      }
     });
 
     it("should throw an error if the XML is missing the root element", async function () {
@@ -2082,7 +2082,7 @@ describe("/lib/lti10.js", function () {
           cartridge_basiclti_link: {
             $: {
               // Incorrect xmlns attribute to simulate incorrect namespace
-              xmlns: "http://www.imsglobal.org/xsd/lti/lti_v1p0"
+              xmlns: "http://www.imsglobal.org/xsd/lti/lti_v1p0",
             },
             // Missing other required elements
           },
@@ -2269,11 +2269,11 @@ describe("/lib/lti10.js", function () {
             "blti:description": "LTI Toolkit Description",
             "blti:icon": "LTI Toolkit Icon",
             "blti:launch_url": "https://example.com/launch",
-            "blti:custom":{
+            "blti:custom": {
               "lticm:property": {
                 $: { name: "custom_name1" },
                 _: "custom_value1",
-              }
+              },
             },
             "blti:extensions": {
               $: { platform: "canvas.instructure.com" },
@@ -2323,7 +2323,7 @@ describe("/lib/lti10.js", function () {
         status: 200,
         text: async () => validConfigXML,
       });
-      
+
       // Instantiate library
       const lti10Utils = new LTI10Utils(models, logger, domain_name);
 

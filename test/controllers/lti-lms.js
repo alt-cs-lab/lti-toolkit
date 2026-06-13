@@ -578,7 +578,7 @@ describe("/controllers/lti-lms.js", () => {
       },
     });
     const buildLaunchJWTStub = sinon.stub(LTI13Utils.prototype, "buildLaunchJWT").resolves("mock_launch_jwt");
-    
+
     // Construct controller with stubbed dependencies
     const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
 
@@ -612,7 +612,7 @@ describe("/controllers/lti-lms.js", () => {
       form: {
         id_token: "mock_launch_jwt",
         state: "test_state",
-        lti_storage_target: "post_message_forwarding"
+        lti_storage_target: "post_message_forwarding",
       },
       url: "http://localhost:3000/lti/consumer/launch",
     });
@@ -686,7 +686,7 @@ describe("/controllers/lti-lms.js", () => {
       clientId: "test_client_id",
       scope: "test_scope",
     });
-    
+
     // Construct controller with stubbed dependencies
     const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
 
@@ -740,7 +740,7 @@ describe("/controllers/lti-lms.js", () => {
         context_key: "context_key",
         resource_key: "resource_key",
         gradebook_key: "gradebook_key",
-      }
+      },
     };
     const result = await controller.agsGradePassbackHandler(mockReq);
 
@@ -788,7 +788,7 @@ describe("/controllers/lti-lms.js", () => {
         context_key: "context_key",
         resource_key: "resource_key",
         gradebook_key: "gradebook_key",
-      }
+      },
     };
     const result = await controller.agsGradePassbackHandler(mockReq);
 
@@ -829,7 +829,7 @@ describe("/controllers/lti-lms.js", () => {
         context_key: "context_key",
         resource_key: "resource_key",
         gradebook_key: "gradebook_key",
-      }
+      },
     };
     const result = await controller.agsGradePassbackHandler(mockReq);
 
@@ -865,10 +865,7 @@ describe("/controllers/lti-lms.js", () => {
       token_endpoint: "http://localhost:3000/lti/consumer/token",
       token_endpoint_auth_methods_supported: ["private_key_jwt"],
       token_endpoint_auth_signing_alg_values_supported: ["RS256"],
-      scopes_supported: [
-        "openid",
-        "https://purl.imsglobal.org/spec/lti-ags/scope/score"
-      ],
+      scopes_supported: ["openid", "https://purl.imsglobal.org/spec/lti-ags/scope/score"],
       response_types_supported: ["id_token"],
       id_token_signing_alg_values_supported: ["RS256"],
       claims_supported: ["sub", "picture", "email", "name", "given_name", "family_name", "locale"],
@@ -881,12 +878,12 @@ describe("/controllers/lti-lms.js", () => {
       messages_supported: [
         {
           type: "LtiResourceLinkRequest",
-          placements: ["ContentArea"]
+          placements: ["ContentArea"],
         },
         {
           type: "LtiDeepLinkingRequest",
-          placements: ["ContentArea", "RichTextEditor"]
-        }
+          placements: ["ContentArea", "RichTextEditor"],
+        },
       ],
       notice_types_supported: [],
       variables: [],
@@ -902,14 +899,14 @@ describe("/controllers/lti-lms.js", () => {
           token: "test_registration_token",
         }),
         destroy: sinon.stub().resolves(),
-      }
+      },
     };
     const provider_controller = {
       getByName: sinon.stub().resolves(null),
       createProvider: sinon.stub().resolves({
-          client_id: "test_client_id",
-          deployment_id: "test_deployment_id",
-      })
+        client_id: "test_client_id",
+        deployment_id: "test_deployment_id",
+      }),
     };
 
     // Construct controller with stubbed dependencies
@@ -923,7 +920,7 @@ describe("/controllers/lti-lms.js", () => {
         initiate_login_uri: "http://localhost:3000/test/login",
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {
           target_link_uri: "http://localhost:3000/test/launch",
-        }
+        },
       },
       headers: {
         authorization: "Bearer test_registration_token",
@@ -961,7 +958,7 @@ describe("/controllers/lti-lms.js", () => {
     });
     mockReq.body.client_id = "test_client_id"; // client_id is typically generated during registration, so we set it here for assertion
     mockReq.body.deployment_id = "test_deployment_id"; // deployment_id is typically generated during registration, so we set it here for assertion
-    expect(result).to.deep.equal(mockReq.body)
+    expect(result).to.deep.equal(mockReq.body);
   });
 
   it("should return an error response for dynamic registration requests with invalid tokens", async () => {
@@ -970,7 +967,7 @@ describe("/controllers/lti-lms.js", () => {
     const models = {
       ProviderRegistration: {
         findOne: sinon.stub().resolves(null),
-      }
+      },
     };
     const provider_controller = {};
 
@@ -985,7 +982,7 @@ describe("/controllers/lti-lms.js", () => {
         initiate_login_uri: "http://localhost:3000/test/login",
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {
           target_link_uri: "http://localhost:3000/test/launch",
-        }
+        },
       },
       headers: {
         authorization: "Bearer invalid_token",
@@ -994,7 +991,7 @@ describe("/controllers/lti-lms.js", () => {
     };
 
     // Call the function under test
-    try{
+    try {
       await controller.dynamicRegistrationHandler(mockReq);
     } catch (error) {
       expect(error.message).to.equal("Invalid registration token");
@@ -1007,7 +1004,7 @@ describe("/controllers/lti-lms.js", () => {
     const models = {
       ProviderRegistration: {
         findOne: sinon.stub().resolves(null),
-      }
+      },
     };
     const provider_controller = {};
 
@@ -1022,14 +1019,14 @@ describe("/controllers/lti-lms.js", () => {
         initiate_login_uri: "http://localhost:3000/test/login",
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {
           target_link_uri: "http://localhost:3000/test/launch",
-        }
+        },
       },
       headers: {},
       originalUrl: "http://localhost:3000/lti/consumer/register",
     };
 
     // Call the function under test
-    try{
+    try {
       await controller.dynamicRegistrationHandler(mockReq);
     } catch (error) {
       expect(error.message).to.equal("Missing or invalid Authorization header");
@@ -1044,10 +1041,10 @@ describe("/controllers/lti-lms.js", () => {
         findOne: sinon.stub().resolves({
           token: "test_registration_token",
         }),
-      }
+      },
     };
     const provider_controller = {};
-    
+
     // Construct controller with stubbed dependencies
     const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
 
@@ -1059,7 +1056,7 @@ describe("/controllers/lti-lms.js", () => {
         initiate_login_uri: "http://localhost:3000/test/login",
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {
           target_link_uri: "http://localhost:3000/test/launch",
-        }
+        },
       },
       headers: {
         authorization: "Bearer test_registration_token",
@@ -1068,7 +1065,7 @@ describe("/controllers/lti-lms.js", () => {
     };
 
     // Call the function under test
-    try{
+    try {
       await controller.dynamicRegistrationHandler(mockReq);
     } catch (error) {
       // Assertions
@@ -1088,10 +1085,10 @@ describe("/controllers/lti-lms.js", () => {
         findOne: sinon.stub().resolves({
           token: "test_registration_token",
         }),
-      }
+      },
     };
     const provider_controller = {};
-    
+
     // Construct controller with stubbed dependencies
     const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
 
@@ -1103,7 +1100,7 @@ describe("/controllers/lti-lms.js", () => {
         // initiate_login_uri is missing
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {
           target_link_uri: "http://localhost:3000/test/launch",
-        }
+        },
       },
       headers: {
         authorization: "Bearer test_registration_token",
@@ -1112,7 +1109,7 @@ describe("/controllers/lti-lms.js", () => {
     };
 
     // Call the function under test
-    try{
+    try {
       await controller.dynamicRegistrationHandler(mockReq);
     } catch (error) {
       // Assertions
@@ -1132,10 +1129,10 @@ describe("/controllers/lti-lms.js", () => {
         findOne: sinon.stub().resolves({
           token: "test_registration_token",
         }),
-      }
+      },
     };
     const provider_controller = {};
-    
+
     // Construct controller with stubbed dependencies
     const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
 
@@ -1147,7 +1144,7 @@ describe("/controllers/lti-lms.js", () => {
         initiate_login_uri: "http://localhost:3000/test/login",
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {
           target_link_uri: "http://localhost:3000/test/launch",
-        }
+        },
       },
       headers: {
         authorization: "Bearer test_registration_token",
@@ -1156,7 +1153,7 @@ describe("/controllers/lti-lms.js", () => {
     };
 
     // Call the function under test
-    try{
+    try {
       await controller.dynamicRegistrationHandler(mockReq);
     } catch (error) {
       // Assertions
@@ -1176,10 +1173,10 @@ describe("/controllers/lti-lms.js", () => {
         findOne: sinon.stub().resolves({
           token: "test_registration_token",
         }),
-      }
+      },
     };
     const provider_controller = {};
-    
+
     // Construct controller with stubbed dependencies
     const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
 
@@ -1189,7 +1186,7 @@ describe("/controllers/lti-lms.js", () => {
         client_name: "Test Client",
         jwks_uri: "http://localhost:3000/test/jwks",
         initiate_login_uri: "http://localhost:3000/test/login",
-          // target_link_uri is missing
+        // target_link_uri is missing
       },
       headers: {
         authorization: "Bearer test_registration_token",
@@ -1198,7 +1195,7 @@ describe("/controllers/lti-lms.js", () => {
     };
 
     // Call the function under test
-    try{
+    try {
       await controller.dynamicRegistrationHandler(mockReq);
     } catch (error) {
       // Assertions
@@ -1206,7 +1203,9 @@ describe("/controllers/lti-lms.js", () => {
       expect(models.ProviderRegistration.findOne.firstCall.args[0]).to.deep.equal({
         where: { token: "test_registration_token" },
       });
-      expect(error.message).to.equal("Missing required field: https://purl.imsglobal.org/spec/lti-tool-configuration.target_link_uri");
+      expect(error.message).to.equal(
+        "Missing required field: https://purl.imsglobal.org/spec/lti-tool-configuration.target_link_uri",
+      );
     }
   });
 
@@ -1218,10 +1217,10 @@ describe("/controllers/lti-lms.js", () => {
         findOne: sinon.stub().resolves({
           token: "test_registration_token",
         }),
-      }
+      },
     };
     const provider_controller = {};
-    
+
     // Construct controller with stubbed dependencies
     const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
 
@@ -1233,7 +1232,7 @@ describe("/controllers/lti-lms.js", () => {
         initiate_login_uri: "http://localhost:3000/test/login",
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {
           // target_link_uri is missing
-        }
+        },
       },
       headers: {
         authorization: "Bearer test_registration_token",
@@ -1242,7 +1241,7 @@ describe("/controllers/lti-lms.js", () => {
     };
 
     // Call the function under test
-    try{
+    try {
       await controller.dynamicRegistrationHandler(mockReq);
     } catch (error) {
       // Assertions
@@ -1250,7 +1249,9 @@ describe("/controllers/lti-lms.js", () => {
       expect(models.ProviderRegistration.findOne.firstCall.args[0]).to.deep.equal({
         where: { token: "test_registration_token" },
       });
-      expect(error.message).to.equal("Missing required field: https://purl.imsglobal.org/spec/lti-tool-configuration.target_link_uri");
+      expect(error.message).to.equal(
+        "Missing required field: https://purl.imsglobal.org/spec/lti-tool-configuration.target_link_uri",
+      );
     }
   });
 
@@ -1263,14 +1264,14 @@ describe("/controllers/lti-lms.js", () => {
           token: "test_registration_token",
         }),
         destroy: sinon.stub().resolves(),
-      }
+      },
     };
     const provider_controller = {
       getByName: sinon.stub().resolves(null),
       createProvider: sinon.stub().resolves({
-          client_id: "test_client_id",
-          deployment_id: "test_deployment_id",
-      })
+        client_id: "test_client_id",
+        deployment_id: "test_deployment_id",
+      }),
     };
 
     // Construct controller with stubbed dependencies
@@ -1287,7 +1288,7 @@ describe("/controllers/lti-lms.js", () => {
           custom_parameters: {
             custom_key1: "custom_value1",
             custom_key2: "custom_value2",
-          }
+          },
         },
       },
       headers: {
@@ -1328,14 +1329,14 @@ describe("/controllers/lti-lms.js", () => {
           token: "test_registration_token",
         }),
         destroy: sinon.stub().resolves(),
-      }
+      },
     };
     const provider_controller = {
       getByName: sinon.stub().resolves(null),
       createProvider: sinon.stub().resolves({
-          client_id: "test_client_id",
-          deployment_id: "test_deployment_id",
-      })
+        client_id: "test_client_id",
+        deployment_id: "test_deployment_id",
+      }),
     };
 
     // Construct controller with stubbed dependencies
@@ -1347,10 +1348,7 @@ describe("/controllers/lti-lms.js", () => {
         client_name: "Test Client",
         jwks_uri: "http://localhost:3000/test/jwks",
         initiate_login_uri: "http://localhost:3000/test/login",
-        redirect_urls: [
-          "http://localhost:3000/test/redirect1",
-          "http://localhost:3000/test/redirect2",
-        ],
+        redirect_urls: ["http://localhost:3000/test/redirect1", "http://localhost:3000/test/redirect2"],
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {
           target_link_uri: "http://localhost:3000/test/launch",
         },
@@ -1375,16 +1373,13 @@ describe("/controllers/lti-lms.js", () => {
       use_section: false,
       keyset_url: "http://localhost:3000/test/jwks",
       auth_url: "http://localhost:3000/test/login",
-      redirect_urls: JSON.stringify([
-        "http://localhost:3000/test/redirect1",
-        "http://localhost:3000/test/redirect2",
-      ]),
+      redirect_urls: JSON.stringify(["http://localhost:3000/test/redirect1", "http://localhost:3000/test/redirect2"]),
       scopes: null,
       claims: null,
     });
   });
 
-  it('should handle bodies that contain scopes and claims and pass them to the provider controller', async () => {
+  it("should handle bodies that contain scopes and claims and pass them to the provider controller", async () => {
     // Create mock dependencies
     const consumer = {};
     const models = {
@@ -1393,14 +1388,14 @@ describe("/controllers/lti-lms.js", () => {
           token: "test_registration_token",
         }),
         destroy: sinon.stub().resolves(),
-      }
+      },
     };
     const provider_controller = {
       getByName: sinon.stub().resolves(null),
       createProvider: sinon.stub().resolves({
-          client_id: "test_client_id",
-          deployment_id: "test_deployment_id",
-      })
+        client_id: "test_client_id",
+        deployment_id: "test_deployment_id",
+      }),
     };
 
     // Construct controller with stubbed dependencies
@@ -1442,7 +1437,6 @@ describe("/controllers/lti-lms.js", () => {
       scopes: JSON.stringify(["scope1", "scope2", "scope3"]),
       claims: JSON.stringify(["claim1", "claim2", "claim3"]),
     });
-    
   });
 
   it("should rename the provider if one already exists during dynamic registration", async () => {
@@ -1454,13 +1448,13 @@ describe("/controllers/lti-lms.js", () => {
           token: "test_registration_token",
         }),
         destroy: sinon.stub().resolves(),
-      }
+      },
     };
     const provider_controller = {
       getByName: sinon.stub().resolves({ name: "Test Client" }), // Simulate existing provider with same name
       createProvider: sinon.stub().resolves({
-          client_id: "test_client_id",
-          deployment_id: "test_deployment_id",
+        client_id: "test_client_id",
+        deployment_id: "test_deployment_id",
       }),
       renameProvider: sinon.stub().resolves(), // Stub rename function
     };
@@ -1476,7 +1470,7 @@ describe("/controllers/lti-lms.js", () => {
         initiate_login_uri: "http://localhost:3000/test/login",
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {
           target_link_uri: "http://localhost:3000/test/launch",
-        }
+        },
       },
       headers: {
         authorization: "Bearer test_registration_token",
@@ -1491,10 +1485,12 @@ describe("/controllers/lti-lms.js", () => {
     expect(provider_controller.getByName.calledOnce).to.be.true;
     expect(provider_controller.getByName.firstCall.args[0]).to.equal("Test Client");
     expect(provider_controller.createProvider.calledOnce).to.be.true;
-    expect(provider_controller.createProvider.firstCall.args[0]).to.have.property("name").that.matches(/^Test Client \(\w+\)$/); // New provider name should have a suffix
+    expect(provider_controller.createProvider.firstCall.args[0])
+      .to.have.property("name")
+      .that.matches(/^Test Client \(\w+\)$/); // New provider name should have a suffix
   });
 
-  it('should return an error if creating a provider fails during dynamic registration', async () => {
+  it("should return an error if creating a provider fails during dynamic registration", async () => {
     // Create mock dependencies
     const consumer = {};
     const models = {
@@ -1503,7 +1499,7 @@ describe("/controllers/lti-lms.js", () => {
           token: "test_registration_token",
         }),
         destroy: sinon.stub().resolves(),
-      }
+      },
     };
     const provider_controller = {
       getByName: sinon.stub().resolves(null),
@@ -1521,7 +1517,7 @@ describe("/controllers/lti-lms.js", () => {
         initiate_login_uri: "http://localhost:3000/test/login",
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {
           target_link_uri: "http://localhost:3000/test/launch",
-        }
+        },
       },
       headers: {
         authorization: "Bearer test_registration_token",
@@ -1530,7 +1526,7 @@ describe("/controllers/lti-lms.js", () => {
     };
 
     // Call the function under test
-    try{
+    try {
       await controller.dynamicRegistrationHandler(mockReq);
     } catch (error) {
       // Assertions

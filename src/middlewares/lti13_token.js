@@ -44,7 +44,7 @@ function setupLTI13TokenMiddleware(ProviderKeys, logger) {
 
       // Verify the token with the retrieved public key
       const verified = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
-      
+
       req.lti13Token = verified;
       next();
     } catch (err) {

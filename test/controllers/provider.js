@@ -338,7 +338,7 @@ describe("/controllers/provider.js", () => {
     // Assertions
     expect(models.Provider.findOne.calledOnceWith({ where: { name: "Non-existent Provider" } })).to.be.true;
     expect(result).to.be.null;
-  }); 
+  });
 
   // Test update secret
   it("updateSecret should update the secret for a provider", async () => {
@@ -450,6 +450,4 @@ describe("/controllers/provider.js", () => {
     expect(models.ProviderKey.findAll.calledWith({ attributes: ["key", "public"] })).to.be.true;
     expect(result).to.deep.equal(providerKeys);
   });
-
 });
-

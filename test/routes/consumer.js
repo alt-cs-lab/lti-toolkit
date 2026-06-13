@@ -93,7 +93,7 @@ describe("/routes/consumer.js", function () {
           form: {
             name: "test",
             value: "value",
-          }
+          },
         }),
       };
       const ProviderKeyModel = {};
@@ -157,9 +157,9 @@ describe("/routes/consumer.js", function () {
     it("should return JWKS response", async function () {
       // Mock controller
       const LTILMSController = {
-        generateProviderJWKS: sinon.stub().resolves([
-              { kty: "RSA", kid: "key1", use: "sig", n: "modulus", e: "exponent" }
-          ]),
+        generateProviderJWKS: sinon
+          .stub()
+          .resolves([{ kty: "RSA", kid: "key1", use: "sig", n: "modulus", e: "exponent" }]),
       };
       const ProviderKeyModel = {};
 
@@ -168,8 +168,7 @@ describe("/routes/consumer.js", function () {
       app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger));
 
       // Send request to route
-      const res = await request(app)
-        .get("/lti/consumer/jwks");
+      const res = await request(app).get("/lti/consumer/jwks");
 
       // Assert controller was called
       expect(LTILMSController.generateProviderJWKS.calledOnce).to.be.true;
@@ -177,9 +176,7 @@ describe("/routes/consumer.js", function () {
       // Assert response
       expect(res.status).to.equal(200);
       expect(res.headers).to.have.property("content-type").that.includes("application/json");
-      expect(res.body).to.deep.equal({ keys: [
-          { kty: "RSA", kid: "key1", use: "sig", n: "modulus", e: "exponent" }
-      ] });
+      expect(res.body).to.deep.equal({ keys: [{ kty: "RSA", kid: "key1", use: "sig", n: "modulus", e: "exponent" }] });
     });
 
     it("should handle errors in JWKS generation and send 500", async function () {
@@ -194,8 +191,7 @@ describe("/routes/consumer.js", function () {
       app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger));
 
       // Send request to route
-      const res = await request(app)
-        .get("/lti/consumer/jwks");
+      const res = await request(app).get("/lti/consumer/jwks");
 
       // Assert controller was called
       expect(LTILMSController.generateProviderJWKS.calledOnce).to.be.true;
@@ -210,7 +206,9 @@ describe("/routes/consumer.js", function () {
     it("should return token response", async function () {
       // Mock controller
       const LTILMSController = {
-        tokenRequestHandler: sinon.stub().resolves({ access_token: "token123", token_type: "Bearer", expires_in: 3600 }),
+        tokenRequestHandler: sinon
+          .stub()
+          .resolves({ access_token: "token123", token_type: "Bearer", expires_in: 3600 }),
       };
       const ProviderKeyModel = {};
 
@@ -219,8 +217,7 @@ describe("/routes/consumer.js", function () {
       app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger));
 
       // Send request to route
-      const res = await request(app)
-        .post("/lti/consumer/token");
+      const res = await request(app).post("/lti/consumer/token");
 
       // Assert controller was called
       expect(LTILMSController.tokenRequestHandler.calledOnce).to.be.true;
@@ -243,8 +240,7 @@ describe("/routes/consumer.js", function () {
       app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger));
 
       // Send request to route
-      const res = await request(app)
-        .post("/lti/consumer/token");
+      const res = await request(app).post("/lti/consumer/token");
 
       // Assert controller was called
       expect(LTILMSController.tokenRequestHandler.calledOnce).to.be.true;
@@ -278,8 +274,7 @@ describe("/routes/consumer.js", function () {
       );
 
       // Send request to route
-      const res = await request(app)
-        .post("/lti/consumer/ags/context/resource/gradebook/scores");
+      const res = await request(app).post("/lti/consumer/ags/context/resource/gradebook/scores");
 
       // Assert controller was called
       expect(LTILMSController.agsGradePassbackHandler.calledOnce).to.be.true;
@@ -312,8 +307,7 @@ describe("/routes/consumer.js", function () {
       );
 
       // Send request to route
-      const res = await request(app)
-        .post("/lti/consumer/ags/context/resource/gradebook/scores");
+      const res = await request(app).post("/lti/consumer/ags/context/resource/gradebook/scores");
 
       // Assert controller was called
       expect(LTILMSController.agsGradePassbackHandler.calledOnce).to.be.true;
@@ -342,8 +336,7 @@ describe("/routes/consumer.js", function () {
       app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger));
 
       // Send request to route
-      const res = await request(app)
-        .get("/lti/consumer/openid-configuration");
+      const res = await request(app).get("/lti/consumer/openid-configuration");
 
       // Assert controller was called
       expect(LTILMSController.getOpenIDConfiguration.calledOnce).to.be.true;
@@ -371,8 +364,7 @@ describe("/routes/consumer.js", function () {
       app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger));
 
       // Send request to route
-      const res = await request(app)
-        .get("/lti/consumer/openid-configuration");
+      const res = await request(app).get("/lti/consumer/openid-configuration");
 
       // Assert controller was called
       expect(LTILMSController.getOpenIDConfiguration.calledOnce).to.be.true;

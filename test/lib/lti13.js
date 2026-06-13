@@ -1909,4 +1909,1271 @@ describe("/lib/lti13.js", function () {
       );
     });
   });
+
+  describe("validateAuthRequest", function () {
+    // Create a sample authentication request
+    const authRequest = {
+      scope: "openid",
+      response_type: "id_token",
+      client_id: "10000000000002",
+      redirect_uri: "https://lpp.home.russfeld.me/lti/provider/redirect13",
+      login_hint: "login_hint_value",
+      state: "state_value",
+      response_mode: "form_post",
+      nonce: "nonce_value",
+      prompt: "prompt_value",
+      lti_message_hint: "message_hint_value",
+    };
+
+    it("should validate a correct authentication request and return the expected claims", async function () {
+      // Mock Library Dependencies
+      const destroyStub = sinon.stub().resolves();
+      const jsonStub = sinon.stub().returns({
+        data: JSON.stringify({
+          login_state: "login_state_value",
+        }),
+      });
+      const models = {
+        ProviderLogin: {
+          findOne: sinon.stub().resolves({
+            toJSON: jsonStub,
+            destroy: destroyStub,
+          }),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Call the method under test
+      const result = await lti13Utils.validateAuthRequest({ body: authRequest });
+
+      // Assert the expected results
+      expect(
+        models.ProviderLogin.findOne.calledOnceWith({
+          where: {
+            client_id: authRequest.client_id,
+            login_hint: authRequest.login_hint,
+          },
+        }),
+      ).to.be.true;
+      expect(destroyStub.calledOnce).to.be.true;
+      expect(result).to.deep.equal({
+        scope: authRequest.scope,
+        response_type: authRequest.response_type,
+        client_id: authRequest.client_id,
+        redirect_uri: authRequest.redirect_uri,
+        login_hint: authRequest.login_hint,
+        state: authRequest.state,
+        response_mode: authRequest.response_mode,
+        nonce: authRequest.nonce,
+        loginState: {
+          data: {
+            login_state: "login_state_value",
+          },
+        },
+      });
+    });
+
+    it("should throw an error if the authentication request is missing required parameters", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        // Call the method under test with missing parameters
+        await lti13Utils.validateAuthRequest({ body: {} });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Auth Request: Invalid or missing scope parameter");
+      }
+
+      try {
+        await lti13Utils.validateAuthRequest({ body: { scope: "openid" } });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Auth Request: Invalid or missing response_type parameter");
+      }
+
+      try {
+        await lti13Utils.validateAuthRequest({ body: { scope: "wrongscope" } });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Auth Request: Invalid or missing scope parameter");
+      }
+
+      try {
+        await lti13Utils.validateAuthRequest({ body: { scope: "openid", response_type: "id_token" } });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Auth Request: Missing client_id parameter");
+      }
+
+      try {
+        await lti13Utils.validateAuthRequest({ body: { scope: "openid", response_type: "wrong_token" } });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Auth Request: Invalid or missing response_type parameter");
+      }
+
+      try {
+        await lti13Utils.validateAuthRequest({
+          body: { scope: "openid", response_type: "id_token", client_id: "10000000000002" },
+        });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Auth Request: Missing redirect_uri parameter");
+      }
+
+      try {
+        await lti13Utils.validateAuthRequest({
+          body: {
+            scope: "openid",
+            response_type: "id_token",
+            client_id: "10000000000002",
+            redirect_uri: "https://lpp.home.russfeld.me/lti/provider/redirect13",
+          },
+        });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Auth Request: Missing login_hint parameter");
+      }
+
+      try {
+        await lti13Utils.validateAuthRequest({
+          body: {
+            scope: "openid",
+            response_type: "id_token",
+            client_id: "10000000000002",
+            redirect_uri: "https://lpp.home.russfeld.me/lti/provider/redirect13",
+            login_hint: "login_hint_value",
+          },
+        });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Auth Request: Missing state parameter");
+      }
+
+      try {
+        await lti13Utils.validateAuthRequest({
+          body: {
+            scope: "openid",
+            response_type: "id_token",
+            client_id: "10000000000002",
+            redirect_uri: "https://lpp.home.russfeld.me/lti/provider/redirect13",
+            login_hint: "login_hint_value",
+            state: "state_value",
+          },
+        });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Auth Request: Invalid or missing response_mode parameter");
+      }
+
+      try {
+        await lti13Utils.validateAuthRequest({
+          body: {
+            scope: "openid",
+            response_type: "id_token",
+            client_id: "10000000000002",
+            redirect_uri: "https://lpp.home.russfeld.me/lti/provider/redirect13",
+            login_hint: "login_hint_value",
+            state: "state_value",
+            response_mode: "form_post",
+          },
+        });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Auth Request: Missing nonce parameter");
+      }
+
+      try {
+        await lti13Utils.validateAuthRequest({
+          body: {
+            scope: "openid",
+            response_type: "id_token",
+            client_id: "10000000000002",
+            redirect_uri: "https://lpp.home.russfeld.me/lti/provider/redirect13",
+            login_hint: "login_hint_value",
+            state: "state_value",
+            response_mode: "wrong_response_mode",
+          },
+        });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Auth Request: Invalid or missing response_mode parameter");
+      }
+    });
+
+    it("should throw an error if the login state cannot be found in the database", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ProviderLogin: {
+          findOne: sinon.stub().resolves(null),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        // Call the method under test
+        await lti13Utils.validateAuthRequest({ body: authRequest });
+        throw new Error("Expected validateAuthRequest to throw an error");
+      } catch (err) {
+        expect(
+          models.ProviderLogin.findOne.calledOnceWith({
+            where: {
+              client_id: authRequest.client_id,
+              login_hint: authRequest.login_hint,
+            },
+          }),
+        ).to.be.true;
+        expect(err.message).to.equal("Auth Request: No matching login state found for client_id and login_hint");
+      }
+    });
+  });
+
+  const launch_data = {
+    key: "thisisaconsumerkey",
+    url: "http://localhost:3000/lti/provider/launch",
+    deployment_id: "thisisadeploymentid",
+    ret_url: "http://localhost:3000/lti/provider/launch",
+    context: {
+      key: "thisisacontextid",
+      label: "This is a context label",
+      name: "This is a context title",
+    },
+    resource: {
+      key: "thisisaresourceid",
+      name: "This is a resource title",
+    },
+    user: {
+      key: "thisisauserid",
+      name: "Test User",
+      first_name: "Test",
+      last_name: "User",
+      email: "testuser@localhost.com",
+      image: "https://placehold.co/64x64.png",
+    },
+    manager: false,
+    gradebook_key: "gradebook_key",
+    custom: {
+      custom_id: "thisisacustomid",
+      custom_value: "thisisacustomvalue",
+    },
+  };
+
+  const consumer_config = {
+    deployment_id: "thisisadeploymentid",
+    deployment_name: "Test Deployment",
+    platform_version: "1.0",
+    platform_name: "Test LMS",
+  };
+
+  describe("buildLaunchJWT", function () {
+    it("should build a launch JWT with the correct claims and sign it with the correct private key", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ProviderKey: {
+          findOne: sinon.stub().resolves({ private: privateKey }),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      sinon.stub(crypto, "createPrivateKey").returns(privateKey);
+
+      // Call the method under test
+      const result = await lti13Utils.buildLaunchJWT(
+        {
+          loginState: { data: launch_data },
+          client_id: "thisisaconsumerkey",
+          nonce: "thisisanonce",
+        },
+        consumer_config,
+      );
+
+      // Assert the expected results
+      expect(result).to.be.a("string");
+      const decoded = jsonwebtoken.decode(result, { complete: true });
+
+      // check key id in header
+      expect(decoded.header).to.have.property("kid", "thisisaconsumerkey");
+
+      expect(decoded.payload).to.include({
+        iss: domain_name + "/",
+        aud: "thisisaconsumerkey",
+        sub: "thisisauserid",
+        nonce: "thisisanonce",
+      });
+      expect(decoded.payload).to.have.property(
+        "https://purl.imsglobal.org/spec/lti/claim/message_type",
+        "LtiResourceLinkRequest",
+      );
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/version", "1.3.0");
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/resource_link");
+      expect(decoded.payload["https://purl.imsglobal.org/spec/lti/claim/resource_link"]).to.deep.include({
+        id: "thisisaresourceid",
+        title: "This is a resource title",
+      });
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti-ags/claim/endpoint");
+      expect(decoded.payload["https://purl.imsglobal.org/spec/lti-ags/claim/endpoint"]).to.deep.include({
+        lineitem: "http://localhost:3000/lti/consumer/ags/thisisacontextid/thisisaresourceid/gradebook_key/scores",
+        scope: ["https://purl.imsglobal.org/spec/lti-ags/scope/lineitem"],
+      });
+      expect(decoded.payload).to.have.property(
+        "https://purl.imsglobal.org/spec/lti/claim/deployment_id",
+        "thisisadeploymentid",
+      );
+      expect(decoded.payload).to.have.property(
+        "https://purl.imsglobal.org/spec/lti/claim/target_link_uri",
+        "http://localhost:3000/lti/provider/launch",
+      );
+      expect(decoded.payload).to.include({
+        picture: "https://placehold.co/64x64.png",
+        email: "testuser@localhost.com",
+        name: "Test User",
+        given_name: "Test",
+        family_name: "User",
+      });
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/context");
+      expect(decoded.payload["https://purl.imsglobal.org/spec/lti/claim/context"]).to.deep.include({
+        id: "thisisacontextid",
+        label: "This is a context label",
+        title: "This is a context title",
+        type: ["http://purl.imsglobal.org/vocab/lis/v2/course#CourseOffering"],
+      });
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/tool_platform");
+      expect(decoded.payload["https://purl.imsglobal.org/spec/lti/claim/tool_platform"]).to.deep.include({
+        name: "Test Deployment",
+        version: "1.0",
+        product_family_code: "Test LMS",
+        guid: "thisisadeploymentid",
+      });
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/launch_presentation");
+      expect(decoded.payload["https://purl.imsglobal.org/spec/lti/claim/launch_presentation"]).to.deep.include({
+        document_target: "iframe",
+        return_url: "http://localhost:3000/lti/provider/launch",
+      });
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/roles");
+      expect(decoded.payload["https://purl.imsglobal.org/spec/lti/claim/roles"]).to.deep.include.members([
+        "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Student",
+        "http://purl.imsglobal.org/vocab/lis/v2/membership#Learner",
+        "http://purl.imsglobal.org/vocab/lis/v2/system/person#User",
+      ]);
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/custom");
+      expect(decoded.payload["https://purl.imsglobal.org/spec/lti/claim/custom"]).to.deep.include({
+        custom_id: "thisisacustomid",
+        custom_value: "thisisacustomvalue",
+      });
+      expect(crypto.createPrivateKey.calledOnceWith(privateKey)).to.be.true;
+
+      // Restore stubbed methods
+      crypto.createPrivateKey.restore();
+    });
+
+    it("should throw an error if the private key cannot be retrieved from the database", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ProviderKey: {
+          findOne: sinon.stub().resolves(null),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        // Call the method under test
+        await lti13Utils.buildLaunchJWT(
+          {
+            loginState: { data: launch_data },
+            client_id: "thisisaconsumerkey",
+            nonce: "thisisanonce",
+          },
+          consumer_config,
+        );
+        throw new Error("Expected buildLaunchJWT to throw an error");
+      } catch (err) {
+        expect(
+          models.ProviderKey.findOne.calledOnceWith({ where: { key: "thisisaconsumerkey" }, attributes: ["private"] }),
+        ).to.be.true;
+        expect(err.message).to.equal("Launch JWT: Provider key not found");
+      }
+    });
+
+    it("should handle manager roles correctly in the launch JWT", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ProviderKey: {
+          findOne: sinon.stub().resolves({ private: privateKey }),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      sinon.stub(crypto, "createPrivateKey").returns(privateKey);
+
+      // Call the method under test with manager role
+      const result = await lti13Utils.buildLaunchJWT(
+        {
+          loginState: { data: { ...launch_data, manager: true } },
+          client_id: "thisisaconsumerkey",
+          nonce: "thisisanonce",
+        },
+        consumer_config,
+      );
+
+      // Assert that the manager role is included in the roles claim
+      const decoded = jsonwebtoken.decode(result, { complete: true });
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/roles");
+      expect(decoded.payload["https://purl.imsglobal.org/spec/lti/claim/roles"]).to.deep.include.members([
+        "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Instructor",
+        "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor",
+        "http://purl.imsglobal.org/vocab/lis/v2/system/person#User",
+      ]);
+
+      // Restore stubbed methods
+      crypto.createPrivateKey.restore();
+    });
+  });
+
+  describe("validateTokenRequest", function () {
+    it("should validate a correct token request and return the expected claims", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ProviderKey: {
+          findOne: sinon.stub().resolves({ private: "thisisaprivatekey" }),
+        },
+        Provider: {
+          findOne: sinon.stub().resolves({
+            client_id: "thisisaconsumerkey",
+            keyset_url: "thisisakeyseturl",
+            key: "thisisapublickey",
+          }),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      const decodeStub = sinon.stub(jsonwebtoken, "decode").returns({
+        payload: {
+          iss: "tokenissuer",
+        },
+        header: {
+          kid: "thisisaconsumerkey",
+        },
+      });
+      const verifyStub = sinon.stub(jsonwebtoken, "verify").resolves();
+      const signStub = sinon.stub(jsonwebtoken, "sign").returns("thisisatokenjwt");
+      const getSigningKeyStub = sinon.stub(JwksClient.prototype, "getSigningKey").resolves({
+        getPublicKey: sinon.stub().returns("thisisapublickey"),
+      });
+      const createPrivateKeyStub = sinon.stub(crypto, "createPrivateKey").returns("thisisaprivatekey");
+
+      // Call the method under test with a valid token request
+      const tokenRequest = {
+        client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+        client_assertion: "thisisajwt",
+        grant_type: "client_credentials",
+        scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+      };
+      const result = await lti13Utils.validateTokenRequest({ body: tokenRequest });
+
+      // Assert the expected results
+      expect(result).to.deep.equal({
+        access_token: "thisisatokenjwt",
+        token_type: "Bearer",
+        expires_in: 3600,
+        scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+      });
+
+      // Assert that the expected library methods were called with the correct arguments
+      expect(decodeStub.calledOnceWith(tokenRequest.client_assertion, { complete: true })).to.be.true;
+      expect(models.Provider.findOne.calledOnceWith({ where: { client_id: "tokenissuer" } })).to.be.true;
+      expect(getSigningKeyStub.calledOnceWith("thisisaconsumerkey")).to.be.true;
+      expect(
+        verifyStub.calledOnceWith(tokenRequest.client_assertion, "thisisapublickey", {
+          algorithms: ["RS256"],
+          audience: domain_name + "/lti/consumer/token",
+          issuer: "thisisaconsumerkey",
+          subject: "thisisaconsumerkey",
+        }),
+      ).to.be.true;
+      expect(models.ProviderKey.findOne.calledOnceWith({ where: { key: "thisisapublickey" }, attributes: ["private"] }))
+        .to.be.true;
+      expect(createPrivateKeyStub.calledOnceWith("thisisaprivatekey")).to.be.true;
+      expect(signStub.calledOnce).to.be.true;
+
+      // Restore stubbed methods
+      jsonwebtoken.decode.restore();
+      jsonwebtoken.verify.restore();
+      jsonwebtoken.sign.restore();
+      JwksClient.prototype.getSigningKey.restore();
+      crypto.createPrivateKey.restore();
+    });
+
+    it("should throw an error if the token request is missing required parameters", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        // Call the method under test with missing parameters
+        await lti13Utils.validateTokenRequest({ body: {} });
+        throw new Error("Expected validateTokenRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Token Request: Invalid or missing grant_type parameter");
+      }
+
+      try {
+        await lti13Utils.validateTokenRequest({ body: { grant_type: "wrong_type" } });
+        throw new Error("Expected validateTokenRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Token Request: Invalid or missing grant_type parameter");
+      }
+
+      try {
+        await lti13Utils.validateTokenRequest({ body: { grant_type: "client_credentials" } });
+        throw new Error("Expected validateTokenRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Token Request: Invalid or missing client_assertion_type parameter");
+      }
+
+      try {
+        await lti13Utils.validateTokenRequest({
+          body: { grant_type: "client_credentials", client_assertion_type: "wrong_assertion_type" },
+        });
+        throw new Error("Expected validateTokenRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Token Request: Invalid or missing client_assertion_type parameter");
+      }
+
+      try {
+        await lti13Utils.validateTokenRequest({
+          body: {
+            grant_type: "client_credentials",
+            client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+          },
+        });
+        throw new Error("Expected validateTokenRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Token Request: Missing client_assertion parameter");
+      }
+
+      try {
+        await lti13Utils.validateTokenRequest({
+          body: {
+            grant_type: "client_credentials",
+            client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+            client_assertion: "thisisajwt",
+          },
+        });
+        throw new Error("Expected validateTokenRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Token Request: Missing scopes parameter");
+      }
+    });
+
+    it("should throw an error if the client assertion is invalid", async function () {
+      // Mock Library Dependencies
+      const models = {
+        Provider: {
+          findOne: sinon.stub().resolves(null),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      sinon.stub(jsonwebtoken, "decode").throws(new Error("Invalid JWT"));
+
+      try {
+        // Call the method under test with an invalid client assertion
+        await lti13Utils.validateTokenRequest({
+          body: {
+            grant_type: "client_credentials",
+            client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+            client_assertion: "thisisajwt",
+            scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+          },
+        });
+        throw new Error("Expected validateTokenRequest to throw an error");
+      } catch (err) {
+        expect(jsonwebtoken.decode.calledOnceWith("thisisajwt", { complete: true })).to.be.true;
+        expect(err.message).to.equal("Token Request: Invalid JWT in client_assertion parameter: Invalid JWT");
+      }
+    });
+
+    it("should throw an error if no matching provider is found for the client_id in the token request", async function () {
+      // Mock Library Dependencies
+      const models = {
+        Provider: {
+          findOne: sinon.stub().resolves(null),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      sinon.stub(jsonwebtoken, "decode").returns({
+        payload: {
+          iss: "tokenissuer",
+        },
+        header: {
+          kid: "thisisaconsumerkey",
+        },
+      });
+
+      try {
+        // Call the method under test with a token request that has no matching provider
+        await lti13Utils.validateTokenRequest({
+          body: {
+            grant_type: "client_credentials",
+            client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+            client_assertion: "thisisajwt",
+            scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+          },
+        });
+        throw new Error("Expected validateTokenRequest to throw an error");
+      } catch (err) {
+        expect(jsonwebtoken.decode.calledOnceWith("thisisajwt", { complete: true })).to.be.true;
+        expect(models.Provider.findOne.calledOnceWith({ where: { client_id: "tokenissuer" } })).to.be.true;
+        expect(err.message).to.equal("Token Request: No matching provider found for JWT kid");
+      }
+    });
+
+    it("should throw an error if the client assertion signature is invalid", async function () {
+      // Mock Library Dependencies
+      const models = {
+        Provider: {
+          findOne: sinon.stub().resolves({
+            client_id: "thisisaconsumerkey",
+            keyset_url: "thisisakeyseturl",
+            key: "thisisapublickey",
+          }),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      sinon.stub(jsonwebtoken, "decode").returns({
+        payload: {
+          iss: "tokenissuer",
+        },
+        header: {
+          kid: "thisisaconsumerkey",
+        },
+      });
+      sinon.stub(JwksClient.prototype, "getSigningKey").resolves({
+        getPublicKey: sinon.stub().returns("thisisapublickey"),
+      });
+      sinon.stub(jsonwebtoken, "verify").throws(new Error("Invalid signature"));
+
+      try {
+        // Call the method under test with a token request that has an invalid signature
+        await lti13Utils.validateTokenRequest({
+          body: {
+            grant_type: "client_credentials",
+            client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+            client_assertion: "thisisajwt",
+            scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+          },
+        });
+        throw new Error("Expected validateTokenRequest to throw an error");
+      } catch (err) {
+        expect(jsonwebtoken.decode.calledOnceWith("thisisajwt", { complete: true })).to.be.true;
+        expect(models.Provider.findOne.calledOnceWith({ where: { client_id: "tokenissuer" } })).to.be.true;
+        expect(JwksClient.prototype.getSigningKey.calledOnceWith("thisisaconsumerkey")).to.be.true;
+        expect(
+          jsonwebtoken.verify.calledOnceWith("thisisajwt", "thisisapublickey", {
+            algorithms: ["RS256"],
+            audience: domain_name + "/lti/consumer/token",
+            issuer: "thisisaconsumerkey",
+            subject: "thisisaconsumerkey",
+          }),
+        ).to.be.true;
+        expect(err.message).to.equal("Token Request: Unable to verify JWT: Invalid signature");
+      }
+    });
+
+    it("should throw an error if the scopes are invalid", async function () {
+      // Mock Library Dependencies
+      const models = {
+        Provider: {
+          findOne: sinon.stub().resolves({
+            client_id: "thisisaconsumerkey",
+            keyset_url: "thisisakeyseturl",
+            key: "thisisapublickey",
+          }),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      sinon.stub(jsonwebtoken, "decode").returns({
+        payload: {
+          iss: "tokenissuer",
+        },
+        header: {
+          kid: "thisisaconsumerkey",
+        },
+      });
+      sinon.stub(JwksClient.prototype, "getSigningKey").resolves({
+        getPublicKey: sinon.stub().returns("thisisapublickey"),
+      });
+      sinon.stub(jsonwebtoken, "verify").resolves();
+
+      try {
+        // Call the method under test with a token request that has invalid scopes
+        await lti13Utils.validateTokenRequest({
+          body: {
+            grant_type: "client_credentials",
+            client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+            client_assertion: "thisisajwt",
+            scopes: "invalid_scope",
+          },
+        });
+        throw new Error("Expected validateTokenRequest to throw an error");
+      } catch (err) {
+        expect(jsonwebtoken.decode.calledOnceWith("thisisajwt", { complete: true })).to.be.true;
+        expect(models.Provider.findOne.calledOnceWith({ where: { client_id: "tokenissuer" } })).to.be.true;
+        expect(JwksClient.prototype.getSigningKey.calledOnceWith("thisisaconsumerkey")).to.be.true;
+        expect(
+          jsonwebtoken.verify.calledOnceWith("thisisajwt", "thisisapublickey", {
+            algorithms: ["RS256"],
+            audience: domain_name + "/lti/consumer/token",
+            issuer: "thisisaconsumerkey",
+            subject: "thisisaconsumerkey",
+          }),
+        ).to.be.true;
+        expect(err.message).to.equal("Token Request: Required scope not included in scopes parameter");
+      }
+    });
+
+    it("should throw an error if the provider's private key cannot be retrieved from the database", async function () {
+      // Mock Library Dependencies
+      const models = {
+        Provider: {
+          findOne: sinon.stub().resolves({
+            client_id: "thisisaconsumerkey",
+            keyset_url: "thisisakeyseturl",
+            key: "thisisapublickey",
+          }),
+        },
+        ProviderKey: {
+          findOne: sinon.stub().resolves(null),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      sinon.stub(jsonwebtoken, "decode").returns({
+        payload: {
+          iss: "tokenissuer",
+        },
+        header: {
+          kid: "thisisaconsumerkey",
+        },
+      });
+      sinon.stub(JwksClient.prototype, "getSigningKey").resolves({
+        getPublicKey: sinon.stub().returns("thisisapublickey"),
+      });
+      sinon.stub(jsonwebtoken, "verify").resolves();
+
+      try {
+        // Call the method under test with a token request that has a provider whose private key cannot be retrieved
+        await lti13Utils.validateTokenRequest({
+          body: {
+            grant_type: "client_credentials",
+            client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+            client_assertion: "thisisajwt",
+            scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+          },
+        });
+        throw new Error("Expected validateTokenRequest to throw an error");
+      } catch (err) {
+        expect(jsonwebtoken.decode.calledOnceWith("thisisajwt", { complete: true })).to.be.true;
+        expect(models.Provider.findOne.calledOnceWith({ where: { client_id: "tokenissuer" } })).to.be.true;
+        expect(JwksClient.prototype.getSigningKey.calledOnceWith("thisisaconsumerkey")).to.be.true;
+        expect(
+          jsonwebtoken.verify.calledOnceWith("thisisajwt", "thisisapublickey", {
+            algorithms: ["RS256"],
+            audience: domain_name + "/lti/consumer/token",
+            issuer: "thisisaconsumerkey",
+            subject: "thisisaconsumerkey",
+          }),
+        ).to.be.true;
+        expect(
+          models.ProviderKey.findOne.calledOnceWith({ where: { key: "thisisapublickey" }, attributes: ["private"] }),
+        ).to.be.true;
+        expect(err.message).to.equal("Token Request: No matching key found for JWT kid");
+      }
+    });
+  });
+
+  describe("validateAGSGradePassback", function () {
+    it("should validate a correct AGS grade passback request and return the expected claims", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Call the method under test with a valid AGS grade passback request
+      const gradePassbackRequest = {
+        body: {
+          timestamp: "2024-06-01T12:00:00Z",
+          scoreGiven: 0.85,
+          scoreMaximum: 1.0,
+          userId: "thisisauserid",
+          activityProgress: "Completed",
+          gradingProgress: "FullyGraded",
+        },
+        lti13Token: {
+          scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+        },
+      };
+      const result = await lti13Utils.validateAGSGradePassback(gradePassbackRequest);
+
+      // Assert the expected results
+      expect(result).to.deep.equal({
+        timestamp: "2024-06-01T12:00:00Z",
+        scoreGiven: 0.85,
+        scoreMaximum: 1.0,
+        userId: "thisisauserid",
+        activityProgress: "Completed",
+        gradingProgress: "FullyGraded",
+      });
+    });
+
+    it("should throw an error if the AGS grade passback request is missing required parameters", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        // Call the method under test with missing parameters
+        await lti13Utils.validateAGSGradePassback({
+          body: {},
+          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: Missing timestamp parameter");
+      }
+
+      try {
+        await lti13Utils.validateAGSGradePassback({
+          body: { timestamp: "2024-06-01T12:00:00Z" },
+          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: Missing scoreGiven parameter");
+      }
+
+      try {
+        await lti13Utils.validateAGSGradePassback({
+          body: { timestamp: "2024-06-01T12:00:00Z", scoreGiven: undefined },
+          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: Missing scoreGiven parameter");
+      }
+
+      try {
+        await lti13Utils.validateAGSGradePassback({
+          body: { timestamp: "2024-06-01T12:00:00Z", scoreGiven: 0.85 },
+          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: Missing scoreMaximum parameter");
+      }
+
+      try {
+        await lti13Utils.validateAGSGradePassback({
+          body: { timestamp: "2024-06-01T12:00:00Z", scoreGiven: 0.85, scoreMaximum: undefined },
+          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: Missing scoreMaximum parameter");
+      }
+
+      try {
+        await lti13Utils.validateAGSGradePassback({
+          body: { timestamp: "2024-06-01T12:00:00Z", scoreGiven: 0.85, scoreMaximum: 1.0 },
+          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: Missing userId parameter");
+      }
+
+      try {
+        await lti13Utils.validateAGSGradePassback({
+          body: { timestamp: "2024-06-01T12:00:00Z", scoreGiven: 0.85, scoreMaximum: 1.0, userId: "thisisauserid" },
+          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: Missing activityProgress parameter");
+      }
+
+      try {
+        await lti13Utils.validateAGSGradePassback({
+          body: {
+            timestamp: "2024-06-01T12:00:00Z",
+            scoreGiven: 0.85,
+            scoreMaximum: 1.0,
+            userId: "thisisauserid",
+            activityProgress: "Completed",
+          },
+          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: Missing gradingProgress parameter");
+      }
+    });
+
+    it("should throw an error if the AGS grade passback request is missing the required scope", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        // Call the method under test with a request that is missing the required scope
+        await lti13Utils.validateAGSGradePassback({
+          body: {
+            timestamp: "2024-06-01T12:00:00Z",
+            scoreGiven: 0.85,
+            scoreMaximum: 1.0,
+            userId: "thisisauserid",
+            activityProgress: "Completed",
+            gradingProgress: "FullyGraded",
+          },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: Insufficient permissions for AGS grade post");
+      }
+
+      try {
+        // Call the method under test with a request that is missing the required scope
+        await lti13Utils.validateAGSGradePassback({
+          body: {
+            timestamp: "2024-06-01T12:00:00Z",
+            scoreGiven: 0.85,
+            scoreMaximum: 1.0,
+            userId: "thisisauserid",
+            activityProgress: "Completed",
+            gradingProgress: "FullyGraded",
+          },
+          lti13Token: {},
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: Insufficient permissions for AGS grade post");
+      }
+
+      try {
+        // Call the method under test with a request that is missing the required scope
+        await lti13Utils.validateAGSGradePassback({
+          body: {
+            timestamp: "2024-06-01T12:00:00Z",
+            scoreGiven: 0.85,
+            scoreMaximum: 1.0,
+            userId: "thisisauserid",
+            activityProgress: "Completed",
+            gradingProgress: "FullyGraded",
+          },
+          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem" },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: Insufficient permissions for AGS grade post");
+      }
+    });
+
+    it("should throw an error if the scores are not floats", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        // Call the method under test with non-float scores
+        await lti13Utils.validateAGSGradePassback({
+          body: {
+            timestamp: "2024-06-01T12:00:00Z",
+            scoreGiven: "text",
+            scoreMaximum: "text",
+            userId: "thisisauserid",
+            activityProgress: "Completed",
+            gradingProgress: "FullyGraded",
+          },
+          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: scoreGiven and scoreMaximum must be valid numbers");
+      }
+
+      try {
+        // Call the method under test with non-float scores
+        await lti13Utils.validateAGSGradePassback({
+          body: {
+            timestamp: "2024-06-01T12:00:00Z",
+            scoreGiven: "0.85",
+            scoreMaximum: "text",
+            userId: "thisisauserid",
+            activityProgress: "Completed",
+            gradingProgress: "FullyGraded",
+          },
+          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSGradePassback to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Grade Post Request: scoreGiven and scoreMaximum must be valid numbers");
+      }
+    });
+  });
+
+  describe("handleDynamicRegistrationRequest", function () {
+    it("should validate a correct dynamic registration request and return the expected claims", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ProviderRegistration: {
+          create: sinon.stub().resolves({ registration_token: "thisisaregistrationtoken" }),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      sinon.stub(ky, "get").resolves({
+        ok: true,
+        text: async () => "responsetext",
+      });
+
+      // Call the method under test with a valid dynamic registration request
+      const result = await lti13Utils.handleDynamicRegistrationRequest("thisisaurl", "/lti/consumer");
+
+      // Assert the expected results
+      expect(result).to.equal("responsetext");
+      expect(models.ProviderRegistration.create.calledOnceWith({ token: sinon.match.string, url: "thisisaurl" })).to.be
+        .true;
+      const token = models.ProviderRegistration.create.firstCall.args[0].token;
+      expect(token).to.match(/^[\w-]{21}$/);
+      expect(ky.get.calledOnceWith(sinon.match.string, { method: "GET", headers: { "Content-Type": "text/html" } })).to
+        .be.true;
+      const url = ky.get.firstCall.args[0];
+      expect(url).to.match(
+        /^thisisaurl\?registration_token=[\w-]{21}&openid_configuration=http%3A%2F%2Flocalhost%3A3000%2Flti%2Fconsumer%2Fopenid-configuration$/,
+      );
+
+      // Restore stubbed methods
+      ky.get.restore();
+    });
+
+    it("should throw an error if the dynamic registration request fails", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ProviderRegistration: {
+          create: sinon.stub().resolves({ registration_token: "thisisaregistrationtoken" }),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      sinon.stub(ky, "get").resolves({
+        ok: false,
+        statusText: "Bad Request",
+      });
+
+      try {
+        // Call the method under test with a request that results in an error response
+        await lti13Utils.handleDynamicRegistrationRequest("thisisaurl", "/lti/consumer");
+        throw new Error("Expected handleDynamicRegistrationRequest to throw an error");
+      } catch (err) {
+        expect(models.ProviderRegistration.create.calledOnceWith({ token: sinon.match.string, url: "thisisaurl" })).to
+          .be.true;
+        const token = models.ProviderRegistration.create.firstCall.args[0].token;
+        expect(token).to.match(/^[\w-]{21}$/);
+        expect(ky.get.calledOnceWith(sinon.match.string, { method: "GET", headers: { "Content-Type": "text/html" } }))
+          .to.be.true;
+        const url = ky.get.firstCall.args[0];
+        expect(url).to.match(
+          /^thisisaurl\?registration_token=[\w-]{21}&openid_configuration=http%3A%2F%2Flocalhost%3A3000%2Flti%2Fconsumer%2Fopenid-configuration$/,
+        );
+        expect(err.message).to.equal("Failed to fetch registration configuration from URL: " + "thisisaurl");
+      }
+
+      // Restore stubbed methods
+      ky.get.restore();
+    });
+
+    it("should throw an error if the registration token cannot be created in the database", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ProviderRegistration: {
+          create: sinon.stub().resolves(null),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        // Call the method under test with a request that results in a database error
+        await lti13Utils.handleDynamicRegistrationRequest("thisisaurl", "/lti/consumer");
+        throw new Error("Expected handleDynamicRegistrationRequest to throw an error");
+      } catch (err) {
+        expect(models.ProviderRegistration.create.calledOnceWith({ token: sinon.match.string, url: "thisisaurl" })).to
+          .be.true;
+        const token = models.ProviderRegistration.create.firstCall.args[0].token;
+        expect(token).to.match(/^[\w-]{21}$/);
+        expect(err.message).to.equal("Failed to create LTI 1.3 Dynamic Registration Token: Database Error");
+      }
+    });
+
+    it("should throw an error if the database throws an error creating the token", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ProviderRegistration: {
+          create: sinon.stub().rejects(new Error("Database error")),
+        },
+      };
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        // Call the method under test with a request that results in a database error
+        await lti13Utils.handleDynamicRegistrationRequest("thisisaurl", "/lti/consumer");
+        throw new Error("Expected handleDynamicRegistrationRequest to throw an error");
+      } catch (err) {
+        expect(models.ProviderRegistration.create.calledOnceWith({ token: sinon.match.string, url: "thisisaurl" })).to
+          .be.true;
+        const token = models.ProviderRegistration.create.firstCall.args[0].token;
+        expect(token).to.match(/^[\w-]{21}$/);
+        expect(err.message).to.equal("Failed to create LTI 1.3 Dynamic Registration Token: Database error");
+      }
+    });
+  });
 });

@@ -616,7 +616,7 @@ class LTI13Utils {
       },
       "https://purl.imsglobal.org/spec/lti-ags/claim/endpoint": {
         lineitem: new URL(
-          `/lti/consumer/ags/${data.context.key}/${data.resource.key}/${data.gradebook_key}`,
+          `/lti/consumer/ags/${data.context.key}/${data.resource.key}/${data.gradebook_key}/scores`,
           this.#domain_name,
         ).href,
         scope: ["https://purl.imsglobal.org/spec/lti-ags/scope/lineitem"],
@@ -772,6 +772,7 @@ class LTI13Utils {
     // Get private key for signing
     const local_key = await this.#ProviderKeyModel.findOne({
       where: { key: provider.key },
+      attributes: ["private"],
     });
     if (!local_key) {
       throw new Error("Token Request: No matching key found for JWT kid");
@@ -836,12 +837,11 @@ class LTI13Utils {
       throw new Error("Grade Post Request: Insufficient permissions for AGS grade post");
     }
 
-    try {
-      // parse scores to floats
-      params.scoreGiven = parseFloat(params.scoreGiven);
-      params.scoreMaximum = parseFloat(params.scoreMaximum);
-    } catch (error) {
-      throw new Error("Grade Post Request: scoreGiven and scoreMaximum must be valid numbers", { cause: error });
+    // Validate scores are valid numbers
+    const scoreGiven = parseFloat(params.scoreGiven);
+    const scoreMaximum = parseFloat(params.scoreMaximum);
+    if (isNaN(scoreGiven) || isNaN(scoreMaximum)) {
+      throw new Error("Grade Post Request: scoreGiven and scoreMaximum must be valid numbers");
     }
 
     // Return validated data
@@ -850,7 +850,7 @@ class LTI13Utils {
 
   /**
    * Handle LTI 1.3 Dynamic Registration Request
-   * 
+   *
    * @param {string} url the URL to fetch the registration configuration from
    * @return {string} the HTML response to send back to the client
    * @throws {Error} if the request is invalid or if there is an error during processing
@@ -865,7 +865,7 @@ class LTI13Utils {
         url: url,
       });
       if (!registration) {
-        throw new Error("Failed to create LTI 1.3 Dynamic Registration Token");
+        throw new Error("Database Error");
       }
     } catch (err) {
       this.#logger.lti("Failed to create LTI 1.3 Dynamic Registration Token");
@@ -876,8 +876,7 @@ class LTI13Utils {
     // Send GET request to the registration URL with the registration token
     const query = new URLSearchParams({
       registration_token: registrationToken,
-      openid_configuration: new URL(route_prefix + "/openid-configuration", this.#domain_name)
-        .href,
+      openid_configuration: new URL(route_prefix + "/openid-configuration", this.#domain_name).href,
     });
     const response = await ky.get(url + "?" + query.toString(), {
       method: "GET",
