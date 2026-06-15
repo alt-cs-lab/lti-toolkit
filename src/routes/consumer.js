@@ -21,6 +21,9 @@ export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, 
   // Create Express router
   const router = express.Router();
 
+  // Configure nunjucks once for auto-submitting form templates
+  nunjucks.configure({ autoescape: true });
+
   // Load middleware
   const tokenMiddlewareFactory = dependencies.setupLTI13TokenMiddleware || setupLTI13TokenMiddleware;
   const lti13TokenMiddleware = tokenMiddlewareFactory(ProviderKeyModel, logger);
@@ -34,10 +37,15 @@ export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, 
     }),
   );
 
-  // Parse JSON body for custom body types used in LTI 1.3 AGS grade passback
+  // Parse JSON body for custom body types used in LTI 1.3 AGS
   router.use(
     express.json({
-      type: ["application/json", "application/vnd.ims.lis.v1.score+json"],
+      type: [
+        "application/json",
+        "application/vnd.ims.lis.v1.score+json",
+        "application/vnd.ims.lis.v2.lineitem+json",
+        "application/vnd.ims.lis.v2.lineitemcontainer+json",
+      ],
     }),
   );
 
@@ -98,7 +106,6 @@ export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, 
       const authResult = await LTILMSController.authRequestHandler(req);
       res.header("Content-Type", "text/html");
       res.header("Content-Security-Policy", "form-action " + authResult.url);
-      nunjucks.configure({ autoescape: true });
       const output = nunjucks.renderString(
         '<!doctype html>\
 <head>\
@@ -173,6 +180,92 @@ export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, 
       return res.status(500).send("Error processing token request");
     }
   });
+
+  /**
+   * LTI 1.3 AGS Line Items (collection)
+   *
+   * @swagger
+   * /lti/consumer/ags/:context_key/line_items:
+   *   get:
+   *    summary: LTI 1.3 AGS Line Items
+   *    description: LTI 1.3 AGS Line Items collection for a context. Accepts optional ?resource_link_id= filter.
+   *    tags: [lti-consumer]
+   */
+  router.get(
+    "/ags/:context_key/line_items",
+    lti13TokenMiddleware,
+    async function (req, res, next) {
+      logger.lti("LTI 1.3 AGS Get Line Items Request Received");
+      logger.silly(JSON.stringify(req.params, null, 2));
+      logger.silly(JSON.stringify(req.query, null, 2));
+      try {
+        const result = await LTILMSController.agsGetLineItemsHandler(req);
+        res.setHeader("Content-Type", "application/vnd.ims.lis.v2.lineitemcontainer+json");
+        res.status(200).json(result);
+      } catch (err) {
+        logger.lti(err);
+        return res.status(500).send("Error processing AGS line items request");
+      }
+    },
+  );
+
+  /**
+   * LTI 1.3 AGS Get Results
+   *
+   * @swagger
+   * /lti/consumer/ags/:context_key/:resource_key/:gradebook_key/results:
+   *   get:
+   *    summary: LTI 1.3 AGS Get Results
+   *    description: LTI 1.3 AGS Get results for a specific line item. Accepts optional ?user_id= filter.
+   *    tags: [lti-consumer]
+   */
+  router.get(
+    "/ags/:context_key/:resource_key/:gradebook_key/results",
+    lti13TokenMiddleware,
+    async function (req, res, next) {
+      logger.lti("LTI 1.3 AGS Get Results Request Received");
+      logger.silly(JSON.stringify(req.params, null, 2));
+      logger.silly(JSON.stringify(req.query, null, 2));
+      try {
+        const result = await LTILMSController.agsGetResultsHandler(req);
+        res.setHeader("Content-Type", "application/vnd.ims.lis.v2.resultcontainer+json");
+        res.status(200).json(result);
+      } catch (err) {
+        logger.lti(err);
+        return res.status(500).send("Error processing AGS results request");
+      }
+    },
+  );
+
+  /**
+   * LTI 1.3 AGS Get Line Item (single)
+   *
+   * @swagger
+   * /lti/consumer/ags/:context_key/:resource_key/:gradebook_key:
+   *   get:
+   *    summary: LTI 1.3 AGS Get Line Item
+   *    description: LTI 1.3 AGS Get a specific line item
+   *    tags: [lti-consumer]
+   */
+  router.get(
+    "/ags/:context_key/:resource_key/:gradebook_key",
+    lti13TokenMiddleware,
+    async function (req, res, next) {
+      logger.lti("LTI 1.3 AGS Get Line Item Request Received");
+      logger.silly(JSON.stringify(req.params, null, 2));
+      try {
+        const result = await LTILMSController.agsGetLineItemHandler(req);
+        if (!result) {
+          return res.status(404).send("Line item not found");
+        }
+        res.setHeader("Content-Type", "application/vnd.ims.lis.v2.lineitem+json");
+        res.status(200).json(result);
+      } catch (err) {
+        logger.lti(err);
+        return res.status(500).send("Error processing AGS line item request");
+      }
+    },
+  );
 
   /**
    * LTI 1.3 AGS Grade Passback

@@ -86,8 +86,10 @@ class LTILMSController {
         message_id,
         req,
       );
-
-      // TODO handle readResult or deleteResult?
+    } else if (body["readresultrequest"]) {
+      return await this.readResultRequest(body["readresultrequest"], providerKey, req.originalUrl, message_id, req);
+    } else if (body["deleteresultrequest"]) {
+      return await this.deleteResultRequest(body["deleteresultrequest"], providerKey, req.originalUrl, message_id, req);
     } else {
       // Find the operation type from the body keys (e.g., "replaceResultRequest", "readResultRequest", "deleteResultRequest")
       let operation = Object.keys(body);
@@ -161,14 +163,23 @@ class LTILMSController {
     // Extract values from Source ID
     const [contextKey, resourceKey, userKey, gradebookKey] = sourceValues;
 
+    // Build AGS-style grade score object, mimicking LTI 1.3 structure for LTI 1.0 scores
+    const gradeScore = {
+      userId: userKey,
+      scoreGiven: parseFloat(score),
+      scoreMaximum: 1.0,
+      activityProgress: "Submitted",
+      gradingProgress: "FullyGraded",
+      timestamp: new Date().toISOString(),
+    };
+
     // Post Provider Grade to Handler Function
     const gradeResult = await this.#consumer_config.postProviderGrade(
       providerKey.key,
       contextKey,
       resourceKey,
-      userKey,
       gradebookKey,
-      score,
+      gradeScore,
       req,
     );
 
@@ -197,6 +208,201 @@ class LTILMSController {
         },
       );
     }
+  }
+
+  /**
+   * Handle a Read Result Request
+   *
+   * @param {Object} request - the request object from the body
+   * @param {Object} providerKey - the key and secret for the provider
+   * @param {string} url - the original request URL
+   * @param {string} message_id - the message identifier from the header
+   * @param {Object} req - Express request object
+   * @returns {Object} an XML response object
+   */
+  async readResultRequest(request, providerKey, url, message_id, req) {
+    this.#logger.lti("Handling Read Result Request");
+
+    let sourcedIdValue;
+    try {
+      const values = this.#LTI10Utils.validateSourcedIdRequest(request);
+      sourcedIdValue = values.sourcedIdValue;
+    } catch (err) {
+      this.#logger.lti("Read Result Request Validation Failed: " + err.message);
+      return this.#LTI10Utils.buildResponse(
+        "failure",
+        "invalidtargetdatafail",
+        err.message,
+        providerKey,
+        req.originalUrl,
+        message_id,
+        "readResult",
+      );
+    }
+
+    const sourceValues = sourcedIdValue.split(":");
+    if (sourceValues.length != 4) {
+      this.#logger.lti("Read Result Request: Invalid Source ID " + sourcedIdValue + " - expected 4 parts");
+      return this.#LTI10Utils.buildResponse(
+        "failure",
+        "invalididfail",
+        "Invalid Source ID " + sourcedIdValue + " - expected 4 parts",
+        providerKey,
+        req.originalUrl,
+        message_id,
+        "readResult",
+      );
+    }
+
+    const [contextKey, resourceKey, userKey, gradebookKey] = sourceValues;
+
+    if (typeof this.#consumer_config.readProviderGrade !== "function") {
+      this.#logger.lti("Read Result Request: No readProviderGrade function configured");
+      return this.#LTI10Utils.buildResponse(
+        "unsupported",
+        "status",
+        "The operation readResult is not supported by this LTI Tool Consumer",
+        providerKey,
+        url,
+        message_id,
+        "readResult",
+      );
+    }
+
+    const gradeResult = await this.#consumer_config.readProviderGrade(
+      providerKey.key,
+      contextKey,
+      resourceKey,
+      userKey,
+      gradebookKey,
+      req,
+    );
+
+    if (gradeResult === null || gradeResult === undefined) {
+      return this.#LTI10Utils.buildResponse(
+        "success",
+        "status",
+        "No result on file",
+        providerKey,
+        url,
+        message_id,
+        "readResult",
+        { readResultResponse: {} },
+      );
+    }
+
+    return this.#LTI10Utils.buildResponse(
+      "success",
+      "status",
+      "Grade read successfully",
+      providerKey,
+      url,
+      message_id,
+      "readResult",
+      {
+        readResultResponse: {
+          result: {
+            resultScore: {
+              language: "en",
+              textString: gradeResult.score,
+            },
+          },
+        },
+      },
+    );
+  }
+
+  /**
+   * Handle a Delete Result Request
+   *
+   * @param {Object} request - the request object from the body
+   * @param {Object} providerKey - the key and secret for the provider
+   * @param {string} url - the original request URL
+   * @param {string} message_id - the message identifier from the header
+   * @param {Object} req - Express request object
+   * @returns {Object} an XML response object
+   */
+  async deleteResultRequest(request, providerKey, url, message_id, req) {
+    this.#logger.lti("Handling Delete Result Request");
+
+    let sourcedIdValue;
+    try {
+      const values = this.#LTI10Utils.validateSourcedIdRequest(request);
+      sourcedIdValue = values.sourcedIdValue;
+    } catch (err) {
+      this.#logger.lti("Delete Result Request Validation Failed: " + err.message);
+      return this.#LTI10Utils.buildResponse(
+        "failure",
+        "invalidtargetdatafail",
+        err.message,
+        providerKey,
+        req.originalUrl,
+        message_id,
+        "deleteResult",
+      );
+    }
+
+    const sourceValues = sourcedIdValue.split(":");
+    if (sourceValues.length != 4) {
+      this.#logger.lti("Delete Result Request: Invalid Source ID " + sourcedIdValue + " - expected 4 parts");
+      return this.#LTI10Utils.buildResponse(
+        "failure",
+        "invalididfail",
+        "Invalid Source ID " + sourcedIdValue + " - expected 4 parts",
+        providerKey,
+        req.originalUrl,
+        message_id,
+        "deleteResult",
+      );
+    }
+
+    const [contextKey, resourceKey, userKey, gradebookKey] = sourceValues;
+
+    if (typeof this.#consumer_config.deleteProviderGrade !== "function") {
+      this.#logger.lti("Delete Result Request: No deleteProviderGrade function configured");
+      return this.#LTI10Utils.buildResponse(
+        "unsupported",
+        "status",
+        "The operation deleteResult is not supported by this LTI Tool Consumer",
+        providerKey,
+        url,
+        message_id,
+        "deleteResult",
+      );
+    }
+
+    const deleteResult = await this.#consumer_config.deleteProviderGrade(
+      providerKey.key,
+      contextKey,
+      resourceKey,
+      userKey,
+      gradebookKey,
+      req,
+    );
+
+    if (!deleteResult || !deleteResult.success) {
+      this.#logger.lti("Failed to Delete Grade: " + deleteResult?.message);
+      return this.#LTI10Utils.buildResponse(
+        "failure",
+        "processingfail",
+        "Failed to Delete Grade: " + deleteResult?.message,
+        providerKey,
+        req.originalUrl,
+        message_id,
+        "deleteResult",
+      );
+    }
+
+    return this.#LTI10Utils.buildResponse(
+      "success",
+      "status",
+      deleteResult.message,
+      providerKey,
+      url,
+      message_id,
+      "deleteResult",
+      { deleteResultResponse: {} },
+    );
   }
 
   /**
@@ -261,14 +467,21 @@ class LTILMSController {
   async agsGradePassbackHandler(req) {
     const gradeResult = await this.#LTI13Utils.validateAGSGradePassback(req);
     this.#logger.lti("Grade Passback Result: " + JSON.stringify(gradeResult, null, 2));
+    const gradeScore = {
+      userId: gradeResult.userId,
+      scoreGiven: parseFloat(gradeResult.scoreGiven),
+      scoreMaximum: parseFloat(gradeResult.scoreMaximum),
+      activityProgress: gradeResult.activityProgress,
+      gradingProgress: gradeResult.gradingProgress,
+      timestamp: gradeResult.timestamp,
+    };
     // Post Provider Grade to Handler Function
     const passbackResult = await this.#consumer_config.postProviderGrade(
       req.lti13Token.kid,
       req.params.context_key,
       req.params.resource_key,
-      gradeResult.userId,
       req.params.gradebook_key,
-      gradeResult.scoreGiven / gradeResult.scoreMaximum,
+      gradeScore,
       req,
     );
 
@@ -287,6 +500,113 @@ class LTILMSController {
   }
 
   /**
+   * Handle LTI 1.3 AGS Get Line Item (single)
+   *
+   * @param {Object} req - Express request object
+   * @return {Object} an AGS line item object
+   */
+  async agsGetLineItemHandler(req) {
+    this.#LTI13Utils.validateAGSLineItemRequest(req);
+    if (typeof this.#consumer_config.getProviderLineItem !== "function") {
+      throw new Error("Get Line Item: No getProviderLineItem function configured");
+    }
+    const { context_key, resource_key, gradebook_key } = req.params;
+    const lineItemData = await this.#consumer_config.getProviderLineItem(
+      req.lti13Token.kid,
+      context_key,
+      resource_key,
+      gradebook_key,
+      req,
+    );
+    if (!lineItemData) {
+      return null;
+    }
+    return {
+      id: new URL(
+        `/lti/consumer/ags/${context_key}/${resource_key}/${gradebook_key}`,
+        this.#domain_name,
+      ).href,
+      scoreMaximum: lineItemData.scoreMaximum,
+      label: lineItemData.label,
+      resourceLinkId: resource_key,
+    };
+  }
+
+  /**
+   * Handle LTI 1.3 AGS Get Line Items (collection)
+   *
+   * @param {Object} req - Express request object
+   * @return {Array} an array of AGS line item objects
+   */
+  async agsGetLineItemsHandler(req) {
+    this.#LTI13Utils.validateAGSLineItemRequest(req);
+    if (typeof this.#consumer_config.getProviderLineItems !== "function") {
+      throw new Error("Get Line Items: No getProviderLineItems function configured");
+    }
+    const { context_key } = req.params;
+    const resource_link_id = req.query.resource_link_id || null;
+    const lineItems = await this.#consumer_config.getProviderLineItems(
+      req.lti13Token.kid,
+      context_key,
+      resource_link_id,
+      req,
+    );
+    if (!lineItems) {
+      return [];
+    }
+    return lineItems.map((item) => ({
+      id: new URL(
+        `/lti/consumer/ags/${context_key}/${item.resourceKey}/${item.gradebookKey}`,
+        this.#domain_name,
+      ).href,
+      scoreMaximum: item.scoreMaximum,
+      label: item.label,
+      resourceLinkId: item.resourceKey,
+    }));
+  }
+
+  /**
+   * Handle LTI 1.3 AGS Get Results
+   *
+   * @param {Object} req - Express request object
+   * @return {Array} an array of AGS result objects
+   */
+  async agsGetResultsHandler(req) {
+    this.#LTI13Utils.validateAGSResultRequest(req);
+    if (typeof this.#consumer_config.getProviderResults !== "function") {
+      throw new Error("Get Results: No getProviderResults function configured");
+    }
+    const { context_key, resource_key, gradebook_key } = req.params;
+    const user_id = req.query.user_id || null;
+    const results = await this.#consumer_config.getProviderResults(
+      req.lti13Token.kid,
+      context_key,
+      resource_key,
+      gradebook_key,
+      user_id,
+      req,
+    );
+    if (!results) {
+      return [];
+    }
+    const lineItemUrl = new URL(
+      `/lti/consumer/ags/${context_key}/${resource_key}/${gradebook_key}`,
+      this.#domain_name,
+    ).href;
+    return results.map((result) => ({
+      id: new URL(
+        `/lti/consumer/ags/${context_key}/${resource_key}/${gradebook_key}/results/${result.userId}`,
+        this.#domain_name,
+      ).href,
+      scoreOf: lineItemUrl,
+      userId: result.userId,
+      resultScore: result.resultScore,
+      resultMaximum: result.resultMaximum,
+      comment: result.comment,
+    }));
+  }
+
+  /**
    * Get LTI 1.3 OpenID Configuration
    *
    * @return {Object} the OpenID configuration object
@@ -301,9 +621,10 @@ class LTILMSController {
       token_endpoint_auth_methods_supported: ["private_key_jwt"],
       token_endpoint_auth_signing_alg_values_supported: ["RS256"],
       scopes_supported: [
-        // TODO Add more scopes here?
         "openid",
         "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+        "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+        "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
       ],
       response_types_supported: ["id_token"],
       id_token_signing_alg_values_supported: ["RS256"],

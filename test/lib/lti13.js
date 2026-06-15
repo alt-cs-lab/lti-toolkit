@@ -1786,7 +1786,7 @@ describe("/lib/lti13.js", function () {
         status: 200,
       });
 
-      // Call the method under test
+      // Call the method under test with default progress values
       const result = await lti13Utils.postAGSGrade(
         "thisisauserid",
         0.95,
@@ -1820,6 +1820,60 @@ describe("/lib/lti13.js", function () {
       // Restore stubbed methods
       lti13Utils.getAccessToken.restore();
       ky.post.restore();
+    });
+
+    it("should post a grade with custom activityProgress and gradingProgress values", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({ token_type: "Bearer", access_token: "thisisatoken" });
+      sinon.stub(ky, "post").resolves({ status: 200 });
+
+      await lti13Utils.postAGSGrade(
+        "thisisauserid",
+        0.5,
+        "thisisaconsumerkey",
+        "http://localhost:3000/lti/ags/endpoint",
+        "InProgress",
+        "Pending",
+      );
+
+      expect(ky.post.firstCall.args[1]).to.shallowDeepEqual({
+        json: {
+          activityProgress: "InProgress",
+          gradingProgress: "Pending",
+        },
+      });
+
+      lti13Utils.getAccessToken.restore();
+      ky.post.restore();
+    });
+
+    it("should throw an error if activityProgress is invalid", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        await lti13Utils.postAGSGrade("user", 0.5, "key", "http://example.com", "InvalidValue", "FullyGraded");
+        throw new Error("Expected postAGSGrade to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Post AGS Grade: Invalid activityProgress value: InvalidValue");
+      }
+    });
+
+    it("should throw an error if gradingProgress is invalid", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        await lti13Utils.postAGSGrade("user", 0.5, "key", "http://example.com", "Submitted", "InvalidValue");
+        throw new Error("Expected postAGSGrade to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Post AGS Grade: Invalid gradingProgress value: InvalidValue");
+      }
     });
 
     it("should throw an error if the response is not 200 OK", async function () {
@@ -2239,8 +2293,13 @@ describe("/lib/lti13.js", function () {
       });
       expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti-ags/claim/endpoint");
       expect(decoded.payload["https://purl.imsglobal.org/spec/lti-ags/claim/endpoint"]).to.deep.include({
-        lineitem: "http://localhost:3000/lti/consumer/ags/thisisacontextid/thisisaresourceid/gradebook_key/scores",
-        scope: ["https://purl.imsglobal.org/spec/lti-ags/scope/lineitem"],
+        lineitem: "http://localhost:3000/lti/consumer/ags/thisisacontextid/thisisaresourceid/gradebook_key",
+        lineitems: "http://localhost:3000/lti/consumer/ags/thisisacontextid/line_items",
+        scope: [
+          "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+          "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+          "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+        ],
       });
       expect(decoded.payload).to.have.property(
         "https://purl.imsglobal.org/spec/lti/claim/deployment_id",
@@ -2413,7 +2472,7 @@ describe("/lib/lti13.js", function () {
         client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
         client_assertion: "thisisajwt",
         grant_type: "client_credentials",
-        scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+        scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
       };
       const result = await lti13Utils.validateTokenRequest({ body: tokenRequest });
 
@@ -2514,7 +2573,7 @@ describe("/lib/lti13.js", function () {
         });
         throw new Error("Expected validateTokenRequest to throw an error");
       } catch (err) {
-        expect(err.message).to.equal("Token Request: Missing scopes parameter");
+        expect(err.message).to.equal("Token Request: Missing scope parameter");
       }
     });
 
@@ -2543,7 +2602,7 @@ describe("/lib/lti13.js", function () {
             grant_type: "client_credentials",
             client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
             client_assertion: "thisisajwt",
-            scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+            scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
           },
         });
         throw new Error("Expected validateTokenRequest to throw an error");
@@ -2585,7 +2644,7 @@ describe("/lib/lti13.js", function () {
             grant_type: "client_credentials",
             client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
             client_assertion: "thisisajwt",
-            scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+            scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
           },
         });
         throw new Error("Expected validateTokenRequest to throw an error");
@@ -2636,7 +2695,7 @@ describe("/lib/lti13.js", function () {
             grant_type: "client_credentials",
             client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
             client_assertion: "thisisajwt",
-            scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+            scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
           },
         });
         throw new Error("Expected validateTokenRequest to throw an error");
@@ -2696,7 +2755,7 @@ describe("/lib/lti13.js", function () {
             grant_type: "client_credentials",
             client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
             client_assertion: "thisisajwt",
-            scopes: "invalid_scope",
+            scope: "invalid_scope",
           },
         });
         throw new Error("Expected validateTokenRequest to throw an error");
@@ -2712,7 +2771,7 @@ describe("/lib/lti13.js", function () {
             subject: "thisisaconsumerkey",
           }),
         ).to.be.true;
-        expect(err.message).to.equal("Token Request: Required scope not included in scopes parameter");
+        expect(err.message).to.equal("Token Request: Required scope not included in scope parameter");
       }
     });
 
@@ -2759,7 +2818,7 @@ describe("/lib/lti13.js", function () {
             grant_type: "client_credentials",
             client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
             client_assertion: "thisisajwt",
-            scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+            scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
           },
         });
         throw new Error("Expected validateTokenRequest to throw an error");
@@ -2780,6 +2839,96 @@ describe("/lib/lti13.js", function () {
         ).to.be.true;
         expect(err.message).to.equal("Token Request: No matching key found for JWT kid");
       }
+    });
+
+    it("should accept lineitem.readonly scope alone and return it as the granted scope", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ProviderKey: {
+          findOne: sinon.stub().resolves({ private: "thisisaprivatekey" }),
+        },
+        Provider: {
+          findOne: sinon.stub().resolves({
+            client_id: "thisisaconsumerkey",
+            keyset_url: "thisisakeyseturl",
+            key: "thisisapublickey",
+          }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(jsonwebtoken, "decode").returns({ payload: { iss: "tokenissuer" }, header: { kid: "thisisaconsumerkey" } });
+      sinon.stub(jsonwebtoken, "verify").resolves();
+      sinon.stub(jsonwebtoken, "sign").returns("thisisatokenjwt");
+      sinon.stub(JwksClient.prototype, "getSigningKey").resolves({ getPublicKey: sinon.stub().returns("thisisapublickey") });
+      sinon.stub(crypto, "createPrivateKey").returns("thisisaprivatekey");
+
+      const result = await lti13Utils.validateTokenRequest({
+        body: {
+          grant_type: "client_credentials",
+          client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+          client_assertion: "thisisajwt",
+          scope: "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+        },
+      });
+
+      expect(result).to.deep.equal({
+        access_token: "thisisatokenjwt",
+        token_type: "Bearer",
+        expires_in: 3600,
+        scope: "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+      });
+
+      jsonwebtoken.decode.restore();
+      jsonwebtoken.verify.restore();
+      jsonwebtoken.sign.restore();
+      JwksClient.prototype.getSigningKey.restore();
+      crypto.createPrivateKey.restore();
+    });
+
+    it("should only grant supported scopes when a mix of valid and invalid scopes is requested", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ProviderKey: {
+          findOne: sinon.stub().resolves({ private: "thisisaprivatekey" }),
+        },
+        Provider: {
+          findOne: sinon.stub().resolves({
+            client_id: "thisisaconsumerkey",
+            keyset_url: "thisisakeyseturl",
+            key: "thisisapublickey",
+          }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(jsonwebtoken, "decode").returns({ payload: { iss: "tokenissuer" }, header: { kid: "thisisaconsumerkey" } });
+      sinon.stub(jsonwebtoken, "verify").resolves();
+      sinon.stub(jsonwebtoken, "sign").returns("thisisatokenjwt");
+      sinon.stub(JwksClient.prototype, "getSigningKey").resolves({ getPublicKey: sinon.stub().returns("thisisapublickey") });
+      sinon.stub(crypto, "createPrivateKey").returns("thisisaprivatekey");
+
+      const result = await lti13Utils.validateTokenRequest({
+        body: {
+          grant_type: "client_credentials",
+          client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+          client_assertion: "thisisajwt",
+          scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly unsupported_scope",
+        },
+      });
+
+      // Only the three valid scopes should be granted, unsupported_scope should be filtered out
+      expect(result.scope).to.equal(
+        "https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+      );
+
+      jsonwebtoken.decode.restore();
+      jsonwebtoken.verify.restore();
+      jsonwebtoken.sign.restore();
+      JwksClient.prototype.getSigningKey.restore();
+      crypto.createPrivateKey.restore();
     });
   });
 
@@ -2806,7 +2955,7 @@ describe("/lib/lti13.js", function () {
           gradingProgress: "FullyGraded",
         },
         lti13Token: {
-          scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+          scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score",
         },
       };
       const result = await lti13Utils.validateAGSGradePassback(gradePassbackRequest);
@@ -2837,7 +2986,7 @@ describe("/lib/lti13.js", function () {
         // Call the method under test with missing parameters
         await lti13Utils.validateAGSGradePassback({
           body: {},
-          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
         });
         throw new Error("Expected validateAGSGradePassback to throw an error");
       } catch (err) {
@@ -2847,7 +2996,7 @@ describe("/lib/lti13.js", function () {
       try {
         await lti13Utils.validateAGSGradePassback({
           body: { timestamp: "2024-06-01T12:00:00Z" },
-          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
         });
         throw new Error("Expected validateAGSGradePassback to throw an error");
       } catch (err) {
@@ -2857,7 +3006,7 @@ describe("/lib/lti13.js", function () {
       try {
         await lti13Utils.validateAGSGradePassback({
           body: { timestamp: "2024-06-01T12:00:00Z", scoreGiven: undefined },
-          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
         });
         throw new Error("Expected validateAGSGradePassback to throw an error");
       } catch (err) {
@@ -2867,7 +3016,7 @@ describe("/lib/lti13.js", function () {
       try {
         await lti13Utils.validateAGSGradePassback({
           body: { timestamp: "2024-06-01T12:00:00Z", scoreGiven: 0.85 },
-          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
         });
         throw new Error("Expected validateAGSGradePassback to throw an error");
       } catch (err) {
@@ -2877,7 +3026,7 @@ describe("/lib/lti13.js", function () {
       try {
         await lti13Utils.validateAGSGradePassback({
           body: { timestamp: "2024-06-01T12:00:00Z", scoreGiven: 0.85, scoreMaximum: undefined },
-          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
         });
         throw new Error("Expected validateAGSGradePassback to throw an error");
       } catch (err) {
@@ -2887,7 +3036,7 @@ describe("/lib/lti13.js", function () {
       try {
         await lti13Utils.validateAGSGradePassback({
           body: { timestamp: "2024-06-01T12:00:00Z", scoreGiven: 0.85, scoreMaximum: 1.0 },
-          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
         });
         throw new Error("Expected validateAGSGradePassback to throw an error");
       } catch (err) {
@@ -2897,7 +3046,7 @@ describe("/lib/lti13.js", function () {
       try {
         await lti13Utils.validateAGSGradePassback({
           body: { timestamp: "2024-06-01T12:00:00Z", scoreGiven: 0.85, scoreMaximum: 1.0, userId: "thisisauserid" },
-          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
         });
         throw new Error("Expected validateAGSGradePassback to throw an error");
       } catch (err) {
@@ -2913,7 +3062,7 @@ describe("/lib/lti13.js", function () {
             userId: "thisisauserid",
             activityProgress: "Completed",
           },
-          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
         });
         throw new Error("Expected validateAGSGradePassback to throw an error");
       } catch (err) {
@@ -2978,7 +3127,7 @@ describe("/lib/lti13.js", function () {
             activityProgress: "Completed",
             gradingProgress: "FullyGraded",
           },
-          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem" },
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem" },
         });
         throw new Error("Expected validateAGSGradePassback to throw an error");
       } catch (err) {
@@ -3008,7 +3157,7 @@ describe("/lib/lti13.js", function () {
             activityProgress: "Completed",
             gradingProgress: "FullyGraded",
           },
-          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
         });
         throw new Error("Expected validateAGSGradePassback to throw an error");
       } catch (err) {
@@ -3026,7 +3175,7 @@ describe("/lib/lti13.js", function () {
             activityProgress: "Completed",
             gradingProgress: "FullyGraded",
           },
-          lti13Token: { scopes: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
         });
         throw new Error("Expected validateAGSGradePassback to throw an error");
       } catch (err) {
@@ -3173,6 +3322,335 @@ describe("/lib/lti13.js", function () {
         const token = models.ProviderRegistration.create.firstCall.args[0].token;
         expect(token).to.match(/^[\w-]{21}$/);
         expect(err.message).to.equal("Failed to create LTI 1.3 Dynamic Registration Token: Database error");
+      }
+    });
+  });
+
+  describe("validateAGSLineItemRequest", function () {
+    it("should pass validation when token has lineitem.readonly scope", function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      lti13Utils.validateAGSLineItemRequest({
+        lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly" },
+      });
+    });
+
+    it("should pass validation when token has lineitem scope", function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      lti13Utils.validateAGSLineItemRequest({
+        lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem" },
+      });
+    });
+
+    it("should throw if lti13Token is missing from the request", function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        lti13Utils.validateAGSLineItemRequest({});
+        throw new Error("Expected validateAGSLineItemRequest to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Line Item Request: Insufficient permissions for AGS line item read");
+      }
+    });
+
+    it("should throw if lti13Token has no scope property", function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        lti13Utils.validateAGSLineItemRequest({ lti13Token: {} });
+        throw new Error("Expected validateAGSLineItemRequest to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Line Item Request: Insufficient permissions for AGS line item read");
+      }
+    });
+
+    it("should throw if the token scope does not include a lineitem scope", function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        lti13Utils.validateAGSLineItemRequest({
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSLineItemRequest to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Line Item Request: Insufficient permissions for AGS line item read");
+      }
+    });
+  });
+
+  describe("validateAGSResultRequest", function () {
+    it("should pass validation when token has result.readonly scope", function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      lti13Utils.validateAGSResultRequest({
+        lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly" },
+      });
+    });
+
+    it("should throw if lti13Token is missing from the request", function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        lti13Utils.validateAGSResultRequest({});
+        throw new Error("Expected validateAGSResultRequest to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Result Request: Insufficient permissions for AGS result read");
+      }
+    });
+
+    it("should throw if the token scope does not include result.readonly", function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        lti13Utils.validateAGSResultRequest({
+          lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+        });
+        throw new Error("Expected validateAGSResultRequest to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Result Request: Insufficient permissions for AGS result read");
+      }
+    });
+  });
+
+  describe("getAGSLineItem", function () {
+    it("should fetch a line item with the correct token and headers", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      const lineItemData = {
+        id: "http://example.com/lineitems/1",
+        scoreMaximum: 100,
+        label: "Assignment 1",
+        resourceLinkId: "resource1",
+      };
+      sinon.stub(ky, "get").returns({ json: sinon.stub().resolves(lineItemData) });
+
+      const result = await lti13Utils.getAGSLineItem("thisisaconsumerkey", "http://example.com/lineitems/1");
+
+      expect(result).to.deep.equal(lineItemData);
+      expect(
+        lti13Utils.getAccessToken.calledOnceWith(
+          "thisisaconsumerkey",
+          "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+        ),
+      ).to.be.true;
+      expect(ky.get.firstCall.args[0]).to.equal("http://example.com/lineitems/1");
+      expect(ky.get.firstCall.args[1]).to.shallowDeepEqual({
+        headers: {
+          Authorization: "Bearer thisisatoken",
+          Accept: "application/vnd.ims.lis.v2.lineitem+json",
+        },
+      });
+
+      lti13Utils.getAccessToken.restore();
+      ky.get.restore();
+    });
+
+    it("should throw a wrapped error if the HTTP request fails", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      sinon.stub(ky, "get").returns({ json: sinon.stub().rejects(new Error("Connection refused")) });
+
+      try {
+        await lti13Utils.getAGSLineItem("thisisaconsumerkey", "http://example.com/lineitems/1");
+        throw new Error("Expected getAGSLineItem to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Get AGS Line Item: Failed to fetch line item: Connection refused");
+      } finally {
+        lti13Utils.getAccessToken.restore();
+        ky.get.restore();
+      }
+    });
+  });
+
+  describe("getAGSLineItems", function () {
+    it("should fetch line items without a resource_link_id filter", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      const lineItemsData = [
+        { id: "http://example.com/lineitems/1", scoreMaximum: 100, label: "Assignment 1", resourceLinkId: "resource1" },
+      ];
+      sinon.stub(ky, "get").returns({ json: sinon.stub().resolves(lineItemsData) });
+
+      const result = await lti13Utils.getAGSLineItems("thisisaconsumerkey", "http://example.com/lineitems");
+
+      expect(result).to.deep.equal(lineItemsData);
+      expect(
+        lti13Utils.getAccessToken.calledOnceWith(
+          "thisisaconsumerkey",
+          "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+        ),
+      ).to.be.true;
+      expect(ky.get.firstCall.args[0]).to.equal("http://example.com/lineitems");
+      expect(ky.get.firstCall.args[1]).to.shallowDeepEqual({
+        headers: {
+          Authorization: "Bearer thisisatoken",
+          Accept: "application/vnd.ims.lis.v2.lineitemcontainer+json",
+        },
+      });
+
+      lti13Utils.getAccessToken.restore();
+      ky.get.restore();
+    });
+
+    it("should append resource_link_id as a query parameter when provided", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      sinon.stub(ky, "get").returns({ json: sinon.stub().resolves([]) });
+
+      await lti13Utils.getAGSLineItems("thisisaconsumerkey", "http://example.com/lineitems", "resource1");
+
+      expect(ky.get.firstCall.args[0]).to.equal("http://example.com/lineitems?resource_link_id=resource1");
+
+      lti13Utils.getAccessToken.restore();
+      ky.get.restore();
+    });
+
+    it("should throw a wrapped error if the HTTP request fails", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      sinon.stub(ky, "get").returns({ json: sinon.stub().rejects(new Error("Connection refused")) });
+
+      try {
+        await lti13Utils.getAGSLineItems("thisisaconsumerkey", "http://example.com/lineitems");
+        throw new Error("Expected getAGSLineItems to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Get AGS Line Items: Failed to fetch line items: Connection refused");
+      } finally {
+        lti13Utils.getAccessToken.restore();
+        ky.get.restore();
+      }
+    });
+  });
+
+  describe("getAGSResults", function () {
+    it("should fetch results without a user_id filter", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      const resultsData = [
+        { id: "http://example.com/results/user1", scoreOf: "http://example.com/lineitems/1", userId: "user1", resultScore: 85, resultMaximum: 100 },
+      ];
+      sinon.stub(ky, "get").returns({ json: sinon.stub().resolves(resultsData) });
+
+      const result = await lti13Utils.getAGSResults("thisisaconsumerkey", "http://example.com/results");
+
+      expect(result).to.deep.equal(resultsData);
+      expect(
+        lti13Utils.getAccessToken.calledOnceWith(
+          "thisisaconsumerkey",
+          "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+        ),
+      ).to.be.true;
+      expect(ky.get.firstCall.args[0]).to.equal("http://example.com/results");
+      expect(ky.get.firstCall.args[1]).to.shallowDeepEqual({
+        headers: {
+          Authorization: "Bearer thisisatoken",
+          Accept: "application/vnd.ims.lis.v2.resultcontainer+json",
+        },
+      });
+
+      lti13Utils.getAccessToken.restore();
+      ky.get.restore();
+    });
+
+    it("should append user_id as a query parameter when provided", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      sinon.stub(ky, "get").returns({ json: sinon.stub().resolves([]) });
+
+      await lti13Utils.getAGSResults("thisisaconsumerkey", "http://example.com/results", "user1");
+
+      expect(ky.get.firstCall.args[0]).to.equal("http://example.com/results?user_id=user1");
+
+      lti13Utils.getAccessToken.restore();
+      ky.get.restore();
+    });
+
+    it("should throw a wrapped error if the HTTP request fails", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      sinon.stub(ky, "get").returns({ json: sinon.stub().rejects(new Error("Connection refused")) });
+
+      try {
+        await lti13Utils.getAGSResults("thisisaconsumerkey", "http://example.com/results");
+        throw new Error("Expected getAGSResults to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Get AGS Results: Failed to fetch results: Connection refused");
+      } finally {
+        lti13Utils.getAccessToken.restore();
+        ky.get.restore();
       }
     });
   });

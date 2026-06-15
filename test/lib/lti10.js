@@ -1386,6 +1386,255 @@ describe("/lib/lti10.js", function () {
     });
   });
 
+  describe("readOutcome", function () {
+    it("should read an outcome with a score successfully", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({
+        status: 200,
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
+            <imsx_POXHeader>\n\
+              <imsx_POXResponseHeaderInfo>\n\
+                <imsx_statusInfo>\n\
+                  <imsx_codeMajor>success</imsx_codeMajor>\n\
+                </imsx_statusInfo>\n\
+              </imsx_POXResponseHeaderInfo>\n\
+            </imsx_POXHeader>\n\
+            <imsx_POXBody>\n\
+              <readResultResponse>\n\
+                <result>\n\
+                  <resultScore>\n\
+                    <textString>0.85</textString>\n\
+                  </resultScore>\n\
+                </result>\n\
+              </readResultResponse>\n\
+            </imsx_POXBody>\n\
+          </imsx_POXEnvelopeResponse>",
+        ),
+      });
+
+      const result = await lti10Utils.readOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+
+      expect(result).to.equal(0.85);
+      sinon.assert.calledWith(models.ConsumerKey.findByPk, "thisisatestkey");
+      const body = ky.post.getCall(0).args[1].body;
+      expect(body).to.include("<sourcedId>thisisagradeid</sourcedId>");
+      expect(body).to.include("readResultRequest");
+    });
+
+    it("should return null when no grade is on file", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({
+        status: 200,
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
+            <imsx_POXHeader>\n\
+              <imsx_POXResponseHeaderInfo>\n\
+                <imsx_statusInfo>\n\
+                  <imsx_codeMajor>success</imsx_codeMajor>\n\
+                </imsx_statusInfo>\n\
+              </imsx_POXResponseHeaderInfo>\n\
+            </imsx_POXHeader>\n\
+            <imsx_POXBody>\n\
+              <readResultResponse/>\n\
+            </imsx_POXBody>\n\
+          </imsx_POXEnvelopeResponse>",
+        ),
+      });
+
+      const result = await lti10Utils.readOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+
+      expect(result).to.be.null;
+    });
+
+    it("should reject with an invalid Consumer Key", async function () {
+      const models = {
+        ConsumerKey: { findByPk: sinon.stub().resolves(null) },
+      };
+      const logger = {};
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      try {
+        await lti10Utils.readOutcome("thisisagradeid", "invalidkey", "http://example.com/grade");
+        throw new Error("Expected readOutcome to throw an error for invalid Consumer Key");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Error: Invalid Consumer Key");
+      }
+    });
+
+    it("should throw when LMS returns a non-success response", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({
+        status: 200,
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
+            <imsx_POXHeader>\n\
+              <imsx_POXResponseHeaderInfo>\n\
+                <imsx_statusInfo>\n\
+                  <imsx_codeMajor>failure</imsx_codeMajor>\n\
+                </imsx_statusInfo>\n\
+              </imsx_POXResponseHeaderInfo>\n\
+            </imsx_POXHeader>\n\
+          </imsx_POXEnvelopeResponse>",
+        ),
+      });
+
+      try {
+        await lti10Utils.readOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+        throw new Error("Expected readOutcome to throw for non-success response");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.startWith("Failed to read grade: ");
+      }
+    });
+
+    it("should throw when the HTTP request fails", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({ status: 500, statusText: "Internal Server Error" });
+
+      try {
+        await lti10Utils.readOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+        throw new Error("Expected readOutcome to throw for HTTP failure");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Failed to read grade: HTTP 500 - Internal Server Error");
+      }
+    });
+  });
+
+  describe("deleteOutcome", function () {
+    it("should delete an outcome successfully", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({
+        status: 200,
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
+            <imsx_POXHeader>\n\
+              <imsx_POXResponseHeaderInfo>\n\
+                <imsx_statusInfo>\n\
+                  <imsx_codeMajor>success</imsx_codeMajor>\n\
+                </imsx_statusInfo>\n\
+              </imsx_POXResponseHeaderInfo>\n\
+            </imsx_POXHeader>\n\
+          </imsx_POXEnvelopeResponse>",
+        ),
+      });
+
+      const result = await lti10Utils.deleteOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+
+      expect(result).to.be.true;
+      sinon.assert.calledWith(models.ConsumerKey.findByPk, "thisisatestkey");
+      const body = ky.post.getCall(0).args[1].body;
+      expect(body).to.include("<sourcedId>thisisagradeid</sourcedId>");
+      expect(body).to.include("deleteResultRequest");
+    });
+
+    it("should reject with an invalid Consumer Key", async function () {
+      const models = {
+        ConsumerKey: { findByPk: sinon.stub().resolves(null) },
+      };
+      const logger = {};
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      try {
+        await lti10Utils.deleteOutcome("thisisagradeid", "invalidkey", "http://example.com/grade");
+        throw new Error("Expected deleteOutcome to throw an error for invalid Consumer Key");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Error: Invalid Consumer Key");
+      }
+    });
+
+    it("should throw when LMS returns a non-success response", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({
+        status: 200,
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
+            <imsx_POXHeader>\n\
+              <imsx_POXResponseHeaderInfo>\n\
+                <imsx_statusInfo>\n\
+                  <imsx_codeMajor>failure</imsx_codeMajor>\n\
+                </imsx_statusInfo>\n\
+              </imsx_POXResponseHeaderInfo>\n\
+            </imsx_POXHeader>\n\
+          </imsx_POXEnvelopeResponse>",
+        ),
+      });
+
+      try {
+        await lti10Utils.deleteOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+        throw new Error("Expected deleteOutcome to throw for non-success response");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.startWith("Failed to delete grade: ");
+      }
+    });
+
+    it("should throw when the HTTP request fails", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({ status: 500, statusText: "Internal Server Error" });
+
+      try {
+        await lti10Utils.deleteOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+        throw new Error("Expected deleteOutcome to throw for HTTP failure");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Failed to delete grade: HTTP 500 - Internal Server Error");
+      }
+    });
+  });
+
   describe("buildResponse", async function () {
     it("should build a valid LTI 1.0 response", async function () {
       // Mock Library Dependencies
@@ -1896,8 +2145,61 @@ describe("/lib/lti10.js", function () {
     });
   });
 
+  describe("validateSourcedIdRequest", function () {
+    const sourcedIdRequest = {
+      resultrecord: {
+        sourcedguid: {
+          sourcedid: "thisisagradeid",
+        },
+      },
+    };
+
+    it("should validate a valid sourced id request", async function () {
+      const lti10Utils = new LTI10Utils({}, {}, domain_name);
+      const result = lti10Utils.validateSourcedIdRequest(sourcedIdRequest);
+      expect(result).to.be.an("object");
+      expect(result).to.have.property("sourcedIdValue", "thisisagradeid");
+    });
+
+    it("should reject a request with a missing resultrecord", async function () {
+      const lti10Utils = new LTI10Utils({}, {}, domain_name);
+      const invalidRequest = {};
+      try {
+        lti10Utils.validateSourcedIdRequest(invalidRequest);
+        throw new Error("Expected validateSourcedIdRequest to throw");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Read/Delete Result: Missing Result Record");
+      }
+    });
+
+    it("should reject a request with a missing sourcedguid", async function () {
+      const lti10Utils = new LTI10Utils({}, {}, domain_name);
+      const invalidRequest = { resultrecord: {} };
+      try {
+        lti10Utils.validateSourcedIdRequest(invalidRequest);
+        throw new Error("Expected validateSourcedIdRequest to throw");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Read/Delete Result: Missing Result Source ID");
+      }
+    });
+
+    it("should reject a request with a missing sourcedid value", async function () {
+      const lti10Utils = new LTI10Utils({}, {}, domain_name);
+      const invalidRequest = { resultrecord: { sourcedguid: {} } };
+      try {
+        lti10Utils.validateSourcedIdRequest(invalidRequest);
+        throw new Error("Expected validateSourcedIdRequest to throw");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Read/Delete Result: Missing Result Source ID Value");
+      }
+    });
+  });
+
   const validConfigXML = `
-  <cartridge_basiclti_link 
+  <cartridge_basiclti_link
   xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0" 
   xmlns:blti="http://www.imsglobal.org/xsd/imsbasiclti_v1p0" 
   xmlns:lticm="http://www.imsglobal.org/xsd/imslticm_v1p0" 

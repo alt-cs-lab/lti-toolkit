@@ -7,8 +7,11 @@
 // Import LTI Toolkit
 import LTIToolkit from "lti-toolkit";
 
-// LTI Post Provider Grade Handler
-import postProviderGrade from "../routes/post-grade.js";
+// LTI Grade Handlers (post, read, delete)
+import postProviderGrade, { readGradeHandler, deleteGradeHandler } from "../routes/post-grade.js";
+
+// LTI AGS Line Item and Results Handlers
+import { getProviderLineItemHandler, getProviderLineItemsHandler, getProviderResultsHandler } from "../routes/get-lineitems.js";
 
 // Initialize LTI Toolkit
 const lti = await LTIToolkit({
@@ -22,8 +25,14 @@ const lti = await LTIToolkit({
   db_storage: ":memory:",
   // Consumer Configuration
   consumer: {
-    // Incoming grade handler
+    // Grade handlers (LTI 1.0)
     postProviderGrade: postProviderGrade,
+    readProviderGrade: readGradeHandler,
+    deleteProviderGrade: deleteGradeHandler,
+    // AGS handlers (LTI 1.3)
+    getProviderLineItem: getProviderLineItemHandler,
+    getProviderLineItems: getProviderLineItemsHandler,
+    getProviderResults: getProviderResultsHandler,
     // LTI Tool Consumer Information
     deployment_name: process.env.DEPLOYMENT_NAME,
     deployment_id: process.env.DEPLOYMENT_ID,

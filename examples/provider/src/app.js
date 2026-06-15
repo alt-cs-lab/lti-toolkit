@@ -26,6 +26,8 @@ import ConsumerConfigHandler from "./routes/consumer-config.js";
 import AdminHandler from "./routes/admin.js";
 import IndexHandler from "./routes/index.js";
 import InstructorGradeHandler from "./routes/instructor-grade.js";
+import InstructorReadGradeHandler from "./routes/instructor-read-grade.js";
+import InstructorDeleteGradeHandler from "./routes/instructor-delete-grade.js";
 import InstructorHandler from "./routes/instructor.js";
 import StudentGradeHandler from "./routes/student-grade.js";
 import StudentHandler from "./routes/student.js";
@@ -79,6 +81,8 @@ app.get("/student", requireLTI, StudentHandler);
 app.post("/student/grade", requireLTI, StudentGradeHandler);
 app.get("/instructor", requireLTI, InstructorHandler);
 app.post("/instructor/grade", requireLTI, InstructorGradeHandler);
+app.post("/instructor/read-grade", requireLTI, InstructorReadGradeHandler);
+app.post("/instructor/delete-grade", requireLTI, InstructorDeleteGradeHandler);
 app.get("/deeplink", requireDeeplink, DeepLinkHandler);
 app.post("/deeplink/select", requireDeeplink, DeepLinkSelect);
 

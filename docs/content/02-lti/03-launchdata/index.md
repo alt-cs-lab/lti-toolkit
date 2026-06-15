@@ -40,15 +40,18 @@ agsURL = "https://purl.imsglobal.org/spec/lti-ags/claim/"
 * `return_url` - the URL to return students to after finishing the assignment
   * LTI 1.0: `launch_presentation_return_url`
   * LTI 1.3: `[baseUrl + "launch_presentation"].return_url`
-* `outcome_url` - the URL to submit grades to
+* `outcome_url` - the URL to submit grades to (and to read back a single line item via AGS)
   * LTI 1.0: `lis_outcome_service_url`
   * LTI 1.3: `[agsUrl + "endpoint"].lineitem`
+* `outcome_lineitems` - the URL for the AGS line items collection endpoint (LTI 1.3 only)
+  * LTI 1.0: `null`
+  * LTI 1.3: `[agsUrl + "endpoint"].lineitems`
 * `outcome_id` - the ID of the outcome to submit (only present on student launches)
   * LTI 1.0: `lis_result_sourcedid`
   * LTI 1.3: `null`
-* `outcome_ags` - information for the LTI Assignment & Grade Services (AGS)
+* `outcome_ags` - full AGS endpoint claim as a JSON string (useful for debugging)
   * LTI 1.0: `null`
-  * LTI 1.3: `launchResult[agsUrl + "endpoint"]`
+  * LTI 1.3: `JSON.stringify(launchResult[agsUrl + "endpoint"])`
 * `user_lis_id` - the unique ID of the student for LTI 1.0
   * LTI 1.0: `user_id`
   * LTI 1.3: `[baseUrl + "lti1p1"].user_id`
@@ -115,6 +118,7 @@ Sent to the `handleLaunch` endpoint:
   assignment_name: 'Test LTI 1.0 Assignment Name',
   return_url: 'https://canvas.home.russfeld.me/courses/1/assignments',
   outcome_url: 'https://canvas.home.russfeld.me/api/lti/v1/tools/1/grade_passback',
+  outcome_lineitems: null,
   outcome_id: '1-1-1-2-c14957047fa8fd73a6aa4d7ec543574aff29597b',
   outcome_ags: null,
   user_lis_id: '86157096483e6b3a50bfedc6bac902c0b20a824f',
@@ -139,7 +143,7 @@ Stored in the database:
 }
 ```
 
-### LTI 1.0 Example
+### LTI 1.3 Example
 
 Sent to the `handleLaunch` endpoint:
 
@@ -153,7 +157,8 @@ Sent to the `handleLaunch` endpoint:
   assignment_lti_id: '8aa641d1-b4d4-4fea-8a9b-e9fedfb62b1e',
   assignment_name: 'Test LTI 1.3 Assignment Name',
   return_url: 'https://canvas.home.russfeld.me/courses/3/assignments',
-  outcome_url: null,
+  outcome_url: 'https://canvas.home.russfeld.me/api/lti/courses/3/line_items/1',
+  outcome_lineitems: 'https://canvas.home.russfeld.me/api/lti/courses/3/line_items',
   outcome_id: null,
   outcome_ags: '{"lineitem":"https://canvas.home.russfeld.me/api/lti/courses/3/line_items/1","scope":["https://purl.imsglobal.org/spec/lti-ags/scope/lineitem","https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly","https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly","https://purl.imsglobal.org/spec/lti-ags/scope/score","https://canvas.instructure.com/lti-ags/progress/scope/show"],"lineitems":"http://canvas.home.russfeld.me/api/lti/courses/3/line_items"}',
   user_lis_id: '86157096483e6b3a50bfedc6bac902c0b20a824f',

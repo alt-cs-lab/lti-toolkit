@@ -114,6 +114,7 @@ class LTI13Utils {
     if (!login) {
       throw new Error("Login: Unable to save Login State");
     }
+    // Note: state and nonce records expire automatically via clearExpired() in models.js
 
     // Build Return Request Object
     const authRequestForm = {
@@ -200,10 +201,8 @@ class LTI13Utils {
     // Add Tool Consumer Key to Token
     token.key = loginState.key;
 
-    // Remove login state to prevent replays
+    // Remove login state to prevent replays; nonce was already verified by jsonwebtoken.verify above
     await loginState.destroy();
-
-    // TODO: Store and check nonce in token?
 
     const baseUrl = "https://purl.imsglobal.org/spec/lti/claim/";
 
@@ -275,7 +274,7 @@ class LTI13Utils {
       grant_type: "client_credentials",
       client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
       client_assertion: jwt,
-      scopes: scopes,
+      scope: scopes,
     };
     this.#logger.lti("Sending Access Token Request to " + consumer.token_url);
     this.#logger.silly(JSON.stringify(request, null, 2));
@@ -459,16 +458,24 @@ class LTI13Utils {
    * @returns {boolean} true if the grade was posted successfully, false otherwise
    * @throws {Error} if required information is missing or if posting fails
    */
-  async postAGSGrade(user_lis13_id, score, consumer_key, grade_url) {
+  async postAGSGrade(user_lis13_id, score, consumer_key, grade_url, activityProgress = "Submitted", gradingProgress = "FullyGraded") {
+    const validActivityProgress = ["Initialized", "Started", "InProgress", "Submitted", "Completed"];
+    const validGradingProgress = ["FullyGraded", "Pending", "PendingManual", "Failed", "NotReady"];
+    if (!validActivityProgress.includes(activityProgress)) {
+      throw new Error("Post AGS Grade: Invalid activityProgress value: " + activityProgress);
+    }
+    if (!validGradingProgress.includes(gradingProgress)) {
+      throw new Error("Post AGS Grade: Invalid gradingProgress value: " + gradingProgress);
+    }
+
     const token = await this.getAccessToken(consumer_key, "https://purl.imsglobal.org/spec/lti-ags/scope/score");
 
-    // TODO Handle completed vs. incomplete grades here
     const lineitem = {
       timestamp: new Date(Date.now()).toISOString(),
       scoreGiven: parseFloat(score),
       scoreMaximum: 1.0,
-      activityProgress: "Submitted",
-      gradingProgress: "FullyGraded",
+      activityProgress,
+      gradingProgress,
       userId: user_lis13_id,
     };
 
@@ -616,12 +623,15 @@ class LTI13Utils {
       },
       "https://purl.imsglobal.org/spec/lti-ags/claim/endpoint": {
         lineitem: new URL(
-          `/lti/consumer/ags/${data.context.key}/${data.resource.key}/${data.gradebook_key}/scores`,
+          `/lti/consumer/ags/${data.context.key}/${data.resource.key}/${data.gradebook_key}`,
           this.#domain_name,
         ).href,
-        scope: ["https://purl.imsglobal.org/spec/lti-ags/scope/lineitem"],
-        // TODO unsure if this is needed?
-        // "lineitems": new URL(`/lti/consumer/ags/${data.context.key}/line_items`, this.#domain_name).href,
+        lineitems: new URL(`/lti/consumer/ags/${data.context.key}/line_items`, this.#domain_name).href,
+        scope: [
+          "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+          "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+          "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+        ],
       },
       "https://purl.imsglobal.org/spec/lti/claim/deployment_id": data.deployment_id,
       nonce: authRequest.nonce,
@@ -713,8 +723,8 @@ class LTI13Utils {
     if (!params.client_assertion) {
       throw new Error("Token Request: Missing client_assertion parameter");
     }
-    if (!params.scopes) {
-      throw new Error("Token Request: Missing scopes parameter");
+    if (!params.scope) {
+      throw new Error("Token Request: Missing scope parameter");
     }
 
     // Decode JWT
@@ -757,16 +767,23 @@ class LTI13Utils {
       throw new Error("Token Request: Unable to verify JWT: " + error.message, { cause: error });
     }
 
-    // Verify scopes - for simplicity, just check that the required score scope is present for now
-    // TODO: Implement more robust scope validation and error handling
-    const requestedScopes = params.scopes.split(" ");
-    if (!requestedScopes.includes("https://purl.imsglobal.org/spec/lti-ags/scope/score")) {
-      throw new Error("Token Request: Required scope not included in scopes parameter");
+    // Verify scopes - at least one supported scope must be requested
+    const allowedScopes = [
+      "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+      "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+      "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+    ];
+    const requestedScopes = params.scope.split(" ");
+
+    // Only grant scopes that are supported — never echo back arbitrary requested scopes
+    const grantedScopes = requestedScopes.filter((s) => allowedScopes.includes(s));
+    if (grantedScopes.length === 0) {
+      throw new Error("Token Request: Required scope not included in scope parameter");
     }
 
     // Create and issue token
     const token = {
-      scopes: params.scopes,
+      scope: grantedScopes.join(" "),
     };
 
     // Get private key for signing
@@ -793,7 +810,7 @@ class LTI13Utils {
       access_token: jwt,
       token_type: "Bearer",
       expires_in: 3600,
-      scope: params.scopes,
+      scope: grantedScopes.join(" "),
     };
   }
 
@@ -831,8 +848,8 @@ class LTI13Utils {
     // Check scope of provided token - for simplicity, just check that the required score scope is present for now
     if (
       !req.lti13Token ||
-      !req.lti13Token.scopes ||
-      !req.lti13Token.scopes.split(" ").includes("https://purl.imsglobal.org/spec/lti-ags/scope/score")
+      !req.lti13Token.scope ||
+      !req.lti13Token.scope.split(" ").includes("https://purl.imsglobal.org/spec/lti-ags/scope/score")
     ) {
       throw new Error("Grade Post Request: Insufficient permissions for AGS grade post");
     }
@@ -846,6 +863,150 @@ class LTI13Utils {
 
     // Return validated data
     return params;
+  }
+
+  /**
+   * Validate an AGS Line Item Request token scope
+   *
+   * @param {Object} req the Express request object (must have req.lti13Token set by middleware)
+   * @throws {Error} if the token does not include lineitem.readonly or lineitem scope
+   */
+  validateAGSLineItemRequest(req) {
+    const lineitemScopes = [
+      "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+      "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
+    ];
+    if (!req.lti13Token || !req.lti13Token.scope) {
+      throw new Error("Line Item Request: Insufficient permissions for AGS line item read");
+    }
+    const tokenScopes = req.lti13Token.scope.split(" ");
+    if (!lineitemScopes.some((s) => tokenScopes.includes(s))) {
+      throw new Error("Line Item Request: Insufficient permissions for AGS line item read");
+    }
+  }
+
+  /**
+   * Validate an AGS Result Request token scope
+   *
+   * @param {Object} req the Express request object (must have req.lti13Token set by middleware)
+   * @throws {Error} if the token does not include result.readonly scope
+   */
+  validateAGSResultRequest(req) {
+    if (!req.lti13Token || !req.lti13Token.scope) {
+      throw new Error("Result Request: Insufficient permissions for AGS result read");
+    }
+    const tokenScopes = req.lti13Token.scope.split(" ");
+    if (!tokenScopes.includes("https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly")) {
+      throw new Error("Result Request: Insufficient permissions for AGS result read");
+    }
+  }
+
+  /**
+   * Get a single line item from an LTI 1.3 AGS endpoint
+   *
+   * @param {string} consumer_key the key of the consumer
+   * @param {string} lineitem_url the URL of the line item to retrieve
+   * @returns {Object} the line item object from the LMS
+   * @throws {Error} if the request fails
+   */
+  async getAGSLineItem(consumer_key, lineitem_url) {
+    const token = await this.getAccessToken(
+      consumer_key,
+      "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+    );
+    this.#logger.lti("Fetching AGS line item from " + lineitem_url);
+    let result;
+    try {
+      result = await ky
+        .get(lineitem_url, {
+          headers: {
+            Authorization: `${token.token_type} ${token.access_token}`,
+            Accept: "application/vnd.ims.lis.v2.lineitem+json",
+          },
+        })
+        .json();
+    } catch (error) {
+      throw new Error("Get AGS Line Item: Failed to fetch line item: " + error.message, { cause: error });
+    }
+    this.#logger.lti("AGS line item fetched successfully");
+    this.#logger.silly(JSON.stringify(result, null, 2));
+    return result;
+  }
+
+  /**
+   * Get all line items from an LTI 1.3 AGS lineitems endpoint
+   *
+   * @param {string} consumer_key the key of the consumer
+   * @param {string} lineitems_url the URL of the lineitems collection to retrieve
+   * @param {string|null} resource_link_id optional resource link ID filter
+   * @returns {Array} the array of line item objects from the LMS
+   * @throws {Error} if the request fails
+   */
+  async getAGSLineItems(consumer_key, lineitems_url, resource_link_id = null) {
+    const token = await this.getAccessToken(
+      consumer_key,
+      "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+    );
+    let url = lineitems_url;
+    if (resource_link_id) {
+      const params = new URLSearchParams({ resource_link_id });
+      url = lineitems_url + "?" + params.toString();
+    }
+    this.#logger.lti("Fetching AGS line items from " + url);
+    let result;
+    try {
+      result = await ky
+        .get(url, {
+          headers: {
+            Authorization: `${token.token_type} ${token.access_token}`,
+            Accept: "application/vnd.ims.lis.v2.lineitemcontainer+json",
+          },
+        })
+        .json();
+    } catch (error) {
+      throw new Error("Get AGS Line Items: Failed to fetch line items: " + error.message, { cause: error });
+    }
+    this.#logger.lti("AGS line items fetched successfully");
+    this.#logger.silly(JSON.stringify(result, null, 2));
+    return result;
+  }
+
+  /**
+   * Fetch AGS results for a line item from an LTI consumer via LTI 1.3 AGS
+   *
+   * @param {string} consumer_key the consumer key
+   * @param {string} results_url the results URL for the line item
+   * @param {string|null} user_id optional user ID to filter results
+   * @returns {Array} array of result objects
+   * @throws {Error} if the request fails
+   */
+  async getAGSResults(consumer_key, results_url, user_id = null) {
+    const token = await this.getAccessToken(
+      consumer_key,
+      "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+    );
+    let url = results_url;
+    if (user_id) {
+      const params = new URLSearchParams({ user_id });
+      url = results_url + "?" + params.toString();
+    }
+    this.#logger.lti("Fetching AGS results from " + url);
+    let result;
+    try {
+      result = await ky
+        .get(url, {
+          headers: {
+            Authorization: `${token.token_type} ${token.access_token}`,
+            Accept: "application/vnd.ims.lis.v2.resultcontainer+json",
+          },
+        })
+        .json();
+    } catch (error) {
+      throw new Error("Get AGS Results: Failed to fetch results: " + error.message, { cause: error });
+    }
+    this.#logger.lti("AGS results fetched successfully");
+    this.#logger.silly(JSON.stringify(result, null, 2));
+    return result;
   }
 
   /**

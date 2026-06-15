@@ -375,6 +375,177 @@ describe("/routes/consumer.js", function () {
     });
   });
 
+  describe("GET /ags line_items", function () {
+    it("should return line items with lineitemcontainer content type", async function () {
+      const LTILMSController = {
+        agsGetLineItemsHandler: sinon.stub().resolves([
+          { id: "http://localhost:3000/lti/consumer/ags/ctx/res/grade", scoreMaximum: 100, label: "Assignment 1", resourceLinkId: "res" },
+        ]),
+      };
+      const ProviderKeyModel = {};
+
+      const lti13TokenMiddleware = sinon.stub().callsFake((req, res, next) => {
+        req.lti13Token = { kid: "test_key" };
+        next();
+      });
+      const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
+
+      const app = express();
+      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+
+      const res = await request(app).get("/lti/consumer/ags/context/line_items");
+
+      expect(LTILMSController.agsGetLineItemsHandler.calledOnce).to.be.true;
+      expect(res.status).to.equal(200);
+      expect(res.headers["content-type"]).to.include("application/vnd.ims.lis.v2.lineitemcontainer+json");
+    });
+
+    it("should send 500 on agsGetLineItemsHandler error", async function () {
+      const LTILMSController = {
+        agsGetLineItemsHandler: sinon.stub().rejects(new Error("Test error")),
+      };
+      const ProviderKeyModel = {};
+
+      const lti13TokenMiddleware = sinon.stub().callsFake((req, res, next) => {
+        req.lti13Token = { kid: "test_key" };
+        next();
+      });
+      const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
+
+      const app = express();
+      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+
+      const res = await request(app).get("/lti/consumer/ags/context/line_items");
+
+      expect(LTILMSController.agsGetLineItemsHandler.calledOnce).to.be.true;
+      expect(res.status).to.equal(500);
+      expect(res.text).to.equal("Error processing AGS line items request");
+    });
+  });
+
+  describe("GET /ags single lineitem", function () {
+    it("should return a line item with lineitem content type", async function () {
+      const LTILMSController = {
+        agsGetLineItemHandler: sinon.stub().resolves({
+          id: "http://localhost:3000/lti/consumer/ags/context/resource/gradebook",
+          scoreMaximum: 100,
+          label: "Assignment 1",
+          resourceLinkId: "resource",
+        }),
+      };
+      const ProviderKeyModel = {};
+
+      const lti13TokenMiddleware = sinon.stub().callsFake((req, res, next) => {
+        req.lti13Token = { kid: "test_key" };
+        next();
+      });
+      const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
+
+      const app = express();
+      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+
+      const res = await request(app).get("/lti/consumer/ags/context/resource/gradebook");
+
+      expect(LTILMSController.agsGetLineItemHandler.calledOnce).to.be.true;
+      expect(res.status).to.equal(200);
+      expect(res.headers["content-type"]).to.include("application/vnd.ims.lis.v2.lineitem+json");
+    });
+
+    it("should return 404 when the line item is not found", async function () {
+      const LTILMSController = {
+        agsGetLineItemHandler: sinon.stub().resolves(null),
+      };
+      const ProviderKeyModel = {};
+
+      const lti13TokenMiddleware = sinon.stub().callsFake((req, res, next) => {
+        req.lti13Token = { kid: "test_key" };
+        next();
+      });
+      const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
+
+      const app = express();
+      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+
+      const res = await request(app).get("/lti/consumer/ags/context/resource/gradebook");
+
+      expect(LTILMSController.agsGetLineItemHandler.calledOnce).to.be.true;
+      expect(res.status).to.equal(404);
+      expect(res.text).to.equal("Line item not found");
+    });
+
+    it("should send 500 on agsGetLineItemHandler error", async function () {
+      const LTILMSController = {
+        agsGetLineItemHandler: sinon.stub().rejects(new Error("Test error")),
+      };
+      const ProviderKeyModel = {};
+
+      const lti13TokenMiddleware = sinon.stub().callsFake((req, res, next) => {
+        req.lti13Token = { kid: "test_key" };
+        next();
+      });
+      const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
+
+      const app = express();
+      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+
+      const res = await request(app).get("/lti/consumer/ags/context/resource/gradebook");
+
+      expect(LTILMSController.agsGetLineItemHandler.calledOnce).to.be.true;
+      expect(res.status).to.equal(500);
+      expect(res.text).to.equal("Error processing AGS line item request");
+    });
+  });
+
+  describe("GET /ags/:context_key/:resource_key/:gradebook_key/results", function () {
+    it("should handle agsGetResultsHandler and return results array", async function () {
+      const LTILMSController = {
+        agsGetResultsHandler: sinon.stub().resolves([
+          { id: "http://localhost:3000/lti/consumer/ags/ctx/res/gb/results/user1", scoreOf: "http://localhost:3000/lti/consumer/ags/ctx/res/gb", userId: "user1", resultScore: 0.85, resultMaximum: 1.0 },
+        ]),
+      };
+      const ProviderKeyModel = {};
+
+      const lti13TokenMiddleware = sinon.stub().callsFake((req, res, next) => {
+        req.lti13Token = { kid: "test_key" };
+        next();
+      });
+      const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
+
+      const app = express();
+      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+
+      const res = await request(app).get("/lti/consumer/ags/ctx/res/gb/results");
+
+      expect(LTILMSController.agsGetResultsHandler.calledOnce).to.be.true;
+      expect(res.status).to.equal(200);
+      expect(res.headers["content-type"]).to.include("application/vnd.ims.lis.v2.resultcontainer+json");
+      expect(res.body).to.be.an("array").with.length(1);
+      expect(res.body[0].userId).to.equal("user1");
+    });
+
+    it("should send 500 on agsGetResultsHandler error", async function () {
+      const LTILMSController = {
+        agsGetResultsHandler: sinon.stub().rejects(new Error("Test error")),
+      };
+      const ProviderKeyModel = {};
+
+      const lti13TokenMiddleware = sinon.stub().callsFake((req, res, next) => {
+        req.lti13Token = { kid: "test_key" };
+        next();
+      });
+      const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
+
+      const app = express();
+      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+
+      const res = await request(app).get("/lti/consumer/ags/ctx/res/gb/results");
+
+      expect(LTILMSController.agsGetResultsHandler.calledOnce).to.be.true;
+      expect(res.status).to.equal(500);
+      expect(res.text).to.equal("Error processing AGS results request");
+    });
+  });
+
   describe("POST /register", function () {
     it("should handle dynamic registration request", async function () {
       // Mock controller

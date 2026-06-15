@@ -229,7 +229,7 @@ describe("/controllers/lti-lms.js", () => {
     const validateBasicOutcomesStub = sinon.stub(LTI10Utils.prototype, "validateBasicOutcomesRequest").returns({
       message_id: "test_message_id",
       body: {
-        deleteresultrequest: mockRequest,
+        unknownresultrequest: mockRequest,
       },
     });
 
@@ -262,18 +262,74 @@ describe("/controllers/lti-lms.js", () => {
     expect(buildResponseStub.firstCall.args[0]).to.equal("unsupported");
     expect(buildResponseStub.firstCall.args[1]).to.equal("status");
     expect(buildResponseStub.firstCall.args[2]).to.equal(
-      "The operation deleteresult is not supported by this LTI Tool Consumer",
+      "The operation unknownresult is not supported by this LTI Tool Consumer",
     );
     expect(buildResponseStub.firstCall.args[3]).to.deep.equal(mockKeys);
     expect(buildResponseStub.firstCall.args[4]).to.equal("http://localhost:3000/lti/consumer/grade");
     expect(buildResponseStub.firstCall.args[5]).to.equal("test_message_id");
-    expect(buildResponseStub.firstCall.args[6]).to.equal("deleteresultrequest");
+    expect(buildResponseStub.firstCall.args[6]).to.equal("unknownresultrequest");
     expect(result).to.deep.equal(mockResult);
 
     // Restore stubbed method
     validateOauthStub.restore();
     validateBasicOutcomesStub.restore();
     buildResponseStub.restore();
+  });
+
+  it("should route a readresultrequest to readResultRequest", async () => {
+    const consumer = {};
+    const models = {};
+    const mockKeys = sinon.mock({ key: "test_consumer_key", secret: "test_consumer_secret" });
+    const validateOauthStub = sinon.stub(LTI10Utils.prototype, "validateOauthBody").resolves(mockKeys);
+    const mockRequest = sinon.mock({ sourcedid: "test_sourcedid" });
+    const validateBasicOutcomesStub = sinon.stub(LTI10Utils.prototype, "validateBasicOutcomesRequest").returns({
+      message_id: "test_message_id",
+      body: { readresultrequest: mockRequest },
+    });
+    const mockResult = sinon.mock({ content: "<xml/>", headers: "OAuth header" });
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+    controller.readResultRequest = sinon.stub().resolves(mockResult);
+
+    const mockReq = { body: {}, originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.basicOutcomesHandler(mockReq);
+
+    expect(controller.readResultRequest.calledOnce).to.be.true;
+    expect(controller.readResultRequest.firstCall.args[0]).to.deep.equal(mockRequest);
+    expect(controller.readResultRequest.firstCall.args[1]).to.deep.equal(mockKeys);
+    expect(controller.readResultRequest.firstCall.args[4]).to.deep.equal(mockReq);
+    expect(result).to.deep.equal(mockResult);
+
+    validateOauthStub.restore();
+    validateBasicOutcomesStub.restore();
+  });
+
+  it("should route a deleteresultrequest to deleteResultRequest", async () => {
+    const consumer = {};
+    const models = {};
+    const mockKeys = sinon.mock({ key: "test_consumer_key", secret: "test_consumer_secret" });
+    const validateOauthStub = sinon.stub(LTI10Utils.prototype, "validateOauthBody").resolves(mockKeys);
+    const mockRequest = sinon.mock({ sourcedid: "test_sourcedid" });
+    const validateBasicOutcomesStub = sinon.stub(LTI10Utils.prototype, "validateBasicOutcomesRequest").returns({
+      message_id: "test_message_id",
+      body: { deleteresultrequest: mockRequest },
+    });
+    const mockResult = sinon.mock({ content: "<xml/>", headers: "OAuth header" });
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+    controller.deleteResultRequest = sinon.stub().resolves(mockResult);
+
+    const mockReq = { body: {}, originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.basicOutcomesHandler(mockReq);
+
+    expect(controller.deleteResultRequest.calledOnce).to.be.true;
+    expect(controller.deleteResultRequest.firstCall.args[0]).to.deep.equal(mockRequest);
+    expect(controller.deleteResultRequest.firstCall.args[1]).to.deep.equal(mockKeys);
+    expect(controller.deleteResultRequest.firstCall.args[4]).to.deep.equal(mockReq);
+    expect(result).to.deep.equal(mockResult);
+
+    validateOauthStub.restore();
+    validateBasicOutcomesStub.restore();
   });
 
   it("should handle a replace result request properly and return the result", async () => {
@@ -333,10 +389,16 @@ describe("/controllers/lti-lms.js", () => {
     expect(consumer.postProviderGrade.firstCall.args[0]).to.equal("test_consumer_key");
     expect(consumer.postProviderGrade.firstCall.args[1]).to.equal("context_key");
     expect(consumer.postProviderGrade.firstCall.args[2]).to.equal("resource_key");
-    expect(consumer.postProviderGrade.firstCall.args[3]).to.equal("user_key");
-    expect(consumer.postProviderGrade.firstCall.args[4]).to.equal("gradebook_key");
-    expect(consumer.postProviderGrade.firstCall.args[5]).to.equal(0.95);
-    expect(consumer.postProviderGrade.firstCall.args[6]).to.deep.equal(mockReq);
+    expect(consumer.postProviderGrade.firstCall.args[3]).to.equal("gradebook_key");
+    expect(consumer.postProviderGrade.firstCall.args[4]).to.deep.include({
+      userId: "user_key",
+      scoreGiven: 0.95,
+      scoreMaximum: 1.0,
+      activityProgress: "Submitted",
+      gradingProgress: "FullyGraded",
+    });
+    expect(consumer.postProviderGrade.firstCall.args[4].timestamp).to.be.a("string");
+    expect(consumer.postProviderGrade.firstCall.args[5]).to.deep.equal(mockReq);
     expect(buildResponseStub.calledOnce).to.be.true;
     expect(buildResponseStub.firstCall.args[0]).to.equal("success");
     expect(buildResponseStub.firstCall.args[1]).to.equal("status");
@@ -560,6 +622,257 @@ describe("/controllers/lti-lms.js", () => {
     buildResponseStub.restore();
   });
 
+  it("should return success with score when readResultRequest callback returns a score", async () => {
+    const consumer = {
+      readProviderGrade: sinon.stub().resolves({ score: 0.85 }),
+    };
+    const models = {};
+    const mockKeys = { key: "test_key", secret: "test_secret" };
+    const mockRequest = sinon.mock({ sourcedid: "test_sourcedid" });
+    const validateSourcedIdStub = sinon
+      .stub(LTI10Utils.prototype, "validateSourcedIdRequest")
+      .returns({ sourcedIdValue: "ctx:res:user:gb" });
+    const mockResult = sinon.mock({ content: "<xml/>", headers: null });
+    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").resolves(mockResult);
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = { originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.readResultRequest(mockRequest, mockKeys, "http://localhost:3000/lti/consumer/grade", "msg_id", mockReq);
+
+    expect(validateSourcedIdStub.calledOnceWith(mockRequest)).to.be.true;
+    expect(consumer.readProviderGrade.calledOnce).to.be.true;
+    expect(consumer.readProviderGrade.firstCall.args).to.deep.equal(["test_key", "ctx", "res", "user", "gb", mockReq]);
+    expect(buildResponseStub.firstCall.args[0]).to.equal("success");
+    expect(buildResponseStub.firstCall.args[6]).to.equal("readResult");
+    expect(buildResponseStub.firstCall.args[7]).to.deep.equal({
+      readResultResponse: { result: { resultScore: { language: "en", textString: 0.85 } } },
+    });
+    expect(result).to.deep.equal(mockResult);
+
+    validateSourcedIdStub.restore();
+    buildResponseStub.restore();
+  });
+
+  it("should return success with empty body when readResultRequest callback returns null", async () => {
+    const consumer = {
+      readProviderGrade: sinon.stub().resolves(null),
+    };
+    const models = {};
+    const mockKeys = sinon.mock({ key: "test_key", secret: "test_secret" });
+    const mockRequest = sinon.mock({ sourcedid: "test_sourcedid" });
+    const validateSourcedIdStub = sinon
+      .stub(LTI10Utils.prototype, "validateSourcedIdRequest")
+      .returns({ sourcedIdValue: "ctx:res:user:gb" });
+    const mockResult = sinon.mock({ content: "<xml/>", headers: null });
+    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").resolves(mockResult);
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = { originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.readResultRequest(mockRequest, mockKeys, "http://localhost:3000/lti/consumer/grade", "msg_id", mockReq);
+
+    expect(buildResponseStub.firstCall.args[0]).to.equal("success");
+    expect(buildResponseStub.firstCall.args[2]).to.equal("No result on file");
+    expect(buildResponseStub.firstCall.args[7]).to.deep.equal({ readResultResponse: {} });
+    expect(result).to.deep.equal(mockResult);
+
+    validateSourcedIdStub.restore();
+    buildResponseStub.restore();
+  });
+
+  it("should return failure when readResultRequest validation fails", async () => {
+    const consumer = {};
+    const models = {};
+    const mockKeys = sinon.mock({ key: "test_key", secret: "test_secret" });
+    const validateSourcedIdStub = sinon
+      .stub(LTI10Utils.prototype, "validateSourcedIdRequest")
+      .throws(new Error("Read/Delete Result: Missing Result Record"));
+    const mockResult = sinon.mock({ content: "<xml/>", headers: null });
+    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").resolves(mockResult);
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = { originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.readResultRequest({}, mockKeys, "http://localhost:3000/lti/consumer/grade", "msg_id", mockReq);
+
+    expect(buildResponseStub.firstCall.args[0]).to.equal("failure");
+    expect(buildResponseStub.firstCall.args[1]).to.equal("invalidtargetdatafail");
+    expect(result).to.deep.equal(mockResult);
+
+    validateSourcedIdStub.restore();
+    buildResponseStub.restore();
+  });
+
+  it("should return failure when readResultRequest sourcedId is malformed", async () => {
+    const consumer = {};
+    const models = {};
+    const mockKeys = sinon.mock({ key: "test_key", secret: "test_secret" });
+    const validateSourcedIdStub = sinon
+      .stub(LTI10Utils.prototype, "validateSourcedIdRequest")
+      .returns({ sourcedIdValue: "only:two" });
+    const mockResult = sinon.mock({ content: "<xml/>", headers: null });
+    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").resolves(mockResult);
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = { originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.readResultRequest({}, mockKeys, "http://localhost:3000/lti/consumer/grade", "msg_id", mockReq);
+
+    expect(buildResponseStub.firstCall.args[0]).to.equal("failure");
+    expect(buildResponseStub.firstCall.args[1]).to.equal("invalididfail");
+    expect(result).to.deep.equal(mockResult);
+
+    validateSourcedIdStub.restore();
+    buildResponseStub.restore();
+  });
+
+  it("should return unsupported when readResultRequest has no callback configured", async () => {
+    const consumer = {};
+    const models = {};
+    const mockKeys = sinon.mock({ key: "test_key", secret: "test_secret" });
+    const validateSourcedIdStub = sinon
+      .stub(LTI10Utils.prototype, "validateSourcedIdRequest")
+      .returns({ sourcedIdValue: "ctx:res:user:gb" });
+    const mockResult = sinon.mock({ content: "<xml/>", headers: null });
+    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").resolves(mockResult);
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = { originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.readResultRequest({}, mockKeys, "http://localhost:3000/lti/consumer/grade", "msg_id", mockReq);
+
+    expect(buildResponseStub.firstCall.args[0]).to.equal("unsupported");
+    expect(result).to.deep.equal(mockResult);
+
+    validateSourcedIdStub.restore();
+    buildResponseStub.restore();
+  });
+
+  it("should return success when deleteResultRequest callback succeeds", async () => {
+    const consumer = {
+      deleteProviderGrade: sinon.stub().resolves({ success: true, message: "Grade deleted successfully" }),
+    };
+    const models = {};
+    const mockKeys = { key: "test_key", secret: "test_secret" };
+    const mockRequest = sinon.mock({ sourcedid: "test_sourcedid" });
+    const validateSourcedIdStub = sinon
+      .stub(LTI10Utils.prototype, "validateSourcedIdRequest")
+      .returns({ sourcedIdValue: "ctx:res:user:gb" });
+    const mockResult = sinon.mock({ content: "<xml/>", headers: null });
+    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").resolves(mockResult);
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = { originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.deleteResultRequest(mockRequest, mockKeys, "http://localhost:3000/lti/consumer/grade", "msg_id", mockReq);
+
+    expect(validateSourcedIdStub.calledOnceWith(mockRequest)).to.be.true;
+    expect(consumer.deleteProviderGrade.calledOnce).to.be.true;
+    expect(consumer.deleteProviderGrade.firstCall.args).to.deep.equal(["test_key", "ctx", "res", "user", "gb", mockReq]);
+    expect(buildResponseStub.firstCall.args[0]).to.equal("success");
+    expect(buildResponseStub.firstCall.args[6]).to.equal("deleteResult");
+    expect(buildResponseStub.firstCall.args[7]).to.deep.equal({ deleteResultResponse: {} });
+    expect(result).to.deep.equal(mockResult);
+
+    validateSourcedIdStub.restore();
+    buildResponseStub.restore();
+  });
+
+  it("should return failure when deleteResultRequest validation fails", async () => {
+    const consumer = {};
+    const models = {};
+    const mockKeys = sinon.mock({ key: "test_key", secret: "test_secret" });
+    const validateSourcedIdStub = sinon
+      .stub(LTI10Utils.prototype, "validateSourcedIdRequest")
+      .throws(new Error("Read/Delete Result: Missing Result Record"));
+    const mockResult = sinon.mock({ content: "<xml/>", headers: null });
+    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").resolves(mockResult);
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = { originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.deleteResultRequest({}, mockKeys, "http://localhost:3000/lti/consumer/grade", "msg_id", mockReq);
+
+    expect(buildResponseStub.firstCall.args[0]).to.equal("failure");
+    expect(buildResponseStub.firstCall.args[1]).to.equal("invalidtargetdatafail");
+    expect(result).to.deep.equal(mockResult);
+
+    validateSourcedIdStub.restore();
+    buildResponseStub.restore();
+  });
+
+  it("should return failure when deleteResultRequest sourcedId is malformed", async () => {
+    const consumer = {};
+    const models = {};
+    const mockKeys = sinon.mock({ key: "test_key", secret: "test_secret" });
+    const validateSourcedIdStub = sinon
+      .stub(LTI10Utils.prototype, "validateSourcedIdRequest")
+      .returns({ sourcedIdValue: "only:two" });
+    const mockResult = sinon.mock({ content: "<xml/>", headers: null });
+    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").resolves(mockResult);
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = { originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.deleteResultRequest({}, mockKeys, "http://localhost:3000/lti/consumer/grade", "msg_id", mockReq);
+
+    expect(buildResponseStub.firstCall.args[0]).to.equal("failure");
+    expect(buildResponseStub.firstCall.args[1]).to.equal("invalididfail");
+    expect(result).to.deep.equal(mockResult);
+
+    validateSourcedIdStub.restore();
+    buildResponseStub.restore();
+  });
+
+  it("should return unsupported when deleteResultRequest has no callback configured", async () => {
+    const consumer = {};
+    const models = {};
+    const mockKeys = sinon.mock({ key: "test_key", secret: "test_secret" });
+    const validateSourcedIdStub = sinon
+      .stub(LTI10Utils.prototype, "validateSourcedIdRequest")
+      .returns({ sourcedIdValue: "ctx:res:user:gb" });
+    const mockResult = sinon.mock({ content: "<xml/>", headers: null });
+    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").resolves(mockResult);
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = { originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.deleteResultRequest({}, mockKeys, "http://localhost:3000/lti/consumer/grade", "msg_id", mockReq);
+
+    expect(buildResponseStub.firstCall.args[0]).to.equal("unsupported");
+    expect(result).to.deep.equal(mockResult);
+
+    validateSourcedIdStub.restore();
+    buildResponseStub.restore();
+  });
+
+  it("should return failure when deleteResultRequest callback fails", async () => {
+    const consumer = {
+      deleteProviderGrade: sinon.stub().resolves({ success: false, message: "Grade deletion failed" }),
+    };
+    const models = {};
+    const mockKeys = sinon.mock({ key: "test_key", secret: "test_secret" });
+    const validateSourcedIdStub = sinon
+      .stub(LTI10Utils.prototype, "validateSourcedIdRequest")
+      .returns({ sourcedIdValue: "ctx:res:user:gb" });
+    const mockResult = sinon.mock({ content: "<xml/>", headers: null });
+    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").resolves(mockResult);
+    const provider_controller = { getAllKeys: sinon.stub().resolves([]) };
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = { originalUrl: "http://localhost:3000/lti/consumer/grade" };
+    const result = await controller.deleteResultRequest({}, mockKeys, "http://localhost:3000/lti/consumer/grade", "msg_id", mockReq);
+
+    expect(buildResponseStub.firstCall.args[0]).to.equal("failure");
+    expect(buildResponseStub.firstCall.args[1]).to.equal("processingfail");
+    expect(buildResponseStub.firstCall.args[2]).to.equal("Failed to Delete Grade: Grade deletion failed");
+    expect(result).to.deep.equal(mockResult);
+
+    validateSourcedIdStub.restore();
+    buildResponseStub.restore();
+  });
+
   it("should handle an incoming LTI 1.3 auth request and return the expected response", async () => {
     // Create mock dependencies
     const consumer = {
@@ -723,6 +1036,9 @@ describe("/controllers/lti-lms.js", () => {
       userId: "user_key",
       scoreGiven: 0.95,
       scoreMaximum: 1.0,
+      activityProgress: "Submitted",
+      gradingProgress: "FullyGraded",
+      timestamp: "2024-06-01T12:00:00Z",
     });
 
     // Construct controller with stubbed dependencies
@@ -751,10 +1067,16 @@ describe("/controllers/lti-lms.js", () => {
     expect(consumer.postProviderGrade.firstCall.args[0]).to.equal("test_kid");
     expect(consumer.postProviderGrade.firstCall.args[1]).to.equal("context_key");
     expect(consumer.postProviderGrade.firstCall.args[2]).to.equal("resource_key");
-    expect(consumer.postProviderGrade.firstCall.args[3]).to.equal("user_key");
-    expect(consumer.postProviderGrade.firstCall.args[4]).to.equal("gradebook_key");
-    expect(consumer.postProviderGrade.firstCall.args[5]).to.equal(0.95);
-    expect(consumer.postProviderGrade.firstCall.args[6]).to.deep.equal(mockReq);
+    expect(consumer.postProviderGrade.firstCall.args[3]).to.equal("gradebook_key");
+    expect(consumer.postProviderGrade.firstCall.args[4]).to.deep.equal({
+      userId: "user_key",
+      scoreGiven: 0.95,
+      scoreMaximum: 1.0,
+      activityProgress: "Submitted",
+      gradingProgress: "FullyGraded",
+      timestamp: "2024-06-01T12:00:00Z",
+    });
+    expect(consumer.postProviderGrade.firstCall.args[5]).to.deep.equal(mockReq);
     expect(result).to.deep.equal({ success: true, message: "Grade posted successfully" });
   });
 
@@ -865,7 +1187,12 @@ describe("/controllers/lti-lms.js", () => {
       token_endpoint: "http://localhost:3000/lti/consumer/token",
       token_endpoint_auth_methods_supported: ["private_key_jwt"],
       token_endpoint_auth_signing_alg_values_supported: ["RS256"],
-      scopes_supported: ["openid", "https://purl.imsglobal.org/spec/lti-ags/scope/score"],
+      scopes_supported: [
+        "openid",
+        "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+        "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+        "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+      ],
       response_types_supported: ["id_token"],
       id_token_signing_alg_values_supported: ["RS256"],
       claims_supported: ["sub", "picture", "email", "name", "given_name", "family_name", "locale"],
@@ -1532,6 +1859,377 @@ describe("/controllers/lti-lms.js", () => {
       // Assertions
       expect(provider_controller.createProvider.calledOnce).to.be.true;
       expect(error.message).to.equal("Failed to create provider from dynamic registration");
+    }
+  });
+
+  it("should return a line item for a valid agsGetLineItemHandler request", async () => {
+    const consumer = {
+      getProviderLineItem: sinon.stub().resolves({ scoreMaximum: 100, label: "Assignment 1" }),
+    };
+    const models = {};
+    const provider_controller = {};
+
+    sinon.stub(LTI13Utils.prototype, "validateAGSLineItemRequest").returns();
+
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key" },
+      params: { context_key: "context_key", resource_key: "resource_key", gradebook_key: "gradebook_key" },
+    };
+    const result = await controller.agsGetLineItemHandler(mockReq);
+
+    expect(LTI13Utils.prototype.validateAGSLineItemRequest.calledOnceWith(mockReq)).to.be.true;
+    expect(
+      consumer.getProviderLineItem.calledOnceWith(
+        "test_consumer_key",
+        "context_key",
+        "resource_key",
+        "gradebook_key",
+        mockReq,
+      ),
+    ).to.be.true;
+    expect(result).to.deep.equal({
+      id: "http://localhost:3000/lti/consumer/ags/context_key/resource_key/gradebook_key",
+      scoreMaximum: 100,
+      label: "Assignment 1",
+      resourceLinkId: "resource_key",
+    });
+
+    LTI13Utils.prototype.validateAGSLineItemRequest.restore();
+  });
+
+  it("should return null from agsGetLineItemHandler if the callback returns null", async () => {
+    const consumer = {
+      getProviderLineItem: sinon.stub().resolves(null),
+    };
+    const models = {};
+    const provider_controller = {};
+
+    sinon.stub(LTI13Utils.prototype, "validateAGSLineItemRequest").returns();
+
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key" },
+      params: { context_key: "context_key", resource_key: "resource_key", gradebook_key: "gradebook_key" },
+    };
+    const result = await controller.agsGetLineItemHandler(mockReq);
+
+    expect(result).to.be.null;
+
+    LTI13Utils.prototype.validateAGSLineItemRequest.restore();
+  });
+
+  it("should throw from agsGetLineItemHandler if getProviderLineItem callback is not configured", async () => {
+    const consumer = {};
+    const models = {};
+    const provider_controller = {};
+
+    sinon.stub(LTI13Utils.prototype, "validateAGSLineItemRequest").returns();
+
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key" },
+      params: { context_key: "context_key", resource_key: "resource_key", gradebook_key: "gradebook_key" },
+    };
+
+    try {
+      await controller.agsGetLineItemHandler(mockReq);
+      throw new Error("Expected agsGetLineItemHandler to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Get Line Item: No getProviderLineItem function configured");
+    } finally {
+      LTI13Utils.prototype.validateAGSLineItemRequest.restore();
+    }
+  });
+
+  it("should throw from agsGetLineItemHandler if token scope validation fails", async () => {
+    const consumer = {};
+    const models = {};
+    const provider_controller = {};
+
+    sinon.stub(LTI13Utils.prototype, "validateAGSLineItemRequest").throws(
+      new Error("Line Item Request: Insufficient permissions for AGS line item read"),
+    );
+
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = {
+      lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+      params: { context_key: "context_key", resource_key: "resource_key", gradebook_key: "gradebook_key" },
+    };
+
+    try {
+      await controller.agsGetLineItemHandler(mockReq);
+      throw new Error("Expected agsGetLineItemHandler to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Line Item Request: Insufficient permissions for AGS line item read");
+    } finally {
+      LTI13Utils.prototype.validateAGSLineItemRequest.restore();
+    }
+  });
+
+  it("should return an array of line items for a valid agsGetLineItemsHandler request", async () => {
+    const consumer = {
+      getProviderLineItems: sinon.stub().resolves([
+        { resourceKey: "resource1", gradebookKey: "grade1", scoreMaximum: 100, label: "Assignment 1" },
+        { resourceKey: "resource2", gradebookKey: "grade2", scoreMaximum: 50, label: "Assignment 2" },
+      ]),
+    };
+    const models = {};
+    const provider_controller = {};
+
+    sinon.stub(LTI13Utils.prototype, "validateAGSLineItemRequest").returns();
+
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key" },
+      params: { context_key: "context_key" },
+      query: {},
+    };
+    const result = await controller.agsGetLineItemsHandler(mockReq);
+
+    expect(LTI13Utils.prototype.validateAGSLineItemRequest.calledOnceWith(mockReq)).to.be.true;
+    expect(
+      consumer.getProviderLineItems.calledOnceWith("test_consumer_key", "context_key", null, mockReq),
+    ).to.be.true;
+    expect(result).to.deep.equal([
+      {
+        id: "http://localhost:3000/lti/consumer/ags/context_key/resource1/grade1",
+        scoreMaximum: 100,
+        label: "Assignment 1",
+        resourceLinkId: "resource1",
+      },
+      {
+        id: "http://localhost:3000/lti/consumer/ags/context_key/resource2/grade2",
+        scoreMaximum: 50,
+        label: "Assignment 2",
+        resourceLinkId: "resource2",
+      },
+    ]);
+
+    LTI13Utils.prototype.validateAGSLineItemRequest.restore();
+  });
+
+  it("should pass resource_link_id query param to the callback in agsGetLineItemsHandler", async () => {
+    const consumer = {
+      getProviderLineItems: sinon.stub().resolves([
+        { resourceKey: "resource1", gradebookKey: "grade1", scoreMaximum: 100, label: "Assignment 1" },
+      ]),
+    };
+    const models = {};
+    const provider_controller = {};
+
+    sinon.stub(LTI13Utils.prototype, "validateAGSLineItemRequest").returns();
+
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key" },
+      params: { context_key: "context_key" },
+      query: { resource_link_id: "resource1" },
+    };
+    await controller.agsGetLineItemsHandler(mockReq);
+
+    expect(
+      consumer.getProviderLineItems.calledOnceWith("test_consumer_key", "context_key", "resource1", mockReq),
+    ).to.be.true;
+
+    LTI13Utils.prototype.validateAGSLineItemRequest.restore();
+  });
+
+  it("should return an empty array from agsGetLineItemsHandler if the callback returns null", async () => {
+    const consumer = {
+      getProviderLineItems: sinon.stub().resolves(null),
+    };
+    const models = {};
+    const provider_controller = {};
+
+    sinon.stub(LTI13Utils.prototype, "validateAGSLineItemRequest").returns();
+
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key" },
+      params: { context_key: "context_key" },
+      query: {},
+    };
+    const result = await controller.agsGetLineItemsHandler(mockReq);
+
+    expect(result).to.deep.equal([]);
+
+    LTI13Utils.prototype.validateAGSLineItemRequest.restore();
+  });
+
+  it("should throw from agsGetLineItemsHandler if getProviderLineItems callback is not configured", async () => {
+    const consumer = {};
+    const models = {};
+    const provider_controller = {};
+
+    sinon.stub(LTI13Utils.prototype, "validateAGSLineItemRequest").returns();
+
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key" },
+      params: { context_key: "context_key" },
+      query: {},
+    };
+
+    try {
+      await controller.agsGetLineItemsHandler(mockReq);
+      throw new Error("Expected agsGetLineItemsHandler to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Get Line Items: No getProviderLineItems function configured");
+    } finally {
+      LTI13Utils.prototype.validateAGSLineItemRequest.restore();
+    }
+  });
+
+  it("should throw from agsGetLineItemsHandler if token scope validation fails", async () => {
+    const consumer = {};
+    const models = {};
+    const provider_controller = {};
+
+    sinon.stub(LTI13Utils.prototype, "validateAGSLineItemRequest").throws(
+      new Error("Line Item Request: Insufficient permissions for AGS line item read"),
+    );
+
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+
+    const mockReq = {
+      lti13Token: { scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score" },
+      params: { context_key: "context_key" },
+      query: {},
+    };
+
+    try {
+      await controller.agsGetLineItemsHandler(mockReq);
+      throw new Error("Expected agsGetLineItemsHandler to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Line Item Request: Insufficient permissions for AGS line item read");
+    } finally {
+      LTI13Utils.prototype.validateAGSLineItemRequest.restore();
+    }
+  });
+
+  it("should return an array of results for a valid agsGetResultsHandler request", async () => {
+    const consumer = {
+      getProviderResults: sinon.stub().resolves([
+        { userId: "user1", resultScore: 0.85, resultMaximum: 1.0, comment: "Good work" },
+      ]),
+    };
+    const models = {};
+    const provider_controller = {};
+    sinon.stub(LTI13Utils.prototype, "validateAGSResultRequest").returns();
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key", scope: "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly" },
+      params: { context_key: "ctx", resource_key: "res", gradebook_key: "gb" },
+      query: {},
+    };
+
+    const result = await controller.agsGetResultsHandler(mockReq);
+
+    expect(LTI13Utils.prototype.validateAGSResultRequest.calledOnceWith(mockReq)).to.be.true;
+    expect(consumer.getProviderResults.calledOnceWith("test_consumer_key", "ctx", "res", "gb", null, mockReq)).to.be.true;
+    expect(result).to.be.an("array").with.length(1);
+    expect(result[0].userId).to.equal("user1");
+    expect(result[0].resultScore).to.equal(0.85);
+    expect(result[0].resultMaximum).to.equal(1.0);
+    expect(result[0].comment).to.equal("Good work");
+    expect(result[0].scoreOf).to.equal("http://localhost:3000/lti/consumer/ags/ctx/res/gb");
+    expect(result[0].id).to.equal("http://localhost:3000/lti/consumer/ags/ctx/res/gb/results/user1");
+
+    LTI13Utils.prototype.validateAGSResultRequest.restore();
+  });
+
+  it("should pass user_id query param to the callback in agsGetResultsHandler", async () => {
+    const consumer = {
+      getProviderResults: sinon.stub().resolves([]),
+    };
+    const models = {};
+    const provider_controller = {};
+    sinon.stub(LTI13Utils.prototype, "validateAGSResultRequest").returns();
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key", scope: "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly" },
+      params: { context_key: "ctx", resource_key: "res", gradebook_key: "gb" },
+      query: { user_id: "user42" },
+    };
+
+    await controller.agsGetResultsHandler(mockReq);
+
+    expect(consumer.getProviderResults.calledOnceWith("test_consumer_key", "ctx", "res", "gb", "user42", mockReq)).to.be.true;
+
+    LTI13Utils.prototype.validateAGSResultRequest.restore();
+  });
+
+  it("should return an empty array from agsGetResultsHandler if the callback returns null", async () => {
+    const consumer = { getProviderResults: sinon.stub().resolves(null) };
+    const models = {};
+    const provider_controller = {};
+    sinon.stub(LTI13Utils.prototype, "validateAGSResultRequest").returns();
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key", scope: "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly" },
+      params: { context_key: "ctx", resource_key: "res", gradebook_key: "gb" },
+      query: {},
+    };
+
+    const result = await controller.agsGetResultsHandler(mockReq);
+
+    expect(result).to.deep.equal([]);
+
+    LTI13Utils.prototype.validateAGSResultRequest.restore();
+  });
+
+  it("should throw from agsGetResultsHandler if getProviderResults callback is not configured", async () => {
+    const consumer = {};
+    const models = {};
+    const provider_controller = {};
+    sinon.stub(LTI13Utils.prototype, "validateAGSResultRequest").returns();
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key", scope: "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly" },
+      params: { context_key: "ctx", resource_key: "res", gradebook_key: "gb" },
+      query: {},
+    };
+
+    try {
+      await controller.agsGetResultsHandler(mockReq);
+      throw new Error("Expected agsGetResultsHandler to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Get Results: No getProviderResults function configured");
+    } finally {
+      LTI13Utils.prototype.validateAGSResultRequest.restore();
+    }
+  });
+
+  it("should throw from agsGetResultsHandler if token scope validation fails", async () => {
+    const consumer = {};
+    const models = {};
+    const provider_controller = {};
+    sinon.stub(LTI13Utils.prototype, "validateAGSResultRequest").throws(
+      new Error("Result Request: Insufficient permissions for AGS result read"),
+    );
+    const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
+    const mockReq = {
+      lti13Token: { kid: "test_consumer_key", scope: "wrong_scope" },
+      params: { context_key: "ctx", resource_key: "res", gradebook_key: "gb" },
+      query: {},
+    };
+
+    try {
+      await controller.agsGetResultsHandler(mockReq);
+      throw new Error("Expected agsGetResultsHandler to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Result Request: Insufficient permissions for AGS result read");
+    } finally {
+      LTI13Utils.prototype.validateAGSResultRequest.restore();
     }
   });
 });

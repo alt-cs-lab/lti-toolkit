@@ -30,7 +30,7 @@ DEPLOYMENT_ID=deployment-001
 
 ## LTI Toolkit Configuration
 
-The `src/configs/lti.js` file contains a minimal configuration for the LTI Toolkit for use as an LTI 1.0 Tool Consumer:
+The `src/configs/lti.js` file contains a minimal configuration for the LTI Toolkit for use as an LTI Tool Consumer:
 
 ```js {title="src/configs/lti.js"}
 /**
@@ -42,8 +42,11 @@ The `src/configs/lti.js` file contains a minimal configuration for the LTI Toolk
 // Import LTI Toolkit
 import LTIToolkit from "lti-toolkit";
 
-// LTI Post Provider Grade Handler
-import postProviderGrade from "../routes/post-grade.js";
+// LTI Grade Handlers (post, read, delete)
+import postProviderGrade, { readGradeHandler, deleteGradeHandler } from "../routes/post-grade.js";
+
+// LTI AGS Line Item and Results Handlers
+import { getProviderLineItemHandler, getProviderLineItemsHandler, getProviderResultsHandler } from "../routes/get-lineitems.js";
 
 // Initialize LTI Toolkit
 const lti = await LTIToolkit({
@@ -57,8 +60,14 @@ const lti = await LTIToolkit({
   db_storage: ":memory:",
   // Consumer Configuration
   consumer: {
-    // Incoming grade handler
+    // Grade handlers (LTI 1.0)
     postProviderGrade: postProviderGrade,
+    readProviderGrade: readGradeHandler,
+    deleteProviderGrade: deleteGradeHandler,
+    // AGS handlers (LTI 1.3)
+    getProviderLineItem: getProviderLineItemHandler,
+    getProviderLineItems: getProviderLineItemsHandler,
+    getProviderResults: getProviderResultsHandler,
     // LTI Tool Consumer Information
     deployment_name: process.env.DEPLOYMENT_NAME,
     deployment_id: process.env.DEPLOYMENT_ID,
@@ -68,7 +77,7 @@ const lti = await LTIToolkit({
 export default lti;
 ```
 
-It configures a default LTI 1.0 Tool Consumer using the domain provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. In addition, it provides some configuration information about the LTI 1.0 Tool Consumer using the information provided in the environment. Finally, it directs the library to the `postProviderGrade` function provided by one of the routes as the handler for incoming LTI grade passback.
+It configures an LTI Tool Consumer using the domain provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. In addition, it provides some configuration information about the LTI Tool Consumer using the information provided in the environment. Finally, it directs the library to the handler functions provided by the routes for incoming LTI grade operations (post, read, delete via LTI 1.0) and AGS line item and result read requests (LTI 1.3).
 
 ## Integrating Application Routes
 
@@ -465,54 +474,49 @@ At any time, the LTI 1.0 Tool Provider may provide updated grade information to 
 
 ```js {title="src/routes/post-grade.js"}
 /**
- * LTI 1.0 Grade Passback Handler for LTI Tool Consumer
+ * LTI Grade Passback Handler for LTI Tool Consumer
  *
  * @param {string} providerKey the provider key
  * @param {string} contextKey the context (course) key
  * @param {string} resourceKey the resource (lesson or assignment) key
- * @param {string} userKey the user (student) key
  * @param {string} gradebookKey the gradebook key
- * @param {number} score the score to post (0.0 - 1.0)
+ * @param {Object} gradeScore the AGS-style grade score object
+ * @param {string} gradeScore.userId the user ID
+ * @param {number} gradeScore.scoreGiven the score given (0.0 - 1.0)
+ * @param {number} gradeScore.scoreMaximum the maximum score
+ * @param {string} gradeScore.activityProgress the activity progress status
+ * @param {string} gradeScore.gradingProgress the grading progress status
+ * @param {string} gradeScore.timestamp the ISO 8601 timestamp of the grade
  * @param {Object} req the Express request object
  */
-async function postGradeHandler(
-  providerKey,
-  contextKey,
-  resourceKey,
-  userKey,
-  gradebookKey,
-  score,
-  req,
-) {
+async function postGradeHandler(providerKey, contextKey, resourceKey, gradebookKey, gradeScore, req) {
   // Store grade in the local data store
-  updateLocalDataStoreWithGrade(
-    req,
-    contextKey,
-    resourceKey,
-    userKey,
-    gradebookKey,
-    score,
-  );
+  updateLocalDataStoreWithGrade(req, contextKey, resourceKey, gradebookKey, gradeScore);
 
   // Return success response
   return {
     success: true,
     message: "Grade posted successfully",
-  }
+  };
 }
 ```
 
 This function is called with a number of helpful parameters:
 
-* `providerKey` - the shared key for the LTI 1.0 Tool Provider, which can be used to look up the provider in the `Provider` controller with the `getByKey` method.
+* `providerKey` - the shared key for the LTI Tool Provider, which can be used to look up the provider in the `Provider` controller with the `getByKey` method.
 * `contextKey` - the unique key for the context (course) in the original LTI launch
 * `resourceKey` - the unique key for the resource (assignment) in the original LTI launch
-* `userKey` - the unique key for the user in the original LTI launch
 * `gradebookKey` - the unique key for the gradebook line item in the original LTI launch
-* `score` - the grade received, as a floating-point value between 0.0 and 1.0
+* `gradeScore` - an AGS-style grade score object containing:
+  * `userId` - the unique key for the user in the original LTI launch
+  * `scoreGiven` - the grade received, as a floating-point value
+  * `scoreMaximum` - the maximum possible score (typically `1.0`)
+  * `activityProgress` - the student's activity progress (e.g. `"Submitted"`, `"Completed"`)
+  * `gradingProgress` - the grading status (e.g. `"FullyGraded"`, `"Pending"`)
+  * `timestamp` - an ISO 8601 timestamp of when the grade was submitted
 * `req` - the original Express request object
 
-This should be enough information to properly record the grade in the LMS gradebook. In this example application, it is just stored in an in-memory object for short-term tracking. 
+Both LTI 1.0 and LTI 1.3 grade passbacks are delivered through this same callback. For LTI 1.0 Basic Outcomes, the library maps the incoming score to this same AGS-style object (using fixed values of `"Submitted"` and `"FullyGraded"` for the progress fields) so the consuming application can handle both protocols uniformly. This should be enough information to properly record the grade in the LMS gradebook. In this example application, it is just stored in an in-memory object for short-term tracking.
 
 ## Viewing Grades
 
@@ -523,3 +527,217 @@ This example application will display any grades received and stored in local me
 This matches the grade found in the LTI 1.0 Tool Provider:
 
 ![LTI Tool Grades](images/ltigrades2.png)
+
+## Handling AGS Line Item Requests (LTI 1.3)
+
+When this application acts as an LTI 1.3 Tool Consumer (LMS), connected LTI 1.3 Tool Providers may request line item metadata using the AGS (Assignment and Grade Services) read endpoints. This allows a Tool Provider to discover the label and maximum score for a gradebook entry without requiring the LMS to push that data during launch.
+
+The toolkit exposes two callbacks for this purpose, both implemented in `src/routes/get-lineitems.js`:
+
+```js {title="src/routes/get-lineitems.js"}
+/**
+ * Handler for LTI 1.3 AGS GET line item requests.
+ * Returns metadata for a single gradebook line item identified by context, resource, and gradebook key.
+ *
+ * @param {string} providerKey the provider key (from the AGS token)
+ * @param {string} contextKey the context (course) key
+ * @param {string} resourceKey the resource (assignment) key
+ * @param {string} gradebookKey the gradebook key
+ * @param {Object} req the Express request object
+ * @returns {{ label: string, scoreMaximum: number }|null} line item metadata, or null if not found
+ */
+async function getProviderLineItemHandler(providerKey, contextKey, resourceKey, gradebookKey, req) {
+  const courses = req.app.locals.dataStore.courses;
+  const assignment = courses[contextKey]?.assignments[resourceKey];
+
+  if (!assignment) {
+    return null;
+  }
+
+  // Find a scoreMaximum from any stored grade for this gradebook key, defaulting to 1.0
+  let scoreMaximum = 1.0;
+  for (const user of Object.values(assignment.users)) {
+    const grade = user.grades[gradebookKey];
+    if (grade && grade.scoreMaximum !== undefined && grade.scoreMaximum !== null) {
+      scoreMaximum = grade.scoreMaximum;
+      break;
+    }
+  }
+
+  return {
+    label: assignment.name,
+    scoreMaximum,
+  };
+}
+
+/**
+ * Handler for LTI 1.3 AGS GET line items requests.
+ * Returns all line items for a context, optionally filtered by resource link ID.
+ * Each unique (resourceKey, gradebookKey) pair is returned as a separate line item.
+ *
+ * @param {string} providerKey the provider key (from the AGS token)
+ * @param {string} contextKey the context (course) key
+ * @param {string|null} resource_link_id optional resource link ID to filter results
+ * @param {Object} req the Express request object
+ * @returns {Array<{ resourceKey: string, gradebookKey: string, label: string, scoreMaximum: number }>|null}
+ */
+async function getProviderLineItemsHandler(providerKey, contextKey, resource_link_id, req) {
+  const courses = req.app.locals.dataStore.courses;
+  const course = courses[contextKey];
+
+  if (!course) {
+    return null;
+  }
+
+  const lineItems = [];
+
+  for (const [resourceKey, assignment] of Object.entries(course.assignments)) {
+    if (resource_link_id && resourceKey !== resource_link_id) {
+      continue;
+    }
+
+    // Collect unique gradebook keys and their scoreMaximums across all users
+    const gradebookKeys = new Map();
+    for (const user of Object.values(assignment.users)) {
+      for (const [gKey, grade] of Object.entries(user.grades)) {
+        if (!gradebookKeys.has(gKey)) {
+          const scoreMaximum =
+            grade && grade.scoreMaximum !== undefined && grade.scoreMaximum !== null ? grade.scoreMaximum : 1.0;
+          gradebookKeys.set(gKey, scoreMaximum);
+        }
+      }
+    }
+
+    for (const [gradebookKey, scoreMaximum] of gradebookKeys) {
+      lineItems.push({
+        resourceKey,
+        gradebookKey,
+        label: assignment.name,
+        scoreMaximum,
+      });
+    }
+  }
+
+  return lineItems;
+}
+```
+
+The callbacks receive the following parameters:
+
+**`getProviderLineItem`** — called when a Tool Provider requests a single line item:
+* `providerKey` - the key of the requesting provider, usable with `getByKey` on the provider controller
+* `contextKey` - the context (course) key from the original LTI launch
+* `resourceKey` - the resource (assignment) key from the original LTI launch
+* `gradebookKey` - the gradebook key from the original LTI launch
+* `req` - the Express request object
+
+Return `{ label, scoreMaximum }` if the line item is found, or `null` to send a 404 response.
+
+**`getProviderLineItems`** — called when a Tool Provider requests all line items for a context:
+* `providerKey` - the key of the requesting provider
+* `contextKey` - the context (course) key
+* `resource_link_id` - an optional filter; if provided, return only line items matching this resource key
+* `req` - the Express request object
+
+Return an array of `{ resourceKey, gradebookKey, label, scoreMaximum }` objects — one per unique `(resourceKey, gradebookKey)` pair. The `gradebookKey` differentiates multiple line items for the same resource (for example, when students may repeat or re-attempt an assignment). Return `null` if the context is not found; return `[]` if the context exists but has no matching line items.
+
+The toolkit uses these return values to build the spec-compliant AGS response objects, including constructing the `id` URL for each line item automatically.
+
+## Handling AGS Result Requests (LTI 1.3)
+
+When a Tool Provider requests the current result status for a line item, the toolkit calls the `getProviderResults` callback. This endpoint (`GET /lti/consumer/ags/:context_key/:resource_key/:gradebook_key/results`) requires the `result.readonly` AGS scope. Results represent the grade a specific user received for a specific line item.
+
+```js {title="src/routes/get-lineitems.js"}
+/**
+ * Handler for LTI 1.3 AGS GET results requests.
+ * Returns the current result status for each user who has submitted a grade for a given line item.
+ *
+ * @param {string} providerKey the provider key (from the AGS token)
+ * @param {string} contextKey the context (course) key
+ * @param {string} resourceKey the resource (assignment) key
+ * @param {string} gradebookKey the gradebook key
+ * @param {string|null} userId optional user ID to filter results to a single user
+ * @param {Object} req the Express request object
+ * @returns {Array<{ userId: string, resultScore: number, resultMaximum: number, comment: null }>|null}
+ *   array of result objects, or null if assignment not found
+ */
+async function getProviderResultsHandler(providerKey, contextKey, resourceKey, gradebookKey, userId, req) {
+  const courses = req.app.locals.dataStore.courses;
+  const assignment = courses[contextKey]?.assignments[resourceKey];
+
+  if (!assignment) {
+    return null;
+  }
+
+  const results = [];
+  for (const [userKey, user] of Object.entries(assignment.users)) {
+    if (userId && userKey !== userId) {
+      continue;
+    }
+    const grade = user.grades[gradebookKey];
+    if (grade && grade.scoreGiven !== null && grade.scoreGiven !== undefined) {
+      results.push({
+        userId: userKey,
+        resultScore: grade.scoreGiven,
+        resultMaximum: grade.scoreMaximum,
+        comment: null,
+      });
+    }
+  }
+  return results;
+}
+```
+
+**`getProviderResults`** — called when a Tool Provider requests result status for a line item:
+* `providerKey` - the key of the requesting provider
+* `contextKey` - the context (course) key
+* `resourceKey` - the resource (assignment) key
+* `gradebookKey` - the gradebook key
+* `userId` - an optional filter; if provided, return only results for this user ID
+* `req` - the Express request object
+
+Return an array of `{ userId, resultScore, resultMaximum, comment }` objects — one per user who has submitted a grade for this line item. The `resultScore` is the raw score given (not normalized) and `resultMaximum` is the maximum possible score. Return `null` if the assignment is not found; return `[]` if no users have submitted grades yet.
+
+The toolkit wraps each result with the spec-compliant `id` and `scoreOf` URLs automatically.
+
+## Handling LTI 1.0 Read and Delete Grade Requests
+
+When this application acts as an LTI 1.0 Tool Consumer, connected LTI 1.0 Tool Providers may also send `readResultRequest` and `deleteResultRequest` in addition to the standard `replaceResultRequest`. These allow a Tool Provider to check or clear a previously submitted grade.
+
+The toolkit calls the optional `readProviderGrade` and `deleteProviderGrade` callbacks, both implemented in `src/routes/post-grade.js`:
+
+```js {title="src/routes/post-grade.js"}
+async function readGradeHandler(providerKey, contextKey, resourceKey, userKey, gradebookKey, req) {
+  const courses = req.app.locals.dataStore.courses;
+  const grade = courses[contextKey]?.assignments[resourceKey]?.users[userKey]?.grades[gradebookKey];
+  if (!grade || grade.scoreGiven === null || grade.scoreGiven === undefined) {
+    return null;
+  }
+  const score = grade.scoreMaximum > 0 ? grade.scoreGiven / grade.scoreMaximum : 0;
+  return { score };
+}
+
+async function deleteGradeHandler(providerKey, contextKey, resourceKey, userKey, gradebookKey, req) {
+  const courses = req.app.locals.dataStore.courses;
+  const user = courses[contextKey]?.assignments[resourceKey]?.users[userKey];
+  if (!user || !user.grades[gradebookKey]) {
+    return { success: true, message: "No grade to delete" };
+  }
+  delete user.grades[gradebookKey];
+  return { success: true, message: "Grade deleted successfully" };
+}
+```
+
+**`readProviderGrade`** — called when a Tool Provider sends a `readResultRequest`:
+* `providerKey` - the provider key object with `key` and `secret`
+* `contextKey`, `resourceKey`, `userKey`, `gradebookKey` - parsed from the LTI 1.0 sourcedId
+* `req` - the Express request object
+
+Return `{ score: number }` (a value between 0.0 and 1.0) if a grade exists, or `null` if no grade is on file. The toolkit sends the score back to the provider in the LTI 1.0 XML response.
+
+**`deleteProviderGrade`** — called when a Tool Provider sends a `deleteResultRequest`:
+* Same parameters as `readProviderGrade`
+
+Return `{ success: boolean, message: string }`. If `success` is false, the toolkit returns a failure response to the provider.
+
+If either callback is not configured, the toolkit returns an `unsupported` response to the Tool Provider.

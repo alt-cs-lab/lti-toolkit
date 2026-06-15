@@ -18,6 +18,27 @@
         <form method="POST" action="/student/grade">
           <label for="grade">Enter your desired grade as a value between 0.00 and 1.00</label>
           <input type="number" id="grade" name="grade" min="0" max="1" step="0.01">
+          {% if launchData.launch_type == "lti1.3" %}
+          <br>
+          <label for="activityProgress"><b>Activity Progress: </b></label>
+          <select id="activityProgress" name="activityProgress">
+            <option value="Submitted" selected>Submitted</option>
+            <option value="Initialized">Initialized</option>
+            <option value="Started">Started</option>
+            <option value="InProgress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+          <br>
+          <label for="gradingProgress"><b>Grading Progress: </b></label>
+          <select id="gradingProgress" name="gradingProgress">
+            <option value="FullyGraded" selected>Fully Graded</option>
+            <option value="Pending">Pending</option>
+            <option value="PendingManual">Pending Manual</option>
+            <option value="Failed">Failed</option>
+            <option value="NotReady">Not Ready</option>
+          </select>
+          <br>
+          {% endif %}
           <input type="submit" value="Submit">
         </form>
         <hr />

@@ -17,6 +17,9 @@ export default function setupProviderRoutes(LTILaunchController, LTIRegistration
   // Create Express router
   const router = express.Router();
 
+  // Configure nunjucks once for auto-submitting form templates
+  nunjucks.configure({ autoescape: true });
+
   /**
    * LTI Launch Target
    *
@@ -110,7 +113,6 @@ export default function setupProviderRoutes(LTILaunchController, LTIRegistration
       const authResult = await LTILaunchController.login13(req);
       res.header("Content-Type", "text/html");
       res.header("Content-Security-Policy", "form-action " + authResult.url);
-      nunjucks.configure({ autoescape: true });
       const output = nunjucks.renderString(
         '<!doctype html>\
 <head>\
@@ -243,7 +245,6 @@ export default function setupProviderRoutes(LTILaunchController, LTIRegistration
 
     try {
       await LTIRegistrationController.dynamicRegistration(req.query);
-      nunjucks.configure({ autoescape: true });
       const output = nunjucks.renderString(
         '<!doctype html>\
   <head>\

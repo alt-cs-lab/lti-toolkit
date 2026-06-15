@@ -7,6 +7,9 @@
 // Import libraries
 import { nanoid } from "nanoid";
 import crypto from "crypto";
+import { promisify } from "util";
+
+const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
 class ProviderController {
   // Private Attributes
@@ -109,7 +112,7 @@ class ProviderController {
         },
         { transaction: t },
       );
-      const { publicKey, privateKey } = await this.#generateKeys(); // Generate keys for the consumer// Generate keys for the provider
+      const { publicKey, privateKey } = await this.#generateKeys();
       await this.#ProviderKeyModel.create(
         {
           key: provider.key,
@@ -267,20 +270,11 @@ class ProviderController {
    * @return {Object} the generated keys
    */
   async #generateKeys() {
-    let publicKey;
-    let privateKey;
-    ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+    return await generateKeyPairAsync("rsa", {
       modulusLength: 4096,
-      publicKeyEncoding: {
-        type: "spki",
-        format: "pem",
-      },
-      privateKeyEncoding: {
-        type: "pkcs1",
-        format: "pem",
-      },
-    }));
-    return { publicKey, privateKey };
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs1", format: "pem" },
+    });
   }
 }
 

@@ -163,9 +163,46 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // REQUIRED
     // LTI Grade Handler
     // User-provided async function to receive LTI Grades
-    // Params: LTI Provider Key, Context Key, Resource Key, User Key, Gradebook Key, Score, Express Request Object
-    // Function should resolve when grade is posted, no return needed
+    // Params: LTI Provider Key, Context Key, Resource Key, Gradebook Key, AGS Grade Score Object, Express Request Object
+    // The Grade Score Object contains: userId, scoreGiven, scoreMaximum, activityProgress, gradingProgress, timestamp
+    // Function must return: { success: boolean, message: string }
     postProviderGrade: LTIGradeHandler,
+
+    // OPTIONAL
+    // LTI 1.0 Read Grade Handler
+    // User-provided async function to return a previously submitted grade (LTI 1.0 readResult)
+    // Params: Provider Key, Context Key, Resource Key, User Key, Gradebook Key, Express Request Object
+    // Function must return: { score: number } (0.0 - 1.0) or null if no grade on file
+    readProviderGrade: LTIReadGradeHandler,
+
+    // OPTIONAL
+    // LTI 1.0 Delete Grade Handler
+    // User-provided async function to delete a previously submitted grade (LTI 1.0 deleteResult)
+    // Params: Provider Key, Context Key, Resource Key, User Key, Gradebook Key, Express Request Object
+    // Function must return: { success: boolean, message: string }
+    deleteProviderGrade: LTIDeleteGradeHandler,
+
+    // OPTIONAL
+    // LTI 1.3 AGS Get Line Item Handler
+    // User-provided async function to return metadata for a single gradebook line item
+    // Params: Provider Key, Context Key, Resource Key, Gradebook Key, Express Request Object
+    // Function must return: { label: string, scoreMaximum: number } or null if not found
+    getProviderLineItem: LTIGetLineItemHandler,
+
+    // OPTIONAL
+    // LTI 1.3 AGS Get Line Items Handler
+    // User-provided async function to return all line items for a context
+    // Each unique (resourceKey, gradebookKey) pair should be returned as a separate entry
+    // Params: Provider Key, Context Key, Resource Link ID (optional filter, may be null), Express Request Object
+    // Function must return: [{ resourceKey, gradebookKey, label, scoreMaximum }] or null if context not found
+    getProviderLineItems: LTIGetLineItemsHandler,
+
+    // OPTIONAL
+    // LTI 1.3 AGS Get Results Handler
+    // User-provided async function to return result status for users who have submitted grades for a line item
+    // Params: Provider Key, Context Key, Resource Key, Gradebook Key, User ID (optional filter, may be null), Express Request Object
+    // Function must return: [{ userId, resultScore, resultMaximum, comment }] or null if assignment not found
+    getProviderResults: LTIGetResultsHandler,
 
     // REQUIRED
     // LTI Tool Consumer Deployment Name
@@ -396,13 +433,67 @@ The initialized LTI Toolkit is a complex object containing the following items:
         score,
         // User's LTI 1.3 ID (for LTI 1.3 AGS)
         user_lis13_id,
-        // Debugging data
+        // Debugging data (optional)
         debug: {
           user,
           user_id,
           assignment,
           assignment_id
-        }
+        },
+        // Activity Progress for LTI 1.3 AGS (optional, default: "Submitted")
+        // One of: "Initialized", "Started", "InProgress", "Submitted", "Completed"
+        activityProgress,
+        // Grading Progress for LTI 1.3 AGS (optional, default: "FullyGraded")
+        // One of: "FullyGraded", "Pending", "PendingManual", "Failed", "NotReady"
+        gradingProgress,
+      ),
+      // Get a Single Line Item from an LTI Consumer via AGS (LTI 1.3 only)
+      // Returns the line item object from the LMS
+      getLineItem(
+        // LTI Consumer Key
+        consumer_key,
+        // Line item URL (from launchData.outcome_url)
+        lineitem_url,
+      ),
+      // Get All Line Items from an LTI Consumer via AGS (LTI 1.3 only)
+      // Returns an array of line item objects from the LMS
+      getLineItems(
+        // LTI Consumer Key
+        consumer_key,
+        // Line items collection URL (from launchData.outcome_lineitems)
+        lineitems_url,
+        // Optional resource link ID filter (default: null)
+        resource_link_id,
+      ),
+      // Read a Grade from an LTI Consumer via LTI 1.0 Basic Outcomes
+      // Returns the current score (float 0.0–1.0), or null if no grade is on file
+      readGrade(
+        // LTI Consumer Key
+        consumer_key,
+        // Grade passback URL (from launchData.outcome_url)
+        grade_url,
+        // LMS Grade ID / sourcedId (from launchData.outcome_id)
+        lms_grade_id,
+      ),
+      // Delete a Grade from an LTI Consumer via LTI 1.0 Basic Outcomes
+      // Returns true on success
+      deleteGrade(
+        // LTI Consumer Key
+        consumer_key,
+        // Grade passback URL (from launchData.outcome_url)
+        grade_url,
+        // LMS Grade ID / sourcedId (from launchData.outcome_id)
+        lms_grade_id,
+      ),
+      // Get AGS Results for a Line Item from an LTI Consumer (LTI 1.3 only)
+      // Returns an array of result objects from the LMS
+      getResults(
+        // LTI Consumer Key
+        consumer_key,
+        // Results URL (append "/results" to launchData.outcome_url)
+        results_url,
+        // Optional user ID filter (default: null)
+        user_id,
       ),
       // Create a Deeplink Response
       createDeepLink(

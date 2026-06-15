@@ -300,8 +300,10 @@ class LTI10Utils {
       signedParams,
       consumerKey.secret,
     );
-    // Compare extracted signature to computed
-    if (computedSignature !== oauth_signature) {
+    // Compare extracted signature to computed (timing-safe to prevent timing attacks)
+    const computedBuf = Buffer.from(computedSignature);
+    const providedBuf = Buffer.from(oauth_signature);
+    if (computedBuf.length !== providedBuf.length || !crypto.timingSafeEqual(computedBuf, providedBuf)) {
       throw new Error("Validation Error: Invalid OAuth Signature");
     }
 
@@ -462,6 +464,138 @@ class LTI10Utils {
       }
     } else {
       throw new Error("Failed to post grade: HTTP " + response.status + " - " + response.statusText);
+    }
+  }
+
+  /**
+   * Read a grade from a consumer via LTI 1.0 Basic Outcomes readResult
+   *
+   * @param {string} lms_grade_id - the LMS grade ID (sourcedId)
+   * @param {string} consumer_key - the consumer key
+   * @param {string} url - the grade passback URL
+   * @returns {number|null} the score (0.0 - 1.0), or null if no grade is on file
+   * @throws {Error} if required information is missing or if the request fails
+   */
+  async readOutcome(lms_grade_id, consumer_key, url) {
+    const envelope = {
+      imsx_POXEnvelopeRequest: {
+        $: { xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0" },
+        imsx_POXHeader: {
+          imsx_POXRequestHeaderInfo: {
+            imsx_version: "V1.0",
+            imsx_messageIdentifier: nanoid(),
+          },
+        },
+        imsx_POXBody: {
+          readResultRequest: {
+            resultRecord: {
+              sourcedGUID: { sourcedId: lms_grade_id },
+            },
+          },
+        },
+      },
+    };
+    const builder = new xml2js.Builder();
+    const content = builder.buildObject(envelope);
+
+    const providerKey = await this.#ConsumerKeyModel.findByPk(consumer_key, { attributes: ["key", "secret"] });
+    if (!providerKey) {
+      throw new Error("Error: Invalid Consumer Key");
+    }
+
+    const authHeader = await this.#signOauthBody(content, providerKey.key, providerKey.secret, "POST", url);
+    this.#logger.lti("Reading grade from LTI 1.0 Outcome Service at " + url);
+
+    const response = await ky.post(url, {
+      headers: { "Content-Type": "application/xml", Authorization: authHeader },
+      body: content,
+    });
+
+    if (response && response.status === 200) {
+      const responseText = await response.text();
+      const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+      const responseXml = await parser.parseStringPromise(responseText);
+      this.#logger.silly("Response XML: " + JSON.stringify(responseXml, null, 2));
+      if (
+        responseXml.imsx_POXEnvelopeResponse.imsx_POXHeader.imsx_POXResponseHeaderInfo.imsx_statusInfo
+          .imsx_codeMajor === "success"
+      ) {
+        const body = responseXml.imsx_POXEnvelopeResponse.imsx_POXBody;
+        const textString = body?.readResultResponse?.result?.resultScore?.textString;
+        if (!textString) {
+          this.#logger.lti("No grade on file");
+          return null;
+        }
+        this.#logger.lti("Grade read successfully: " + textString);
+        return parseFloat(textString);
+      } else {
+        throw new Error("Failed to read grade: " + JSON.stringify(responseXml, null, 2));
+      }
+    } else {
+      throw new Error("Failed to read grade: HTTP " + response.status + " - " + response.statusText);
+    }
+  }
+
+  /**
+   * Delete a grade from a consumer via LTI 1.0 Basic Outcomes deleteResult
+   *
+   * @param {string} lms_grade_id - the LMS grade ID (sourcedId)
+   * @param {string} consumer_key - the consumer key
+   * @param {string} url - the grade passback URL
+   * @returns {boolean} true if the grade was deleted successfully
+   * @throws {Error} if required information is missing or if the request fails
+   */
+  async deleteOutcome(lms_grade_id, consumer_key, url) {
+    const envelope = {
+      imsx_POXEnvelopeRequest: {
+        $: { xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0" },
+        imsx_POXHeader: {
+          imsx_POXRequestHeaderInfo: {
+            imsx_version: "V1.0",
+            imsx_messageIdentifier: nanoid(),
+          },
+        },
+        imsx_POXBody: {
+          deleteResultRequest: {
+            resultRecord: {
+              sourcedGUID: { sourcedId: lms_grade_id },
+            },
+          },
+        },
+      },
+    };
+    const builder = new xml2js.Builder();
+    const content = builder.buildObject(envelope);
+
+    const providerKey = await this.#ConsumerKeyModel.findByPk(consumer_key, { attributes: ["key", "secret"] });
+    if (!providerKey) {
+      throw new Error("Error: Invalid Consumer Key");
+    }
+
+    const authHeader = await this.#signOauthBody(content, providerKey.key, providerKey.secret, "POST", url);
+    this.#logger.lti("Deleting grade from LTI 1.0 Outcome Service at " + url);
+
+    const response = await ky.post(url, {
+      headers: { "Content-Type": "application/xml", Authorization: authHeader },
+      body: content,
+    });
+
+    if (response && response.status === 200) {
+      const responseText = await response.text();
+      const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+      const responseXml = await parser.parseStringPromise(responseText);
+      this.#logger.silly("Response XML: " + JSON.stringify(responseXml, null, 2));
+      if (
+        responseXml.imsx_POXEnvelopeResponse.imsx_POXHeader.imsx_POXResponseHeaderInfo.imsx_statusInfo
+          .imsx_codeMajor === "success"
+      ) {
+        this.#logger.lti("Grade deleted successfully");
+        return true;
+      } else {
+        throw new Error("Failed to delete grade: " + JSON.stringify(responseXml, null, 2));
+      }
+    } else {
+      throw new Error("Failed to delete grade: HTTP " + response.status + " - " + response.statusText);
     }
   }
 
@@ -664,6 +798,28 @@ class LTI10Utils {
       score,
       sourcedIdValue: sourcedId["sourcedid"],
     };
+  }
+
+  /**
+   * Validate a Basic Outcomes Read or Delete Result Request
+   *
+   * @param {Object} request - The read/delete result request body extracted from the envelope
+   * @throws {Error} if the request is not a valid Basic Outcomes Read/Delete Result Request
+   * @returns {Object} an object containing the sourcedIdValue if the request is valid
+   */
+  validateSourcedIdRequest(request) {
+    if (!request["resultrecord"]) {
+      throw new Error("Read/Delete Result: Missing Result Record");
+    }
+    const resultRecord = request["resultrecord"];
+    if (!resultRecord["sourcedguid"]) {
+      throw new Error("Read/Delete Result: Missing Result Source ID");
+    }
+    const sourcedId = resultRecord["sourcedguid"];
+    if (!sourcedId["sourcedid"] || sourcedId["sourcedid"].length === 0) {
+      throw new Error("Read/Delete Result: Missing Result Source ID Value");
+    }
+    return { sourcedIdValue: sourcedId["sourcedid"] };
   }
 
   /**

@@ -281,6 +281,8 @@ async function StudentGradeHandler(req, res) {
 
   // Get grade from form submission
   const grade = parseFloat(req.body.grade);
+  const activityProgress = req.body.activityProgress || "Submitted";
+  const gradingProgress = req.body.gradingProgress || "FullyGraded";
   if (isNaN(grade) || grade < 0 || grade > 1) {
     error = "Invalid grade value. Must be between 0 and 1.";
   } else {
@@ -308,13 +310,15 @@ async function StudentGradeHandler(req, res) {
     };
     try {
       if (
-        lti.controllers.lti.provider.postGrade(
+        await lti.controllers.lti.provider.postGrade(
           consumer.key,
           gradeObject.grade_url,
           gradeObject.lms_grade_id,
           gradeObject.score,
           gradeObject.user_lis13_id,
           gradeObject.debug,
+          activityProgress,
+          gradingProgress,
         )
       ) {
         message = `Successfully posted grade of ${grade} back to the LMS.`;
@@ -365,6 +369,8 @@ async function InstructorGradeHandler(req, res) {
   const assignmentId = req.body.assignment;
   const userId = req.body.user;
   const grade = parseFloat(req.body.grade);
+  const activityProgress = req.body.activityProgress || "Submitted";
+  const gradingProgress = req.body.gradingProgress || "FullyGraded";
 
   // Get assignment and user info from local data store
   // This is a placeholder function for updating a local data store
@@ -404,13 +410,15 @@ async function InstructorGradeHandler(req, res) {
     };
     try {
       if (
-        lti.controllers.lti.provider.postGrade(
+        await lti.controllers.lti.provider.postGrade(
           consumer.key,
           gradeObject.grade_url,
           gradeObject.lms_grade_id,
           gradeObject.score,
           gradeObject.user_lis13_id,
           gradeObject.debug,
+          activityProgress,
+          gradingProgress,
         )
       ) {
         message = `Successfully posted grade of ${grade} back to the LMS.`;
@@ -438,6 +446,135 @@ async function InstructorGradeHandler(req, res) {
 ```
 
 In this example, the same data required to build a grade object is read from the shared data structure stored in memory. Again, in practice, this data would be read from a database or another storage mechanism, but this code should be instructive.
+
+## LTI 1.3 AGS: Fetching Line Item and Results
+
+When an instructor is launched via LTI 1.3, the instructor view can use the `getLineItem` and `getResults` methods to retrieve the current assignment metadata and submission results from the LMS. This is done on page load using data from the launch:
+
+```js {title="src/routes/instructor.js"}
+/**
+ * Handle LTI Instructor Launch
+ */
+async function InstructorHandler(req, res) {
+  const launchData = req.session.ltiLaunchData;
+  const consumer = req.session.ltiConsumer;
+
+  let lineItem = null;
+  let results = null;
+  let agsError = null;
+
+  // For LTI 1.3 launches, fetch line item info and results from the consumer
+  if (launchData.launch_type === "lti1.3" && launchData.outcome_url) {
+    try {
+      lineItem = await lti.controllers.lti.provider.getLineItem(consumer.key, launchData.outcome_url);
+      results = await lti.controllers.lti.provider.getResults(consumer.key, launchData.outcome_url + "/results");
+    } catch (err) {
+      agsError = "Error fetching AGS data: " + err.message;
+    }
+  }
+
+  res.render("instructor.njk", {
+    title: "LTI Tool Provider - Instructor View",
+    courses: req.app.locals.dataStore.courses,
+    launchData: launchData,
+    consumer: consumer,
+    lineItem: lineItem,
+    results: results,
+    agsError: agsError,
+  });
+}
+```
+
+- `launchData.outcome_url` contains the AGS line item URL provided during the LTI 1.3 launch.
+- The results URL is built by appending `/results` to the line item URL, which maps to the AGS results endpoint on the consumer.
+- `getLineItem` returns an object with `label` and `scoreMaximum`.
+- `getResults` returns an array of result objects, each containing `userId`, `resultScore`, `resultMaximum`, and `comment`.
+
+## LTI 1.0 Read and Delete Grade
+
+For LTI 1.0 launches, the instructor view provides buttons to read or delete a student's grade directly from the LMS using the LTI 1.0 Basic Outcomes service:
+
+```js {title="src/routes/instructor-read-grade.js"}
+/**
+ * Handle LTI Instructor Read Grade Request (LTI 1.0 Basic Outcomes)
+ */
+async function InstructorReadGradeHandler(req, res) {
+  const launchData = req.session.ltiLaunchData;
+  const consumer = req.session.ltiConsumer;
+
+  const courseId = req.body.course;
+  const assignmentId = req.body.assignment;
+  const userId = req.body.user;
+
+  const courses = req.app.locals.dataStore.courses;
+  const assignment = courses[courseId]?.assignments[assignmentId];
+  const studentGrade = assignment?.grades[userId];
+
+  let error = null;
+  let message = null;
+
+  if (!studentGrade || !studentGrade.outcome_id) {
+    error = "No LTI 1.0 outcome ID found for this student.";
+  } else {
+    try {
+      const score = await lti.controllers.lti.provider.readGrade(
+        consumer.key,
+        assignment.grade_url,
+        studentGrade.outcome_id,
+      );
+      if (score === null) {
+        message = `No grade on file for ${studentGrade.name}.`;
+      } else {
+        message = `Current grade for ${studentGrade.name}: ${score} (${Math.round(score * 100)}%)`;
+      }
+    } catch (err) {
+      error = "Error reading grade from the LMS: " + err.message;
+    }
+  }
+
+  res.render("instructor.njk", { ... });
+}
+```
+
+```js {title="src/routes/instructor-delete-grade.js"}
+/**
+ * Handle LTI Instructor Delete Grade Request (LTI 1.0 Basic Outcomes)
+ */
+async function InstructorDeleteGradeHandler(req, res) {
+  const launchData = req.session.ltiLaunchData;
+  const consumer = req.session.ltiConsumer;
+
+  const courseId = req.body.course;
+  const assignmentId = req.body.assignment;
+  const userId = req.body.user;
+
+  const courses = req.app.locals.dataStore.courses;
+  const assignment = courses[courseId]?.assignments[assignmentId];
+  const studentGrade = assignment?.grades[userId];
+
+  let error = null;
+  let message = null;
+
+  if (!studentGrade || !studentGrade.outcome_id) {
+    error = "No LTI 1.0 outcome ID found for this student.";
+  } else {
+    try {
+      await lti.controllers.lti.provider.deleteGrade(consumer.key, assignment.grade_url, studentGrade.outcome_id);
+      message = `Grade deleted successfully for ${studentGrade.name}.`;
+      studentGrade.score = null;
+    } catch (err) {
+      error = "Error deleting grade from the LMS: " + err.message;
+    }
+  }
+
+  res.render("instructor.njk", { ... });
+}
+```
+
+- `readGrade(consumer_key, grade_url, lms_grade_id)` sends a `readResultRequest` to the LMS and returns the stored score as a float (0.0–1.0), or `null` if no grade is on file.
+- `deleteGrade(consumer_key, grade_url, lms_grade_id)` sends a `deleteResultRequest` and returns `true` on success.
+- The `outcome_id` (sourcedId) is stored from the student's original launch via `launchData.outcome_id`.
+- These buttons are only shown in the instructor view when `launch_type === "lti1.0"` and the student has a stored `outcome_id`.
 
 ## LTI 1.3 Configuration
 

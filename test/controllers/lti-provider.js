@@ -232,13 +232,51 @@ describe("/controllers/lti-provider.js", () => {
     // Create controller instance
     const controller = new LTIProviderController(provider, models, logger, domain_name);
 
-    // Call the function under test with valid information
+    // Call the function under test with valid information (default progress values)
     await controller.postGrade("test_consumer_key", "http://example.com/grade", null, 0.85, "user123");
 
     // Assertions
     expect(LTI13Utils.prototype.postAGSGrade.calledOnce).to.be.true;
     expect(
-      LTI13Utils.prototype.postAGSGrade.calledWith("user123", 0.85, "test_consumer_key", "http://example.com/grade"),
+      LTI13Utils.prototype.postAGSGrade.calledWith(
+        "user123",
+        0.85,
+        "test_consumer_key",
+        "http://example.com/grade",
+        "Submitted",
+        "FullyGraded",
+      ),
+    ).to.be.true;
+  });
+
+  it("should forward custom activityProgress and gradingProgress to postAGSGrade", async () => {
+    const provider = {};
+    const models = {};
+
+    sinon.stub(LTI13Utils.prototype, "postAGSGrade").resolves(true);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    await controller.postGrade(
+      "test_consumer_key",
+      "http://example.com/grade",
+      null,
+      0.5,
+      "user123",
+      null,
+      "InProgress",
+      "Pending",
+    );
+
+    expect(
+      LTI13Utils.prototype.postAGSGrade.calledWith(
+        "user123",
+        0.5,
+        "test_consumer_key",
+        "http://example.com/grade",
+        "InProgress",
+        "Pending",
+      ),
     ).to.be.true;
   });
 
@@ -341,6 +379,279 @@ describe("/controllers/lti-provider.js", () => {
       throw new Error("Expected createDeepLink to throw an error due to missing resource title");
     } catch (err) {
       expect(err.message).to.equal("Create Deep Link: Resource title is required");
+    }
+  });
+
+  it("should fetch a single line item from the LMS via getLineItem", async () => {
+    const provider = {};
+    const models = {};
+    const lineItemData = { id: "http://example.com/lineitems/1", scoreMaximum: 100, label: "Assignment 1", resourceLinkId: "resource1" };
+
+    sinon.stub(LTI13Utils.prototype, "getAGSLineItem").resolves(lineItemData);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    const result = await controller.getLineItem("consumer_key", "http://example.com/lineitems/1");
+
+    expect(LTI13Utils.prototype.getAGSLineItem.calledOnceWith("consumer_key", "http://example.com/lineitems/1")).to.be.true;
+    expect(result).to.deep.equal(lineItemData);
+
+    LTI13Utils.prototype.getAGSLineItem.restore();
+  });
+
+  it("should throw from getLineItem if consumer_key is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.getLineItem(null, "http://example.com/lineitems/1");
+      throw new Error("Expected getLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Get Line Item: Consumer Key is required");
+    }
+  });
+
+  it("should throw from getLineItem if lineitem_url is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.getLineItem("consumer_key", null);
+      throw new Error("Expected getLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Get Line Item: Line item URL is required");
+    }
+  });
+
+  it("should fetch all line items from the LMS via getLineItems without a filter", async () => {
+    const provider = {};
+    const models = {};
+    const lineItemsData = [
+      { id: "http://example.com/lineitems/1", scoreMaximum: 100, label: "Assignment 1", resourceLinkId: "resource1" },
+    ];
+
+    sinon.stub(LTI13Utils.prototype, "getAGSLineItems").resolves(lineItemsData);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    const result = await controller.getLineItems("consumer_key", "http://example.com/lineitems");
+
+    expect(LTI13Utils.prototype.getAGSLineItems.calledOnceWith("consumer_key", "http://example.com/lineitems", null)).to.be.true;
+    expect(result).to.deep.equal(lineItemsData);
+
+    LTI13Utils.prototype.getAGSLineItems.restore();
+  });
+
+  it("should pass resource_link_id to getAGSLineItems when provided to getLineItems", async () => {
+    const provider = {};
+    const models = {};
+
+    sinon.stub(LTI13Utils.prototype, "getAGSLineItems").resolves([]);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    await controller.getLineItems("consumer_key", "http://example.com/lineitems", "resource1");
+
+    expect(LTI13Utils.prototype.getAGSLineItems.calledOnceWith("consumer_key", "http://example.com/lineitems", "resource1")).to.be.true;
+
+    LTI13Utils.prototype.getAGSLineItems.restore();
+  });
+
+  it("should throw from getLineItems if consumer_key is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.getLineItems(null, "http://example.com/lineitems");
+      throw new Error("Expected getLineItems to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Get Line Items: Consumer Key is required");
+    }
+  });
+
+  it("should throw from getLineItems if lineitems_url is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.getLineItems("consumer_key", null);
+      throw new Error("Expected getLineItems to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Get Line Items: Line items URL is required");
+    }
+  });
+
+  it("should read a grade via readGrade", async () => {
+    const provider = {};
+    const models = {};
+
+    sinon.stub(LTI10Utils.prototype, "readOutcome").resolves(0.85);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    const result = await controller.readGrade("consumer_key", "http://example.com/grade", "grade_id");
+
+    expect(LTI10Utils.prototype.readOutcome.calledOnceWith("grade_id", "consumer_key", "http://example.com/grade")).to.be.true;
+    expect(result).to.equal(0.85);
+
+    LTI10Utils.prototype.readOutcome.restore();
+  });
+
+  it("should throw from readGrade if consumer_key is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.readGrade(null, "http://example.com/grade", "grade_id");
+      throw new Error("Expected readGrade to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Read Grade: Consumer Key is required");
+    }
+  });
+
+  it("should throw from readGrade if grade_url is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.readGrade("consumer_key", null, "grade_id");
+      throw new Error("Expected readGrade to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Read Grade: Grade URL is required");
+    }
+  });
+
+  it("should throw from readGrade if lms_grade_id is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.readGrade("consumer_key", "http://example.com/grade", null);
+      throw new Error("Expected readGrade to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Read Grade: LMS Grade ID is required");
+    }
+  });
+
+  it("should delete a grade via deleteGrade", async () => {
+    const provider = {};
+    const models = {};
+
+    sinon.stub(LTI10Utils.prototype, "deleteOutcome").resolves(true);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    const result = await controller.deleteGrade("consumer_key", "http://example.com/grade", "grade_id");
+
+    expect(LTI10Utils.prototype.deleteOutcome.calledOnceWith("grade_id", "consumer_key", "http://example.com/grade")).to.be.true;
+    expect(result).to.be.true;
+
+    LTI10Utils.prototype.deleteOutcome.restore();
+  });
+
+  it("should throw from deleteGrade if consumer_key is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.deleteGrade(null, "http://example.com/grade", "grade_id");
+      throw new Error("Expected deleteGrade to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Delete Grade: Consumer Key is required");
+    }
+  });
+
+  it("should throw from deleteGrade if grade_url is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.deleteGrade("consumer_key", null, "grade_id");
+      throw new Error("Expected deleteGrade to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Delete Grade: Grade URL is required");
+    }
+  });
+
+  it("should throw from deleteGrade if lms_grade_id is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.deleteGrade("consumer_key", "http://example.com/grade", null);
+      throw new Error("Expected deleteGrade to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Delete Grade: LMS Grade ID is required");
+    }
+  });
+
+  it("should fetch results via getResults without a user_id filter", async () => {
+    const provider = {};
+    const models = {};
+    const resultsData = [
+      { id: "http://example.com/results/user1", scoreOf: "http://example.com/lineitems/1", userId: "user1", resultScore: 85, resultMaximum: 100 },
+    ];
+
+    sinon.stub(LTI13Utils.prototype, "getAGSResults").resolves(resultsData);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    const result = await controller.getResults("consumer_key", "http://example.com/results");
+
+    expect(LTI13Utils.prototype.getAGSResults.calledOnceWith("consumer_key", "http://example.com/results", null)).to.be.true;
+    expect(result).to.deep.equal(resultsData);
+
+    LTI13Utils.prototype.getAGSResults.restore();
+  });
+
+  it("should pass user_id to getAGSResults when provided to getResults", async () => {
+    const provider = {};
+    const models = {};
+
+    sinon.stub(LTI13Utils.prototype, "getAGSResults").resolves([]);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    await controller.getResults("consumer_key", "http://example.com/results", "user1");
+
+    expect(LTI13Utils.prototype.getAGSResults.calledOnceWith("consumer_key", "http://example.com/results", "user1")).to.be.true;
+
+    LTI13Utils.prototype.getAGSResults.restore();
+  });
+
+  it("should throw from getResults if consumer_key is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.getResults(null, "http://example.com/results");
+      throw new Error("Expected getResults to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Get Results: Consumer Key is required");
+    }
+  });
+
+  it("should throw from getResults if results_url is missing", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.getResults("consumer_key", null);
+      throw new Error("Expected getResults to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Get Results: Results URL is required");
     }
   });
 });

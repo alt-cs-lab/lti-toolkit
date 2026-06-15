@@ -23,6 +23,8 @@ async function StudentGradeHandler(req, res) {
 
   // Get grade from form submission
   const grade = parseFloat(req.body.grade);
+  const activityProgress = req.body.activityProgress || "Submitted";
+  const gradingProgress = req.body.gradingProgress || "FullyGraded";
   if (isNaN(grade) || grade < 0 || grade > 1) {
     error = "Invalid grade value. Must be between 0 and 1.";
   } else {
@@ -57,6 +59,8 @@ async function StudentGradeHandler(req, res) {
           gradeObject.score,
           gradeObject.user_lis13_id,
           gradeObject.debug,
+          activityProgress,
+          gradingProgress,
         )
       ) {
         message = `Successfully posted grade of ${grade} back to the LMS.`;

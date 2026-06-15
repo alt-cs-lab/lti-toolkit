@@ -26,6 +26,8 @@ async function InstructorGradeHandler(req, res) {
   const assignmentId = req.body.assignment;
   const userId = req.body.user;
   const grade = parseFloat(req.body.grade);
+  const activityProgress = req.body.activityProgress || "Submitted";
+  const gradingProgress = req.body.gradingProgress || "FullyGraded";
 
   // Get assignment and user info from local data store
   // This is a placeholder function for updating a local data store
@@ -72,6 +74,8 @@ async function InstructorGradeHandler(req, res) {
           gradeObject.score,
           gradeObject.user_lis13_id,
           gradeObject.debug,
+          activityProgress,
+          gradingProgress,
         )
       ) {
         message = `Successfully posted grade of ${grade} back to the LMS.`;
@@ -86,6 +90,20 @@ async function InstructorGradeHandler(req, res) {
     }
   }
 
+  let lineItem = null;
+  let results = null;
+  let agsError = null;
+
+  // For LTI 1.3 launches, re-fetch AGS data so the page renders with current results
+  if (launchData.launch_type === "lti1.3" && launchData.outcome_url) {
+    try {
+      lineItem = await lti.controllers.lti.provider.getLineItem(consumer.key, launchData.outcome_url);
+      results = await lti.controllers.lti.provider.getResults(consumer.key, launchData.outcome_url + "/results");
+    } catch (err) {
+      agsError = "Error fetching AGS data: " + err.message;
+    }
+  }
+
   // Render instructor view with LTI Launch Data
   res.render("instructor.njk", {
     title: "LTI Tool Provider - Instructor View",
@@ -94,6 +112,9 @@ async function InstructorGradeHandler(req, res) {
     courses: req.app.locals.dataStore.courses,
     launchData: launchData,
     consumer: consumer,
+    lineItem: lineItem,
+    results: results,
+    agsError: agsError,
   });
 }
 
