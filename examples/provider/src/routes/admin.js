@@ -15,7 +15,7 @@ import lti from "../configs/lti.js";
  */
 async function AdminHandler(req, res) {
   // Get LTI Consumer
-  const consumers = await lti.controllers.consumer.getAll();
+  const consumers = await lti.controllers.consumerRegistry.getAll();
 
   // Get LMS Domain
   const lmsDomain = process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
@@ -25,7 +25,6 @@ async function AdminHandler(req, res) {
     consumers: consumers,
     lmsDomain: lmsDomain,
     domain: process.env.DOMAIN_NAME,
-    key: process.env.LTI_CONSUMER_KEY,
   });
 }
 

@@ -13,7 +13,9 @@ This project is yet another toolkit for developing [LTI (Learning Tools Interope
  - Supports all Canvas privacy levels in LTI Launch Requests to LTI 1.0 and LTI 1.3 Tool Providers
  - Supports test students from Canvas in LTI 1.0 and LTI 1.3 Launch Requests
  - Handles LTI 1.3 Dynamic Registration and Deep Linking as a Tool Provider
+ - Initiates LTI 1.3 Deep Linking requests and processes Deep Link responses as a Tool Consumer
  - Provides LTI 1.0 XML Configuration as a Tool Provider
+ - Encrypts LTI consumer/provider secrets and private keys at rest using AES-256-GCM
 
 **Limitations**
  - Does not fully support all features of LTI 1.3 AGS (Advanced Grade Service) or DR (Dynamic Registration) but does enough to work with Canvas in most cases.
@@ -33,6 +35,8 @@ npm install github:alt-cs-lab/lti-toolkit
 
 See the [Examples]({{% relref "00-general/00-examples" %}}) section for detailed example projects using this tool.
 
+TypeScript users: type declarations are published alongside the library (`index.d.ts`), covering the full configuration object, all callback signatures, and all four controller interfaces (`ConsumerRegistryController`, `ProviderRegistryController`, `LTIConsumerController`, `LTIProviderController`) with typed return shapes for each method.
+
 ## Configuration
 
 A minimal configuration example as an LTI 1.0 tool provider:
@@ -50,6 +54,9 @@ const lti = await LTIToolkit({
   domain_name: "https://app.domain.tld",
   // Admin email address for this application
   admin_email: "admin@domain.tld",
+  // Encryption key used to encrypt secrets and private keys at rest
+  // 64-character hex string (32 bytes), e.g. from `openssl rand -hex 32`
+  encryption_key: "your_64_character_hex_encryption_key",
   // Logging Level
   // One of error warn info http verbose lti debug sql silly
   log_level: "lti",
@@ -57,12 +64,19 @@ const lti = await LTIToolkit({
   provider: {
     // Incoming LTI Launch Handler Function
     handleLaunch: LTILaunch,
-    // LTI 1.0 Consumer Key and Shared Secret 
-    // for single LTI 1.0 Consumer setup
-    key: "your_lti_key",
-    secret: "your_lti_secret"
   }
 });
+
+// Create an LTI 1.0 consumer on startup if one doesn't already exist
+const existing = await lti.controllers.consumerRegistry.getByKey("your_lti_key");
+if (!existing) {
+  await lti.controllers.consumerRegistry.createConsumer({
+    name: "My LMS",
+    key: "your_lti_key",
+    secret: "your_lti_secret",
+    lti13: false,
+  });
+}
 ```
 
 The LTI Toolkit library is initialized by providing a configuration options object with the following options:
@@ -71,14 +85,24 @@ The LTI Toolkit library is initialized by providing a configuration options obje
 {
   // REQUIRED
   // Domain Name
-  // The fully qualified domain name for the application
-  // Must use HTTPS for most other LTI apps to work
+  // The public-facing URL for this application, including scheme and host.
+  // Must be the URL the LMS uses to reach this app (i.e. the URL after any
+  // reverse proxy). LTI 1.0 OAuth signatures are verified against this value,
+  // so it must exactly match the URL the LMS signed.
+  // Must use HTTPS for most LMS integrations.
   domain_name: "https://app.domain.tld",
 
   // REQUIRED
   // Admin Email
   // Email address for system administrator
   admin_email: "administrator@app.domain.tld",
+
+  // REQUIRED
+  // Encryption Key
+  // 64-character hex string (32 bytes) used as the AES-256-GCM key to
+  // encrypt LTI consumer/provider secrets and private keys at rest.
+  // Generate one with: openssl rand -hex 32
+  encryption_key: "your_64_character_hex_encryption_key",
 
   // OPTIONAL 
   // Logging Level for built-in Winston instance
@@ -102,6 +126,11 @@ The LTI Toolkit library is initialized by providing a configuration options obje
   // Database Object
   // An external instance of Sequelize ORM for a database
   // Default: built-in Sequelize instance using SQLite
+  // Any Sequelize-supported dialect works here (Postgres, MySQL, MariaDB, etc.) -
+  // db_storage is only a convenience default for SQLite. This is also how an
+  // application can share a single Sequelize instance with this library, so its
+  // own models can form direct relationships with this library's models (e.g.
+  // Course.belongsTo(lti.models.Consumer)) - see "Sharing a Database" below.
   database: sequelize_instance
 
   // REQUIRED
@@ -115,16 +144,8 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // User-provided function to handle LTI Launches
     // Params: LTI Launch Data, LTI Consumer Sequelize Object, and Express request
     // Return: URL string to redirect browser to after successful launch
+    // A non-string (or empty string) return value throws a descriptive error
     handleLaunch: LTILaunchHandler
-
-    // OPTIONAL Single LTI 1.0 Consumer Setup
-    // Both key and secret must be provided
-    // Will configure a simple LTI 1.0 Consumer on launch
-    // All other consumers will be removed from the database on launch
-    // LTI 1.0 Key
-    key: "your_lti_key",
-    // LTI 1.0 Secret
-    secret: "your_lti_secret"
 
     // OPTIONAL Information for XML Configuration
     // All of the options below are only used for automatic
@@ -154,6 +175,7 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // User-provided function to handle LTI Deeplink Requests
     // Params: LTI Deeplink Data, LTI Consumer Sequelize Object, and Express request
     // Return: URL string to redirect browser to after successful launch
+    // A non-string (or empty string) return value throws a descriptive error
     handleDeeplink: LTIDeeplinkHandler
   }
 
@@ -166,6 +188,7 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // Params: LTI Provider Key, Context Key, Resource Key, Gradebook Key, AGS Grade Score Object, Express Request Object
     // The Grade Score Object contains: userId, scoreGiven, scoreMaximum, activityProgress, gradingProgress, timestamp
     // Function must return: { success: boolean, message: string }
+    // An incorrectly-shaped return value (e.g. a missing/non-boolean success field) throws a descriptive error
     postProviderGrade: LTIGradeHandler,
 
     // OPTIONAL
@@ -173,6 +196,7 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // User-provided async function to return a previously submitted grade (LTI 1.0 readResult)
     // Params: Provider Key, Context Key, Resource Key, User Key, Gradebook Key, Express Request Object
     // Function must return: { score: number } (0.0 - 1.0) or null if no grade on file
+    // An incorrectly-shaped non-null return value (e.g. a missing/non-number score field) throws a descriptive error
     readProviderGrade: LTIReadGradeHandler,
 
     // OPTIONAL
@@ -180,6 +204,7 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // User-provided async function to delete a previously submitted grade (LTI 1.0 deleteResult)
     // Params: Provider Key, Context Key, Resource Key, User Key, Gradebook Key, Express Request Object
     // Function must return: { success: boolean, message: string }
+    // An incorrectly-shaped return value (e.g. a missing/non-boolean success field) throws a descriptive error
     deleteProviderGrade: LTIDeleteGradeHandler,
 
     // OPTIONAL
@@ -187,6 +212,7 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // User-provided async function to return metadata for a single gradebook line item
     // Params: Provider Key, Context Key, Resource Key, Gradebook Key, Express Request Object
     // Function must return: { label: string, scoreMaximum: number } or null if not found
+    // An incorrectly-shaped non-null return value throws a descriptive error
     getProviderLineItem: LTIGetLineItemHandler,
 
     // OPTIONAL
@@ -195,6 +221,7 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // Each unique (resourceKey, gradebookKey) pair should be returned as a separate entry
     // Params: Provider Key, Context Key, Resource Link ID (optional filter, may be null), Express Request Object
     // Function must return: [{ resourceKey, gradebookKey, label, scoreMaximum }] or null if context not found
+    // An incorrectly-shaped non-null return value throws a descriptive error
     getProviderLineItems: LTIGetLineItemsHandler,
 
     // OPTIONAL
@@ -202,7 +229,16 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     // User-provided async function to return result status for users who have submitted grades for a line item
     // Params: Provider Key, Context Key, Resource Key, Gradebook Key, User ID (optional filter, may be null), Express Request Object
     // Function must return: [{ userId, resultScore, resultMaximum, comment }] or null if assignment not found
+    // An incorrectly-shaped non-null return value throws a descriptive error
     getProviderResults: LTIGetResultsHandler,
+
+    // OPTIONAL
+    // LTI 1.3 Deep Link Response Handler
+    // User-provided async function called after a Tool Provider completes a Deep Link selection
+    // Params: content_items (array of deep-linked items), context (object stored at deep link initiation)
+    // Function must return: URL string to redirect the browser to after processing
+    // A non-string (or empty string) return value throws a descriptive error
+    handleDeeplink: LTIDeeplinkResponseHandler,
 
     // REQUIRED
     // LTI Tool Consumer Deployment Name
@@ -239,6 +275,46 @@ The LTI Toolkit library is initialized by providing a configuration options obje
 }
 ```
 
+### Sharing a Database
+
+The library is built on [Sequelize](https://sequelize.org/), which supports SQLite, Postgres, MySQL, MariaDB, and others. The built-in `db_storage` option is only a convenience default for a local SQLite database — any other dialect is supported by constructing your own `Sequelize` instance and passing it as `config.database`:
+
+```js
+import { Sequelize } from "sequelize";
+
+const sequelizeInstance = new Sequelize({
+  dialect: "postgres",
+  host: "localhost",
+  username: "lti",
+  password: "lti",
+  database: "lti_toolkit",
+});
+
+const lti = await LTIToolkit({
+  // ... other config ...
+  database: sequelizeInstance,
+});
+```
+
+Passing your own instance also lets your application **share a single database connection with this library**, so your own models can form direct relationships with the library's models. For example, a `Course` model in your application could reference the library's `Consumer` model:
+
+```js
+const lti = await LTIToolkit({ /* ... */ database: sequelizeInstance });
+
+// lti.models.Consumer / lti.models.Provider are the same Sequelize Model
+// classes the library uses internally, defined on your shared instance.
+Course.belongsTo(lti.models.Consumer);
+```
+
+If your application has its own migrations that need to reference tables this library creates (e.g. a foreign key to `lti_consumers` or `lti_providers`), run them only **after** `await LTIToolkit(...)` resolves — that's when this library's own migrations are guaranteed to have completed:
+
+```js
+const lti = await LTIToolkit({ /* ... */ database: sequelizeInstance });
+
+// Now safe to run your own migrations that reference lti_consumers/lti_providers
+await myAppUmzug.up();
+```
+
 ## Usage
 
 The initialized LTI Toolkit is a complex object containing the following items:
@@ -265,15 +341,36 @@ The initialized LTI Toolkit is a complex object containing the following items:
     // Returned if consumer is configured
     consumer: {
       // LTI 1.0 Basic Outcomes Target
-      "/grade"
+      "/grade",
+      // LTI 1.3 OIDC Login Target (incoming launches from Tool Providers)
+      "/login",
+      // LTI 1.3 Keyset Target (public JWKS for Tool Providers to verify tokens)
+      "/jwks",
+      // LTI 1.3 Token Endpoint (issues AGS access tokens to Tool Providers)
+      "/token",
+      // LTI 1.3 AGS Line Items Collection (GET — all line items for a context)
+      "/ags/:context_key/line_items",
+      // LTI 1.3 AGS Line Item (GET — single line item)
+      "/ags/:context_key/:resource_key/:gradebook_key",
+      // LTI 1.3 AGS Results (GET — submission results for a line item)
+      "/ags/:context_key/:resource_key/:gradebook_key/results",
+      // LTI 1.3 AGS Score (POST — grade passback from Tool Provider)
+      "/ags/:context_key/:resource_key/:gradebook_key/scores",
+      // LTI 1.3 OpenID Configuration (for Dynamic Registration)
+      "/openid-configuration",
+      // LTI 1.3 Dynamic Registration Target
+      "/register",
+      // LTI 1.3 Deep Link Response Target
+      "/deeplink/:token",
     }
   },
   // Controller Interfaces
   controllers: {
-    // LTI Provider Controller Instance
+    // Provider Registry Controller Instance
     // Returned if consumer is configured
     // (As an LMS Consumer, you are talking to Providers)
-    provider: {
+    // CRUD operations on registered Provider records
+    providerRegistry: {
       // Get All Providers
       getAll(),
       // Get a Provider by Database ID
@@ -290,15 +387,17 @@ The initialized LTI Toolkit is a complex object containing the following items:
       deleteProvider(id)
       // Get the secrets for a Provider by ID
       getSecret(id),
-      // Update the secret for a Provider
+      // Rotate the secret/key pair for a Provider
+      // key and secret are optional — omit both to auto-generate new credentials
       updateSecret(id, key, secret)
       // Get all public JWKS keys
       getAllKeys()
     },
-    // LTI Consumer Controller Instance
+    // Consumer Registry Controller Instance
     // Returned if provider is configured
     // (As an LMS Provider, you are talking to Consumers)
-    consumer: {
+    // CRUD operations on registered Consumer records
+    consumerRegistry: {
       // Get all Consumers
       getAll(),
       // Get a Consumer by Database ID
@@ -315,15 +414,14 @@ The initialized LTI Toolkit is a complex object containing the following items:
       deleteConsumer(id),
       // Get the secrets for a Consumer by ID
       getSecret(id),
-      // Update the secrets for a Consumer
+      // Rotate the secret/key pair for a Consumer
+      // key and secret are optional — omit both to auto-generate new credentials
       updateSecret(id, key, secret)
       // Get all public JWKS keys
       getAllKeys()
-    }
-  },
-  // LTI Specific Controllers
-  lti: {
+    },
     // LTI Consumer Controller
+    // Returned if consumer is configured
     // Contains methods for acting as an LTI Consumer
     consumer: {
       // Generate an LTI 1.0 Launch Form
@@ -406,6 +504,33 @@ The initialized LTI Toolkit is a complex object containing the following items:
           // custom variable names and values
         }
       ),
+      // Initiate an LTI 1.3 Deep Link request to a Tool Provider
+      generateLTI13DeepLinkFormData(
+        // LTI Provider Key
+        key,
+        // LTI Client ID
+        client_id,
+        // LTI Deployment ID
+        deployment_id,
+        // LTI Provider Launch URL
+        url,
+        // Return URL back to the LTI Consumer after Deep Link response
+        ret_url,
+        // LTI Context (Course)
+        context: {
+          key,
+          label,
+          name
+        }
+        // LTI User
+        user: {
+          key,
+          email
+        }
+        // LTI 1.3 Deep Link Settings (optional)
+        // Overrides defaults: accept_types defaults to ["ltiResourceLink"], accept_multiple to false
+        settings: {}
+      ),
       // Register an LTI 1.0 Tool Provider via XML
       lti10configxml(
         data: {
@@ -419,6 +544,7 @@ The initialized LTI Toolkit is a complex object containing the following items:
       lti13dynamicregistration(url)
     },
     // LTI Provider Controller
+    // Returned if provider is configured
     // Contains methods for acting as an LTI Provider
     provider: {
       // Post a Grade to an LTI Consumer
@@ -511,7 +637,7 @@ The initialized LTI Toolkit is a complex object containing the following items:
         title
       )
     }
-  }
+  },
   // Test Utilities
   // Returned if test mode is configured
   test: {

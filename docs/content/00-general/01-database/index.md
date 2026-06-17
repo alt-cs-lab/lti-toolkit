@@ -80,7 +80,7 @@ This table stores information about LTI Tool Providers connected to this system.
 * `launch_url` - {{% badge %}}LTI 1.0{{% /badge %}} the launch URL for LTI 1.0 connections to the LTI Tool Provider
 * `domain` - {{% badge %}}Both{{% /badge %}} the base domain name of the LTI Tool Provider
 * `custom` - {{% badge %}}Both{{% /badge %}} custom launch variables provided as part of the LTI 1.0 connection to the LTI Tool Provider
-* `use_section` - {{% badge %}}Both{{% /badge %}} flag for some LTI Tool Providers that require special handling. This is not implemented within this library but may be handy for other uses.
+* `use_section` - {{% badge %}}Both{{% /badge %}} flag to differentiate between LTI Tool Providers that may need different handling. Not implemented within this library itself, but available for applications built on this library to use as needed.
 * `client_id` - {{% badge %}}LTI 1.3{{% /badge %}} client ID provided to the LTI provider
 * `deployment_id` - {{% badge %}}LTI 1.3{{% /badge %}} deployment ID provided to the LTI provider
 * `keyset_url` - {{% badge %}}LTI 1.3{{% /badge %}} JWKS keyset URL for the LTI Provider 

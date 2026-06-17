@@ -17,9 +17,10 @@ import {
   ProviderKeySchema,
   ProviderLoginSchema,
   ProviderRegistrationSchema,
+  ProviderDeepLinkSchema,
 } from "./schemas.js";
 
-export default function configureModels(database, logger) {
+export default function configureModels(database, logger, encryptionKey) {
   // Create OauthNonce Model
   const OauthNonce = database.define(
     // Model Name
@@ -49,7 +50,7 @@ export default function configureModels(database, logger) {
     // Model Name
     "ConsumerKey",
     // Schema
-    ConsumerKeySchema,
+    ConsumerKeySchema(encryptionKey),
     // Other options
     {
       tableName: "lti_consumer_keys",
@@ -86,7 +87,7 @@ export default function configureModels(database, logger) {
     // Model Name
     "ProviderKey",
     // Schema
-    ProviderKeySchema,
+    ProviderKeySchema(encryptionKey),
     // Other options
     {
       tableName: "lti_provider_keys",
@@ -116,6 +117,18 @@ export default function configureModels(database, logger) {
     // Other options
     {
       tableName: "lti_provider_registrations",
+    },
+  );
+
+  // Create Provider Deep Link Model
+  const ProviderDeepLink = database.define(
+    // Model Name
+    "ProviderDeepLink",
+    // Schema
+    ProviderDeepLinkSchema,
+    // Other options
+    {
+      tableName: "lti_provider_deep_links",
     },
   );
 
@@ -160,6 +173,11 @@ export default function configureModels(database, logger) {
       }).then((count) => {
         logger.lti("Removed " + count + " Expired Provider Registrations");
       });
+      ProviderDeepLink.destroy({
+        where: { createdAt: { [Op.lte]: new Date(Date.now() - expireAfter) } },
+      }).then((count) => {
+        logger.lti("Removed " + count + " Expired Provider Deep Links");
+      });
       /* c8 ignore next 4 */
     } catch (error) {
       logger.error("Error Expiring Old OAuth Nonces & Login Sessions");
@@ -184,6 +202,7 @@ export default function configureModels(database, logger) {
       ProviderKey,
       ProviderLogin,
       ProviderRegistration,
+      ProviderDeepLink,
     },
     initializeExpiration,
   };

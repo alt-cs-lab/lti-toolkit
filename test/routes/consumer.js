@@ -604,4 +604,48 @@ describe("/routes/consumer.js", function () {
       expect(res.body).to.deep.equal({ error: "Error processing dynamic registration request: Test error" });
     });
   });
+
+  describe("POST /deeplink/:token", function () {
+    it("should handle a deep link response and redirect", async function () {
+      const LTILMSController = {
+        deepLinkResponseHandler: sinon.stub().callsFake(async (req, res) => {
+          res.redirect("http://example.com/deeplink-result");
+        }),
+      };
+      const ProviderKeyModel = {};
+
+      const app = express();
+      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger));
+
+      const res = await request(app)
+        .post("/lti/consumer/deeplink/test_token")
+        .send({ JWT: "test_jwt" })
+        .set("Content-Type", "application/json");
+
+      expect(LTILMSController.deepLinkResponseHandler.calledOnce).to.be.true;
+      expect(res.status).to.equal(302);
+      expect(res.headers.location).to.equal("http://example.com/deeplink-result");
+    });
+
+    it("should pass errors to next() when deepLinkResponseHandler throws", async function () {
+      const LTILMSController = {
+        deepLinkResponseHandler: sinon.stub().rejects(new Error("Deep link error")),
+      };
+      const ProviderKeyModel = {};
+
+      const app = express();
+      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger));
+      app.use((err, req, res, next) => {
+        res.status(500).send(err.message);
+      });
+
+      const res = await request(app)
+        .post("/lti/consumer/deeplink/test_token")
+        .send({ JWT: "test_jwt" })
+        .set("Content-Type", "application/json");
+
+      expect(res.status).to.equal(500);
+      expect(res.text).to.equal("Deep link error");
+    });
+  });
 });

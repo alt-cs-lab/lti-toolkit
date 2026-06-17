@@ -34,7 +34,7 @@ async function InstructorReadGradeHandler(req, res) {
     error = "No LTI 1.0 outcome ID found for this student.";
   } else {
     try {
-      const score = await lti.controllers.lti.provider.readGrade(
+      const score = await lti.controllers.provider.readGrade(
         consumer.key,
         assignment.grade_url,
         studentGrade.outcome_id,

@@ -31,7 +31,7 @@ async function ProviderConfigDynamicHandler(req, res) {
     } else {
       // Create Provider
       try {
-        await lti.controllers.lti.consumer.lti13dynamicregistration(data.url);
+        await lti.controllers.consumer.lti13dynamicregistration(data.url);
       } catch (err) {
         error = "Failed to create provider: " + err.message;
       }
@@ -42,12 +42,12 @@ async function ProviderConfigDynamicHandler(req, res) {
   }
 
   // Get list of configured tool providers
-  const providers = await lti.controllers.provider.getAll();
+  const providers = await lti.controllers.providerRegistry.getAll();
 
   // Get secrets for each provider and convert to JSON-friendly format
   const providerData = [];
   for (const provider of providers) {
-    const providerSecret = await lti.controllers.provider.getSecret(provider.id);
+    const providerSecret = await lti.controllers.providerRegistry.getSecret(provider.id);
     providerData.push({ ...provider.toJSON(), secret: providerSecret });
   }
 

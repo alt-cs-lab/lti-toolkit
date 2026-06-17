@@ -17,20 +17,21 @@ async function ConsumerHandler(req, res) {
   const consumerId = req.params.id;
 
   // Get Consumer
-  const consumer = await lti.controllers.consumer.getById(consumerId);
+  const consumer = await lti.controllers.consumerRegistry.getById(consumerId);
   if (!consumer) {
     return res.status(404).send("Consumer not found");
   }
 
   // Get Secret
-  const consumerSecret = await lti.controllers.consumer.getSecret(consumer.id);
+  const consumerSecret = await lti.controllers.consumerRegistry.getSecret(consumer.id);
 
   // Get LMS Domain
   const lmsDomain = process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
 
-  // Formatted consumer including secret
+  // Formatted consumer including secret and masked secret (last 4 chars)
   const consumerData = consumer.toJSON();
   consumerData.secret = consumerSecret.secret;
+  consumerData.maskedSecret = "••••••••" + consumerSecret.secret.slice(-4);
 
   // Render consumer view
   res.render("consumer.njk", {

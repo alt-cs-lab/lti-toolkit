@@ -10,6 +10,14 @@ import crypto from "crypto";
 // Import Utilities
 import LTI10Utils from "../lib/lti10.js";
 import LTI13Utils from "../lib/lti13.js";
+import {
+  assertGradeResult,
+  assertScoreResult,
+  assertLineItem,
+  assertLineItems,
+  assertResults,
+  assertRedirectUrl,
+} from "../lib/callback-validation.js";
 
 class LTILMSController {
   // Private fields
@@ -182,8 +190,9 @@ class LTILMSController {
       gradeScore,
       req,
     );
+    assertGradeResult(gradeResult, "postProviderGrade");
 
-    if (!gradeResult || !gradeResult.success) {
+    if (!gradeResult.success) {
       this.#logger.lti("Failed to Post Grade: " + gradeResult.message);
       return this.#LTI10Utils.buildResponse(
         "failure",
@@ -277,6 +286,7 @@ class LTILMSController {
       gradebookKey,
       req,
     );
+    assertScoreResult(gradeResult, "readProviderGrade");
 
     if (gradeResult === null || gradeResult === undefined) {
       return this.#LTI10Utils.buildResponse(
@@ -379,13 +389,14 @@ class LTILMSController {
       gradebookKey,
       req,
     );
+    assertGradeResult(deleteResult, "deleteProviderGrade");
 
-    if (!deleteResult || !deleteResult.success) {
-      this.#logger.lti("Failed to Delete Grade: " + deleteResult?.message);
+    if (!deleteResult.success) {
+      this.#logger.lti("Failed to Delete Grade: " + deleteResult.message);
       return this.#LTI10Utils.buildResponse(
         "failure",
         "processingfail",
-        "Failed to Delete Grade: " + deleteResult?.message,
+        "Failed to Delete Grade: " + deleteResult.message,
         providerKey,
         req.originalUrl,
         message_id,
@@ -413,8 +424,11 @@ class LTILMSController {
    */
   async authRequestHandler(req) {
     const authRequest = await this.#LTI13Utils.validateAuthRequest(req);
-    // Build the launch JWT
-    const launchJWT = await this.#LTI13Utils.buildLaunchJWT(authRequest, this.#consumer_config);
+    // Build the launch JWT — deep link requests use a different JWT shape
+    const isDeepLink = authRequest.loginState.data.message_type === "LtiDeepLinkingRequest";
+    const launchJWT = isDeepLink
+      ? await this.#LTI13Utils.buildDeepLinkJWT(authRequest, this.#consumer_config)
+      : await this.#LTI13Utils.buildLaunchJWT(authRequest, this.#consumer_config);
     // Return the launch data and action URL
     return {
       form: {
@@ -424,6 +438,22 @@ class LTILMSController {
       },
       url: authRequest.loginState.data.url,
     };
+  }
+
+  /**
+   * Handle an incoming LTI 1.3 Deep Linking Response
+   *
+   * @param {Object} req - Express request object (must have req.params.token and req.body.JWT)
+   * @param {Object} res - Express response object
+   */
+  async deepLinkResponseHandler(req, res) {
+    if (typeof this.#consumer_config.handleDeeplink !== "function") {
+      throw new Error("Deep Link Response: No handleDeeplink callback configured");
+    }
+    const { content_items, context } = await this.#LTI13Utils.verifyDeepLinkResponse(req);
+    const result = await this.#consumer_config.handleDeeplink(content_items, context);
+    assertRedirectUrl(result, "handleDeeplink");
+    res.redirect(result);
   }
 
   /**
@@ -484,12 +514,13 @@ class LTILMSController {
       gradeScore,
       req,
     );
+    assertGradeResult(passbackResult, "postProviderGrade");
 
-    if (!passbackResult || !passbackResult.success) {
-      this.#logger.lti("Failed to Post Grade: " + passbackResult?.message);
+    if (!passbackResult.success) {
+      this.#logger.lti("Failed to Post Grade: " + passbackResult.message);
       return {
         success: false,
-        message: "Failed to Post Grade: " + passbackResult?.message,
+        message: "Failed to Post Grade: " + passbackResult.message,
       };
     } else {
       return {
@@ -518,14 +549,12 @@ class LTILMSController {
       gradebook_key,
       req,
     );
+    assertLineItem(lineItemData, "getProviderLineItem");
     if (!lineItemData) {
       return null;
     }
     return {
-      id: new URL(
-        `/lti/consumer/ags/${context_key}/${resource_key}/${gradebook_key}`,
-        this.#domain_name,
-      ).href,
+      id: new URL(`/lti/consumer/ags/${context_key}/${resource_key}/${gradebook_key}`, this.#domain_name).href,
       scoreMaximum: lineItemData.scoreMaximum,
       label: lineItemData.label,
       resourceLinkId: resource_key,
@@ -551,14 +580,12 @@ class LTILMSController {
       resource_link_id,
       req,
     );
+    assertLineItems(lineItems, "getProviderLineItems");
     if (!lineItems) {
       return [];
     }
     return lineItems.map((item) => ({
-      id: new URL(
-        `/lti/consumer/ags/${context_key}/${item.resourceKey}/${item.gradebookKey}`,
-        this.#domain_name,
-      ).href,
+      id: new URL(`/lti/consumer/ags/${context_key}/${item.resourceKey}/${item.gradebookKey}`, this.#domain_name).href,
       scoreMaximum: item.scoreMaximum,
       label: item.label,
       resourceLinkId: item.resourceKey,
@@ -586,13 +613,12 @@ class LTILMSController {
       user_id,
       req,
     );
+    assertResults(results, "getProviderResults");
     if (!results) {
       return [];
     }
-    const lineItemUrl = new URL(
-      `/lti/consumer/ags/${context_key}/${resource_key}/${gradebook_key}`,
-      this.#domain_name,
-    ).href;
+    const lineItemUrl = new URL(`/lti/consumer/ags/${context_key}/${resource_key}/${gradebook_key}`, this.#domain_name)
+      .href;
     return results.map((result) => ({
       id: new URL(
         `/lti/consumer/ags/${context_key}/${resource_key}/${gradebook_key}/results/${result.userId}`,
@@ -707,7 +733,7 @@ class LTILMSController {
       use_section: false,
       keyset_url: body.jwks_uri,
       auth_url: body.initiate_login_uri,
-      redirect_urls: body.redirect_urls ? JSON.stringify(body.redirect_urls) : null,
+      redirect_urls: body.redirect_uris ? JSON.stringify(body.redirect_uris) : null,
       scopes: body.scope ? JSON.stringify(body.scope.split(" ")) : null,
       claims: body["https://purl.imsglobal.org/spec/lti-tool-configuration"].claims
         ? JSON.stringify(body["https://purl.imsglobal.org/spec/lti-tool-configuration"].claims)
@@ -733,12 +759,44 @@ class LTILMSController {
       },
     });
 
-    // TODO modify the response to include/remove the appropriate fields based on the registration request and the created provider
+    // Build the response explicitly from stored provider fields and recognized request fields.
+    // Unknown fields sent by the registering tool are intentionally omitted.
+    const ltiToolConfig = body["https://purl.imsglobal.org/spec/lti-tool-configuration"];
 
-    // Return the expected response object
-    body.client_id = provider.client_id;
-    body.deployment_id = provider.deployment_id;
-    return body;
+    const response = {
+      // Platform-assigned identifiers
+      client_id: provider.client_id,
+      deployment_id: provider.deployment_id,
+      // Required OIDC fields — echo from request or use LTI 1.3 defaults
+      application_type: body.application_type || "web",
+      grant_types: body.grant_types || ["implicit", "client_credentials"],
+      response_types: body.response_types || ["id_token"],
+      token_endpoint_auth_method: body.token_endpoint_auth_method || "private_key_jwt",
+      // Core tool identity from stored provider
+      client_name: provider.name,
+      initiate_login_uri: provider.auth_url,
+      jwks_uri: provider.keyset_url,
+    };
+
+    if (body.redirect_uris) response.redirect_uris = body.redirect_uris;
+    if (body.logo_uri) response.logo_uri = body.logo_uri;
+    if (body.contacts) response.contacts = body.contacts;
+    if (provider.scopes) response.scope = JSON.parse(provider.scopes).join(" ");
+
+    // LTI tool configuration — reconstructed from stored data
+    const responseToolConfig = {
+      domain: provider.domain,
+      target_link_uri: provider.launch_url,
+      // deployment_id included per IMS LTI DR spec (also at top-level for Canvas compatibility)
+      deployment_id: provider.deployment_id,
+    };
+    if (provider.custom) responseToolConfig.custom_parameters = JSON.parse(provider.custom);
+    if (provider.claims) responseToolConfig.claims = JSON.parse(provider.claims);
+    if (ltiToolConfig?.messages) responseToolConfig.messages = ltiToolConfig.messages;
+    if (ltiToolConfig?.description) responseToolConfig.description = ltiToolConfig.description;
+    response["https://purl.imsglobal.org/spec/lti-tool-configuration"] = responseToolConfig;
+
+    return response;
   }
 }
 

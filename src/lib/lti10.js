@@ -88,7 +88,7 @@ class LTI10Utils {
     // Part 1 - HTTP method in uppercase
     const part1 = LTI10Utils.#rfc3986(http_method.toUpperCase());
     // Part 2 - Base String URI
-    // TODO update this to read domain name from headers?
+    // domain_name must be the public-facing URL so this matches the URL the LMS signed
     const part2 = LTI10Utils.#rfc3986(new URL(base_uri, this.#domain_name).href);
     // Part 3 - Parameters
     const part3 = LTI10Utils.#rfc3986(LTI10Utils.#normalizeParams(params));

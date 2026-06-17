@@ -5,12 +5,14 @@
  */
 
 // Import Libraries
-import { JwksClient } from "jwks-rsa";
 import jsonwebtoken from "jsonwebtoken";
 import { nanoid } from "nanoid";
 import ky from "ky";
 import crypto from "crypto";
 import nunjucks from "nunjucks";
+
+// Import Utilities
+import { getJwksClient } from "./jwks-cache.js";
 
 class LTI13Utils {
   // Private Attributes
@@ -21,6 +23,7 @@ class LTI13Utils {
   #ProviderKeyModel;
   #ProviderModel;
   #ProviderRegistrationModel;
+  #ProviderDeepLinkModel;
   #logger;
   #domain_name;
 
@@ -38,6 +41,7 @@ class LTI13Utils {
     this.#ProviderKeyModel = models.ProviderKey;
     this.#ProviderModel = models.Provider;
     this.#ProviderRegistrationModel = models.ProviderRegistration;
+    this.#ProviderDeepLinkModel = models.ProviderDeepLink;
     this.#logger = logger;
     this.#domain_name = domain_name;
   }
@@ -110,6 +114,7 @@ class LTI13Utils {
       iss: params.iss,
       client_id: consumer.client_id,
       keyset_url: consumer.keyset_url,
+      deployment_id: consumer.deployment_id,
     });
     if (!login) {
       throw new Error("Login: Unable to save Login State");
@@ -167,11 +172,7 @@ class LTI13Utils {
 
     // Request Keys
     const keyUrl = loginState.keyset_url;
-    const jwksClient = new JwksClient({
-      jwksUri: keyUrl,
-      requestHeaders: {},
-      timeout: 1000,
-    });
+    const jwksClient = getJwksClient(keyUrl);
 
     // Decode JWT
     const decodedJwt = await jsonwebtoken.decode(req.body.id_token, {
@@ -200,9 +201,7 @@ class LTI13Utils {
 
     // Add Tool Consumer Key to Token
     token.key = loginState.key;
-
-    // Remove login state to prevent replays; nonce was already verified by jsonwebtoken.verify above
-    await loginState.destroy();
+    const expectedDeploymentId = loginState.deployment_id;
 
     const baseUrl = "https://purl.imsglobal.org/spec/lti/claim/";
 
@@ -222,6 +221,13 @@ class LTI13Utils {
     if (!token[baseUrl + "version"] || token[baseUrl + "version"] !== "1.3.0") {
       throw new Error("Launch: Invalid LTI Version: " + token[baseUrl + "version"]);
     }
+    // Token's deployment_id claim must match the deployment used during the OIDC login
+    if (!token[baseUrl + "deployment_id"] || token[baseUrl + "deployment_id"] !== expectedDeploymentId) {
+      throw new Error("Launch: Invalid LTI Deployment ID: " + token[baseUrl + "deployment_id"]);
+    }
+
+    // Remove login state to prevent replays; nonce was already verified by jsonwebtoken.verify above
+    await loginState.destroy();
 
     // Return validated payload to controller
     return token;
@@ -321,7 +327,7 @@ class LTI13Utils {
     if (!response.issuer) {
       throw new Error("Dynamic Registration: No Issuer found in OpenID Configuration");
     }
-    if (!response.registration_endpoint.startsWith(response.issuer)) {
+    if (new URL(response.registration_endpoint).origin !== new URL(response.issuer).origin) {
       throw new Error("Dynamic Registration: Registration Endpoint does not match Issuer in OpenID Configuration");
     }
     // validate other URLs are present
@@ -458,7 +464,14 @@ class LTI13Utils {
    * @returns {boolean} true if the grade was posted successfully, false otherwise
    * @throws {Error} if required information is missing or if posting fails
    */
-  async postAGSGrade(user_lis13_id, score, consumer_key, grade_url, activityProgress = "Submitted", gradingProgress = "FullyGraded") {
+  async postAGSGrade(
+    user_lis13_id,
+    score,
+    consumer_key,
+    grade_url,
+    activityProgress = "Submitted",
+    gradingProgress = "FullyGraded",
+  ) {
     const validActivityProgress = ["Initialized", "Started", "InProgress", "Submitted", "Completed"];
     const validGradingProgress = ["FullyGraded", "Pending", "PendingManual", "Failed", "NotReady"];
     if (!validActivityProgress.includes(activityProgress)) {
@@ -700,6 +713,139 @@ class LTI13Utils {
   }
 
   /**
+   * Build an LTI 1.3 Deep Linking Request JWT
+   *
+   * @param {Object} authRequest the validated auth request data
+   * @param {Object} consumer_config the consumer configuration
+   * @returns {string} the signed JWT
+   * @throws {Error} if there is an error signing the JWT
+   */
+  async buildDeepLinkJWT(authRequest, consumer_config) {
+    const data = authRequest.loginState.data;
+    const settings = data.settings || {};
+    const launchData = {
+      "https://purl.imsglobal.org/spec/lti/claim/message_type": "LtiDeepLinkingRequest",
+      "https://purl.imsglobal.org/spec/lti/claim/version": "1.3.0",
+      "https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings": {
+        deep_link_return_url: new URL(
+          `/lti/consumer/deeplink/${data.deep_link_token}`,
+          this.#domain_name,
+        ).href,
+        accept_types: settings.accept_types ?? ["ltiResourceLink"],
+        accept_presentation_document_targets: settings.accept_presentation_document_targets ?? ["iframe", "window"],
+        accept_multiple: settings.accept_multiple ?? false,
+      },
+      "https://purl.imsglobal.org/spec/lti/claim/deployment_id": data.deployment_id,
+      nonce: authRequest.nonce,
+      "https://purl.imsglobal.org/spec/lti/claim/target_link_uri": data.url,
+      picture: data.user.image,
+      email: data.user.email,
+      name: data.user.name,
+      given_name: data.user.first_name,
+      family_name: data.user.last_name,
+      "https://purl.imsglobal.org/spec/lti/claim/context": {
+        id: data.context.key,
+        label: data.context.label,
+        title: data.context.name,
+        type: ["http://purl.imsglobal.org/vocab/lis/v2/course#CourseOffering"],
+      },
+      "https://purl.imsglobal.org/spec/lti/claim/tool_platform": {
+        guid: consumer_config.deployment_id,
+        name: consumer_config.deployment_name,
+        version: consumer_config.platform_version,
+        product_family_code: consumer_config.platform_name,
+      },
+      "https://purl.imsglobal.org/spec/lti/claim/launch_presentation": {
+        document_target: "iframe",
+        return_url: data.ret_url,
+        locale: "en",
+      },
+      locale: "en",
+    };
+    if (data.custom) {
+      launchData["https://purl.imsglobal.org/spec/lti/claim/custom"] = data.custom;
+    }
+    const key = await this.#ProviderKeyModel.findOne({
+      where: { key: data.key },
+      attributes: ["private"],
+    });
+    if (!key) {
+      throw new Error("Deep Link JWT: Provider key not found");
+    }
+    this.#logger.lti("Building LTI 1.3 Deep Link JWT");
+    this.#logger.silly(JSON.stringify(launchData, null, 2));
+    const privateKey = crypto.createPrivateKey(key.private);
+    const jwt = await jsonwebtoken.sign(launchData, privateKey, {
+      algorithm: "RS256",
+      expiresIn: "1h",
+      keyid: data.key,
+      issuer: new URL("/", this.#domain_name).href,
+      audience: authRequest.client_id,
+      subject: data.user.key,
+    });
+    return jwt;
+  }
+
+  /**
+   * Verify an LTI 1.3 Deep Linking Response JWT and extract content items
+   *
+   * @param {Object} req the Express request object (must have req.body.JWT and req.params.token)
+   * @returns {Object} an object with content_items array and context from the pending deep link record
+   * @throws {Error} if the token is invalid, the JWT cannot be verified, or content items are missing
+   */
+  async verifyDeepLinkResponse(req) {
+    const token = req.params.token;
+    if (!token) {
+      throw new Error("Deep Link Response: No token provided");
+    }
+    if (!req.body || !req.body.JWT) {
+      throw new Error("Deep Link Response: No JWT provided");
+    }
+
+    // Look up the pending deep link record
+    const deepLinkRecord = await this.#ProviderDeepLinkModel.findOne({ where: { token } });
+    if (!deepLinkRecord) {
+      throw new Error("Deep Link Response: Invalid or expired token");
+    }
+
+    // Look up the provider
+    const provider = await this.#ProviderModel.findOne({ where: { key: deepLinkRecord.provider_key } });
+    if (!provider) {
+      throw new Error("Deep Link Response: Provider not found");
+    }
+
+    // Decode JWT to get kid for key lookup
+    const decodedJwt = await jsonwebtoken.decode(req.body.JWT, { complete: true });
+    if (!decodedJwt) {
+      throw new Error("Deep Link Response: Unable to decode JWT");
+    }
+
+    // Verify JWT signature using the provider's JWKS
+    const jwksClient = getJwksClient(provider.keyset_url);
+    const signingKey = await jwksClient.getSigningKey(decodedJwt.header.kid);
+    const publicKey = signingKey.getPublicKey();
+    try {
+      await jsonwebtoken.verify(req.body.JWT, publicKey, {
+        audience: new URL("/", this.#domain_name).href,
+        issuer: provider.client_id,
+      });
+    } catch (error) {
+      throw new Error("Deep Link Response: Unable to verify JWT: " + error.message, { cause: error });
+    }
+
+    // Extract content items
+    const contentItemsClaim = "https://purl.imsglobal.org/spec/lti-dl/claim/content_items";
+    const content_items = decodedJwt.payload[contentItemsClaim] || [];
+
+    // Destroy the pending record to prevent replay
+    const context = deepLinkRecord.context;
+    await deepLinkRecord.destroy();
+
+    this.#logger.lti("Deep Link Response verified, received " + content_items.length + " content items");
+    return { content_items, context };
+  }
+
+  /**
    * Validate LTI 1.3 Token Request
    *
    * @param {Object} req the Express request object
@@ -745,11 +891,7 @@ class LTI13Utils {
 
     // Get key from provider using JWKS
     const keyUrl = provider.keyset_url;
-    const jwksClient = new JwksClient({
-      jwksUri: keyUrl,
-      requestHeaders: {},
-      timeout: 1000,
-    });
+    const jwksClient = getJwksClient(keyUrl);
 
     // Find Key
     const key = await jwksClient.getSigningKey(decodedJwt.header.kid);

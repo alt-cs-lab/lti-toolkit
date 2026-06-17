@@ -34,7 +34,7 @@ async function InstructorDeleteGradeHandler(req, res) {
     error = "No LTI 1.0 outcome ID found for this student.";
   } else {
     try {
-      await lti.controllers.lti.provider.deleteGrade(consumer.key, assignment.grade_url, studentGrade.outcome_id);
+      await lti.controllers.provider.deleteGrade(consumer.key, assignment.grade_url, studentGrade.outcome_id);
       message = `Grade deleted successfully for ${studentGrade.name}.`;
       // Clear the stored score since it's been deleted on the LMS
       studentGrade.score = null;

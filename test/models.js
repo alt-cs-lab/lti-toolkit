@@ -14,6 +14,9 @@ should();
 import configureModels from "../src/models/models.js";
 import configureDatabase from "../src/config/database.js";
 
+// 32-byte key for AES-256-GCM, used across these tests
+const TEST_ENCRYPTION_KEY = Buffer.from("0123456789abcdef".repeat(4), "hex");
+
 /**
  * Check that old nonces are expired
  */
@@ -31,7 +34,7 @@ const shouldExpireOldNonces = () => {
     const db = configureDatabase(logger, ":memory:");
 
     // Initialize Models
-    const models = configureModels(db, logger);
+    const models = configureModels(db, logger, TEST_ENCRYPTION_KEY);
 
     db.sync({ force: true }).then(() => {
       db.getQueryInterface()
@@ -72,7 +75,7 @@ const shouldExpireOldLogins = () => {
     const db = configureDatabase(logger, ":memory:");
 
     // Initialize Models
-    const models = configureModels(db, logger);
+    const models = configureModels(db, logger, TEST_ENCRYPTION_KEY);
 
     db.sync({ force: true }).then(() => {
       db.getQueryInterface()
@@ -113,7 +116,7 @@ const shouldExpireOldProviderLogins = () => {
     const db = configureDatabase(logger, ":memory:");
 
     // Initialize Models
-    const models = configureModels(db, logger);
+    const models = configureModels(db, logger, TEST_ENCRYPTION_KEY);
 
     db.sync({ force: true }).then(() => {
       db.getQueryInterface()
@@ -154,7 +157,7 @@ const shouldExpireOldProviderRegistrations = () => {
     const db = configureDatabase(logger, ":memory:");
 
     // Initialize Models
-    const models = configureModels(db, logger);
+    const models = configureModels(db, logger, TEST_ENCRYPTION_KEY);
 
     db.sync({ force: true }).then(() => {
       db.getQueryInterface()
@@ -169,6 +172,47 @@ const shouldExpireOldProviderRegistrations = () => {
             models.models.ProviderRegistration.findAll().then((results) => {
               results.length.should.equal(1); // Only the old token should remain
               results[0].token.should.equal("token1");
+              clock.restore();
+              done();
+            });
+          });
+        });
+    });
+  });
+};
+
+/**
+ * Check that old provider deep links are expired
+ */
+const shouldExpireOldProviderDeepLinks = () => {
+  it("should expire old provider deep links", (done) => {
+    // Stub Logger
+    const logger = {
+      error: sinon.stub(),
+      info: sinon.stub(),
+      lti: sinon.stub(),
+      sql: sinon.stub(),
+    };
+
+    // Database instance
+    const db = configureDatabase(logger, ":memory:");
+
+    // Initialize Models
+    const models = configureModels(db, logger, TEST_ENCRYPTION_KEY);
+
+    db.sync({ force: true }).then(() => {
+      db.getQueryInterface()
+        .bulkInsert("lti_provider_deep_links", provider_deep_links)
+        .then(() => {
+          const clock = sinon.useFakeTimers({
+            now: new Date(),
+            shouldClearNativeTimers: true,
+          });
+          models.initializeExpiration();
+          clock.nextAsync().then(() => {
+            models.models.ProviderDeepLink.findAll().then((results) => {
+              results.length.should.equal(1); // Only the old token should remain
+              results[0].token.should.equal("dltoken1");
               clock.restore();
               done();
             });
@@ -195,7 +239,7 @@ const consumerShouldSetKey = () => {
     const db = configureDatabase(logger, ":memory:");
 
     // Initialize Models
-    const models = configureModels(db, logger);
+    const models = configureModels(db, logger, TEST_ENCRYPTION_KEY);
 
     db.sync({ force: true }).then(() => {
       models.models.Consumer.create({
@@ -230,7 +274,7 @@ const providerShouldSetClientID = () => {
     const db = configureDatabase(logger, ":memory:");
 
     // Initialize Models
-    const models = configureModels(db, logger);
+    const models = configureModels(db, logger, TEST_ENCRYPTION_KEY);
 
     db.sync({ force: true }).then(() => {
       models.models.Provider.create({
@@ -267,7 +311,7 @@ const shouldForceEmptyFieldsToNull = (field, modelName, sample) => {
     const db = configureDatabase(logger, ":memory:");
 
     // Initialize Models
-    const models = configureModels(db, logger);
+    const models = configureModels(db, logger, TEST_ENCRYPTION_KEY);
 
     await db.sync({ force: true });
 
@@ -277,6 +321,64 @@ const shouldForceEmptyFieldsToNull = (field, modelName, sample) => {
       error.message.should.contain(modelName + "." + field + " cannot be null");
       return;
     }
+  });
+};
+
+const shouldEncryptSecretAndPrivateAtRest = (modelName, sample) => {
+  it("should encrypt secret and private at rest for " + modelName, async () => {
+    // Stub Logger
+    const logger = {
+      error: sinon.stub(),
+      info: sinon.stub(),
+      lti: sinon.stub(),
+      sql: sinon.stub(),
+    };
+
+    // Database instance
+    const db = configureDatabase(logger, ":memory:");
+
+    // Initialize Models
+    const models = configureModels(db, logger, TEST_ENCRYPTION_KEY);
+
+    await db.sync({ force: true });
+
+    const created = await models.models[modelName].create(sample);
+
+    // The model transparently decrypts on access
+    created.secret.should.equal(sample.secret);
+    created.private.should.equal(sample.private);
+
+    // The value stored in the database is not the plaintext
+    const raw = await models.models[modelName].findOne({ where: { key: sample.key }, raw: true });
+    raw.secret.should.not.equal(sample.secret);
+    raw.private.should.not.equal(sample.private);
+
+    // Re-fetching through the model decrypts again correctly
+    const fetched = await models.models[modelName].findOne({ where: { key: sample.key } });
+    fetched.secret.should.equal(sample.secret);
+    fetched.private.should.equal(sample.private);
+  });
+
+  it("should leave a missing private key as null for " + modelName, async () => {
+    // Stub Logger
+    const logger = {
+      error: sinon.stub(),
+      info: sinon.stub(),
+      lti: sinon.stub(),
+      sql: sinon.stub(),
+    };
+
+    // Database instance
+    const db = configureDatabase(logger, ":memory:");
+
+    // Initialize Models
+    const models = configureModels(db, logger, TEST_ENCRYPTION_KEY);
+
+    await db.sync({ force: true });
+
+    const created = await models.models[modelName].create({ ...sample, private: null });
+
+    (created.private === null || created.private === undefined).should.be.true;
   });
 };
 
@@ -307,6 +409,7 @@ const logins = [
     iss: "https://example.com",
     client_id: "client1",
     keyset_url: "https://example.com/jwks",
+    deployment_id: "deployment1",
     createdAt: now,
     updatedAt: now,
   },
@@ -317,6 +420,7 @@ const logins = [
     iss: "https://example.com",
     client_id: "client2",
     keyset_url: "https://example.com/jwks",
+    deployment_id: "deployment2",
     createdAt: old,
     updatedAt: old,
   },
@@ -352,12 +456,28 @@ const provider_registrations = [
   },
 ];
 
+const provider_deep_links = [
+  {
+    token: "dltoken1",
+    provider_key: "key1",
+    createdAt: now,
+    updatedAt: now,
+  },
+  {
+    token: "dltoken2",
+    provider_key: "key2",
+    createdAt: old,
+    updatedAt: old,
+  },
+];
+
 describe("Models", () => {
   describe("initializeExpiration", () => {
     shouldExpireOldLogins();
     shouldExpireOldNonces();
     shouldExpireOldProviderLogins();
     shouldExpireOldProviderRegistrations();
+    shouldExpireOldProviderDeepLinks();
   });
 
   describe("Consumer.beforeValidate", () => {
@@ -379,6 +499,11 @@ describe("Models", () => {
     };
     shouldForceEmptyFieldsToNull("key", "ConsumerKey", sampleConsumerKey);
     shouldForceEmptyFieldsToNull("secret", "ConsumerKey", sampleConsumerKey);
+    shouldEncryptSecretAndPrivateAtRest("ConsumerKey", {
+      key: "thisisakey",
+      secret: "thisisasecret",
+      private: "thisisaprivatekey",
+    });
   });
 
   describe("Provider", () => {
@@ -405,5 +530,10 @@ describe("Models", () => {
     };
     shouldForceEmptyFieldsToNull("key", "ProviderKey", sampleProviderKey);
     shouldForceEmptyFieldsToNull("secret", "ProviderKey", sampleProviderKey);
+    shouldEncryptSecretAndPrivateAtRest("ProviderKey", {
+      key: "thisisakey",
+      secret: "thisisasecret",
+      private: "thisisaprivatekey",
+    });
   });
 });

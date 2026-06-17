@@ -349,5 +349,23 @@ export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, 
       return res.status(400).json({ error: "Error processing dynamic registration request: " + err.message });
     }
   });
+
+  /**
+   * @swagger
+   * /lti/consumer/deeplink/{token}:
+   *   post:
+   *    summary: LTI 1.3 Deep Linking Response Handler
+   *    description: Receives the LtiDeepLinkingResponse JWT POSTed back by the tool provider
+   *    tags: [lti-consumer]
+   */
+  router.post("/deeplink/:token", async function (req, res, next) {
+    logger.lti("LTI 1.3 Deep Link Response Received");
+    try {
+      await LTILMSController.deepLinkResponseHandler(req, res);
+    } catch (err) {
+      next(err);
+    }
+  });
+
   return router;
 }

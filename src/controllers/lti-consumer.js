@@ -21,6 +21,7 @@ class LTIConsumerController {
   #admin_email;
   #ProviderModel;
   #ProviderLoginModel;
+  #ProviderDeepLinkModel;
   #ProviderController;
 
   /**
@@ -40,6 +41,7 @@ class LTIConsumerController {
     this.#admin_email = admin_email;
     this.#ProviderModel = models.Provider;
     this.#ProviderLoginModel = models.ProviderLogin;
+    this.#ProviderDeepLinkModel = models.ProviderDeepLink;
     this.#ProviderController = provider_controller;
 
     // Create LTI Utilities
@@ -297,6 +299,113 @@ class LTIConsumerController {
       throw new Error("Validation Error: Unable to save LTI 1.3 Login - Aborting!");
     }
     this.#logger.silly("Login Created: " + JSON.stringify(loginCreated, null, 2));
+    return {
+      fields: login,
+      action: auth_url,
+    };
+  }
+
+  /**
+   * Generate LTI 1.3 Deep Link Form Data
+   *
+   * @param {string} key - the consumer key for the LTI tool provider
+   * @param {string} client_id - the client ID for the LTI tool provider
+   * @param {string} deployment_id - the deployment ID for the LTI tool provider
+   * @param {string} url - the launch URL of the LTI tool provider
+   * @param {string} ret_url - the return URL for the consumer app (passed to handleDeeplink callback context)
+   * @param {Object} context - the context for the deep link request (course)
+   * @param {string} context.key - the context key (course ID)
+   * @param {string} context.label - the context label (course code)
+   * @param {string} context.name - the context name (course name)
+   * @param {Object} user - the user initiating the deep link request
+   * @param {string} user.key - the user key (user ID)
+   * @param {string} user.email - the user's email address
+   * @param {Object} settings - optional LtiDeepLinkingSettings overrides
+   * @param {string[]} settings.accept_types - content item types to accept (default: ["ltiResourceLink"])
+   * @param {string[]} settings.accept_presentation_document_targets - targets to accept (default: ["iframe", "window"])
+   * @param {boolean} settings.accept_multiple - whether to accept multiple items (default: false)
+   * @return {Object} an object containing the form fields and action URL for the OIDC login redirect
+   */
+  async generateLTI13DeepLinkFormData(key, client_id, deployment_id, url, ret_url, context, user, settings = {}) {
+    // Validate Inputs
+    if (!key) {
+      throw new Error("Consumer Key is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!client_id) {
+      throw new Error("Client ID is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!deployment_id) {
+      throw new Error("Deployment ID is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!url) {
+      throw new Error("Launch URL is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!ret_url) {
+      throw new Error("Return URL is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!context || !context.key || !context.label || !context.name) {
+      throw new Error("Context with key, label, and name is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!user || !user.key || !user.email) {
+      throw new Error("User with key and email is required to generate LTI 1.3 Deep Link Data");
+    }
+
+    // Find the Provider in the database
+    const provider = await this.#ProviderModel.findOne({ where: { key } });
+    if (!provider) {
+      throw new Error("No provider found with key " + key);
+    }
+    const auth_url = provider.auth_url;
+    if (!auth_url) {
+      throw new Error("No auth URL found for provider " + provider.name);
+    }
+    this.#logger.lti("Generating LTI 1.3 Deep Link Data for Provider " + provider.name + " (" + key + ")");
+
+    // Create the pending deep link record so the return handler can look up context
+    const deep_link_token = nanoid();
+    const deepLinkCreated = await this.#ProviderDeepLinkModel.create({
+      token: deep_link_token,
+      provider_key: key,
+      context: { context, user, ret_url },
+    });
+    if (!deepLinkCreated || deepLinkCreated.token !== deep_link_token) {
+      throw new Error("Validation Error: Unable to save LTI 1.3 Deep Link record - Aborting!");
+    }
+
+    // Build Login Message
+    const login = {
+      iss: new URL("/", this.#domain_name).href,
+      login_hint: nanoid(),
+      client_id: client_id,
+      lti_deployment_id: deployment_id,
+      target_link_uri: url,
+      lti_storage_target: "post_message_forwarding",
+    };
+    this.#logger.silly("Deep Link Login Data: " + JSON.stringify(login, null, 2));
+
+    // Build Data to Store in ProviderLogin (carries context through the OIDC round-trip)
+    const loginData = {
+      message_type: "LtiDeepLinkingRequest",
+      deep_link_token,
+      key,
+      url,
+      deployment_id,
+      ret_url,
+      context,
+      user,
+      settings,
+    };
+
+    // Store in DB
+    const loginCreated = await this.#ProviderLoginModel.create({
+      client_id: client_id,
+      login_hint: login.login_hint,
+      data: JSON.stringify(loginData),
+    });
+    if (!loginCreated || loginCreated.login_hint !== login.login_hint) {
+      throw new Error("Validation Error: Unable to save LTI 1.3 Login - Aborting!");
+    }
+    this.#logger.silly("Deep Link Login Created: " + JSON.stringify(loginCreated, null, 2));
     return {
       fields: login,
       action: auth_url,

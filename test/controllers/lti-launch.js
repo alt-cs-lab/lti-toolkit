@@ -161,6 +161,26 @@ describe("/controllers/lti-launch.js", () => {
     LTI10Utils.prototype.validate10.restore();
   });
 
+  it("should throw if the provider's handleLaunch function returns a non-string value", async () => {
+    // Create mock dependencies
+    const provider = { handleLaunch: sinon.stub().resolves({ redirectURL: "/redirectURL" }) };
+    const models = { ConsumerKey: { findOne: sinon.stub(), findAll: sinon.stub() } };
+    const consumer_controller = { getByKey: sinon.stub().resolves(consumerProductStub) };
+
+    sinon.stub(LTI10Utils.prototype, "validate10").resolves(testLTILaunchResult);
+
+    const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
+
+    try {
+      await controller.launch(testLLTI10LaunchRequest);
+      throw new Error("Expected launch to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Invalid handleLaunch return value: expected a non-empty URL string");
+    } finally {
+      LTI10Utils.prototype.validate10.restore();
+    }
+  });
+
   it("should fail if the LTI 1.0 launch request is invalid", async () => {
     // Create mock dependencies
     const provider = { handleLaunch: handleLaunchStub };
@@ -649,6 +669,27 @@ describe("/controllers/lti-launch.js", () => {
 
     // Restore the stubbed method
     LTI13Utils.prototype.launchRequest.restore();
+  });
+
+  it("should throw if the provider's handleDeeplink function returns a non-string value", async () => {
+    // Create mock dependencies
+    const provider = { handleDeeplink: sinon.stub().resolves(null) };
+
+    const models = { ConsumerKey: { findOne: sinon.stub(), findAll: sinon.stub() } };
+    const consumer_controller = { getByKey: sinon.stub().resolves(consumerProduct13DLStub) };
+
+    sinon.stub(LTI13Utils.prototype, "launchRequest").resolves(testLTI13DeeplinkingResult);
+
+    const controller = new LTILaunchController(provider, models, logger, domain_name, consumer_controller);
+
+    try {
+      await controller.launch(testLLTI13LaunchRequest);
+      throw new Error("Expected launch to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Invalid handleDeeplink return value: expected a non-empty URL string");
+    } finally {
+      LTI13Utils.prototype.launchRequest.restore();
+    }
   });
 
   it("should fail on invalid message type", async () => {

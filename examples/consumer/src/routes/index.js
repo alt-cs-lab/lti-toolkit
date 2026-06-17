@@ -15,7 +15,7 @@ import lti from "../configs/lti.js";
  */
 async function IndexHandler(req, res) {
   // Get list of configured tool providers
-  const providers = await lti.controllers.provider.getAll();
+  const providers = await lti.controllers.providerRegistry.getAll();
 
   // Convert to JSON-friendly format
   const providerData = [];

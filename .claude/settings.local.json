@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test *)",
+      "Bash(npm run *)",
+      "Bash(sed -n '/## 14\\\\./,/^---/p' /workspaces/lti-toolkit/.claude/ROADMAP.md)",
+      "Bash(npx mocha *)"
+    ],
+    "additionalDirectories": [
+      "/workspaces/lti-toolkit/.claude"
+    ]
+  }
+}

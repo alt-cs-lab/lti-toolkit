@@ -18,6 +18,7 @@ import morgan from "morgan";
 import lti from "./configs/lti.js";
 
 // Import Middleware
+import { requireAdmin } from "./middlewares/require-admin.js";
 import { requireLTI } from "./middlewares/require-lti.js";
 import { requireDeeplink } from "./middlewares/require-deeplink.js";
 
@@ -32,6 +33,8 @@ import InstructorHandler from "./routes/instructor.js";
 import StudentGradeHandler from "./routes/student-grade.js";
 import StudentHandler from "./routes/student.js";
 import ConsumerHandler from "./routes/consumer.js";
+import ConsumerDeleteHandler from "./routes/consumer-delete.js";
+import ConsumerRotateHandler from "./routes/consumer-rotate.js";
 import DeepLinkHandler from "./routes/deeplink.js";
 import DeepLinkSelect from "./routes/deeplink-select.js";
 
@@ -74,9 +77,11 @@ app.use("/lti/provider", lti.routers.provider);
 
 // Add Handlers
 app.get("/", IndexHandler);
-app.get("/admin", AdminHandler);
-app.get("/consumer/:id", ConsumerHandler);
-app.post("/consumer/:id/config", ConsumerConfigHandler);
+app.get("/admin", requireAdmin, AdminHandler);
+app.get("/consumer/:id", requireAdmin, ConsumerHandler);
+app.post("/consumer/:id/config", requireAdmin, ConsumerConfigHandler);
+app.post("/consumer/:id/rotate", requireAdmin, ConsumerRotateHandler);
+app.post("/consumer/:id/delete", requireAdmin, ConsumerDeleteHandler);
 app.get("/student", requireLTI, StudentHandler);
 app.post("/student/grade", requireLTI, StudentGradeHandler);
 app.get("/instructor", requireLTI, InstructorHandler);
@@ -88,6 +93,14 @@ app.post("/deeplink/select", requireDeeplink, DeepLinkSelect);
 
 // Use static files
 app.use(express.static(path.join(import.meta.dirname, "../public")));
+
+// Global error handler — must be registered after all routes and middleware.
+// The 4-argument signature is required for Express to treat this as an error handler.
+// A real application should extend this with appropriate logging and error reporting.
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).render("error.njk", { title: "Error" });
+});
 
 // Export the app
 export default app;

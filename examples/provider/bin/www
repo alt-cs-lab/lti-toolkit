@@ -27,12 +27,8 @@ startup();
  * Server startup function
  */
 function startup() {
-  try {
-    // Server Startup Functions Here
-    server.listen(port)
-  } catch (error){
-    logger.error(error)
-  }
+  // Server Startup Functions Here
+  server.listen(port);
 }
 
 /**

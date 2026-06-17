@@ -49,8 +49,10 @@ class LTIRegistrationController {
     // Build custom properties XML
     let custom = "";
     if (this.#provider_config.custom_params) {
+      const escapeXml = (s) =>
+        String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
       for (const [key, value] of Object.entries(this.#provider_config.custom_params)) {
-        custom += `<lticm:property name="${key}">${value}</lticm:property> \n    `;
+        custom += `<lticm:property name="${escapeXml(key)}">${escapeXml(value)}</lticm:property> \n    `;
       }
       custom = `<blti:custom> \n    ${custom}</blti:custom>\n`;
     }

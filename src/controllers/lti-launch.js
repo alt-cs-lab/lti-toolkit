@@ -10,6 +10,7 @@ import crypto from "crypto";
 // Import Utilities
 import LTI10Utils from "../lib/lti10.js";
 import LTI13Utils from "../lib/lti13.js";
+import { assertRedirectUrl } from "../lib/callback-validation.js";
 
 class LTILaunchController {
   // Private fields for LTI utilities
@@ -270,7 +271,9 @@ class LTILaunchController {
     this.#logger.lti("Handling LTI Launch");
     this.#logger.silly("Launch Data: " + JSON.stringify(launchData, null, 2));
     if (this.#provider_config && typeof this.#provider_config.handleLaunch === "function") {
-      return await this.#provider_config.handleLaunch(launchData, consumer, req);
+      const result = await this.#provider_config.handleLaunch(launchData, consumer, req);
+      assertRedirectUrl(result, "handleLaunch");
+      return result;
     } else {
       throw new Error("Launch Error: No provider.handleLaunch function defined!");
     }
@@ -284,7 +287,9 @@ class LTILaunchController {
     this.#logger.lti("Handling LTI Deeplink");
     this.#logger.silly("Launch Data: " + JSON.stringify(launchData, null, 2));
     if (this.#provider_config && typeof this.#provider_config.handleDeeplink === "function") {
-      return await this.#provider_config.handleDeeplink(launchData, consumer, req);
+      const result = await this.#provider_config.handleDeeplink(launchData, consumer, req);
+      assertRedirectUrl(result, "handleDeeplink");
+      return result;
     } else {
       throw new Error("Deeplink Error: No provider.handleDeeplink function defined!");
     }

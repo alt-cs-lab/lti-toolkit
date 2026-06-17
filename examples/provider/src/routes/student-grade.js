@@ -52,7 +52,7 @@ async function StudentGradeHandler(req, res) {
     };
     try {
       if (
-        await lti.controllers.lti.provider.postGrade(
+        await lti.controllers.provider.postGrade(
           consumer.key,
           gradeObject.grade_url,
           gradeObject.lms_grade_id,

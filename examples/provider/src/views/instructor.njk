@@ -48,6 +48,29 @@
                 </table>
               {% endif %}
             {% endif %}
+            {% if lineItems %}
+              <h3>All Line Items in Course</h3>
+              {% if lineItems.length == 0 %}
+                <p>No line items found.</p>
+              {% else %}
+                <table border="1" cellpadding="4">
+                  <tr>
+                    <th>Label</th>
+                    <th>Max Score</th>
+                    <th>Resource Key</th>
+                    <th>Gradebook Key</th>
+                  </tr>
+                  {% for item in lineItems %}
+                    <tr>
+                      <td>{{ item.label }}</td>
+                      <td>{{ item.scoreMaximum }}</td>
+                      <td>{{ item.resourceKey }}</td>
+                      <td>{{ item.gradebookKey }}</td>
+                    </tr>
+                  {% endfor %}
+                </table>
+              {% endif %}
+            {% endif %}
           {% endif %}
         {% endif %}
         {% for courseId, course in courses %}

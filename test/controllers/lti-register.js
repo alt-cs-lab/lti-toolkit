@@ -84,6 +84,23 @@ describe("/controllers/lti-register.js", () => {
     );
   });
 
+  it("should XML-escape custom parameter keys and values containing special characters", async () => {
+    const provider_config = {
+      title: "Test",
+      description: "Test",
+      route_prefix: "/lti/provider",
+      custom_params: {
+        "key<with>special": 'value & "quoted" <chars>',
+      },
+    };
+
+    const controller = new LTIRegistrationController(provider_config, {}, logger, domain_name, admin_email, {});
+    const configXML = await controller.getLTI10Config();
+
+    expect(configXML).to.include('<lticm:property name="key&lt;with&gt;special">value &amp; &quot;quoted&quot; &lt;chars&gt;</lticm:property>');
+    expect(configXML).to.not.include('<lticm:property name="key<with>special">');
+  });
+
   // LMS Details Fixture
   const confURL = "https://purl.imsglobal.org/spec/lti-platform-configuration";
   const canvasURL = "https://canvas.instructure.com/lti/";

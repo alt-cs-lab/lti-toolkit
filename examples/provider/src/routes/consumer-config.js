@@ -19,6 +19,7 @@ async function ConsumerConfigHandler(req, res) {
 
   // Get Form Data
   const data = {
+    name: req.body.name,
     lti13: true,
     client_id: req.body.client_id,
     platform_id: req.body.platform_id,
@@ -29,14 +30,14 @@ async function ConsumerConfigHandler(req, res) {
   };
 
   // Check if any required fields are missing
-  const requiredFields = ["client_id", "platform_id", "deployment_id", "keyset_url", "token_url", "auth_url"];
+  const requiredFields = ["name", "client_id", "platform_id", "deployment_id", "keyset_url", "token_url", "auth_url"];
   const missingFields = requiredFields.filter((field) => !data[field] || data[field].trim() === "");
   if (missingFields.length > 0) {
     error = "Missing required fields: " + missingFields.join(", ");
   } else {
     // Update Consumer
     try {
-      const returnValue = await lti.controllers.consumer.updateConsumer(req.params.id, data);
+      const returnValue = await lti.controllers.consumerRegistry.updateConsumer(req.params.id, data);
       if (!returnValue) {
         throw new Error("Consumer not found");
       }
@@ -49,7 +50,7 @@ async function ConsumerConfigHandler(req, res) {
   }
 
   // Get Updated LTI Consumer
-  const consumers = await lti.controllers.consumer.getAll();
+  const consumers = await lti.controllers.consumerRegistry.getAll();
 
   // Get LMS Domain
   const lmsDomain = process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
@@ -59,7 +60,6 @@ async function ConsumerConfigHandler(req, res) {
     consumers: consumers,
     lmsDomain: lmsDomain,
     domain: process.env.DOMAIN_NAME,
-    key: process.env.LTI_CONSUMER_KEY,
     error: error,
     message: message,
   });

@@ -23,6 +23,14 @@ DOMAIN_NAME=https://ltidemo.home.russfeld.me
 # Admin Email Address
 ADMIN_EMAIL=admin@domain.tld
 
+# Admin Password for HTTP Basic Auth on admin routes
+# Any username is accepted; only the password is checked
+ADMIN_PASSWORD=your_admin_password
+
+# LTI Encryption Key (64-character hex string)
+# Generate with: openssl rand -hex 32
+LTI_ENCRYPTION_KEY=your_64_character_hex_encryption_key
+
 # LTI Tool Consumer Settings
 DEPLOYMENT_NAME=LTI Toolkit Demo
 DEPLOYMENT_ID=deployment-001
@@ -46,7 +54,14 @@ import LTIToolkit from "lti-toolkit";
 import postProviderGrade, { readGradeHandler, deleteGradeHandler } from "../routes/post-grade.js";
 
 // LTI AGS Line Item and Results Handlers
-import { getProviderLineItemHandler, getProviderLineItemsHandler, getProviderResultsHandler } from "../routes/get-lineitems.js";
+import {
+  getProviderLineItemHandler,
+  getProviderLineItemsHandler,
+  getProviderResultsHandler,
+} from "../routes/get-lineitems.js";
+
+// LTI 1.3 Deep Linking callback
+import { handleDeeplink } from "../routes/deeplink-result.js";
 
 // Initialize LTI Toolkit
 const lti = await LTIToolkit({
@@ -58,6 +73,8 @@ const lti = await LTIToolkit({
   log_level: process.env.LOG_LEVEL || "silly",
   // Use In-memory database for testing
   db_storage: ":memory:",
+  // Encryption key used to encrypt secrets and private keys at rest
+  encryption_key: process.env.LTI_ENCRYPTION_KEY,
   // Consumer Configuration
   consumer: {
     // Grade handlers (LTI 1.0)
@@ -68,6 +85,8 @@ const lti = await LTIToolkit({
     getProviderLineItem: getProviderLineItemHandler,
     getProviderLineItems: getProviderLineItemsHandler,
     getProviderResults: getProviderResultsHandler,
+    // LTI 1.3 Deep Linking response handler
+    handleDeeplink: handleDeeplink,
     // LTI Tool Consumer Information
     deployment_name: process.env.DEPLOYMENT_NAME,
     deployment_id: process.env.DEPLOYMENT_ID,
@@ -87,6 +106,9 @@ The `app.js` file creates a basic [Express](https://www.npmjs.com/package/expres
 // Import LTI configuration
 import lti from "./configs/lti.js";
 
+// Import Middleware
+import { requireAdmin } from "./middlewares/require-admin.js";
+
 // Other imports here
 
 // Create Express application
@@ -96,9 +118,35 @@ var app = express();
 
 // Add LTI Toolkit Routes
 app.use("/lti/consumer", lti.routers.consumer);
+
+// Public routes (no auth required)
+app.get("/", IndexHandler);
+
+// Admin routes — protected by HTTP Basic Auth via ADMIN_PASSWORD env var
+app.post("/configure", requireAdmin, ConfigureProviderHandler);
+app.post("/configure/xml", requireAdmin, ProviderConfigXMLHandler);
+app.post("/configure/dynamic", requireAdmin, ProviderConfigDynamicHandler);
+app.get("/provider/:id", requireAdmin, ProviderHandler);
+app.post("/provider/:id/launch", requireAdmin, ProviderLaunchHandler);
+app.post("/provider/:id/deeplink", requireAdmin, DeepLinkHandler);
+app.post("/provider/:id/update", requireAdmin, ProviderUpdateHandler);
+app.post("/provider/:id/delete", requireAdmin, ProviderDeleteHandler);
+app.post("/provider/:id/rotate", requireAdmin, ProviderRotateHandler);
+app.get("/deeplink-result", requireAdmin, DeepLinkResultHandler);
+app.get("/grades", requireAdmin, GradeHandler);
+
+// Global error handler — must be registered after all routes and middleware.
+// The 4-argument signature is required for Express to treat this as an error handler.
+// A real application should extend this with appropriate logging and error reporting.
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).render("error.njk", { title: "Error" });
+});
 ```
 
-The details of that file are omitted (_read the source, you must_), but the notable configuration is shown above. The configured LTI Toolkit is imported, and then the LTI Provider Router is connected to the application at the `/lti/consumer` path. So, any incoming requests sent to that URL will be passed to the LTI Toolkit for handling. This matches the default route in the toolkit configuration; if this route is changed, it must also be provided in the configuration.
+The details of that file are omitted (_read the source, you must_), but the notable configuration is shown above. The configured LTI Toolkit is imported, and then the LTI Consumer Router is connected to the application at the `/lti/consumer` path. So, any incoming requests sent to that URL will be passed to the LTI Toolkit for handling. This matches the default route in the toolkit configuration; if this route is changed, it must also be provided in the configuration.
+
+Admin routes (`/configure`, `/configure/xml`, `/configure/dynamic`, `/provider/:id`, `/provider/:id/launch`, `/provider/:id/deeplink`, `/provider/:id/update`, `/provider/:id/delete`, `/provider/:id/rotate`, `/deeplink-result`, and `/grades`) are protected by the `requireAdmin` middleware, which checks for an HTTP Basic Auth password matching the `ADMIN_PASSWORD` environment variable. If the variable is not set, all admin requests are rejected. Any username is accepted — only the password is checked. This is the bare minimum for demo purposes; a real application should use a proper authentication and authorization system (e.g. OAuth 2.0 or SSO).
 
 ## Adding an LTI 1.0 Tool Provider
 
@@ -111,8 +159,8 @@ Required settings:
 * **LTI 1.0 Shared Secret** - the shared secret used with this provider
 * **LTI 1.0 Launch URL** - the launch URL for the LTI Tool Provider.
 * **LTI 1.0 Tool Provider Domain** - the domain for the LTI Tool Provider
-* **Use Sections?** - enable if the LTI Tool Provider requires special section configuration
-  * Currently this does nothing in the library itself, but may be useful for applications implementing LTI Tool Consumer functionality
+* **Use Sections?** - a flag to differentiate between LTI Tool Providers that may need different handling
+  * Not implemented within this library itself, but available for applications built on this library to use as needed
 * **LTI 1.0 Custom Values** - set custom values for the LTI 1.0 Launch Requests from this Provider
   * These must in a quoted JSON format, e.g. `"key1": "value1", "key2": "value2"`
 * **LTI 1.0 Enabled** - enable LTI 1.3 Tool Providers (currently unsupported)
@@ -152,7 +200,7 @@ async function ProviderConfigHandler(req, res) {
   if (req.body.custom) {
     try {
       // Parse custom parameters as JSON to check format
-      const customParams = JSON.parse("{" + req.body.custom + "}");
+      const customParams = JSON.parse(req.body.custom);
       // Convert custom parameters to string format for storage
       data.custom = JSON.stringify(customParams);
     } catch (err) {
@@ -169,7 +217,7 @@ async function ProviderConfigHandler(req, res) {
     } else {
       // Create Provider
       try {
-        await lti.controllers.provider.createProvider(data);
+        await lti.controllers.providerRegistry.createProvider(data);
       } catch (err) {
         error = "Failed to create provider: " + err.message;
       }
@@ -180,12 +228,12 @@ async function ProviderConfigHandler(req, res) {
   }
 
   // Get list of configured tool providers
-  const providers = await lti.controllers.provider.getAll();
+  const providers = await lti.controllers.providerRegistry.getAll();
 
   // Get secrets for each provider and convert to JSON-friendly format
   const providerData = [];
   for (const provider of providers) {
-    const providerSecret = await lti.controllers.provider.getSecret(provider.id);
+    const providerSecret = await lti.controllers.providerRegistry.getSecret(provider.id);
     providerData.push({ ...provider.toJSON(), secret: providerSecret });
   }
 
@@ -224,7 +272,7 @@ For all of the items listed below, the **key** values should not be the sequenti
   * **Family Name** - the family name, sometimes referred to as the last name or surname, of the user
 * **Launch Type** - currently this tool only supports launching as either an "Instructor" or "Learner" role
 * **Gradebook Key** - a uniquely identifiable key for the gradebook line item. This can be used to differentiate between individual launches to the same LTI Tool Provider, or to differentiate between launches to different LTI Tool Providers using the same context and resource keys.
-* **Custom** - a quoted JSON list of custom parameters to include with the launch (e.g. `"key1": "value1", "key2": "value2"`). These will be added to the parameters configured in the Provider. If two custom parameters have the same key, then the parameters from the launch will override those from the Provider. 
+* **Custom** - a JSON object of custom parameters to include with the launch (e.g. `{"key1": "value1", "key2": "value2"}`). These will be added to the parameters configured in the Provider. If two custom parameters have the same key, then the parameters from the launch will override those from the Provider. 
 
 This sample application provides default values for all of these options in the form to configure the launch. 
 
@@ -246,17 +294,18 @@ async function ProviderLaunchHandler(req, res) {
   const providerId = req.params.id;
 
   // Get Provider
-  const provider = await lti.controllers.provider.getById(providerId);
+  const provider = await lti.controllers.providerRegistry.getById(providerId);
   if (!provider) {
     return res.status(404).send("Provider not found");
   }
 
   // Get Secret
-  const providerSecret = await lti.controllers.provider.getSecret(provider.id);
+  const providerSecret = await lti.controllers.providerRegistry.getSecret(provider.id);
 
-  // Formatted provider including secret
+  // Formatted provider including secret and masked secret (last 4 chars)
   const providerData = provider.toJSON();
   providerData.secret = providerSecret.secret;
+  providerData.maskedSecret = "••••••••" + providerSecret.secret.slice(-4);
 
   // Get Form Data
   const data = {
@@ -284,7 +333,7 @@ async function ProviderLaunchHandler(req, res) {
   // Handle custom parameters
   if(req.body.custom) {
     try {
-      const customParams = JSON.parse("{" + req.body.custom + "}");
+      const customParams = JSON.parse(req.body.custom);
       data.custom = customParams;
     } catch (err) {
       error = "Invalid custom parameters: " + err.message;
@@ -360,7 +409,7 @@ async function ProviderLaunchHandler(req, res) {
     updateDataStoreWithLaunch(data, providerData, req);
 
     // Create LTI Launch
-    const launch = lti.controllers.lti.consumer.generateLTI10LaunchFormData(
+    const launch = lti.controllers.consumer.generateLTI10LaunchFormData(
       providerData.key,
       providerData.secret,
       providerData.launch_url,
@@ -741,3 +790,148 @@ Return `{ score: number }` (a value between 0.0 and 1.0) if a grade exists, or `
 Return `{ success: boolean, message: string }`. If `success` is false, the toolkit returns a failure response to the provider.
 
 If either callback is not configured, the toolkit returns an `unsupported` response to the Tool Provider.
+
+## LTI 1.3 Deep Linking
+
+When this application acts as an LTI 1.3 Tool Consumer, it can initiate a Deep Linking request to a connected LTI 1.3 Tool Provider. This lets an instructor browse and select content inside the provider and have it linked back to an assignment in the consumer. The flow is a two-step process: initiation and response handling.
+
+### Initiating a Deep Link Request
+
+The `deeplink.js` route handler builds the OIDC login form that kicks off the LTI 1.3 Deep Linking request:
+
+```js {title="src/routes/deeplink.js"}
+async function DeepLinkHandler(req, res) {
+  const providerId = req.params.id;
+
+  // Get Provider (must be LTI 1.3)
+  const provider = await lti.controllers.providerRegistry.getById(providerId);
+  if (!provider || !provider.lti13) {
+    return res.status(404).send("LTI 1.3 Provider not found");
+  }
+
+  const context = {
+    key: req.body.context_key,
+    label: req.body.context_label,
+    name: req.body.context_name,
+  };
+
+  const user = {
+    key: req.body.user_key,
+    email: req.body.user_email,
+  };
+
+  const launch = await lti.controllers.consumer.generateLTI13DeepLinkFormData(
+    provider.key,
+    provider.client_id,
+    provider.deployment_id,
+    provider.launch_url,
+    "/provider/" + provider.id,
+    context,
+    user,
+  );
+
+  res.render("launch.njk", { launch });
+}
+```
+
+`generateLTI13DeepLinkFormData` works similarly to `generateLTI13LaunchFormData` but sets the LTI message type to `LtiDeepLinkingRequest`, which signals to the Tool Provider that the user should be presented with a content selection interface rather than a normal launch. The context and user are stored by the library so they can be retrieved when the provider sends back its response.
+
+### Handling the Deep Link Response
+
+When the Tool Provider completes the content selection, it POSTs a signed JWT back to `POST /lti/consumer/deeplink/:token`. The library verifies the JWT, extracts the selected content items and the original stored context, then calls the `handleDeeplink` callback registered in `lti.js`.
+
+```js {title="src/routes/deeplink-result.js"}
+import { nanoid } from "nanoid";
+
+// In-memory store mapping unique keys to deep link results.
+// In a production application, use a database or session store instead.
+const deepLinkStore = new Map();
+
+/**
+ * handleDeeplink callback — registered in lti.js as consumer.handleDeeplink.
+ * Called by the library after verifying the LtiDeepLinkingResponse JWT.
+ *
+ * @param {Object[]} content_items - the content items selected by the user in the provider
+ * @param {Object} context - the context stored when the deep link request was initiated
+ * @returns {Promise<string>} redirect URL for the browser after processing
+ */
+export async function handleDeeplink(content_items, context) {
+  const key = nanoid();
+  deepLinkStore.set(key, { content_items, context });
+  return `/deeplink-result?key=${key}`;
+}
+```
+
+The callback receives:
+* `content_items` — an array of content items selected by the user in the Tool Provider (e.g. `[{ type: "ltiResourceLink", title: "...", url: "..." }]`)
+* `context` — the context object originally passed to `generateLTI13DeepLinkFormData` (includes course and user info)
+
+It must return a `Promise<string>` — a URL to redirect the browser to after processing. In this example, the result is stored in a module-level `Map` keyed by a random nanoid, and the redirect URL includes that key so the result page can retrieve it. In a production application, use a database or session store instead of the in-memory Map.
+
+The `DeepLinkResultHandler` route (`GET /deeplink-result`) reads the stored result by key and renders it:
+
+```js {title="src/routes/deeplink-result.js"}
+async function DeepLinkResultHandler(req, res) {
+  const key = req.query.key;
+  if (!key) return res.status(400).send("Missing deep link result key");
+
+  const result = deepLinkStore.get(key);
+  if (!result) return res.status(404).send("Deep link result not found or already consumed");
+
+  deepLinkStore.delete(key);
+
+  res.render("deeplink-result.njk", {
+    title: "LTI Tool Consumer - Deep Link Result",
+    content_items: result.content_items,
+    context: result.context,
+  });
+}
+```
+
+The result is deleted from the store after first retrieval (one-time use) to prevent stale data from accumulating.
+
+## Managing LTI Tool Providers
+
+The provider detail page (`/provider/:id`) provides forms for editing, rotating credentials, and deleting a provider. These operations use the `providerRegistry` controller:
+
+```js {title="src/routes/provider-update.js"}
+async function ProviderUpdateHandler(req, res) {
+  const providerId = req.params.id;
+  const provider = await lti.controllers.providerRegistry.getById(providerId);
+  if (!provider) return res.status(404).send("Provider not found");
+
+  const data = {
+    name: req.body.name,
+    launch_url: req.body.launch_url,
+    domain: req.body.domain,
+    custom: req.body.custom || null,
+    // Preserve all other fields from the existing record
+    lti13: provider.lti13,
+    key: provider.key,
+    // ...
+  };
+
+  await lti.controllers.providerRegistry.updateProvider(providerId, data);
+  // ...reload and re-render
+}
+```
+
+```js {title="src/routes/provider-rotate.js"}
+async function ProviderRotateHandler(req, res) {
+  await lti.controllers.providerRegistry.updateSecret(req.params.id);
+  // updateSecret(id) with no key/secret arguments auto-generates new random credentials
+  // ...reload and re-render
+}
+```
+
+```js {title="src/routes/provider-delete.js"}
+async function ProviderDeleteHandler(req, res) {
+  const result = await lti.controllers.providerRegistry.deleteProvider(req.params.id);
+  if (!result) return res.status(404).send("Provider not found");
+  res.redirect("/");
+}
+```
+
+- `updateProvider(id, data)` — updates the provider record. The full `data` object must include all fields (not just the changed ones), so the existing provider record is read first to fill in unchanged fields.
+- `updateSecret(id)` — rotates both the LTI 1.0 shared secret and the LTI 1.3 RSA key pair. Called with no `key`/`secret` arguments so the library auto-generates new credentials. Old credentials stop working immediately.
+- `deleteProvider(id)` — permanently removes the provider record and its associated keys in a single database transaction.

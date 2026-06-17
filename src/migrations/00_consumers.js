@@ -113,15 +113,18 @@ export async function up({ context: queryInterface }) {
       allowNull: false,
     },
     secret: {
-      type: Sequelize.STRING,
+      // TEXT, not STRING: encrypted values and PEM keys exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+      type: Sequelize.TEXT,
       allowNull: false,
     },
     public: {
-      type: Sequelize.STRING,
+      // TEXT, not STRING: PEM-encoded public keys exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+      type: Sequelize.TEXT,
       allowNull: true,
     },
     private: {
-      type: Sequelize.STRING,
+      // TEXT, not STRING: encrypted PEM-encoded private keys exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+      type: Sequelize.TEXT,
       allowNull: true,
     },
   });
@@ -151,6 +154,10 @@ export async function up({ context: queryInterface }) {
       allowNull: false,
     },
     keyset_url: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    deployment_id: {
       type: Sequelize.STRING,
       allowNull: false,
     },

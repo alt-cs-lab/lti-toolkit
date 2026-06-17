@@ -1616,4 +1616,161 @@ describe("/controllers/lti-consumer.js", () => {
     expect(handleDynamicRegistrationRequestStub.firstCall.args[1]).to.equal("/lti/consumer");
     expect(result).to.equal("<html>Dynamic Registration Form</html>");
   });
+
+  it("should generate LTI 1.3 deep link form data correctly", async () => {
+    // Create mock dependencies
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const models = {
+      Provider: {
+        findOne: sinon.stub().resolves({
+          name: "Test Provider",
+          auth_url: "http://example.com/auth",
+        }),
+      },
+      ProviderDeepLink: {
+        create: sinon.stub().resolvesArg(0),
+      },
+      ProviderLogin: {
+        create: sinon.stub().resolvesArg(0),
+      },
+    };
+
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+    const formData = await controller.generateLTI13DeepLinkFormData(
+      "test_consumer_key",
+      "test_client_id",
+      "test_deployment_id",
+      "http://example.com/launch",
+      "http://example.com/return",
+      testContext,
+      testUser,
+      { accept_types: ["ltiResourceLink"], accept_multiple: true },
+    );
+
+    expect(formData).to.shallowDeepEqual({
+      action: "http://example.com/auth",
+      fields: {
+        iss: "http://localhost:3000/",
+        client_id: "test_client_id",
+        lti_deployment_id: "test_deployment_id",
+        target_link_uri: "http://example.com/launch",
+        lti_storage_target: "post_message_forwarding",
+      },
+    });
+    expect(models.Provider.findOne.calledOnce).to.be.true;
+    expect(models.ProviderDeepLink.create.calledOnce).to.be.true;
+    const deepLinkArgs = models.ProviderDeepLink.create.firstCall.args[0];
+    expect(deepLinkArgs.provider_key).to.equal("test_consumer_key");
+    expect(deepLinkArgs.context).to.deep.include({ context: testContext, user: testUser, ret_url: "http://example.com/return" });
+    expect(models.ProviderLogin.create.calledOnce).to.be.true;
+    const loginArgs = models.ProviderLogin.create.firstCall.args[0];
+    expect(loginArgs.client_id).to.equal("test_client_id");
+    const loginData = JSON.parse(loginArgs.data);
+    expect(loginData.message_type).to.equal("LtiDeepLinkingRequest");
+    expect(loginData.key).to.equal("test_consumer_key");
+    expect(loginData.settings.accept_types).to.deep.equal(["ltiResourceLink"]);
+    expect(loginData.settings.accept_multiple).to.be.true;
+  });
+
+  it("should throw errors when LTI 1.3 deep link form required parameters are missing", async () => {
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const models = {};
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    const cases = [
+      [null, "test_client_id", "test_deployment_id", "http://ex.com/l", "http://ex.com/r", testContext, testUser, "Consumer Key is required to generate LTI 1.3 Deep Link Data"],
+      ["key", null, "test_deployment_id", "http://ex.com/l", "http://ex.com/r", testContext, testUser, "Client ID is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", null, "http://ex.com/l", "http://ex.com/r", testContext, testUser, "Deployment ID is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", null, "http://ex.com/r", testContext, testUser, "Launch URL is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", "http://ex.com/l", null, testContext, testUser, "Return URL is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", null, testUser, "Context with key, label, and name is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", { key: "k" }, testUser, "Context with key, label, and name is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, null, "User with key and email is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, { key: "k" }, "User with key and email is required to generate LTI 1.3 Deep Link Data"],
+    ];
+
+    for (const [key, client_id, deployment_id, url, ret_url, context, user, expectedMessage] of cases) {
+      try {
+        await controller.generateLTI13DeepLinkFormData(key, client_id, deployment_id, url, ret_url, context, user);
+        throw new Error("Expected error: " + expectedMessage);
+      } catch (err) {
+        expect(err.message).to.equal(expectedMessage);
+      }
+    }
+  });
+
+  it("should throw an error if the provider is not found when generating LTI 1.3 deep link form data", async () => {
+    const consumer = { route_prefix: "/lti/consumer" };
+    const models = {
+      Provider: { findOne: sinon.stub().resolves(null) },
+    };
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    try {
+      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      throw new Error("Expected error");
+    } catch (err) {
+      expect(err.message).to.equal("No provider found with key key");
+    }
+  });
+
+  it("should throw an error if the provider has no auth_url when generating LTI 1.3 deep link form data", async () => {
+    const consumer = { route_prefix: "/lti/consumer" };
+    const models = {
+      Provider: { findOne: sinon.stub().resolves({ name: "Test Provider", auth_url: null }) },
+    };
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    try {
+      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      throw new Error("Expected error");
+    } catch (err) {
+      expect(err.message).to.equal("No auth URL found for provider Test Provider");
+    }
+  });
+
+  it("should throw an error if the ProviderDeepLink record cannot be created", async () => {
+    const consumer = { route_prefix: "/lti/consumer" };
+    const models = {
+      Provider: { findOne: sinon.stub().resolves({ name: "Test Provider", auth_url: "http://example.com/auth" }) },
+      ProviderDeepLink: { create: sinon.stub().resolves(null) },
+    };
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    try {
+      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      throw new Error("Expected error");
+    } catch (err) {
+      expect(err.message).to.equal("Validation Error: Unable to save LTI 1.3 Deep Link record - Aborting!");
+    }
+  });
+
+  it("should throw an error if the ProviderLogin record cannot be created during deep link form data generation", async () => {
+    const consumer = { route_prefix: "/lti/consumer" };
+    const models = {
+      Provider: { findOne: sinon.stub().resolves({ name: "Test Provider", auth_url: "http://example.com/auth" }) },
+      ProviderDeepLink: { create: sinon.stub().resolvesArg(0) },
+      ProviderLogin: { create: sinon.stub().resolves(null) },
+    };
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    try {
+      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      throw new Error("Expected error");
+    } catch (err) {
+      expect(err.message).to.equal("Validation Error: Unable to save LTI 1.3 Login - Aborting!");
+    }
+  });
 });

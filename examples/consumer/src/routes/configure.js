@@ -40,7 +40,7 @@ async function ProviderConfigHandler(req, res) {
   if (req.body.custom) {
     try {
       // Parse custom parameters as JSON to check format
-      const customParams = JSON.parse("{" + req.body.custom + "}");
+      const customParams = JSON.parse(req.body.custom);
       // Convert custom parameters to string format for storage
       data.custom = JSON.stringify(customParams);
     } catch (err) {
@@ -70,7 +70,7 @@ async function ProviderConfigHandler(req, res) {
     } else {
       // Create Provider
       try {
-        await lti.controllers.provider.createProvider(data);
+        await lti.controllers.providerRegistry.createProvider(data);
       } catch (err) {
         error = "Failed to create provider: " + err.message;
       }
@@ -81,12 +81,12 @@ async function ProviderConfigHandler(req, res) {
   }
 
   // Get list of configured tool providers
-  const providers = await lti.controllers.provider.getAll();
+  const providers = await lti.controllers.providerRegistry.getAll();
 
   // Get secrets for each provider and convert to JSON-friendly format
   const providerData = [];
   for (const provider of providers) {
-    const providerSecret = await lti.controllers.provider.getSecret(provider.id);
+    const providerSecret = await lti.controllers.providerRegistry.getSecret(provider.id);
     providerData.push({ ...provider.toJSON(), secret: providerSecret });
   }
 

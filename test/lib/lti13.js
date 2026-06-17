@@ -58,6 +58,7 @@ const loginState = {
   iss: "https://canvas.instructure.com/",
   client_id: "10000000000001",
   keyset_url: "https://canvas.instructure.com/api/lti/security/jwks",
+  deployment_id: "thisisatestkey",
   destroy: destroyState,
 };
 
@@ -207,7 +208,17 @@ describe("/lib/lti13.js", function () {
           where: { client_id: testConsumer.client_id, deployment_id: testConsumer.deployment_id },
         }),
       ).to.be.true;
-      expect(models.ConsumerLogin.create.calledOnce).to.be.true;
+      expect(
+        models.ConsumerLogin.create.calledOnceWith({
+          key: testConsumer.key,
+          state: sinon.match.string,
+          nonce: sinon.match.string,
+          iss: authRequestData.iss,
+          client_id: testConsumer.client_id,
+          keyset_url: testConsumer.keyset_url,
+          deployment_id: testConsumer.deployment_id,
+        }),
+      ).to.be.true;
     });
 
     async function authRequestMissingFields(field, error) {
@@ -684,6 +695,72 @@ describe("/lib/lti13.js", function () {
         JwksClient.prototype.getSigningKey.restore();
       }
     });
+
+    it("should throw an error if the JWT is missing the deployment_id claim", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ConsumerLogin: {
+          findOne: sinon.stub().resolves(loginState),
+        },
+      };
+      const logger = {};
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      sinon.stub(JwksClient.prototype, "getSigningKey").resolves({
+        getPublicKey: () => publicKey,
+      });
+
+      // Create a modified JWT payload with the deployment_id claim removed
+      const modifiedJwt = { ...sampleJwt };
+      delete modifiedJwt["https://purl.imsglobal.org/spec/lti/claim/deployment_id"];
+
+      try {
+        // Call the method under test
+        await lti13Utils.launchRequest({ body: signedBody(modifiedJwt) });
+        throw new Error("Expected launchRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Launch: Invalid LTI Deployment ID: undefined");
+      } finally {
+        // Restore stubbed methods
+        JwksClient.prototype.getSigningKey.restore();
+      }
+    });
+
+    it("should throw an error if the deployment_id claim does not match the deployment used during login", async function () {
+      // Mock Library Dependencies
+      const models = {
+        ConsumerLogin: {
+          findOne: sinon.stub().resolves(loginState),
+        },
+      };
+      const logger = {};
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub library methods
+      sinon.stub(JwksClient.prototype, "getSigningKey").resolves({
+        getPublicKey: () => publicKey,
+      });
+
+      // Create a modified JWT payload with a mismatched deployment_id
+      const modifiedJwt = { ...sampleJwt };
+      modifiedJwt["https://purl.imsglobal.org/spec/lti/claim/deployment_id"] = "some-other-deployment";
+
+      try {
+        // Call the method under test
+        await lti13Utils.launchRequest({ body: signedBody(modifiedJwt) });
+        throw new Error("Expected launchRequest to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Launch: Invalid LTI Deployment ID: some-other-deployment");
+      } finally {
+        // Restore stubbed methods
+        JwksClient.prototype.getSigningKey.restore();
+      }
+    });
   });
 
   describe("getAccessToken", function () {
@@ -1063,6 +1140,42 @@ describe("/lib/lti13.js", function () {
       "https://purl.imsglobal.org/spec/lti-platform-configuration",
       "Dynamic Registration: No LTI Platform Configuration found in OpenID Configuration",
     );
+
+    it("should throw an error if the registration endpoint is on a different origin than the issuer", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Craft a response where registration_endpoint shares the issuer as a string prefix but is a different origin
+      const maliciousDetails = {
+        ...lmsDetails,
+        issuer: "https://canvas.home.russfeld.me",
+        registration_endpoint: "https://canvas.home.russfeld.me.attacker.com/register",
+      };
+
+      sinon.stub(ky, "get").returns({
+        json: sinon.stub().resolves(maliciousDetails),
+      });
+
+      try {
+        await lti13Utils.getLMSDetails({
+          openid_configuration: "http://localhost:3000/lti/.well-known/openid-configuration",
+        });
+        throw new Error("Expected getLMSDetails to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal(
+          "Dynamic Registration: Registration Endpoint does not match Issuer in OpenID Configuration",
+        );
+      } finally {
+        ky.get.restore();
+      }
+    });
 
     it("should throw an error if there is an error requesting the LMS details", async function () {
       // Mock Library Dependencies
@@ -3651,6 +3764,408 @@ describe("/lib/lti13.js", function () {
       } finally {
         lti13Utils.getAccessToken.restore();
         ky.get.restore();
+      }
+    });
+  });
+
+  const deep_link_data = {
+    key: "thisisaconsumerkey",
+    url: "http://localhost:3000/lti/provider/launch",
+    deployment_id: "thisisadeploymentid",
+    ret_url: "http://localhost:3000/return",
+    context: {
+      key: "thisisacontextid",
+      label: "This is a context label",
+      name: "This is a context title",
+    },
+    user: {
+      key: "thisisauserid",
+      name: "Test User",
+      first_name: "Test",
+      last_name: "User",
+      email: "testuser@localhost.com",
+      image: "https://placehold.co/64x64.png",
+    },
+    deep_link_token: "thisisadeeplinktoken",
+    settings: {},
+  };
+
+  describe("buildDeepLinkJWT", function () {
+    it("should build a deep link JWT with the correct claims and sign it with the correct private key", async function () {
+      const models = {
+        ProviderKey: {
+          findOne: sinon.stub().resolves({ private: privateKey }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(crypto, "createPrivateKey").returns(privateKey);
+
+      const result = await lti13Utils.buildDeepLinkJWT(
+        {
+          loginState: { data: deep_link_data },
+          client_id: "thisisaconsumerkey",
+          nonce: "thisisanonce",
+        },
+        consumer_config,
+      );
+
+      expect(result).to.be.a("string");
+      const decoded = jsonwebtoken.decode(result, { complete: true });
+
+      expect(decoded.header).to.have.property("kid", "thisisaconsumerkey");
+      expect(decoded.payload).to.include({
+        iss: domain_name + "/",
+        aud: "thisisaconsumerkey",
+        sub: "thisisauserid",
+        nonce: "thisisanonce",
+      });
+      expect(decoded.payload).to.have.property(
+        "https://purl.imsglobal.org/spec/lti/claim/message_type",
+        "LtiDeepLinkingRequest",
+      );
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/version", "1.3.0");
+      expect(decoded.payload).to.not.have.property("https://purl.imsglobal.org/spec/lti/claim/resource_link");
+      expect(decoded.payload).to.not.have.property("https://purl.imsglobal.org/spec/lti-ags/claim/endpoint");
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings");
+      const dlSettings = decoded.payload["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings"];
+      expect(dlSettings.deep_link_return_url).to.include("/lti/consumer/deeplink/thisisadeeplinktoken");
+      expect(dlSettings.accept_types).to.deep.equal(["ltiResourceLink"]);
+      expect(dlSettings.accept_presentation_document_targets).to.deep.equal(["iframe", "window"]);
+      expect(dlSettings.accept_multiple).to.be.false;
+      expect(decoded.payload).to.have.property(
+        "https://purl.imsglobal.org/spec/lti/claim/deployment_id",
+        "thisisadeploymentid",
+      );
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/context");
+      expect(decoded.payload["https://purl.imsglobal.org/spec/lti/claim/context"]).to.deep.include({
+        id: "thisisacontextid",
+        label: "This is a context label",
+        title: "This is a context title",
+      });
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/tool_platform");
+      expect(decoded.payload["https://purl.imsglobal.org/spec/lti/claim/launch_presentation"]).to.deep.include({
+        document_target: "iframe",
+        return_url: "http://localhost:3000/return",
+      });
+
+      crypto.createPrivateKey.restore();
+    });
+
+    it("should honour custom deep linking settings when building a deep link JWT", async function () {
+      const models = {
+        ProviderKey: {
+          findOne: sinon.stub().resolves({ private: privateKey }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+      sinon.stub(crypto, "createPrivateKey").returns(privateKey);
+
+      const result = await lti13Utils.buildDeepLinkJWT(
+        {
+          loginState: {
+            data: {
+              ...deep_link_data,
+              settings: {
+                accept_types: ["link", "html"],
+                accept_presentation_document_targets: ["window"],
+                accept_multiple: true,
+              },
+            },
+          },
+          client_id: "thisisaconsumerkey",
+          nonce: "thisisanonce",
+        },
+        consumer_config,
+      );
+
+      const decoded = jsonwebtoken.decode(result, { complete: true });
+      const dlSettings = decoded.payload["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings"];
+      expect(dlSettings.accept_types).to.deep.equal(["link", "html"]);
+      expect(dlSettings.accept_presentation_document_targets).to.deep.equal(["window"]);
+      expect(dlSettings.accept_multiple).to.be.true;
+
+      crypto.createPrivateKey.restore();
+    });
+
+    it("should use default deep linking settings when no settings are provided", async function () {
+      const models = {
+        ProviderKey: { findOne: sinon.stub().resolves({ private: privateKey }) },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+      sinon.stub(crypto, "createPrivateKey").returns(privateKey);
+
+      // Omit settings entirely from data
+      const { settings: _unused, ...dataWithoutSettings } = deep_link_data;
+      const result = await lti13Utils.buildDeepLinkJWT(
+        { loginState: { data: dataWithoutSettings }, client_id: "thisisaconsumerkey", nonce: "thisisanonce" },
+        consumer_config,
+      );
+
+      const decoded = jsonwebtoken.decode(result, { complete: true });
+      const dlSettings = decoded.payload["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings"];
+      expect(dlSettings.accept_types).to.deep.equal(["ltiResourceLink"]);
+      expect(dlSettings.accept_multiple).to.be.false;
+
+      crypto.createPrivateKey.restore();
+    });
+
+    it("should include the custom claim in the deep link JWT when custom data is provided", async function () {
+      const models = {
+        ProviderKey: {
+          findOne: sinon.stub().resolves({ private: privateKey }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+      sinon.stub(crypto, "createPrivateKey").returns(privateKey);
+
+      const result = await lti13Utils.buildDeepLinkJWT(
+        {
+          loginState: {
+            data: {
+              ...deep_link_data,
+              custom: { custom_id: "thisisacustomid", custom_value: "thisisacustomvalue" },
+            },
+          },
+          client_id: "thisisaconsumerkey",
+          nonce: "thisisanonce",
+        },
+        consumer_config,
+      );
+
+      const decoded = jsonwebtoken.decode(result, { complete: true });
+      expect(decoded.payload).to.have.property("https://purl.imsglobal.org/spec/lti/claim/custom");
+      expect(decoded.payload["https://purl.imsglobal.org/spec/lti/claim/custom"]).to.deep.include({
+        custom_id: "thisisacustomid",
+        custom_value: "thisisacustomvalue",
+      });
+
+      crypto.createPrivateKey.restore();
+    });
+
+    it("should throw an error if the private key cannot be retrieved for buildDeepLinkJWT", async function () {
+      const models = {
+        ProviderKey: {
+          findOne: sinon.stub().resolves(null),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        await lti13Utils.buildDeepLinkJWT(
+          {
+            loginState: { data: deep_link_data },
+            client_id: "thisisaconsumerkey",
+            nonce: "thisisanonce",
+          },
+          consumer_config,
+        );
+        throw new Error("Expected buildDeepLinkJWT to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Deep Link JWT: Provider key not found");
+      }
+    });
+  });
+
+  describe("verifyDeepLinkResponse", function () {
+    it("should verify a valid deep link response JWT and return content items and context", async function () {
+      const destroy = sinon.stub().resolves();
+      const deepLinkRecord = {
+        provider_key: "thisisakey",
+        context: { ret_url: "http://example.com/return" },
+        destroy,
+      };
+      const providerRecord = {
+        client_id: "provider-client-id",
+        keyset_url: "https://example.com/jwks",
+      };
+
+      // Sign a valid deep link response JWT with the test private key
+      const contentItems = [{ type: "ltiResourceLink", url: "http://example.com/resource" }];
+      const jwtPayload = {
+        "https://purl.imsglobal.org/spec/lti-dl/claim/content_items": contentItems,
+        iss: "provider-client-id",
+        aud: "http://localhost:3000/",
+      };
+      const signedJwt = jsonwebtoken.sign(jwtPayload, privateKey, {
+        algorithm: "RS256",
+        keyid: "test-kid",
+        expiresIn: "1h",
+      });
+
+      const models = {
+        ProviderDeepLink: {
+          findOne: sinon.stub().resolves(deepLinkRecord),
+        },
+        Provider: {
+          findOne: sinon.stub().resolves(providerRecord),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub the JWKS client
+      const getPublicKeyStub = sinon.stub().returns(publicKey);
+      const getSigningKeyStub = sinon.stub().resolves({ getPublicKey: getPublicKeyStub });
+      sinon.stub(JwksClient.prototype, "getSigningKey").callsFake(getSigningKeyStub);
+
+      const result = await lti13Utils.verifyDeepLinkResponse({
+        params: { token: "test_token" },
+        body: { JWT: signedJwt },
+      });
+
+      expect(result.content_items).to.deep.equal(contentItems);
+      expect(result.context).to.deep.include({ ret_url: "http://example.com/return" });
+      expect(destroy.calledOnce).to.be.true;
+
+      JwksClient.prototype.getSigningKey.restore();
+    });
+
+    it("should default content_items to an empty array if the claim is absent", async function () {
+      const destroy = sinon.stub().resolves();
+      const deepLinkRecord = { provider_key: "thisisakey", context: {}, destroy };
+      const providerRecord = { client_id: "provider-client-id", keyset_url: "https://example.com/jwks" };
+
+      const signedJwt = jsonwebtoken.sign(
+        { iss: "provider-client-id", aud: "http://localhost:3000/" },
+        privateKey,
+        { algorithm: "RS256", keyid: "test-kid", expiresIn: "1h" },
+      );
+
+      const models = {
+        ProviderDeepLink: { findOne: sinon.stub().resolves(deepLinkRecord) },
+        Provider: { findOne: sinon.stub().resolves(providerRecord) },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(JwksClient.prototype, "getSigningKey").resolves({ getPublicKey: () => publicKey });
+
+      const result = await lti13Utils.verifyDeepLinkResponse({
+        params: { token: "test_token" },
+        body: { JWT: signedJwt },
+      });
+
+      expect(result.content_items).to.deep.equal([]);
+
+      JwksClient.prototype.getSigningKey.restore();
+    });
+
+    it("should throw if no token is provided in verifyDeepLinkResponse", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        await lti13Utils.verifyDeepLinkResponse({ params: {}, body: { JWT: "test" } });
+        throw new Error("Expected verifyDeepLinkResponse to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Deep Link Response: No token provided");
+      }
+    });
+
+    it("should throw if no JWT body is provided in verifyDeepLinkResponse", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        await lti13Utils.verifyDeepLinkResponse({ params: { token: "t" }, body: {} });
+        throw new Error("Expected verifyDeepLinkResponse to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Deep Link Response: No JWT provided");
+      }
+    });
+
+    it("should throw if the deep link token is not found in the database", async function () {
+      const models = {
+        ProviderDeepLink: { findOne: sinon.stub().resolves(null) },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        await lti13Utils.verifyDeepLinkResponse({ params: { token: "t" }, body: { JWT: "j" } });
+        throw new Error("Expected verifyDeepLinkResponse to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Deep Link Response: Invalid or expired token");
+      }
+    });
+
+    it("should throw if the provider is not found during verifyDeepLinkResponse", async function () {
+      const models = {
+        ProviderDeepLink: {
+          findOne: sinon.stub().resolves({ provider_key: "k", context: {}, destroy: sinon.stub() }),
+        },
+        Provider: { findOne: sinon.stub().resolves(null) },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        await lti13Utils.verifyDeepLinkResponse({ params: { token: "t" }, body: { JWT: "j" } });
+        throw new Error("Expected verifyDeepLinkResponse to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Deep Link Response: Provider not found");
+      }
+    });
+
+    it("should throw if the JWT cannot be decoded in verifyDeepLinkResponse", async function () {
+      const models = {
+        ProviderDeepLink: {
+          findOne: sinon.stub().resolves({ provider_key: "k", context: {}, destroy: sinon.stub() }),
+        },
+        Provider: { findOne: sinon.stub().resolves({ client_id: "cid", keyset_url: "http://ex.com/jwks" }) },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      try {
+        await lti13Utils.verifyDeepLinkResponse({ params: { token: "t" }, body: { JWT: "not.a.valid.jwt" } });
+        throw new Error("Expected verifyDeepLinkResponse to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Deep Link Response: Unable to decode JWT");
+      }
+    });
+
+    it("should throw if JWT signature verification fails in verifyDeepLinkResponse", async function () {
+      const deepLinkRecord = { provider_key: "k", context: {}, destroy: sinon.stub() };
+      const providerRecord = { client_id: "provider-client-id", keyset_url: "https://example.com/jwks" };
+
+      // Sign with a different key so verification fails
+      const { privateKey: wrongKey } = crypto.generateKeyPairSync("rsa", {
+        modulusLength: 2048,
+        publicKeyEncoding: { type: "spki", format: "pem" },
+        privateKeyEncoding: { type: "pkcs1", format: "pem" },
+      });
+      const signedJwt = jsonwebtoken.sign(
+        { iss: "provider-client-id", aud: "http://localhost:3000/" },
+        wrongKey,
+        { algorithm: "RS256", keyid: "test-kid", expiresIn: "1h" },
+      );
+
+      const models = {
+        ProviderDeepLink: { findOne: sinon.stub().resolves(deepLinkRecord) },
+        Provider: { findOne: sinon.stub().resolves(providerRecord) },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Return the correct public key (won't match wrongKey)
+      sinon.stub(JwksClient.prototype, "getSigningKey").resolves({ getPublicKey: () => publicKey });
+
+      try {
+        await lti13Utils.verifyDeepLinkResponse({ params: { token: "t" }, body: { JWT: signedJwt } });
+        throw new Error("Expected verifyDeepLinkResponse to throw");
+      } catch (err) {
+        expect(err.message).to.include("Deep Link Response: Unable to verify JWT");
+      } finally {
+        JwksClient.prototype.getSigningKey.restore();
       }
     });
   });
