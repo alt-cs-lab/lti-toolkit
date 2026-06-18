@@ -39,7 +39,7 @@ async function InstructorHandler(req, res) {
     try {
       lineItems = await lti.controllers.provider.getLineItems(consumer.key, launchData.outcome_lineitems);
     } catch (err) {
-      agsError = agsError || ("Error fetching AGS line items: " + err.message);
+      agsError = agsError || "Error fetching AGS line items: " + err.message;
     }
   }
 

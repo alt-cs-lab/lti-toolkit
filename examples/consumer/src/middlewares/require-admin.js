@@ -44,10 +44,7 @@ export function requireAdmin(req, res, next) {
   // Use timingSafeEqual to prevent timing-based attacks
   const passwordBuf = Buffer.from(password);
   const adminPasswordBuf = Buffer.from(adminPassword);
-  if (
-    passwordBuf.length !== adminPasswordBuf.length ||
-    !crypto.timingSafeEqual(passwordBuf, adminPasswordBuf)
-  ) {
+  if (passwordBuf.length !== adminPasswordBuf.length || !crypto.timingSafeEqual(passwordBuf, adminPasswordBuf)) {
     res.setHeader("WWW-Authenticate", 'Basic realm="Admin"');
     return res.status(401).send("Unauthorized");
   }

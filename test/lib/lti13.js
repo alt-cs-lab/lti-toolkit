@@ -2971,10 +2971,14 @@ describe("/lib/lti13.js", function () {
       const logger = { lti: sinon.stub(), silly: sinon.stub() };
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
 
-      sinon.stub(jsonwebtoken, "decode").returns({ payload: { iss: "tokenissuer" }, header: { kid: "thisisaconsumerkey" } });
+      sinon
+        .stub(jsonwebtoken, "decode")
+        .returns({ payload: { iss: "tokenissuer" }, header: { kid: "thisisaconsumerkey" } });
       sinon.stub(jsonwebtoken, "verify").resolves();
       sinon.stub(jsonwebtoken, "sign").returns("thisisatokenjwt");
-      sinon.stub(JwksClient.prototype, "getSigningKey").resolves({ getPublicKey: sinon.stub().returns("thisisapublickey") });
+      sinon
+        .stub(JwksClient.prototype, "getSigningKey")
+        .resolves({ getPublicKey: sinon.stub().returns("thisisapublickey") });
       sinon.stub(crypto, "createPrivateKey").returns("thisisaprivatekey");
 
       const result = await lti13Utils.validateTokenRequest({
@@ -3017,10 +3021,14 @@ describe("/lib/lti13.js", function () {
       const logger = { lti: sinon.stub(), silly: sinon.stub() };
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
 
-      sinon.stub(jsonwebtoken, "decode").returns({ payload: { iss: "tokenissuer" }, header: { kid: "thisisaconsumerkey" } });
+      sinon
+        .stub(jsonwebtoken, "decode")
+        .returns({ payload: { iss: "tokenissuer" }, header: { kid: "thisisaconsumerkey" } });
       sinon.stub(jsonwebtoken, "verify").resolves();
       sinon.stub(jsonwebtoken, "sign").returns("thisisatokenjwt");
-      sinon.stub(JwksClient.prototype, "getSigningKey").resolves({ getPublicKey: sinon.stub().returns("thisisapublickey") });
+      sinon
+        .stub(JwksClient.prototype, "getSigningKey")
+        .resolves({ getPublicKey: sinon.stub().returns("thisisapublickey") });
       sinon.stub(crypto, "createPrivateKey").returns("thisisaprivatekey");
 
       const result = await lti13Utils.validateTokenRequest({
@@ -3028,7 +3036,8 @@ describe("/lib/lti13.js", function () {
           grant_type: "client_credentials",
           client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
           client_assertion: "thisisajwt",
-          scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly unsupported_scope",
+          scope:
+            "https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly unsupported_scope",
         },
       });
 
@@ -3699,7 +3708,13 @@ describe("/lib/lti13.js", function () {
       });
 
       const resultsData = [
-        { id: "http://example.com/results/user1", scoreOf: "http://example.com/lineitems/1", userId: "user1", resultScore: 85, resultMaximum: 100 },
+        {
+          id: "http://example.com/results/user1",
+          scoreOf: "http://example.com/lineitems/1",
+          userId: "user1",
+          resultScore: 85,
+          resultMaximum: 100,
+        },
       ];
       sinon.stub(ky, "get").returns({ json: sinon.stub().resolves(resultsData) });
 
@@ -4032,11 +4047,11 @@ describe("/lib/lti13.js", function () {
       const deepLinkRecord = { provider_key: "thisisakey", context: {}, destroy };
       const providerRecord = { client_id: "provider-client-id", keyset_url: "https://example.com/jwks" };
 
-      const signedJwt = jsonwebtoken.sign(
-        { iss: "provider-client-id", aud: "http://localhost:3000/" },
-        privateKey,
-        { algorithm: "RS256", keyid: "test-kid", expiresIn: "1h" },
-      );
+      const signedJwt = jsonwebtoken.sign({ iss: "provider-client-id", aud: "http://localhost:3000/" }, privateKey, {
+        algorithm: "RS256",
+        keyid: "test-kid",
+        expiresIn: "1h",
+      });
 
       const models = {
         ProviderDeepLink: { findOne: sinon.stub().resolves(deepLinkRecord) },
@@ -4144,11 +4159,11 @@ describe("/lib/lti13.js", function () {
         publicKeyEncoding: { type: "spki", format: "pem" },
         privateKeyEncoding: { type: "pkcs1", format: "pem" },
       });
-      const signedJwt = jsonwebtoken.sign(
-        { iss: "provider-client-id", aud: "http://localhost:3000/" },
-        wrongKey,
-        { algorithm: "RS256", keyid: "test-kid", expiresIn: "1h" },
-      );
+      const signedJwt = jsonwebtoken.sign({ iss: "provider-client-id", aud: "http://localhost:3000/" }, wrongKey, {
+        algorithm: "RS256",
+        keyid: "test-kid",
+        expiresIn: "1h",
+      });
 
       const models = {
         ProviderDeepLink: { findOne: sinon.stub().resolves(deepLinkRecord) },

@@ -53,7 +53,16 @@ class LTIProviderController {
    * @return {boolean} true if the grade was posted successfully, false otherwise
    * @throws {Error} if required information is missing or if posting fails
    */
-  async postGrade(consumer_key, grade_url, lms_grade_id, score, user_lis13_id, debug, activityProgress = "Submitted", gradingProgress = "FullyGraded") {
+  async postGrade(
+    consumer_key,
+    grade_url,
+    lms_grade_id,
+    score,
+    user_lis13_id,
+    debug,
+    activityProgress = "Submitted",
+    gradingProgress = "FullyGraded",
+  ) {
     // build debug log if not provided
     debug = {
       user: debug?.user || "Unknown User",
@@ -95,7 +104,14 @@ class LTIProviderController {
       return await this.#LTI10Utils.postOutcome(lms_grade_id, score, consumer_key, grade_url);
     } else {
       // No Grade ID, expecting LTI 1.3 Assignment and Grade Services (AGS)
-      return await this.#LTI13Utils.postAGSGrade(user_lis13_id, score, consumer_key, grade_url, activityProgress, gradingProgress);
+      return await this.#LTI13Utils.postAGSGrade(
+        user_lis13_id,
+        score,
+        consumer_key,
+        grade_url,
+        activityProgress,
+        gradingProgress,
+      );
     }
   }
 

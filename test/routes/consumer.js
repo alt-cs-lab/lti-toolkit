@@ -378,9 +378,16 @@ describe("/routes/consumer.js", function () {
   describe("GET /ags line_items", function () {
     it("should return line items with lineitemcontainer content type", async function () {
       const LTILMSController = {
-        agsGetLineItemsHandler: sinon.stub().resolves([
-          { id: "http://localhost:3000/lti/consumer/ags/ctx/res/grade", scoreMaximum: 100, label: "Assignment 1", resourceLinkId: "res" },
-        ]),
+        agsGetLineItemsHandler: sinon
+          .stub()
+          .resolves([
+            {
+              id: "http://localhost:3000/lti/consumer/ags/ctx/res/grade",
+              scoreMaximum: 100,
+              label: "Assignment 1",
+              resourceLinkId: "res",
+            },
+          ]),
       };
       const ProviderKeyModel = {};
 
@@ -391,7 +398,10 @@ describe("/routes/consumer.js", function () {
       const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
 
       const app = express();
-      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+      app.use(
+        "/lti/consumer",
+        setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }),
+      );
 
       const res = await request(app).get("/lti/consumer/ags/context/line_items");
 
@@ -413,7 +423,10 @@ describe("/routes/consumer.js", function () {
       const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
 
       const app = express();
-      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+      app.use(
+        "/lti/consumer",
+        setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }),
+      );
 
       const res = await request(app).get("/lti/consumer/ags/context/line_items");
 
@@ -442,7 +455,10 @@ describe("/routes/consumer.js", function () {
       const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
 
       const app = express();
-      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+      app.use(
+        "/lti/consumer",
+        setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }),
+      );
 
       const res = await request(app).get("/lti/consumer/ags/context/resource/gradebook");
 
@@ -464,7 +480,10 @@ describe("/routes/consumer.js", function () {
       const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
 
       const app = express();
-      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+      app.use(
+        "/lti/consumer",
+        setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }),
+      );
 
       const res = await request(app).get("/lti/consumer/ags/context/resource/gradebook");
 
@@ -486,7 +505,10 @@ describe("/routes/consumer.js", function () {
       const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
 
       const app = express();
-      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+      app.use(
+        "/lti/consumer",
+        setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }),
+      );
 
       const res = await request(app).get("/lti/consumer/ags/context/resource/gradebook");
 
@@ -499,9 +521,17 @@ describe("/routes/consumer.js", function () {
   describe("GET /ags/:context_key/:resource_key/:gradebook_key/results", function () {
     it("should handle agsGetResultsHandler and return results array", async function () {
       const LTILMSController = {
-        agsGetResultsHandler: sinon.stub().resolves([
-          { id: "http://localhost:3000/lti/consumer/ags/ctx/res/gb/results/user1", scoreOf: "http://localhost:3000/lti/consumer/ags/ctx/res/gb", userId: "user1", resultScore: 0.85, resultMaximum: 1.0 },
-        ]),
+        agsGetResultsHandler: sinon
+          .stub()
+          .resolves([
+            {
+              id: "http://localhost:3000/lti/consumer/ags/ctx/res/gb/results/user1",
+              scoreOf: "http://localhost:3000/lti/consumer/ags/ctx/res/gb",
+              userId: "user1",
+              resultScore: 0.85,
+              resultMaximum: 1.0,
+            },
+          ]),
       };
       const ProviderKeyModel = {};
 
@@ -512,7 +542,10 @@ describe("/routes/consumer.js", function () {
       const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
 
       const app = express();
-      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+      app.use(
+        "/lti/consumer",
+        setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }),
+      );
 
       const res = await request(app).get("/lti/consumer/ags/ctx/res/gb/results");
 
@@ -536,7 +569,10 @@ describe("/routes/consumer.js", function () {
       const setupLTI13TokenMiddleware = sinon.stub().returns(lti13TokenMiddleware);
 
       const app = express();
-      app.use("/lti/consumer", setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }));
+      app.use(
+        "/lti/consumer",
+        setupConsumerRoutes(LTILMSController, ProviderKeyModel, logger, { setupLTI13TokenMiddleware }),
+      );
 
       const res = await request(app).get("/lti/consumer/ags/ctx/res/gb/results");
 

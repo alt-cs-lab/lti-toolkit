@@ -191,23 +191,19 @@ export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, 
    *    description: LTI 1.3 AGS Line Items collection for a context. Accepts optional ?resource_link_id= filter.
    *    tags: [lti-consumer]
    */
-  router.get(
-    "/ags/:context_key/line_items",
-    lti13TokenMiddleware,
-    async function (req, res, next) {
-      logger.lti("LTI 1.3 AGS Get Line Items Request Received");
-      logger.silly(JSON.stringify(req.params, null, 2));
-      logger.silly(JSON.stringify(req.query, null, 2));
-      try {
-        const result = await LTILMSController.agsGetLineItemsHandler(req);
-        res.setHeader("Content-Type", "application/vnd.ims.lis.v2.lineitemcontainer+json");
-        res.status(200).json(result);
-      } catch (err) {
-        logger.lti(err);
-        return res.status(500).send("Error processing AGS line items request");
-      }
-    },
-  );
+  router.get("/ags/:context_key/line_items", lti13TokenMiddleware, async function (req, res, next) {
+    logger.lti("LTI 1.3 AGS Get Line Items Request Received");
+    logger.silly(JSON.stringify(req.params, null, 2));
+    logger.silly(JSON.stringify(req.query, null, 2));
+    try {
+      const result = await LTILMSController.agsGetLineItemsHandler(req);
+      res.setHeader("Content-Type", "application/vnd.ims.lis.v2.lineitemcontainer+json");
+      res.status(200).json(result);
+    } catch (err) {
+      logger.lti(err);
+      return res.status(500).send("Error processing AGS line items request");
+    }
+  });
 
   /**
    * LTI 1.3 AGS Get Results
@@ -247,25 +243,21 @@ export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, 
    *    description: LTI 1.3 AGS Get a specific line item
    *    tags: [lti-consumer]
    */
-  router.get(
-    "/ags/:context_key/:resource_key/:gradebook_key",
-    lti13TokenMiddleware,
-    async function (req, res, next) {
-      logger.lti("LTI 1.3 AGS Get Line Item Request Received");
-      logger.silly(JSON.stringify(req.params, null, 2));
-      try {
-        const result = await LTILMSController.agsGetLineItemHandler(req);
-        if (!result) {
-          return res.status(404).send("Line item not found");
-        }
-        res.setHeader("Content-Type", "application/vnd.ims.lis.v2.lineitem+json");
-        res.status(200).json(result);
-      } catch (err) {
-        logger.lti(err);
-        return res.status(500).send("Error processing AGS line item request");
+  router.get("/ags/:context_key/:resource_key/:gradebook_key", lti13TokenMiddleware, async function (req, res, next) {
+    logger.lti("LTI 1.3 AGS Get Line Item Request Received");
+    logger.silly(JSON.stringify(req.params, null, 2));
+    try {
+      const result = await LTILMSController.agsGetLineItemHandler(req);
+      if (!result) {
+        return res.status(404).send("Line item not found");
       }
-    },
-  );
+      res.setHeader("Content-Type", "application/vnd.ims.lis.v2.lineitem+json");
+      res.status(200).json(result);
+    } catch (err) {
+      logger.lti(err);
+      return res.status(500).send("Error processing AGS line item request");
+    }
+  });
 
   /**
    * LTI 1.3 AGS Grade Passback

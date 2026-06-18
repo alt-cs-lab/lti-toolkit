@@ -127,6 +127,7 @@ The replacement pattern — call `consumerRegistry.getByKey(key)` then `createCo
 A new `requireAdmin` middleware (`src/middlewares/require-admin.js`) was added to both example apps. It implements HTTP Basic Auth checked against the `ADMIN_PASSWORD` environment variable using `crypto.timingSafeEqual` to prevent timing attacks. It fails closed: if `ADMIN_PASSWORD` is not set, all requests are rejected with 401. Any username is accepted; only the password is checked. The middleware includes a comment explaining it is the bare minimum for a demo and that real applications should use a proper auth/SSO system.
 
 Protected routes:
+
 - **Provider** (`examples/provider`): `GET /admin`, `GET /consumer/:id`, `POST /consumer/:id/config`
 - **Consumer** (`examples/consumer`): `POST /configure`, `POST /configure/xml`, `POST /configure/dynamic`, `GET /provider/:id`, `POST /provider/:id/launch`, `GET /grades`
 
@@ -237,6 +238,7 @@ The library now supports the full consumer-side deep linking flow: initiating an
 All controllers are optional fields (not conditionally typed on config). Conditional typing was deferred as a future improvement.
 
 **What was deferred:**
+
 - Conditional presence of controllers based on config (complex generics, low real-world benefit)
 - Tighter `createDeepLink` / Express `res` typing (requires `@types/express`)
 - Sequelize model class typing for `lti.models.Consumer` (requires Sequelize types)
@@ -248,11 +250,13 @@ All controllers are optional fields (not conditionally typed on config). Conditi
 All CRUD operations are now demonstrated in both example apps. No library or test changes were needed.
 
 **Consumer example** — three new routes + forms on the provider detail page (`/provider/:id`):
+
 - `POST /provider/:id/update` (`routes/provider-update.js`) — calls `providerRegistry.updateProvider(id, data)` for name/launch_url/domain/custom
 - `POST /provider/:id/delete` (`routes/provider-delete.js`) — calls `providerRegistry.deleteProvider(id)`, redirects to `/`
 - `POST /provider/:id/rotate` (`routes/provider-rotate.js`) — calls `providerRegistry.updateSecret(id)`, re-renders provider page with new credentials
 
 **Provider example** — two new routes + forms on the consumer detail page (`/consumer/:id`):
+
 - `POST /consumer/:id/rotate` (`routes/consumer-rotate.js`) — calls `consumerRegistry.updateSecret(id)`, re-renders consumer page with new credentials
 - `POST /consumer/:id/delete` (`routes/consumer-delete.js`) — calls `consumerRegistry.deleteConsumer(id)`, redirects to `/admin`
 - The existing `POST /consumer/:id/config` form now also updates `name` (the `disabled` attribute was removed from the name field in `consumer.njk` and `name` was added to `consumer-config.js`'s required fields and data object)

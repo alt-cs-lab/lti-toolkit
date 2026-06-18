@@ -2739,9 +2739,7 @@ describe("/controllers/lti-lms.js", () => {
     const models = {};
     const provider_controller = {};
 
-    sinon
-      .stub(LTI13Utils.prototype, "verifyDeepLinkResponse")
-      .resolves({ content_items: [], context: {} });
+    sinon.stub(LTI13Utils.prototype, "verifyDeepLinkResponse").resolves({ content_items: [], context: {} });
 
     const controller = new LTILMSController(consumer, models, logger, domain_name, provider_controller);
 

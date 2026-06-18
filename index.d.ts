@@ -249,11 +249,7 @@ export interface LTIProviderController {
   getLineItem(consumer_key: string, lineitem_url: string): Promise<LineItem | null>;
 
   /** Fetch all AGS line items for a context from the consumer (LTI 1.3 only) */
-  getLineItems(
-    consumer_key: string,
-    lineitems_url: string,
-    resource_link_id?: string | null,
-  ): Promise<LineItem[]>;
+  getLineItems(consumer_key: string, lineitems_url: string, resource_link_id?: string | null): Promise<LineItem[]>;
 
   /** Read a grade from the consumer via LTI 1.0 Basic Outcomes. Returns score (0.0–1.0) or null. */
   readGrade(consumer_key: string, grade_url: string, lms_grade_id: string): Promise<number | null>;
@@ -269,13 +265,7 @@ export interface LTIProviderController {
    * Renders a self-submitting form directly to the Express response.
    * `res` is the Express Response object; `consumer` is the stored consumer session object.
    */
-  createDeepLink(
-    res: unknown,
-    consumer: unknown,
-    return_url: string,
-    id: string,
-    title: string,
-  ): Promise<void>;
+  createDeepLink(res: unknown, consumer: unknown, return_url: string, id: string, title: string): Promise<void>;
 }
 
 // ─── Callback types ───────────────────────────────────────────────────────────
@@ -349,10 +339,7 @@ export type HandleDeeplinkCallback = (launchData: unknown, consumer: unknown, re
  * Receives the content items selected by the user and the context stored when the request was initiated.
  * Must return a URL string to redirect the browser to after processing the response.
  */
-export type HandleDeeplinkResponseCallback = (
-  content_items: object[],
-  context: object,
-) => Promise<string>;
+export type HandleDeeplinkResponseCallback = (content_items: object[], context: object) => Promise<string>;
 
 // ─── Configuration interfaces ─────────────────────────────────────────────────
 

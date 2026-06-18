@@ -42,9 +42,7 @@ describe("Encryption", () => {
       const plaintext = "this is a secret value";
       const encrypted = encrypt(plaintext, KEY);
       const [iv, authTag, ciphertext] = encrypted.split(":");
-      const tampered = [iv, authTag, ciphertext.slice(0, -2) + (ciphertext.slice(-2) === "00" ? "ff" : "00")].join(
-        ":",
-      );
+      const tampered = [iv, authTag, ciphertext.slice(0, -2) + (ciphertext.slice(-2) === "00" ? "ff" : "00")].join(":");
       (() => decrypt(tampered, KEY)).should.throw();
     });
   });

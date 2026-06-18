@@ -1667,7 +1667,11 @@ describe("/controllers/lti-consumer.js", () => {
     expect(models.ProviderDeepLink.create.calledOnce).to.be.true;
     const deepLinkArgs = models.ProviderDeepLink.create.firstCall.args[0];
     expect(deepLinkArgs.provider_key).to.equal("test_consumer_key");
-    expect(deepLinkArgs.context).to.deep.include({ context: testContext, user: testUser, ret_url: "http://example.com/return" });
+    expect(deepLinkArgs.context).to.deep.include({
+      context: testContext,
+      user: testUser,
+      ret_url: "http://example.com/return",
+    });
     expect(models.ProviderLogin.create.calledOnce).to.be.true;
     const loginArgs = models.ProviderLogin.create.firstCall.args[0];
     expect(loginArgs.client_id).to.equal("test_client_id");
@@ -1690,15 +1694,96 @@ describe("/controllers/lti-consumer.js", () => {
     const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
 
     const cases = [
-      [null, "test_client_id", "test_deployment_id", "http://ex.com/l", "http://ex.com/r", testContext, testUser, "Consumer Key is required to generate LTI 1.3 Deep Link Data"],
-      ["key", null, "test_deployment_id", "http://ex.com/l", "http://ex.com/r", testContext, testUser, "Client ID is required to generate LTI 1.3 Deep Link Data"],
-      ["key", "cid", null, "http://ex.com/l", "http://ex.com/r", testContext, testUser, "Deployment ID is required to generate LTI 1.3 Deep Link Data"],
-      ["key", "cid", "did", null, "http://ex.com/r", testContext, testUser, "Launch URL is required to generate LTI 1.3 Deep Link Data"],
-      ["key", "cid", "did", "http://ex.com/l", null, testContext, testUser, "Return URL is required to generate LTI 1.3 Deep Link Data"],
-      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", null, testUser, "Context with key, label, and name is required to generate LTI 1.3 Deep Link Data"],
-      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", { key: "k" }, testUser, "Context with key, label, and name is required to generate LTI 1.3 Deep Link Data"],
-      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, null, "User with key and email is required to generate LTI 1.3 Deep Link Data"],
-      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, { key: "k" }, "User with key and email is required to generate LTI 1.3 Deep Link Data"],
+      [
+        null,
+        "test_client_id",
+        "test_deployment_id",
+        "http://ex.com/l",
+        "http://ex.com/r",
+        testContext,
+        testUser,
+        "Consumer Key is required to generate LTI 1.3 Deep Link Data",
+      ],
+      [
+        "key",
+        null,
+        "test_deployment_id",
+        "http://ex.com/l",
+        "http://ex.com/r",
+        testContext,
+        testUser,
+        "Client ID is required to generate LTI 1.3 Deep Link Data",
+      ],
+      [
+        "key",
+        "cid",
+        null,
+        "http://ex.com/l",
+        "http://ex.com/r",
+        testContext,
+        testUser,
+        "Deployment ID is required to generate LTI 1.3 Deep Link Data",
+      ],
+      [
+        "key",
+        "cid",
+        "did",
+        null,
+        "http://ex.com/r",
+        testContext,
+        testUser,
+        "Launch URL is required to generate LTI 1.3 Deep Link Data",
+      ],
+      [
+        "key",
+        "cid",
+        "did",
+        "http://ex.com/l",
+        null,
+        testContext,
+        testUser,
+        "Return URL is required to generate LTI 1.3 Deep Link Data",
+      ],
+      [
+        "key",
+        "cid",
+        "did",
+        "http://ex.com/l",
+        "http://ex.com/r",
+        null,
+        testUser,
+        "Context with key, label, and name is required to generate LTI 1.3 Deep Link Data",
+      ],
+      [
+        "key",
+        "cid",
+        "did",
+        "http://ex.com/l",
+        "http://ex.com/r",
+        { key: "k" },
+        testUser,
+        "Context with key, label, and name is required to generate LTI 1.3 Deep Link Data",
+      ],
+      [
+        "key",
+        "cid",
+        "did",
+        "http://ex.com/l",
+        "http://ex.com/r",
+        testContext,
+        null,
+        "User with key and email is required to generate LTI 1.3 Deep Link Data",
+      ],
+      [
+        "key",
+        "cid",
+        "did",
+        "http://ex.com/l",
+        "http://ex.com/r",
+        testContext,
+        { key: "k" },
+        "User with key and email is required to generate LTI 1.3 Deep Link Data",
+      ],
     ];
 
     for (const [key, client_id, deployment_id, url, ret_url, context, user, expectedMessage] of cases) {
@@ -1719,7 +1804,15 @@ describe("/controllers/lti-consumer.js", () => {
     const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
 
     try {
-      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      await controller.generateLTI13DeepLinkFormData(
+        "key",
+        "cid",
+        "did",
+        "http://ex.com/l",
+        "http://ex.com/r",
+        testContext,
+        testUser,
+      );
       throw new Error("Expected error");
     } catch (err) {
       expect(err.message).to.equal("No provider found with key key");
@@ -1734,7 +1827,15 @@ describe("/controllers/lti-consumer.js", () => {
     const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
 
     try {
-      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      await controller.generateLTI13DeepLinkFormData(
+        "key",
+        "cid",
+        "did",
+        "http://ex.com/l",
+        "http://ex.com/r",
+        testContext,
+        testUser,
+      );
       throw new Error("Expected error");
     } catch (err) {
       expect(err.message).to.equal("No auth URL found for provider Test Provider");
@@ -1750,7 +1851,15 @@ describe("/controllers/lti-consumer.js", () => {
     const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
 
     try {
-      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      await controller.generateLTI13DeepLinkFormData(
+        "key",
+        "cid",
+        "did",
+        "http://ex.com/l",
+        "http://ex.com/r",
+        testContext,
+        testUser,
+      );
       throw new Error("Expected error");
     } catch (err) {
       expect(err.message).to.equal("Validation Error: Unable to save LTI 1.3 Deep Link record - Aborting!");
@@ -1767,7 +1876,15 @@ describe("/controllers/lti-consumer.js", () => {
     const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
 
     try {
-      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      await controller.generateLTI13DeepLinkFormData(
+        "key",
+        "cid",
+        "did",
+        "http://ex.com/l",
+        "http://ex.com/r",
+        testContext,
+        testUser,
+      );
       throw new Error("Expected error");
     } catch (err) {
       expect(err.message).to.equal("Validation Error: Unable to save LTI 1.3 Login - Aborting!");

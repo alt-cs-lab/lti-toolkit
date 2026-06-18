@@ -727,10 +727,7 @@ class LTI13Utils {
       "https://purl.imsglobal.org/spec/lti/claim/message_type": "LtiDeepLinkingRequest",
       "https://purl.imsglobal.org/spec/lti/claim/version": "1.3.0",
       "https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings": {
-        deep_link_return_url: new URL(
-          `/lti/consumer/deeplink/${data.deep_link_token}`,
-          this.#domain_name,
-        ).href,
+        deep_link_return_url: new URL(`/lti/consumer/deeplink/${data.deep_link_token}`, this.#domain_name).href,
         accept_types: settings.accept_types ?? ["ltiResourceLink"],
         accept_presentation_document_targets: settings.accept_presentation_document_targets ?? ["iframe", "window"],
         accept_multiple: settings.accept_multiple ?? false,

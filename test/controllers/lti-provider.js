@@ -385,7 +385,12 @@ describe("/controllers/lti-provider.js", () => {
   it("should fetch a single line item from the LMS via getLineItem", async () => {
     const provider = {};
     const models = {};
-    const lineItemData = { id: "http://example.com/lineitems/1", scoreMaximum: 100, label: "Assignment 1", resourceLinkId: "resource1" };
+    const lineItemData = {
+      id: "http://example.com/lineitems/1",
+      scoreMaximum: 100,
+      label: "Assignment 1",
+      resourceLinkId: "resource1",
+    };
 
     sinon.stub(LTI13Utils.prototype, "getAGSLineItem").resolves(lineItemData);
 
@@ -393,7 +398,8 @@ describe("/controllers/lti-provider.js", () => {
 
     const result = await controller.getLineItem("consumer_key", "http://example.com/lineitems/1");
 
-    expect(LTI13Utils.prototype.getAGSLineItem.calledOnceWith("consumer_key", "http://example.com/lineitems/1")).to.be.true;
+    expect(LTI13Utils.prototype.getAGSLineItem.calledOnceWith("consumer_key", "http://example.com/lineitems/1")).to.be
+      .true;
     expect(result).to.deep.equal(lineItemData);
 
     LTI13Utils.prototype.getAGSLineItem.restore();
@@ -438,7 +444,8 @@ describe("/controllers/lti-provider.js", () => {
 
     const result = await controller.getLineItems("consumer_key", "http://example.com/lineitems");
 
-    expect(LTI13Utils.prototype.getAGSLineItems.calledOnceWith("consumer_key", "http://example.com/lineitems", null)).to.be.true;
+    expect(LTI13Utils.prototype.getAGSLineItems.calledOnceWith("consumer_key", "http://example.com/lineitems", null)).to
+      .be.true;
     expect(result).to.deep.equal(lineItemsData);
 
     LTI13Utils.prototype.getAGSLineItems.restore();
@@ -454,7 +461,9 @@ describe("/controllers/lti-provider.js", () => {
 
     await controller.getLineItems("consumer_key", "http://example.com/lineitems", "resource1");
 
-    expect(LTI13Utils.prototype.getAGSLineItems.calledOnceWith("consumer_key", "http://example.com/lineitems", "resource1")).to.be.true;
+    expect(
+      LTI13Utils.prototype.getAGSLineItems.calledOnceWith("consumer_key", "http://example.com/lineitems", "resource1"),
+    ).to.be.true;
 
     LTI13Utils.prototype.getAGSLineItems.restore();
   });
@@ -495,7 +504,8 @@ describe("/controllers/lti-provider.js", () => {
 
     const result = await controller.readGrade("consumer_key", "http://example.com/grade", "grade_id");
 
-    expect(LTI10Utils.prototype.readOutcome.calledOnceWith("grade_id", "consumer_key", "http://example.com/grade")).to.be.true;
+    expect(LTI10Utils.prototype.readOutcome.calledOnceWith("grade_id", "consumer_key", "http://example.com/grade")).to
+      .be.true;
     expect(result).to.equal(0.85);
 
     LTI10Utils.prototype.readOutcome.restore();
@@ -550,7 +560,8 @@ describe("/controllers/lti-provider.js", () => {
 
     const result = await controller.deleteGrade("consumer_key", "http://example.com/grade", "grade_id");
 
-    expect(LTI10Utils.prototype.deleteOutcome.calledOnceWith("grade_id", "consumer_key", "http://example.com/grade")).to.be.true;
+    expect(LTI10Utils.prototype.deleteOutcome.calledOnceWith("grade_id", "consumer_key", "http://example.com/grade")).to
+      .be.true;
     expect(result).to.be.true;
 
     LTI10Utils.prototype.deleteOutcome.restore();
@@ -599,7 +610,13 @@ describe("/controllers/lti-provider.js", () => {
     const provider = {};
     const models = {};
     const resultsData = [
-      { id: "http://example.com/results/user1", scoreOf: "http://example.com/lineitems/1", userId: "user1", resultScore: 85, resultMaximum: 100 },
+      {
+        id: "http://example.com/results/user1",
+        scoreOf: "http://example.com/lineitems/1",
+        userId: "user1",
+        resultScore: 85,
+        resultMaximum: 100,
+      },
     ];
 
     sinon.stub(LTI13Utils.prototype, "getAGSResults").resolves(resultsData);
@@ -608,7 +625,8 @@ describe("/controllers/lti-provider.js", () => {
 
     const result = await controller.getResults("consumer_key", "http://example.com/results");
 
-    expect(LTI13Utils.prototype.getAGSResults.calledOnceWith("consumer_key", "http://example.com/results", null)).to.be.true;
+    expect(LTI13Utils.prototype.getAGSResults.calledOnceWith("consumer_key", "http://example.com/results", null)).to.be
+      .true;
     expect(result).to.deep.equal(resultsData);
 
     LTI13Utils.prototype.getAGSResults.restore();
@@ -624,7 +642,8 @@ describe("/controllers/lti-provider.js", () => {
 
     await controller.getResults("consumer_key", "http://example.com/results", "user1");
 
-    expect(LTI13Utils.prototype.getAGSResults.calledOnceWith("consumer_key", "http://example.com/results", "user1")).to.be.true;
+    expect(LTI13Utils.prototype.getAGSResults.calledOnceWith("consumer_key", "http://example.com/results", "user1")).to
+      .be.true;
 
     LTI13Utils.prototype.getAGSResults.restore();
   });
