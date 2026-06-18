@@ -62,7 +62,6 @@ class LTIProviderController {
 
     // Create LTI Utilities
     this.#LTI10Utils = new LTI10Utils(models, logger, domain_name);
-
     this.#LTI13Utils = new LTI13Utils(models, logger, domain_name);
   }
 
@@ -82,7 +81,16 @@ class LTIProviderController {
    * @return {boolean} true if the grade was posted successfully, false otherwise
    * @throws {Error} if required information is missing or if posting fails
    */
-  async postGrade(consumer_key, grade_url, lms_grade_id, score, user_lis13_id, debug) {
+  async postGrade(
+    consumer_key,
+    grade_url,
+    lms_grade_id,
+    score,
+    user_lis13_id,
+    debug,
+    activityProgress = "Submitted",
+    gradingProgress = "FullyGraded",
+  ) {
     // build debug log if not provided
     debug = {
       user: debug?.user || "Unknown User",
@@ -124,8 +132,115 @@ class LTIProviderController {
       return await this.#LTI10Utils.postOutcome(lms_grade_id, score, consumer_key, grade_url);
     } else {
       // No Grade ID, expecting LTI 1.3 Assignment and Grade Services (AGS)
-      return await this.#LTI13Utils.postAGSGrade(user_lis13_id, score, consumer_key, grade_url);
+      return await this.#LTI13Utils.postAGSGrade(
+        user_lis13_id,
+        score,
+        consumer_key,
+        grade_url,
+        activityProgress,
+        gradingProgress,
+      );
     }
+  }
+
+  /**
+   * Get a single line item from a connected LMS via LTI 1.3 AGS
+   *
+   * @param {string} consumer_key - the consumer key
+   * @param {string} lineitem_url - the line item URL from the LTI launch (outcome_url)
+   * @return {Object} the line item object from the LMS
+   * @throws {Error} if required information is missing or if the request fails
+   */
+  async getLineItem(consumer_key, lineitem_url) {
+    if (!consumer_key) {
+      throw new Error("Get Line Item: Consumer Key is required");
+    }
+    if (!lineitem_url) {
+      throw new Error("Get Line Item: Line item URL is required");
+    }
+    return await this.#LTI13Utils.getAGSLineItem(consumer_key, lineitem_url);
+  }
+
+  /**
+   * Get all line items from a connected LMS via LTI 1.3 AGS
+   *
+   * @param {string} consumer_key - the consumer key
+   * @param {string} lineitems_url - the lineitems collection URL from the LTI launch (outcome_lineitems)
+   * @param {string|null} resource_link_id - optional resource link ID to filter results
+   * @return {Array} the array of line item objects from the LMS
+   * @throws {Error} if required information is missing or if the request fails
+   */
+  async getLineItems(consumer_key, lineitems_url, resource_link_id = null) {
+    if (!consumer_key) {
+      throw new Error("Get Line Items: Consumer Key is required");
+    }
+    if (!lineitems_url) {
+      throw new Error("Get Line Items: Line items URL is required");
+    }
+    return await this.#LTI13Utils.getAGSLineItems(consumer_key, lineitems_url, resource_link_id);
+  }
+
+  /**
+   * Read a grade from a connected LMS via LTI 1.0 Basic Outcomes
+   *
+   * @param {string} consumer_key - the consumer key
+   * @param {string} grade_url - the grade passback URL from the LTI launch
+   * @param {string} lms_grade_id - the LMS grade ID (sourcedId)
+   * @return {number|null} the score (0.0 - 1.0), or null if no grade is on file
+   * @throws {Error} if required information is missing or if the request fails
+   */
+  async readGrade(consumer_key, grade_url, lms_grade_id) {
+    if (!consumer_key) {
+      throw new Error("Read Grade: Consumer Key is required");
+    }
+    if (!grade_url) {
+      throw new Error("Read Grade: Grade URL is required");
+    }
+    if (!lms_grade_id) {
+      throw new Error("Read Grade: LMS Grade ID is required");
+    }
+    return await this.#LTI10Utils.readOutcome(lms_grade_id, consumer_key, grade_url);
+  }
+
+  /**
+   * Delete a grade from a connected LMS via LTI 1.0 Basic Outcomes
+   *
+   * @param {string} consumer_key - the consumer key
+   * @param {string} grade_url - the grade passback URL from the LTI launch
+   * @param {string} lms_grade_id - the LMS grade ID (sourcedId)
+   * @return {boolean} true if the grade was deleted successfully
+   * @throws {Error} if required information is missing or if the request fails
+   */
+  async deleteGrade(consumer_key, grade_url, lms_grade_id) {
+    if (!consumer_key) {
+      throw new Error("Delete Grade: Consumer Key is required");
+    }
+    if (!grade_url) {
+      throw new Error("Delete Grade: Grade URL is required");
+    }
+    if (!lms_grade_id) {
+      throw new Error("Delete Grade: LMS Grade ID is required");
+    }
+    return await this.#LTI10Utils.deleteOutcome(lms_grade_id, consumer_key, grade_url);
+  }
+
+  /**
+   * Get AGS results for a line item from a connected LMS via LTI 1.3 AGS
+   *
+   * @param {string} consumer_key - the consumer key
+   * @param {string} results_url - the results URL for the line item
+   * @param {string|null} user_id - optional user ID to filter results
+   * @return {Array} array of result objects from the LMS
+   * @throws {Error} if required information is missing or if the request fails
+   */
+  async getResults(consumer_key, results_url, user_id = null) {
+    if (!consumer_key) {
+      throw new Error("Get Results: Consumer Key is required");
+    }
+    if (!results_url) {
+      throw new Error("Get Results: Results URL is required");
+    }
+    return await this.#LTI13Utils.getAGSResults(consumer_key, results_url, user_id);
   }
 
   /**
@@ -192,13 +307,13 @@ export default LTIProviderController;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti-consumer.module_js.html">controllers/lti-consumer.js</a></li><li><a href="controllers_lti-launch.module_js.html">controllers/lti-launch.js</a></li><li><a href="controllers_lti-provider.module_js.html">controllers/lti-provider.js</a></li><li><a href="controllers_lti-register.module_js.html">controllers/lti-register.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti-consumer.module_js-LTIConsumerController.html">LTIConsumerController</a></li><li><a href="controllers_lti-launch.module_js-LTILaunchController.html">LTILaunchController</a></li><li><a href="controllers_lti-provider.module_js-LTIProviderController.html">LTIProviderController</a></li><li><a href="controllers_lti-register.module_js-LTIRegistrationController.html">LTIRegistrationController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti-consumer.module_js.html">controllers/lti-consumer.js</a></li><li><a href="controllers_lti-launch.module_js.html">controllers/lti-launch.js</a></li><li><a href="controllers_lti-lms.module_js.html">controllers/lti-lms.js</a></li><li><a href="controllers_lti-provider.module_js.html">controllers/lti-provider.js</a></li><li><a href="controllers_lti-register.module_js.html">controllers/lti-register.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_encryption.module_js.html">lib/encryption.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti-consumer.module_js-LTIConsumerController.html">LTIConsumerController</a></li><li><a href="controllers_lti-launch.module_js-LTILaunchController.html">LTILaunchController</a></li><li><a href="controllers_lti-lms.module_js-LTILMSController.html">LTILMSController</a></li><li><a href="controllers_lti-provider.module_js-LTIProviderController.html">LTIProviderController</a></li><li><a href="controllers_lti-register.module_js-LTIRegistrationController.html">LTIRegistrationController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li><li><a href="global.html#assertGradeResult">assertGradeResult</a></li><li><a href="global.html#assertLineItem">assertLineItem</a></li><li><a href="global.html#assertLineItems">assertLineItems</a></li><li><a href="global.html#assertRedirectUrl">assertRedirectUrl</a></li><li><a href="global.html#assertResults">assertResults</a></li><li><a href="global.html#assertScoreResult">assertScoreResult</a></li><li><a href="global.html#clearJwksCache">clearJwksCache</a></li><li><a href="global.html#getJwksClient">getJwksClient</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Apr 10 2026 19:34:45 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jun 18 2026 18:06:18 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

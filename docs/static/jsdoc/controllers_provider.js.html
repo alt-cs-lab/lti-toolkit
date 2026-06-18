@@ -32,6 +32,13 @@
  * @exports ProviderController a provider controller
  */
 
+// Import libraries
+import { nanoid } from "nanoid";
+import crypto from "crypto";
+import { promisify } from "util";
+
+const generateKeyPairAsync = promisify(crypto.generateKeyPair);
+
 class ProviderController {
   // Private Attributes
   #ProviderModel;
@@ -86,69 +93,16 @@ class ProviderController {
   }
 
   /**
-   * Get the secret for an LTI provider
+   * Get a provider by name
    *
-   * @param {number} id the ID of the provider
-   * @return {ProviderKey} the updated provider key
+   * @param {string} name the name of the provider
+   * @return {Provider} the provider with the given name
    */
-  async getSecret(id) {
-    const provider = await this.#ProviderModel.findByPk(id);
-    if (!provider) {
-      return null;
-    }
-    const providerkey = await this.#ProviderKeyModel.findOne({
+  async getByName(name) {
+    const provider = await this.#ProviderModel.findOne({
       where: {
-        key: provider.key,
+        name: name,
       },
-    });
-    if (!providerkey) {
-      return null;
-    }
-    return providerkey;
-  }
-
-  /**
-   * Update an existing provider
-   *
-   * @param {number} id the ID of the provider to update
-   * @param {Object} data the provider data to update
-   * @returns {Provider} the updated provider
-   */
-  async updateProvider(id, data) {
-    let provider = null;
-    await this.#database.transaction(async (t) => {
-      provider = await this.#ProviderModel.findByPk(id);
-      if (!provider) {
-        return null;
-      }
-      const oldKey = provider.key;
-      await provider.update(
-        {
-          name: data.name,
-          lti13: data.lti13 || false,
-          key: data.key,
-          launch_url: data.launch_url,
-          domain: data.domain,
-          custom: data.custom,
-          use_section: data.use_section || false,
-        },
-        { transaction: t },
-      );
-      // If the key or secret has changed, update the provider key and secret
-      if (oldKey !== data.key || data.secret) {
-        await this.#ProviderKeyModel.update(
-          {
-            key: data.key,
-            secret: data.secret,
-          },
-          {
-            where: {
-              key: oldKey,
-            },
-            transaction: t,
-          },
-        );
-      }
     });
     return provider;
   }
@@ -162,6 +116,12 @@ class ProviderController {
   async createProvider(data) {
     let provider = null;
     await this.#database.transaction(async (t) => {
+      if (!data.key) {
+        data.key = nanoid();
+      }
+      if (!data.secret) {
+        data.secret = nanoid();
+      }
       provider = await this.#ProviderModel.create(
         {
           name: data.name,
@@ -171,17 +131,54 @@ class ProviderController {
           domain: data.domain,
           custom: data.custom,
           use_section: data.use_section || false,
+          keyset_url: data.keyset_url,
+          auth_url: data.auth_url,
+          redirect_urls: data.redirect_urls,
+          scopes: data.scopes,
+          claims: data.claims,
+          // client_id and deployment_id will be generated automatically by the model hooks for LTI 1.3 providers
         },
         { transaction: t },
       );
-      // Generate keys for the provider
+      const { publicKey, privateKey } = await this.#generateKeys();
       await this.#ProviderKeyModel.create(
         {
           key: provider.key,
           secret: data.secret,
+          public: publicKey,
+          private: privateKey,
         },
         { transaction: t },
       );
+    });
+    return provider;
+  }
+
+  /**
+   * Update an existing provider
+   *
+   * @param {number} id the ID of the provider to update
+   * @param {Object} data the provider data to update
+   * @returns {Provider} the updated provider
+   */
+  async updateProvider(id, data) {
+    const provider = await this.#ProviderModel.findByPk(id);
+    if (!provider) {
+      return null;
+    }
+    await provider.update({
+      name: data.name,
+      lti13: data.lti13 || false,
+      key: data.key,
+      launch_url: data.launch_url,
+      domain: data.domain,
+      custom: data.custom,
+      use_section: data.use_section || false,
+      keyset_url: data.keyset_url,
+      auth_url: data.auth_url,
+      redirect_urls: data.redirect_urls,
+      scopes: data.scopes,
+      claims: data.claims,
     });
     return provider;
   }
@@ -210,6 +207,103 @@ class ProviderController {
     });
     return true;
   }
+
+  /**
+   * Get the secret for an LTI provider
+   *
+   * @param {number} id the ID of the provider
+   * @return {ProviderKey} the updated provider key
+   */
+  async getSecret(id) {
+    const provider = await this.#ProviderModel.findByPk(id);
+    if (!provider) {
+      return null;
+    }
+    const providerkey = await this.#ProviderKeyModel.findOne({
+      attributes: ["key", "secret"],
+      where: {
+        key: provider.key,
+      },
+    });
+    if (!providerkey) {
+      return null;
+    }
+    return providerkey;
+  }
+
+  /**
+   * Update the secret for an LTI provider
+   *
+   * @param {number} id the ID of the provider
+   * @param {string|null} key the new key for the provider (if null, a new key will be generated)
+   * @param {string|null} secret the new secret for the provider (if null, a new secret will be generated)
+   * @return {ProviderKey} the updated provider key
+   */
+  async updateSecret(id, key = null, secret = null) {
+    const provider = await this.#ProviderModel.findByPk(id);
+    if (!provider) {
+      return null;
+    }
+
+    let providerkey = null;
+
+    await this.#database.transaction(async (t) => {
+      // Remove old key and secret for the provider
+      await this.#ProviderKeyModel.destroy({
+        where: {
+          key: provider.key,
+        },
+        transaction: t,
+      });
+
+      // Generate new key and secret for the provider
+      const newKey = key || nanoid();
+      const newSecret = secret || nanoid();
+      provider.key = newKey;
+      await provider.save({ transaction: t });
+
+      // Generate new keys for the provider
+      const { publicKey, privateKey } = await this.#generateKeys();
+
+      // Save the new key, secret, and keys for the provider
+      providerkey = await this.#ProviderKeyModel.create(
+        {
+          key: newKey,
+          secret: newSecret,
+          public: publicKey,
+          private: privateKey,
+        },
+        { transaction: t },
+      );
+    });
+
+    return providerkey;
+  }
+
+  /**
+   * Get all public keys for all providers
+   *
+   * @return {Array} an array of objects containing the key and public key for each provider
+   */
+  async getAllKeys() {
+    const keys = await this.#ProviderKeyModel.findAll({
+      attributes: ["key", "public"],
+    });
+    return keys;
+  }
+
+  /**
+   * Generate keys for an LTI provider
+   *
+   * @return {Object} the generated keys
+   */
+  async #generateKeys() {
+    return await generateKeyPairAsync("rsa", {
+      modulusLength: 4096,
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs1", format: "pem" },
+    });
+  }
 }
 
 export default ProviderController;
@@ -223,13 +317,13 @@ export default ProviderController;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti-consumer.module_js.html">controllers/lti-consumer.js</a></li><li><a href="controllers_lti-launch.module_js.html">controllers/lti-launch.js</a></li><li><a href="controllers_lti-provider.module_js.html">controllers/lti-provider.js</a></li><li><a href="controllers_lti-register.module_js.html">controllers/lti-register.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti-consumer.module_js-LTIConsumerController.html">LTIConsumerController</a></li><li><a href="controllers_lti-launch.module_js-LTILaunchController.html">LTILaunchController</a></li><li><a href="controllers_lti-provider.module_js-LTIProviderController.html">LTIProviderController</a></li><li><a href="controllers_lti-register.module_js-LTIRegistrationController.html">LTIRegistrationController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti-consumer.module_js.html">controllers/lti-consumer.js</a></li><li><a href="controllers_lti-launch.module_js.html">controllers/lti-launch.js</a></li><li><a href="controllers_lti-lms.module_js.html">controllers/lti-lms.js</a></li><li><a href="controllers_lti-provider.module_js.html">controllers/lti-provider.js</a></li><li><a href="controllers_lti-register.module_js.html">controllers/lti-register.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_encryption.module_js.html">lib/encryption.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti-consumer.module_js-LTIConsumerController.html">LTIConsumerController</a></li><li><a href="controllers_lti-launch.module_js-LTILaunchController.html">LTILaunchController</a></li><li><a href="controllers_lti-lms.module_js-LTILMSController.html">LTILMSController</a></li><li><a href="controllers_lti-provider.module_js-LTIProviderController.html">LTIProviderController</a></li><li><a href="controllers_lti-register.module_js-LTIRegistrationController.html">LTIRegistrationController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li><li><a href="global.html#assertGradeResult">assertGradeResult</a></li><li><a href="global.html#assertLineItem">assertLineItem</a></li><li><a href="global.html#assertLineItems">assertLineItems</a></li><li><a href="global.html#assertRedirectUrl">assertRedirectUrl</a></li><li><a href="global.html#assertResults">assertResults</a></li><li><a href="global.html#assertScoreResult">assertScoreResult</a></li><li><a href="global.html#clearJwksCache">clearJwksCache</a></li><li><a href="global.html#getJwksClient">getJwksClient</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Apr 10 2026 19:34:45 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jun 18 2026 18:06:18 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
