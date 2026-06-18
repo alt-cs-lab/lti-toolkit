@@ -92,6 +92,7 @@ app.use(express.static(path.join(import.meta.dirname, "../public")));
 // The 4-argument signature is required for Express to treat this as an error handler.
 // A real application should extend this with appropriate logging and error reporting.
 app.use((err, req, res, next) => {
+  // eslint-disable-next-line no-console
   console.error(err);
   res.status(500).render("error.njk", { title: "Error" });
 });

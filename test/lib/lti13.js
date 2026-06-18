@@ -3899,6 +3899,7 @@ describe("/lib/lti13.js", function () {
       sinon.stub(crypto, "createPrivateKey").returns(privateKey);
 
       // Omit settings entirely from data
+      // eslint-disable-next-line no-unused-vars
       const { settings: _unused, ...dataWithoutSettings } = deep_link_data;
       const result = await lti13Utils.buildDeepLinkJWT(
         { loginState: { data: dataWithoutSettings }, client_id: "thisisaconsumerkey", nonce: "thisisanonce" },
