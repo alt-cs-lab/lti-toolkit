@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Provider Testing Plan :: LTI Toolkit</title>
+    <link>https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/provider/testing/index.html</link>
+    <description>This is a manual browser-based testing checklist for the Tool Provider example application (/examples/provider). Work through each section in order; later sections depend on state set up by earlier ones.&#xA;The provider can be tested in two configurations:&#xA;Against Canvas LMS — use a real Canvas instance as the LTI Tool Consumer Against the Tool Consumer example — use the companion Consumer example app as the LTI Tool Consumer Both configurations are covered below. A fresh provider app (empty database) is assumed at the start.</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/provider/testing/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>

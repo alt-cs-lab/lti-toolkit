@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html lang="en-us" dir="ltr" itemscope itemtype="http://schema.org/Article" data-r-output-format="html">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.148.1">
+    <meta name="generator" content="Relearn 8.0.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="This is a manual browser-based testing checklist for the Tool Provider example application (/examples/provider). Work through each section in order; later sections depend on state set up by earlier ones.
+The provider can be tested in two configurations:
+Against Canvas LMS — use a real Canvas instance as the LTI Tool Consumer Against the Tool Consumer example — use the companion Consumer example app as the LTI Tool Consumer Both configurations are covered below. A fresh provider app (empty database) is assumed at the start.">
+    <meta name="author" content="K-State ALT&#43;CS Lab">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <meta name="twitter:title" content="Provider Testing Plan :: LTI Toolkit">
+    <meta name="twitter:description" content="This is a manual browser-based testing checklist for the Tool Provider example application (/examples/provider). Work through each section in order; later sections depend on state set up by earlier ones.
+The provider can be tested in two configurations:
+Against Canvas LMS — use a real Canvas instance as the LTI Tool Consumer Against the Tool Consumer example — use the companion Consumer example app as the LTI Tool Consumer Both configurations are covered below. A fresh provider app (empty database) is assumed at the start.">
+    <meta property="og:url" content="https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/provider/testing/index.html">
+    <meta property="og:site_name" content="LTI Toolkit">
+    <meta property="og:title" content="Provider Testing Plan :: LTI Toolkit">
+    <meta property="og:description" content="This is a manual browser-based testing checklist for the Tool Provider example application (/examples/provider). Work through each section in order; later sections depend on state set up by earlier ones.
+The provider can be tested in two configurations:
+Against Canvas LMS — use a real Canvas instance as the LTI Tool Consumer Against the Tool Consumer example — use the companion Consumer example app as the LTI Tool Consumer Both configurations are covered below. A fresh provider app (empty database) is assumed at the start.">
+    <meta property="og:locale" content="en_us">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Documentation">
+    <meta property="article:modified_time" content="2026-06-18T16:28:17+00:00">
+    <meta property="og:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <meta itemprop="name" content="Provider Testing Plan :: LTI Toolkit">
+    <meta itemprop="description" content="This is a manual browser-based testing checklist for the Tool Provider example application (/examples/provider). Work through each section in order; later sections depend on state set up by earlier ones.
+The provider can be tested in two configurations:
+Against Canvas LMS — use a real Canvas instance as the LTI Tool Consumer Against the Tool Consumer example — use the companion Consumer example app as the LTI Tool Consumer Both configurations are covered below. A fresh provider app (empty database) is assumed at the start.">
+    <meta itemprop="dateModified" content="2026-06-18T16:28:17+00:00">
+    <meta itemprop="wordCount" content="1465">
+    <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <title>Provider Testing Plan :: LTI Toolkit</title>
+    <link href="https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/provider/testing/index.html" rel="canonical" type="text/html" title="Provider Testing Plan :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/00-examples/provider/testing/index.xml" rel="alternate" type="application/rss+xml" title="Provider Testing Plan :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/00-examples/provider/testing/index.print.html" rel="alternate" type="text/html" title="Provider Testing Plan :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/00-examples/provider/testing/embed.html" rel="alternate" type="text/html" title="Provider Testing Plan :: LTI Toolkit">
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1781805999" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1781805999" defer></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1781805999";
+    </script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1781805999" defer></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.contentLangs=['en'];
+    </script>
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1781805999" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1781805999" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1781805999" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1781805999" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-html.min.css?1781805999" rel="stylesheet" id="R-format-style">
+    <script>
+      window.relearn = window.relearn || {};
+      // configuration
+      window.relearn.min = `.min`;
+      window.relearn.path='\/00-general\/00-examples\/provider\/testing\/index.html';
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/alt.cs.ksu.edu\/lti-toolkit';
+      window.relearn.disableAnchorCopy=false;
+      window.relearn.disableAnchorScrolling=false;
+      window.relearn.disableInlineCopyToClipboard=true;
+      window.relearn.enableBlockCodeWrap=false;
+      // legal
+      window.relearn.getItem = (s,n) => {return s.getItem(n)};
+      window.relearn.setItem = (s,n,v) => {return s.setItem(n,v)};
+      window.relearn.removeItem = (s,n) => {return s.removeItem(n)};
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+      // variant stuff
+      window.relearn.themevariants = [ 'light-theme' ];
+      window.relearn.customvariantname = "my-custom-variant";
+      // [x] russfeld
+      window.relearn.writeVariant=false;
+      window.relearn.changeVariant = function(variant) {
+        var oldVariant = document.documentElement.dataset.rThemeVariant;
+        window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
+        document.documentElement.dataset.rThemeVariant = variant;
+        if (oldVariant != variant) {
+          document.dispatchEvent( new CustomEvent('themeVariantLoaded', { detail: { variant, oldVariant } }) );
+          window.relearn.markVariant();
+        }
+      }
+      window.relearn.markVariant = function() {
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant");
+        document.querySelectorAll(".R-variantswitcher select").forEach((select) => {select.value = variant;});
+      }
+      window.relearn.initVariant = function() {
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant") ?? "";
+        if( variant == window.relearn.customvariantname ){
+        }else if( !variant || !window.relearn.themevariants.includes(variant) ){
+          variant = window.relearn.themevariants[0];
+          
+          if (window.relearn.writeVariant) {
+            window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
+          }
+        }
+        document.documentElement.dataset.rThemeVariant = variant;
+      }
+      window.relearn.initVariant();
+      window.relearn.markVariant();
+    </script>
+    <link href="/lti-toolkit/css/custom.css?1781805999" rel="stylesheet">
+  </head>
+  <body class="mobile-support html" data-url="/lti-toolkit/00-general/00-examples/provider/testing/index.html">
+    
+    <div id="tele" class="tele mirror">
+    
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      
+      
+      
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable 00-general" tabindex="-1">
+        <div class="flex-block-wrapper">
+<article class="default">
+  <header class="headline">
+  </header>
+
+<h1 id="provider-testing-plan">Provider Testing Plan</h1>
+
+<p>This is a manual browser-based testing checklist for the Tool Provider example application (<code>/examples/provider</code>). Work through each section in order; later sections depend on state set up by earlier ones.</p>
+<p>The provider can be tested in two configurations:</p>
+<ul>
+<li><strong>Against Canvas LMS</strong> — use a real Canvas instance as the LTI Tool Consumer</li>
+<li><strong>Against the Tool Consumer example</strong> — use the companion Consumer example app as the LTI Tool Consumer</li>
+</ul>
+<p>Both configurations are covered below. A fresh provider app (empty database) is assumed at the start.</p>
+<hr>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>Before running any tests, confirm the following:</p>
+<ul>
+<li><input disabled="" type="checkbox"> Provider app is running and accessible at its configured <code>DOMAIN_NAME</code></li>
+<li><input disabled="" type="checkbox"> <code>.env</code> is populated: <code>DOMAIN_NAME</code>, <code>LTI_CONSUMER_KEY</code>, <code>LTI_CONSUMER_SECRET</code>, <code>LTI_13_LMS_DOMAIN</code>, <code>SESSION_SECRET</code>, <code>ENCRYPTION_KEY</code></li>
+<li><input disabled="" type="checkbox"> Visiting <code>/</code> shows the home page with the LTI 1.0 key, secret, XML URL, and launch URL</li>
+</ul>
+<hr>
+<h2 id="section-1--home-page">Section 1 — Home Page</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <code>/</code> loads without error</li>
+<li><input disabled="" type="checkbox"> LTI 1.0 key and secret are displayed</li>
+<li><input disabled="" type="checkbox"> XML configuration URL (<code>/lti/provider/config.xml</code>) is shown</li>
+<li><input disabled="" type="checkbox"> Launch URL (<code>/lti/provider/launch</code>) is shown</li>
+<li><input disabled="" type="checkbox"> Link to the admin page is present</li>
+</ul>
+<hr>
+<h2 id="section-2--admin-page">Section 2 — Admin Page</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <code>/admin</code> loads and shows &ldquo;Available LTI Tool Consumers&rdquo; (empty list on first run)</li>
+<li><input disabled="" type="checkbox"> LTI 1.3 dynamic registration URL (<code>/lti/provider/register</code>) is shown</li>
+<li><input disabled="" type="checkbox"> Manual configuration fields (Client ID, Platform ID, Deployment ID, Keyset URL, Token URL, Auth URL) are present with default Canvas values pre-filled</li>
+</ul>
+<hr>
+<h2 id="section-3--lti-13-consumer-setup-provider-admin">Section 3 — LTI 1.3 Consumer Setup (Provider Admin)</h2>
+<p>This section configures the Canvas-side consumer record in the provider&rsquo;s database. Skip if testing LTI 1.0 only.</p>
+<h3 id="3a--create-consumer-record-via-admin-page">3A — Create consumer record via Admin page</h3>
+<ul>
+<li><input disabled="" type="checkbox"> On <code>/admin</code>, click an existing consumer (if one was auto-created) or follow the steps shown to register the tool in Canvas first</li>
+<li><input disabled="" type="checkbox"> After Canvas registration, fill in Client ID, Platform ID, Deployment ID, Keyset URL, Token URL, and Auth URL on <code>/admin</code></li>
+<li><input disabled="" type="checkbox"> Submit the form — page reloads with a success message</li>
+<li><input disabled="" type="checkbox"> Consumer appears in the &ldquo;Available LTI Tool Consumers&rdquo; list</li>
+</ul>
+<h3 id="3b--view-consumer-detail">3B — View consumer detail</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Click the consumer name in the list — <code>/consumer/:id</code> loads</li>
+<li><input disabled="" type="checkbox"> Name, Key, masked Secret, and all LTI 1.3 fields are shown</li>
+<li><input disabled="" type="checkbox"> &ldquo;Reveal full secret&rdquo; disclosure works and shows the full secret</li>
+<li><input disabled="" type="checkbox"> Debugging section at the bottom can be expanded and shows the consumer JSON</li>
+</ul>
+<hr>
+<h2 id="section-4--consumer-management-crud">Section 4 — Consumer Management (CRUD)</h2>
+<h3 id="4a--update-consumer-configuration">4A — Update consumer configuration</h3>
+<ul>
+<li><input disabled="" type="checkbox"> On <code>/consumer/:id</code>, fill in the LTI 1.3 configuration form (change at least one field)</li>
+<li><input disabled="" type="checkbox"> Submit — page reloads with a success message and the updated values are shown</li>
+</ul>
+<h3 id="4b--rotate-credentials">4B — Rotate credentials</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Click &ldquo;Rotate Credentials&rdquo; — page reloads showing new key and secret values</li>
+<li><input disabled="" type="checkbox"> Old key/secret no longer match; new ones are shown in the settings section</li>
+<li><input disabled="" type="checkbox"> Confirm dialog is <strong>not</strong> shown (this form has no confirmation prompt)</li>
+</ul>
+<h3 id="4c--delete-consumer">4C — Delete consumer</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Click &ldquo;Delete Consumer&rdquo; — a browser confirm dialog appears</li>
+<li><input disabled="" type="checkbox"> Click Cancel — consumer is not deleted, page stays</li>
+<li><input disabled="" type="checkbox"> Click &ldquo;Delete Consumer&rdquo; again, then OK — redirected to <code>/admin</code></li>
+<li><input disabled="" type="checkbox"> Consumer no longer appears in the list on <code>/admin</code></li>
+</ul>
+<hr>
+<h2 id="section-5--lti-10-launch-canvas">Section 5 — LTI 1.0 Launch (Canvas)</h2>
+<p>Requires a Canvas LTI 1.0 external tool assignment. Use the key/secret from <code>/</code>.</p>
+<ul>
+<li><input disabled="" type="checkbox"> In Canvas, configure an LTI 1.0 external tool using the key, secret, and launch URL</li>
+<li><input disabled="" type="checkbox"> As a <strong>student</strong>, click the assignment — provider redirects to <code>/student</code>
+<ul>
+<li><input disabled="" type="checkbox"> Student name and email are shown (if privacy level is &ldquo;Public&rdquo;)</li>
+<li><input disabled="" type="checkbox"> Course name and assignment name are shown</li>
+<li><input disabled="" type="checkbox"> Grade submission form is present</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> As an <strong>instructor</strong>, open the same assignment — provider redirects to <code>/instructor</code>
+<ul>
+<li><input disabled="" type="checkbox"> Instructor name and email are shown</li>
+<li><input disabled="" type="checkbox"> Course and assignment sections are shown</li>
+<li><input disabled="" type="checkbox"> &ldquo;Read Grade from LMS&rdquo; and &ldquo;Delete Grade from LMS&rdquo; buttons appear (LTI 1.0 only)</li>
+<li><input disabled="" type="checkbox"> Debugging section can be expanded</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="section-6--lti-10-grade-passback-canvas">Section 6 — LTI 1.0 Grade Passback (Canvas)</h2>
+<p>Requires at least one student launch from Section 5.</p>
+<h3 id="6a--student-submits-a-grade">6A — Student submits a grade</h3>
+<ul>
+<li><input disabled="" type="checkbox"> As a student on <code>/student</code>, enter a grade between 0.00 and 1.00</li>
+<li><input disabled="" type="checkbox"> Submit — page reloads with a success message</li>
+<li><input disabled="" type="checkbox"> Grade appears in the Canvas gradebook for that student</li>
+</ul>
+<h3 id="6b--instructor-reads-and-modifies-grades">6B — Instructor reads and modifies grades</h3>
+<ul>
+<li><input disabled="" type="checkbox"> As instructor on <code>/instructor</code>, find the student row</li>
+<li><input disabled="" type="checkbox"> Enter a new grade value and click Submit — success message shown, Canvas gradebook updates</li>
+<li><input disabled="" type="checkbox"> Click &ldquo;Read Grade from LMS&rdquo; — the current score from Canvas is shown as a message</li>
+<li><input disabled="" type="checkbox"> Click &ldquo;Delete Grade from LMS&rdquo; — success message shown, grade is removed from Canvas gradebook</li>
+</ul>
+<hr>
+<h2 id="section-7--lti-13-dynamic-registration-canvas">Section 7 — LTI 1.3 Dynamic Registration (Canvas)</h2>
+<ul>
+<li><input disabled="" type="checkbox"> In Canvas Admin → Developer Keys, add a new LTI Registration using the registration URL shown on <code>/admin</code> (<code>/lti/provider/register</code>)</li>
+<li><input disabled="" type="checkbox"> Canvas completes registration; click &ldquo;Enable and Close&rdquo;</li>
+<li><input disabled="" type="checkbox"> A new consumer record appears automatically in the <code>/admin</code> consumer list</li>
+<li><input disabled="" type="checkbox"> Click the consumer to verify Client ID, Platform ID, Deployment ID, Keyset URL, Token URL, and Auth URL are all populated</li>
+</ul>
+<hr>
+<h2 id="section-8--lti-13-manual-registration-canvas">Section 8 — LTI 1.3 Manual Registration (Canvas)</h2>
+<p>If dynamic registration is not available, configure manually via Canvas Developer Keys → New LTI Key.</p>
+<ul>
+<li><input disabled="" type="checkbox"> In Canvas, create a new LTI Key with:
+<ul>
+<li>Redirect URI: <code>DOMAIN/lti/provider/launch</code></li>
+<li>Target Link URI: <code>DOMAIN/lti/provider/launch</code></li>
+<li>OIDC Initiation URL: <code>DOMAIN/lti/provider/login</code></li>
+<li>JWK URL: <code>DOMAIN/lti/provider/jwks</code></li>
+<li>LTI Advantage: &ldquo;Create and update submission results&rdquo; enabled</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Note the Client ID and Deployment ID from Canvas</li>
+<li><input disabled="" type="checkbox"> On <code>/admin</code>, enter all values in the manual configuration form and submit</li>
+<li><input disabled="" type="checkbox"> Consumer appears in the list; click it to verify all fields</li>
+</ul>
+<hr>
+<h2 id="section-9--lti-13-launch-canvas">Section 9 — LTI 1.3 Launch (Canvas)</h2>
+<p>Requires consumer record from Section 7 or 8 and a Canvas LTI 1.3 assignment.</p>
+<ul>
+<li><input disabled="" type="checkbox"> In Canvas, create an assignment using the LTI 1.3 external tool and set the launch URL to <code>DOMAIN/lti/provider/launch</code></li>
+<li><input disabled="" type="checkbox"> As a <strong>student</strong>, click the assignment — provider redirects to <code>/student</code>
+<ul>
+<li><input disabled="" type="checkbox"> Student name and email are shown</li>
+<li><input disabled="" type="checkbox"> Course name and assignment name are shown</li>
+<li><input disabled="" type="checkbox"> Activity Progress and Grading Progress dropdowns appear (LTI 1.3 only)</li>
+<li><input disabled="" type="checkbox"> Debugging section shows <code>launch_type: &quot;lti1.3&quot;</code></li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> As an <strong>instructor</strong>, open the same assignment — provider redirects to <code>/instructor</code>
+<ul>
+<li><input disabled="" type="checkbox"> &ldquo;LTI 1.3 Assignment and Grade Services (AGS)&rdquo; section appears</li>
+<li><input disabled="" type="checkbox"> Line Item info (label and score maximum) is shown</li>
+<li><input disabled="" type="checkbox"> Results table is shown (empty until a student submits)</li>
+<li><input disabled="" type="checkbox"> &ldquo;All Line Items in Course&rdquo; table shows all assignments in the course</li>
+<li><input disabled="" type="checkbox"> Activity Progress and Grading Progress selectors appear in grade form</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="section-10--lti-13-grade-passback-canvas">Section 10 — LTI 1.3 Grade Passback (Canvas)</h2>
+<h3 id="10a--student-submits-a-grade">10A — Student submits a grade</h3>
+<ul>
+<li><input disabled="" type="checkbox"> As a student on <code>/student</code>, select activity/grading progress values and enter a grade (0.00–1.00)</li>
+<li><input disabled="" type="checkbox"> Submit — success message shown; Canvas gradebook updates</li>
+</ul>
+<h3 id="10b--instructor-reviews-and-re-grades">10B — Instructor reviews and re-grades</h3>
+<ul>
+<li><input disabled="" type="checkbox"> As instructor on <code>/instructor</code>, the Results table now shows the student&rsquo;s submission</li>
+<li><input disabled="" type="checkbox"> Enter a new grade for the student and submit — success message shown; Canvas gradebook updates</li>
+</ul>
+<hr>
+<h2 id="section-11--lti-13-deep-linking-canvas">Section 11 — LTI 1.3 Deep Linking (Canvas)</h2>
+<p>Requires LTI 1.3 consumer with Deep Linking scope enabled in Canvas.</p>
+<ul>
+<li><input disabled="" type="checkbox"> In Canvas, initiate a Deep Link assignment (add a module item using the LTI tool&rsquo;s &ldquo;Find&rdquo; option, or use the Rich Content Editor)</li>
+<li><input disabled="" type="checkbox"> Provider redirects to <code>/deeplink</code>
+<ul>
+<li><input disabled="" type="checkbox"> User name and course name are shown</li>
+<li><input disabled="" type="checkbox"> &ldquo;Create a New Assignment&rdquo; form with Title and ID fields is present</li>
+<li><input disabled="" type="checkbox"> Debugging section shows Deep Link launch data</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Enter a title and ID, then click Submit</li>
+<li><input disabled="" type="checkbox"> Canvas receives the deep link response and the content item appears in the module/editor</li>
+</ul>
+<hr>
+<h2 id="section-12--testing-against-the-tool-consumer-example">Section 12 — Testing Against the Tool Consumer Example</h2>
+<p>The following tests use the companion Consumer example (<code>/examples/consumer</code>) as the LTI Tool Consumer instead of Canvas. Both apps must be running.</p>
+<h3 id="12a--lti-10-launch-from-consumer">12A — LTI 1.0 launch from Consumer</h3>
+<ul>
+<li><input disabled="" type="checkbox"> In the Consumer app, add the Provider as an LTI 1.0 tool (manually or via XML)</li>
+<li><input disabled="" type="checkbox"> On the Consumer&rsquo;s provider detail page, fill in context, resource, and user fields</li>
+<li><input disabled="" type="checkbox"> Leave &ldquo;Instructor?&rdquo; unchecked; click Submit — new tab opens on provider&rsquo;s <code>/student</code> view
+<ul>
+<li><input disabled="" type="checkbox"> Course name, assignment name, and user name/email are shown</li>
+<li><input disabled="" type="checkbox"> <code>launch_type</code> in debugging is <code>&quot;lti1.0&quot;</code></li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Repeat with &ldquo;Instructor?&rdquo; checked — <code>/instructor</code> view loads
+<ul>
+<li><input disabled="" type="checkbox"> &ldquo;Read Grade&rdquo; and &ldquo;Delete Grade&rdquo; buttons are visible (LTI 1.0 only)</li>
+</ul>
+</li>
+</ul>
+<h3 id="12b--lti-10-grade-passback-to-consumer">12B — LTI 1.0 grade passback to Consumer</h3>
+<ul>
+<li><input disabled="" type="checkbox"> As a student in the provider, submit a grade</li>
+<li><input disabled="" type="checkbox"> In the Consumer app, open <code>/grades</code></li>
+<li><input disabled="" type="checkbox"> The grade appears under the correct course, assignment, and user</li>
+</ul>
+<h3 id="12c--lti-13-launch-from-consumer">12C — LTI 1.3 launch from Consumer</h3>
+<ul>
+<li><input disabled="" type="checkbox"> In the Consumer app, add the Provider as an LTI 1.3 tool (or use Dynamic Registration)</li>
+<li><input disabled="" type="checkbox"> On the Consumer&rsquo;s provider detail page, fill in context, resource, and user fields</li>
+<li><input disabled="" type="checkbox"> Click Submit — new tab opens on provider&rsquo;s <code>/student</code> view
+<ul>
+<li><input disabled="" type="checkbox"> Activity Progress and Grading Progress dropdowns appear</li>
+<li><input disabled="" type="checkbox"> <code>launch_type</code> in debugging is <code>&quot;lti1.3&quot;</code></li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Repeat with &ldquo;Instructor?&rdquo; checked — <code>/instructor</code> view loads
+<ul>
+<li><input disabled="" type="checkbox"> AGS section appears (line item, results, all line items)</li>
+</ul>
+</li>
+</ul>
+<h3 id="12d--lti-13-grade-passback-to-consumer">12D — LTI 1.3 grade passback to Consumer</h3>
+<ul>
+<li><input disabled="" type="checkbox"> As a student in the provider, submit a grade with progress values</li>
+<li><input disabled="" type="checkbox"> In the Consumer app, open <code>/grades</code></li>
+<li><input disabled="" type="checkbox"> Grade appears with score, activity progress, grading progress, and timestamp</li>
+</ul>
+<h3 id="12e--lti-13-deep-link-from-consumer">12E — LTI 1.3 Deep Link from Consumer</h3>
+<ul>
+<li><input disabled="" type="checkbox"> On the Consumer&rsquo;s provider detail page, fill in the Deep Link context and user fields</li>
+<li><input disabled="" type="checkbox"> Click &ldquo;Launch Deep Link&rdquo; — provider&rsquo;s <code>/deeplink</code> view opens</li>
+<li><input disabled="" type="checkbox"> Enter a title and ID; click Submit</li>
+<li><input disabled="" type="checkbox"> Consumer redirects to <code>/deeplink-result</code> (or the configured redirect) and shows the returned content items</li>
+</ul>
+
+  <footer class="footline">
+  </footer>
+</article>
+        </div>
+      </main>
+      
+      
+      
+    </div>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1781805999" defer></script>
+      
+      
+      
+    </div> 
+  <script src="/lti-toolkit/js/tele-scroll.min.js?1781805999" defer></script>
+  </body>
+</html>

@@ -37,14 +37,20 @@ import { nanoid } from "nanoid";
 
 // Import Utilities
 import LTI10Utils from "../lib/lti10.js";
+import LTI13Utils from "../lib/lti13.js";
 
 class LTIConsumerController {
   // Private fields
   #logger;
   #LTI10Utils;
+  #LTI13Utils;
   #consumer_config;
   #domain_name;
   #admin_email;
+  #ProviderModel;
+  #ProviderLoginModel;
+  #ProviderDeepLinkModel;
+  #ProviderController;
 
   /**
    * LTI Consumer Controller
@@ -54,15 +60,21 @@ class LTIConsumerController {
    * @param {Object} logger - the logger instance
    * @param {string} domain_name - the domain name of the application (e.g., "https://example.com")
    * @param {string} admin_email - the email address of the administrator
+   * @param {Object} provider_controller - the provider controller instance
    */
-  constructor(consumer_config, models, logger, domain_name, admin_email) {
+  constructor(consumer_config, models, logger, domain_name, admin_email, provider_controller) {
     this.#logger = logger;
     this.#consumer_config = consumer_config;
     this.#domain_name = domain_name;
     this.#admin_email = admin_email;
+    this.#ProviderModel = models.Provider;
+    this.#ProviderLoginModel = models.ProviderLogin;
+    this.#ProviderDeepLinkModel = models.ProviderDeepLink;
+    this.#ProviderController = provider_controller;
 
     // Create LTI Utilities
     this.#LTI10Utils = new LTI10Utils(models, logger, domain_name);
+    this.#LTI13Utils = new LTI13Utils(models, logger, domain_name);
   }
 
   /**
@@ -193,159 +205,296 @@ class LTIConsumerController {
   }
 
   /**
-   * Basic Outcomes Handler
+   * Generate LTI 1.3 Login Form Data
    *
-   * @param req - Express request object
-   * @returns {Object} - XML response body
-   * @see https://www.imsglobal.org/spec/lti-bo/v1p1
-   * @see https://www.imsglobal.org/gws/gwsv1p0/imsgws_wsdlBindv1p0.html
+   * @param {string} key - the consumer key for the LTI tool
+   * @param {string} client_id - the client ID for the LTI tool
+   * @param {string} deployment_id - the deployment ID for the LTI tool
+   * @param {string} url - the URL to launch the LTI tool
+   * @param {string} ret_url - the return URL for the LTI tool
+   * @param {Object} context - the context for the LTI launch (course)
+   * @param {string} context.key - the context key (course ID)
+   * @param {string} context.label - the context label (course code)
+   * @param {string} context.name - the context name (course name)
+   * @param {Object} resource - the resource for the LTI launch (assignment or lesson)
+   * @param {string} resource.key - the resource key (assignment or lesson ID)
+   * @param {string} resource.name - the resource name (assignment or lesson name)
+   * @param {Object} user - the user launching the LTI tool
+   * @param {string} user.key - the user key (user ID)
+   * @param {string} user.email - the user's email address
+   * @param {string} user.family_name - the user's family name
+   * @param {string} user.given_name - the user's given name
+   * @param {string} user.name - the user's full name
+   * @param {string} user.image - the user's profile image URL
+   * @param {boolean} manager - true if the user is a course manager, else false
+   * @param {string} gradebook_key - the gradebook ID for the LTI launch
+   * @param {Object} custom - custom parameters to include in the launch (optional)
+   * @return {Object} an object containing the form fields and action URL for the LTI launch
    */
-  async basicOutcomesHandler(req) {
-    this.#logger.lti("Handling Basic Outcomes Request");
-
-    let providerKey = null;
-    let message_id;
-    let body;
-    try {
-      // Validate the request and get the provider key
-      providerKey = await this.#LTI10Utils.validateOauthBody(req);
-      // Additional validation for Basic Outcomes Requests
-      const values = this.#LTI10Utils.validateBasicOutcomesRequest(req);
-      message_id = values.message_id;
-      body = values.body;
-    } catch (err) {
-      this.#logger.lti("Basic Outcomes Request Validation Failed: " + err.message);
-      // Return appropriate error response based on the type of validation error
-      return this.#LTI10Utils.buildResponse(
-        "failure",
-        "invalidtargetdatafail",
-        err.message,
-        providerKey,
-        req.originalUrl,
-        null,
-      );
+  async generateLTI13LoginFormData(
+    key,
+    client_id,
+    deployment_id,
+    url,
+    ret_url,
+    context,
+    resource,
+    user,
+    manager,
+    gradebook_key,
+    custom = null,
+  ) {
+    // Validate Inputs
+    if (!key) {
+      throw new Error("Consumer Key is required to generate LTI 1.3 Login Data");
+    }
+    if (!client_id) {
+      throw new Error("Client ID is required to generate LTI 1.3 Login Data");
+    }
+    if (!deployment_id) {
+      throw new Error("Deployment ID is required to generate LTI 1.3 Login Data");
+    }
+    if (!url) {
+      throw new Error("Launch URL is required to generate LTI 1.3 Login Data");
+    }
+    if (!ret_url) {
+      throw new Error("Return URL is required to generate LTI 1.3 Login Data");
+    }
+    if (!context || !context.key || !context.label || !context.name) {
+      throw new Error("Context with key, label, and name is required to generate LTI 1.3 Login Data");
+    }
+    if (!resource || !resource.key || !resource.name) {
+      throw new Error("Resource with key and name is required to generate LTI 1.3 Login Data");
+    }
+    if (!user || !user.key || !user.email) {
+      throw new Error("User with key and email is required to generate LTI 1.3 Login Data");
+    }
+    if (manager === undefined || manager === null || typeof manager !== "boolean") {
+      throw new Error("Manager status is required to generate LTI 1.3 Login Data");
+    }
+    if (!gradebook_key) {
+      throw new Error("Gradebook Key is required to generate LTI 1.3 Login Data");
     }
 
-    // Check for Replace Result Request
-    if (body["replaceresultrequest"]) {
-      return await this.replaceResultRequest(
-        body["replaceresultrequest"],
-        providerKey,
-        req.originalUrl,
-        message_id,
-        req,
-      );
-
-      // TODO handle readResult or deleteResult?
-    } else {
-      // Find the operation type from the body keys (e.g., "replaceResultRequest", "readResultRequest", "deleteResultRequest")
-      let operation = Object.keys(body);
-      const requestIndex = operation.findIndex((x) => x.endsWith("request"));
-      let operationType = "unknown";
-      if (requestIndex !== -1) {
-        operationType = operation[requestIndex].slice(0, -7); // Remove "request" suffix
-      }
-      this.#logger.lti("Unsupported Operation: " + operationType);
-      return this.#LTI10Utils.buildResponse(
-        "unsupported",
-        "status",
-        `The operation ${operationType} is not supported by this LTI Tool Consumer`,
-        providerKey,
-        req.originalUrl,
-        message_id,
-        operation[requestIndex],
-      );
+    // Find the Provider in the database
+    const provider = await this.#ProviderModel.findOne({
+      where: {
+        key: key,
+      },
+    });
+    if (!provider) {
+      throw new Error("No provider found with key " + key);
     }
+    // Get auth URL for client
+    const auth_url = provider.auth_url;
+    if (!auth_url) {
+      throw new Error("No auth URL found for provider " + provider.name);
+    }
+    this.#logger.lti("Generating LTI 1.3 Login Data for Provider " + provider.name + " (" + key + ")");
+
+    // Build Login Message
+    const login = {
+      iss: new URL("/", this.#domain_name).href,
+      login_hint: nanoid(),
+      client_id: client_id,
+      lti_deployment_id: deployment_id,
+      target_link_uri: url,
+      lti_storage_target: "post_message_forwarding",
+    };
+    this.#logger.silly("Login Data: " + JSON.stringify(login, null, 2));
+
+    // Build Data to Store in DB
+    const loginData = {
+      key: key,
+      url: url,
+      deployment_id: deployment_id,
+      ret_url: ret_url,
+      context: context,
+      resource: resource,
+      user: user,
+      manager: manager,
+      gradebook_key: gradebook_key,
+      custom: custom,
+    };
+
+    // Store in DB
+    const loginCreated = await this.#ProviderLoginModel.create({
+      client_id: client_id,
+      login_hint: login.login_hint,
+      data: JSON.stringify(loginData),
+    });
+    if (!loginCreated || loginCreated.login_hint != login.login_hint) {
+      throw new Error("Validation Error: Unable to save LTI 1.3 Login - Aborting!");
+    }
+    this.#logger.silly("Login Created: " + JSON.stringify(loginCreated, null, 2));
+    return {
+      fields: login,
+      action: auth_url,
+    };
   }
 
   /**
-   * Handle a Replace Result Request
+   * Generate LTI 1.3 Deep Link Form Data
    *
-   * @param {Object} request - the request object from the body
-   * @param {Object} providerKey - the key and secret for the provider
-   * @param {string} url - the original request URL
-   * @param {string} message_id - the message identifier from the header
-   * @param {Object} req - Express request object
-   * @returns {boolean} - true if the request is valid, else false
+   * @param {string} key - the consumer key for the LTI tool provider
+   * @param {string} client_id - the client ID for the LTI tool provider
+   * @param {string} deployment_id - the deployment ID for the LTI tool provider
+   * @param {string} url - the launch URL of the LTI tool provider
+   * @param {string} ret_url - the return URL for the consumer app (passed to handleDeeplink callback context)
+   * @param {Object} context - the context for the deep link request (course)
+   * @param {string} context.key - the context key (course ID)
+   * @param {string} context.label - the context label (course code)
+   * @param {string} context.name - the context name (course name)
+   * @param {Object} user - the user initiating the deep link request
+   * @param {string} user.key - the user key (user ID)
+   * @param {string} user.email - the user's email address
+   * @param {Object} settings - optional LtiDeepLinkingSettings overrides
+   * @param {string[]} settings.accept_types - content item types to accept (default: ["ltiResourceLink"])
+   * @param {string[]} settings.accept_presentation_document_targets - targets to accept (default: ["iframe", "window"])
+   * @param {boolean} settings.accept_multiple - whether to accept multiple items (default: false)
+   * @return {Object} an object containing the form fields and action URL for the OIDC login redirect
    */
-  async replaceResultRequest(request, providerKey, url, message_id, req) {
-    this.#logger.lti("Handling Replace Result Request");
-
-    let score;
-    let sourcedIdValue;
-    try {
-      // Validate the request
-      const values = this.#LTI10Utils.validateReplaceResultRequest(request);
-      score = values.score;
-      sourcedIdValue = values.sourcedIdValue;
-    } catch (err) {
-      this.#logger.lti("Replace Result Request Validation Failed: " + err.message);
-      // Return appropriate error response based on the type of validation error
-      return this.#LTI10Utils.buildResponse(
-        "failure",
-        "invalidtargetdatafail",
-        err.message,
-        providerKey,
-        req.originalUrl,
-        message_id,
-        "replaceResult",
-      );
+  async generateLTI13DeepLinkFormData(key, client_id, deployment_id, url, ret_url, context, user, settings = {}) {
+    // Validate Inputs
+    if (!key) {
+      throw new Error("Consumer Key is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!client_id) {
+      throw new Error("Client ID is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!deployment_id) {
+      throw new Error("Deployment ID is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!url) {
+      throw new Error("Launch URL is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!ret_url) {
+      throw new Error("Return URL is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!context || !context.key || !context.label || !context.name) {
+      throw new Error("Context with key, label, and name is required to generate LTI 1.3 Deep Link Data");
+    }
+    if (!user || !user.key || !user.email) {
+      throw new Error("User with key and email is required to generate LTI 1.3 Deep Link Data");
     }
 
-    // Parse Source ID
-    const sourceValues = sourcedIdValue.split(":");
-    if (sourceValues.length != 4) {
-      this.#logger.lti("Replace Result Request: Invalid Source ID " + sourcedIdValue + " - expected 4 parts");
-      return this.#LTI10Utils.buildResponse(
-        "failure",
-        "invalididfail",
-        "Invalid Source ID " + sourcedIdValue + " - expected 4 parts",
-        providerKey,
-        req.originalUrl,
-        message_id,
-        "replaceResult",
-      );
+    // Find the Provider in the database
+    const provider = await this.#ProviderModel.findOne({ where: { key } });
+    if (!provider) {
+      throw new Error("No provider found with key " + key);
+    }
+    const auth_url = provider.auth_url;
+    if (!auth_url) {
+      throw new Error("No auth URL found for provider " + provider.name);
+    }
+    this.#logger.lti("Generating LTI 1.3 Deep Link Data for Provider " + provider.name + " (" + key + ")");
+
+    // Create the pending deep link record so the return handler can look up context
+    const deep_link_token = nanoid();
+    const deepLinkCreated = await this.#ProviderDeepLinkModel.create({
+      token: deep_link_token,
+      provider_key: key,
+      context: { context, user, ret_url },
+    });
+    if (!deepLinkCreated || deepLinkCreated.token !== deep_link_token) {
+      throw new Error("Validation Error: Unable to save LTI 1.3 Deep Link record - Aborting!");
     }
 
-    // Extract values from Source ID
-    const [contextKey, resourceKey, userKey, gradebookKey] = sourceValues;
+    // Build Login Message
+    const login = {
+      iss: new URL("/", this.#domain_name).href,
+      login_hint: nanoid(),
+      client_id: client_id,
+      lti_deployment_id: deployment_id,
+      target_link_uri: url,
+      lti_storage_target: "post_message_forwarding",
+    };
+    this.#logger.silly("Deep Link Login Data: " + JSON.stringify(login, null, 2));
 
-    // Post Provider Grade to Handler Function
-    const gradeResult = await this.#consumer_config.postProviderGrade(
-      providerKey.key,
-      contextKey,
-      resourceKey,
-      userKey,
-      gradebookKey,
-      score,
-      req,
-    );
+    // Build Data to Store in ProviderLogin (carries context through the OIDC round-trip)
+    const loginData = {
+      message_type: "LtiDeepLinkingRequest",
+      deep_link_token,
+      key,
+      url,
+      deployment_id,
+      ret_url,
+      context,
+      user,
+      settings,
+    };
 
-    if (!gradeResult || !gradeResult.success) {
-      this.#logger.lti("Failed to Post Grade: " + gradeResult.message);
-      return this.#LTI10Utils.buildResponse(
-        "failure",
-        "processingfail",
-        "Failed to Post Grade: " + gradeResult.message,
-        providerKey,
-        req.originalUrl,
-        message_id,
-        "replaceResult",
-      );
-    } else {
-      return this.#LTI10Utils.buildResponse(
-        "success",
-        "status",
-        gradeResult.message,
-        providerKey,
-        url,
-        message_id,
-        "replaceResult",
-        {
-          replaceResultResponse: {},
-        },
-      );
+    // Store in DB
+    const loginCreated = await this.#ProviderLoginModel.create({
+      client_id: client_id,
+      login_hint: login.login_hint,
+      data: JSON.stringify(loginData),
+    });
+    if (!loginCreated || loginCreated.login_hint !== login.login_hint) {
+      throw new Error("Validation Error: Unable to save LTI 1.3 Login - Aborting!");
     }
+    this.#logger.silly("Deep Link Login Created: " + JSON.stringify(loginCreated, null, 2));
+    return {
+      fields: login,
+      action: auth_url,
+    };
+  }
+
+  /**
+   * Handle LTI 1.0 XML Registration Request
+   *
+   * @param {Object} data - the data from the registration request (either XML or URL)
+   * @param {string} data.xml - the XML string containing the LTI 1.0 configuration (optional if URL is provided)
+   * @param {string} data.url - the URL to fetch the XML configuration from (optional if XML is provided)
+   * @param {string} data.key - the key to use for the new provider
+   * @param {string} data.secret - the secret to use for the new provider
+   * @return {Object} the created provider object
+   * @throws {Error} if the XML is invalid or if there is an error creating the provider
+   */
+  async lti10configxml(data) {
+    // data must include a key and secret field
+    if (!data.key) {
+      throw new Error("Invalid LTI 1.0 Configuration: Missing Key");
+    }
+    if (!data.secret) {
+      throw new Error("Invalid LTI 1.0 Configuration: Missing Secret");
+    }
+
+    const config_data = await this.#LTI10Utils.validateConfigXML(data.xml, data.url);
+
+    // Check for duplicate name in database and append random string if duplicate exists
+    const existingConsumer = await this.#ProviderController.getByName(config_data.title);
+    if (existingConsumer) {
+      config_data.title += " (" + Math.random().toString(36).substring(2, 8) + ")";
+    }
+
+    // If valid, add the LTI tool to the database
+    const provider = await this.#ProviderController.createProvider({
+      name: config_data.title,
+      lti13: false,
+      key: data.key,
+      secret: data.secret,
+      launch_url: config_data.launch_url,
+      // infer domain from launch url wihtout https:// or any path (e.g., https://example.com/path -> example.com)
+      domain: config_data?.extensions?.domain || new URL(config_data.launch_url).hostname,
+      custom: config_data.custom ? JSON.stringify(config_data.custom) : null,
+      use_section: false,
+    });
+
+    return provider;
+  }
+
+  /**
+   * Handle LTI 1.3 Dynamic Registration Request
+   *
+   * @param {string} url - the URL to fetch the registration configuration from
+   * @return {Object} the created provider object
+   * @throws {Error} if the configuration is invalid or if there is an error creating the provider
+   */
+  async lti13dynamicregistration(url) {
+    this.#logger.lti("Handling LTI 1.3 Dynamic Registration Request for URL " + url);
+
+    return await this.#LTI13Utils.handleDynamicRegistrationRequest(url, this.#consumer_config.route_prefix);
   }
 }
 
@@ -360,13 +509,13 @@ export default LTIConsumerController;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti-consumer.module_js.html">controllers/lti-consumer.js</a></li><li><a href="controllers_lti-launch.module_js.html">controllers/lti-launch.js</a></li><li><a href="controllers_lti-provider.module_js.html">controllers/lti-provider.js</a></li><li><a href="controllers_lti-register.module_js.html">controllers/lti-register.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti-consumer.module_js-LTIConsumerController.html">LTIConsumerController</a></li><li><a href="controllers_lti-launch.module_js-LTILaunchController.html">LTILaunchController</a></li><li><a href="controllers_lti-provider.module_js-LTIProviderController.html">LTIProviderController</a></li><li><a href="controllers_lti-register.module_js-LTIRegistrationController.html">LTIRegistrationController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti-consumer.module_js.html">controllers/lti-consumer.js</a></li><li><a href="controllers_lti-launch.module_js.html">controllers/lti-launch.js</a></li><li><a href="controllers_lti-lms.module_js.html">controllers/lti-lms.js</a></li><li><a href="controllers_lti-provider.module_js.html">controllers/lti-provider.js</a></li><li><a href="controllers_lti-register.module_js.html">controllers/lti-register.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_encryption.module_js.html">lib/encryption.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti-consumer.module_js-LTIConsumerController.html">LTIConsumerController</a></li><li><a href="controllers_lti-launch.module_js-LTILaunchController.html">LTILaunchController</a></li><li><a href="controllers_lti-lms.module_js-LTILMSController.html">LTILMSController</a></li><li><a href="controllers_lti-provider.module_js-LTIProviderController.html">LTIProviderController</a></li><li><a href="controllers_lti-register.module_js-LTIRegistrationController.html">LTIRegistrationController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li><li><a href="global.html#assertGradeResult">assertGradeResult</a></li><li><a href="global.html#assertLineItem">assertLineItem</a></li><li><a href="global.html#assertLineItems">assertLineItems</a></li><li><a href="global.html#assertRedirectUrl">assertRedirectUrl</a></li><li><a href="global.html#assertResults">assertResults</a></li><li><a href="global.html#assertScoreResult">assertScoreResult</a></li><li><a href="global.html#clearJwksCache">clearJwksCache</a></li><li><a href="global.html#getJwksClient">getJwksClient</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Apr 10 2026 19:34:45 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jun 18 2026 18:06:18 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

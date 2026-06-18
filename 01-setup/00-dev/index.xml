@@ -3,7 +3,7 @@
   <channel>
     <title>Developing :: LTI Toolkit</title>
     <link>https://alt.cs.ksu.edu/lti-toolkit/01-setup/00-dev/index.html</link>
-    <description>Development guide coming soon!</description>
+    <description>This guide covers setting up a development environment for the LTI Toolkit library and its example applications using the provided Dev Container. All development is expected to happen inside the container — a bare local Node.js installation is not documented or recommended.&#xA;Requirements The following must be in place on the host machine before opening the Dev Container:&#xA;Docker Engine (or Docker Desktop) — the local user should be in the docker group VS Code with the Dev Containers extension, or any other editor that supports the Dev Containers spec A Traefik reverse proxy attached to an external Docker network named traefik, with a world-routable DNS name and TLS certificates configured via Let’s Encrypt See Traefik documentation for setup instructions A world-routable domain is required because LTI launches from Canvas (and most other LMS systems) will not reach localhost or private IPs — see the Canvas Installation page for more context on this requirement Options for a world-routable endpoint include a home server with port forwarding and dynamic DNS, a cloud VM, or a tunnel service such as ngrok or Cloudflare Tunnel 1. Clone the Repository ​ terminal $ git clone git@github.com:alt-cs-lab/lti-toolkit.git $ cd lti-toolkit 2. Configure the Dev Container Two files need to be customized before opening the container.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <atom:link href="https://alt.cs.ksu.edu/lti-toolkit/01-setup/00-dev/index.xml" rel="self" type="application/rss+xml" />

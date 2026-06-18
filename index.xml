@@ -3,7 +3,7 @@
   <channel>
     <title>LTI-Toolkit :: LTI Toolkit</title>
     <link>https://alt.cs.ksu.edu/lti-toolkit/index.html</link>
-    <description>This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.&#xA;Features&#xA;Act as an LTI 1.0 and LTI 1.3 Tool Provider (Learning Tool) connected to Canvas LMS Act as an LTI 1.0 Tool Consumer (LMS) connected to other LTI 1.0 Tool Providers Receive Grades from LTI 1.0 Tool Provider Pass Simple Grades to LTI 1.0 or LTI 1.3 Tool Consumer Supports all Canvas privacy levels in LTI Launch Requests to LTI 1.0 Tool Providers Supports test students from Canvas in LTI 1.0 and LTI 1.3 Launch Requests Handles LTI 1.3 Dynamic Registration and Deep Linking as a Tool Provider Provides LTI 1.0 XML Configuration as a Tool Provider Limitations</description>
+    <description>This project is yet another toolkit for developing LTI (Learning Tools Interoperability) applications. It can act both as an LTI Tool Provider (a service integrated with a learning management system) using either LTI 1.0 or LTI 1.3, and it can also act as an LTI Tool Consumer (a learning management system) using LTI 1.0.&#xA;Features&#xA;Act as an LTI 1.0 and LTI 1.3 Tool Provider (Learning Tool) connected to Canvas LMS Act as an LTI 1.0 and LTI 1.3 Tool Consumer (LMS) connected to other LTI Tool Providers Receive Grades from LTI 1.0 and LTI 1.3 Tool Providers Pass Simple Grades to LTI 1.0 or LTI 1.3 Tool Consumer Supports all Canvas privacy levels in LTI Launch Requests to LTI 1.0 and LTI 1.3 Tool Providers Supports test students from Canvas in LTI 1.0 and LTI 1.3 Launch Requests Handles LTI 1.3 Dynamic Registration and Deep Linking as a Tool Provider Initiates LTI 1.3 Deep Linking requests and processes Deep Link responses as a Tool Consumer Provides LTI 1.0 XML Configuration as a Tool Provider Encrypts LTI consumer/provider secrets and private keys at rest using AES-256-GCM Limitations</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <atom:link href="https://alt.cs.ksu.edu/lti-toolkit/index.xml" rel="self" type="application/rss+xml" />
@@ -12,7 +12,7 @@
       <link>https://alt.cs.ksu.edu/lti-toolkit/00-general/index.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://alt.cs.ksu.edu/lti-toolkit/00-general/index.html</guid>
-      <description>General Documentation for the LTI Toolkit&#xA;Examples Database Schema</description>
+      <description>General Documentation for the LTI Toolkit&#xA;Examples Database Schema Changelog</description>
     </item>
     <item>
       <title>Dev Setup</title>

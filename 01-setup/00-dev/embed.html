@@ -6,51 +6,59 @@
     <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <meta name="generator" content="Hugo 0.148.1">
     <meta name="generator" content="Relearn 8.0.0">
-    <meta name="description" content="Development guide coming soon!">
+    <meta name="description" content="This guide covers setting up a development environment for the LTI Toolkit library and its example applications using the provided Dev Container. All development is expected to happen inside the container — a bare local Node.js installation is not documented or recommended.
+Requirements The following must be in place on the host machine before opening the Dev Container:
+Docker Engine (or Docker Desktop) — the local user should be in the docker group VS Code with the Dev Containers extension, or any other editor that supports the Dev Containers spec A Traefik reverse proxy attached to an external Docker network named traefik, with a world-routable DNS name and TLS certificates configured via Let’s Encrypt See Traefik documentation for setup instructions A world-routable domain is required because LTI launches from Canvas (and most other LMS systems) will not reach localhost or private IPs — see the Canvas Installation page for more context on this requirement Options for a world-routable endpoint include a home server with port forwarding and dynamic DNS, a cloud VM, or a tunnel service such as ngrok or Cloudflare Tunnel 1. Clone the Repository ​ terminal $ git clone git@github.com:alt-cs-lab/lti-toolkit.git $ cd lti-toolkit 2. Configure the Dev Container Two files need to be customized before opening the container.">
     <meta name="author" content="K-State ALT&#43;CS Lab">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <meta name="twitter:title" content="Developing :: LTI Toolkit">
-    <meta name="twitter:description" content="Development guide coming soon!">
+    <meta name="twitter:description" content="This guide covers setting up a development environment for the LTI Toolkit library and its example applications using the provided Dev Container. All development is expected to happen inside the container — a bare local Node.js installation is not documented or recommended.
+Requirements The following must be in place on the host machine before opening the Dev Container:
+Docker Engine (or Docker Desktop) — the local user should be in the docker group VS Code with the Dev Containers extension, or any other editor that supports the Dev Containers spec A Traefik reverse proxy attached to an external Docker network named traefik, with a world-routable DNS name and TLS certificates configured via Let’s Encrypt See Traefik documentation for setup instructions A world-routable domain is required because LTI launches from Canvas (and most other LMS systems) will not reach localhost or private IPs — see the Canvas Installation page for more context on this requirement Options for a world-routable endpoint include a home server with port forwarding and dynamic DNS, a cloud VM, or a tunnel service such as ngrok or Cloudflare Tunnel 1. Clone the Repository ​ terminal $ git clone git@github.com:alt-cs-lab/lti-toolkit.git $ cd lti-toolkit 2. Configure the Dev Container Two files need to be customized before opening the container.">
     <meta property="og:url" content="https://alt.cs.ksu.edu/lti-toolkit/01-setup/00-dev/index.html">
     <meta property="og:site_name" content="LTI Toolkit">
     <meta property="og:title" content="Developing :: LTI Toolkit">
-    <meta property="og:description" content="Development guide coming soon!">
+    <meta property="og:description" content="This guide covers setting up a development environment for the LTI Toolkit library and its example applications using the provided Dev Container. All development is expected to happen inside the container — a bare local Node.js installation is not documented or recommended.
+Requirements The following must be in place on the host machine before opening the Dev Container:
+Docker Engine (or Docker Desktop) — the local user should be in the docker group VS Code with the Dev Containers extension, or any other editor that supports the Dev Containers spec A Traefik reverse proxy attached to an external Docker network named traefik, with a world-routable DNS name and TLS certificates configured via Let’s Encrypt See Traefik documentation for setup instructions A world-routable domain is required because LTI launches from Canvas (and most other LMS systems) will not reach localhost or private IPs — see the Canvas Installation page for more context on this requirement Options for a world-routable endpoint include a home server with port forwarding and dynamic DNS, a cloud VM, or a tunnel service such as ngrok or Cloudflare Tunnel 1. Clone the Repository ​ terminal $ git clone git@github.com:alt-cs-lab/lti-toolkit.git $ cd lti-toolkit 2. Configure the Dev Container Two files need to be customized before opening the container.">
     <meta property="og:locale" content="en_us">
     <meta property="og:type" content="article">
     <meta property="article:section" content="Dev Setup">
-    <meta property="article:modified_time" content="2026-01-16T23:33:46+00:00">
+    <meta property="article:modified_time" content="2026-06-18T16:28:17+00:00">
     <meta property="og:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <meta itemprop="name" content="Developing :: LTI Toolkit">
-    <meta itemprop="description" content="Development guide coming soon!">
-    <meta itemprop="dateModified" content="2026-01-16T23:33:46+00:00">
-    <meta itemprop="wordCount" content="4">
+    <meta itemprop="description" content="This guide covers setting up a development environment for the LTI Toolkit library and its example applications using the provided Dev Container. All development is expected to happen inside the container — a bare local Node.js installation is not documented or recommended.
+Requirements The following must be in place on the host machine before opening the Dev Container:
+Docker Engine (or Docker Desktop) — the local user should be in the docker group VS Code with the Dev Containers extension, or any other editor that supports the Dev Containers spec A Traefik reverse proxy attached to an external Docker network named traefik, with a world-routable DNS name and TLS certificates configured via Let’s Encrypt See Traefik documentation for setup instructions A world-routable domain is required because LTI launches from Canvas (and most other LMS systems) will not reach localhost or private IPs — see the Canvas Installation page for more context on this requirement Options for a world-routable endpoint include a home server with port forwarding and dynamic DNS, a cloud VM, or a tunnel service such as ngrok or Cloudflare Tunnel 1. Clone the Repository ​ terminal $ git clone git@github.com:alt-cs-lab/lti-toolkit.git $ cd lti-toolkit 2. Configure the Dev Container Two files need to be customized before opening the container.">
+    <meta itemprop="dateModified" content="2026-06-18T16:28:17+00:00">
+    <meta itemprop="wordCount" content="953">
     <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
     <title>Developing :: LTI Toolkit</title>
     <link href="https://alt.cs.ksu.edu/lti-toolkit/01-setup/00-dev/index.html" rel="canonical" type="text/html" title="Developing :: LTI Toolkit">
     <link href="/lti-toolkit/01-setup/00-dev/index.xml" rel="alternate" type="application/rss+xml" title="Developing :: LTI Toolkit">
     <link href="/lti-toolkit/01-setup/00-dev/index.print.html" rel="alternate" type="text/html" title="Developing :: LTI Toolkit">
     <link href="/lti-toolkit/01-setup/00-dev/tele.html" rel="alternate" type="text/html" title="Developing :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1775849707" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1775849707" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1775849707" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1775849707" defer></script>
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1781805999" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1781805999" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1775849707";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1781805999";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1775849707" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1775849707" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1775849707" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1775849707" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1781805999" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1775849707" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1775849707" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1775849707" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1775849707" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-html.min.css?1775849707" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1781805999" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1781805999" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1781805999" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1781805999" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-html.min.css?1781805999" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -109,7 +117,7 @@
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1775849707" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1781805999" rel="stylesheet">
   </head>
   <body class="mobile-support embed html" data-url="/lti-toolkit/01-setup/00-dev/index.html">
     <div id="R-body" class="default-animation">
@@ -126,7 +134,416 @@
 
 <h1 id="developing">Developing</h1>
 
-<p>Development guide coming soon!</p>
+<p>This guide covers setting up a development environment for the LTI Toolkit library and its example applications using the provided Dev Container. All development is expected to happen inside the container — a bare local Node.js installation is not documented or recommended.</p>
+<h2 id="requirements">Requirements</h2>
+<p>The following must be in place on the host machine before opening the Dev Container:</p>
+<ul>
+<li><a href="https://docs.docker.com/engine/install/" rel="external" target="_blank">Docker Engine</a> (or Docker Desktop) — the local user should be in the <code>docker</code> group</li>
+<li><a href="https://code.visualstudio.com/" rel="external" target="_blank">VS Code</a> with the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers" rel="external" target="_blank">Dev Containers extension</a>, or any other editor that supports the Dev Containers spec</li>
+<li>A Traefik reverse proxy attached to an external Docker network named <code>traefik</code>, with a world-routable DNS name and TLS certificates configured via Let&rsquo;s Encrypt
+<ul>
+<li>See <a href="https://doc.traefik.io/traefik/" rel="external" target="_blank">Traefik documentation</a> for setup instructions</li>
+<li>A world-routable domain is required because LTI launches from Canvas (and most other LMS systems) will not reach <code>localhost</code> or private IPs — see the <a href="/lti-toolkit/01-setup/01-canvas/index.html">Canvas Installation</a> page for more context on this requirement</li>
+<li>Options for a world-routable endpoint include a home server with port forwarding and dynamic DNS, a cloud VM, or a tunnel service such as <a href="https://ngrok.com/" rel="external" target="_blank">ngrok</a> or <a href="https://www.cloudflare.com/products/tunnel/" rel="external" target="_blank">Cloudflare Tunnel</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="1-clone-the-repository">1. Clone the Repository</h2>
+<div class="tab-panel" data-tab-group="9602d89db6dee3d844cb8361e107f9ad">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('9602d89db6dee3d844cb8361e107f9ad','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git clone git@github.com:alt-cs-lab/lti-toolkit.git
+</span></span><span style="display:flex;"><span>$ cd lti-toolkit</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><h2 id="2-configure-the-dev-container">2. Configure the Dev Container</h2>
+<p>Two files need to be customized before opening the container.</p>
+<h3 id="composeyml">compose.yml</h3>
+<p><code>.devcontainer/compose.yml</code> contains the Traefik routing labels. Replace the domain names with your own subdomains. The provider example listens on port <code>3000</code> and the consumer example on port <code>3001</code>.</p>
+<div class="tab-panel" data-tab-group="9b7a67013e34340bb3e782e5fbdcfab5">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="devcontainercomposeyml"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('9b7a67013e34340bb3e782e5fbdcfab5','devcontainercomposeyml')"
+    >
+      <span class="tab-nav-text">.devcontainer/compose.yml</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="devcontainercomposeyml"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span>      # Routing Rule
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-     - &#34;traefik.http.routers.ltitool.rule=Host(`ltitool.home.russfeld.me`)&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+     - &#34;traefik.http.routers.ltitool.rule=Host(`ltitool.yourdomain.tld`)&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span>      ...
+</span></span><span style="display:flex;"><span>      # Routing Rule
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-     - &#34;traefik.http.routers.ltilms.rule=Host(`ltilms.home.russfeld.me`)&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+     - &#34;traefik.http.routers.ltilms.rule=Host(`ltilms.yourdomain.tld`)&#34;
+</span></span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>The router names (<code>ltitool</code>, <code>ltilms</code>) can also be changed if they conflict with existing Traefik routes.</p>
+<h3 id="devcontainerjson">devcontainer.json</h3>
+<p><code>.devcontainer/devcontainer.json</code> includes a <code>mounts</code> entry that bind-mounts the host&rsquo;s GPG keyring into the container, enabling GPG-signed commits from inside VS Code. Update the source path to match your host username:</p>
+<div class="tab-panel" data-tab-group="e944fbc62e332023261b1ce752851568">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="devcontainerdevcontainerjson"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('e944fbc62e332023261b1ce752851568','devcontainerdevcontainerjson')"
+    >
+      <span class="tab-nav-text">.devcontainer/devcontainer.json</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="devcontainerdevcontainerjson"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span><span style="color:#f92672">-  &#34;mounts&#34;: [&#34;source=/home/youboon2/.gnupg,target=/home/node/.gnupg,type=bind,consistency=cached&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+  &#34;mounts&#34;: [&#34;source=/home/YOUR_USERNAME/.gnupg,target=/home/node/.gnupg,type=bind,consistency=cached&#34;]
+</span></span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>If you do not use GPG-signed commits, remove the <code>mounts</code> line entirely.</p>
+<h2 id="3-open-in-the-dev-container">3. Open in the Dev Container</h2>
+<p>In VS Code, open the repository folder and when prompted, click <strong>Reopen in Container</strong> (or run <strong>Dev Containers: Reopen in Container</strong> from the command palette). On first open, Docker will build the container image and run <code>npm install</code> automatically via the <code>postCreateCommand</code>.</p>
+<p>The container image is based on <code>javascript-node:24-trixie</code> and includes:</p>
+<ul>
+<li>Node.js 24</li>
+<li>Go (required by Hugo)</li>
+<li>Hugo <code>0.148.1</code> (for the documentation site)</li>
+<li>VS Code extensions: SQLite Viewer, Draw.io Integration</li>
+</ul>
+<h2 id="4-configure-the-example-applications">4. Configure the Example Applications</h2>
+<p>Each example app has its own environment file. Copy the example and fill in your values.</p>
+<h3 id="tool-provider-examplesprovider">Tool Provider (<code>examples/provider</code>)</h3>
+<div class="tab-panel" data-tab-group="c29d2268c97a4ff2c5892af0058609b4">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('c29d2268c97a4ff2c5892af0058609b4','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ cp examples/provider/.env.example examples/provider/.env</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>Key values to set:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Variable</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>SESSION_SECRET</code></td>
+          <td>Any random string for Express session signing</td>
+      </tr>
+      <tr>
+          <td><code>DOMAIN_NAME</code></td>
+          <td>Full URL of the provider (e.g. <code>https://ltitool.yourdomain.tld</code>)</td>
+      </tr>
+      <tr>
+          <td><code>ADMIN_EMAIL</code></td>
+          <td>Contact email shown in LTI config XML</td>
+      </tr>
+      <tr>
+          <td><code>LTI_ENCRYPTION_KEY</code></td>
+          <td>64-character hex key — generate with <code>openssl rand -hex 32</code></td>
+      </tr>
+      <tr>
+          <td><code>LTI_CONSUMER_KEY</code></td>
+          <td>LTI 1.0 shared key seeded at startup (can be any string)</td>
+      </tr>
+      <tr>
+          <td><code>LTI_CONSUMER_SECRET</code></td>
+          <td>LTI 1.0 shared secret seeded at startup (can be any string)</td>
+      </tr>
+      <tr>
+          <td><code>ADMIN_PASSWORD</code></td>
+          <td>Password for HTTP Basic Auth on admin routes</td>
+      </tr>
+      <tr>
+          <td><code>LTI_13_LMS_DOMAIN</code></td>
+          <td>Base URL of your LMS (e.g. <code>https://canvas.instructure.com</code>)</td>
+      </tr>
+      <tr>
+          <td><code>LOG_LEVEL</code></td>
+          <td>Logging verbosity — <code>lti</code> is recommended for development</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="tool-consumer-examplesconsumer">Tool Consumer (<code>examples/consumer</code>)</h3>
+<div class="tab-panel" data-tab-group="273b04131159d91676137df5a2c78482">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('273b04131159d91676137df5a2c78482','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ cp examples/consumer/.env.example examples/consumer/.env</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>Key values to set:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Variable</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>SESSION_SECRET</code></td>
+          <td>Any random string for Express session signing</td>
+      </tr>
+      <tr>
+          <td><code>DOMAIN_NAME</code></td>
+          <td>Full URL of the consumer (e.g. <code>https://ltilms.yourdomain.tld</code>)</td>
+      </tr>
+      <tr>
+          <td><code>ADMIN_EMAIL</code></td>
+          <td>Contact email</td>
+      </tr>
+      <tr>
+          <td><code>LTI_ENCRYPTION_KEY</code></td>
+          <td>64-character hex key — generate with <code>openssl rand -hex 32</code></td>
+      </tr>
+      <tr>
+          <td><code>ADMIN_PASSWORD</code></td>
+          <td>Password for HTTP Basic Auth on admin routes</td>
+      </tr>
+      <tr>
+          <td><code>DEPLOYMENT_NAME</code></td>
+          <td>Human-readable name for this LMS deployment</td>
+      </tr>
+      <tr>
+          <td><code>DEPLOYMENT_ID</code></td>
+          <td>Identifier string for this deployment</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="5-install-example-dependencies">5. Install Example Dependencies</h2>
+<p>The root <code>npm install</code> (run automatically on container creation) only installs library dependencies. Each example app needs its own install:</p>
+<div class="tab-panel" data-tab-group="64b61b271dd74317e5867e8a8a1b17bc">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('64b61b271dd74317e5867e8a8a1b17bc','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ cd examples/provider <span style="color:#f92672">&amp;&amp;</span> npm install
+</span></span><span style="display:flex;"><span>$ cd ../consumer <span style="color:#f92672">&amp;&amp;</span> npm install</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><h2 id="6-run-the-example-applications">6. Run the Example Applications</h2>
+<p>Each example has a <code>dev</code> script that uses <code>nodemon</code> for automatic reloading on file changes.</p>
+<div class="tab-panel" data-tab-group="0aa8c1d854b95c52e78bef1e54f10486">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('0aa8c1d854b95c52e78bef1e54f10486','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># In one terminal</span>
+</span></span><span style="display:flex;"><span>$ cd examples/provider <span style="color:#f92672">&amp;&amp;</span> npm run dev
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># In a second terminal</span>
+</span></span><span style="display:flex;"><span>$ cd examples/consumer <span style="color:#f92672">&amp;&amp;</span> npm run dev</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><ul>
+<li>Provider is available at <code>http://localhost:3000</code> inside the container and at <code>https://ltitool.yourdomain.tld</code> externally via Traefik</li>
+<li>Consumer is available at <code>http://localhost:3001</code> inside the container and at <code>https://ltilms.yourdomain.tld</code> externally via Traefik</li>
+</ul>
+<p>The SQLite database for each app is created automatically on first run in the app&rsquo;s root directory (<code>examples/provider/database.sqlite</code>, <code>examples/consumer/database.sqlite</code>). To reset all state, stop the server and delete the file.</p>
+<h2 id="7-run-the-library-tests">7. Run the Library Tests</h2>
+<p>From the repository root:</p>
+<div class="tab-panel" data-tab-group="e242699d2c4ec8064993b2f780d88d46">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('e242699d2c4ec8064993b2f780d88d46','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Run tests only</span>
+</span></span><span style="display:flex;"><span>$ npm test
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Run tests with coverage report (output written to docs/static/coverage/)</span>
+</span></span><span style="display:flex;"><span>$ npm run cov</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>The test suite requires 100% code coverage to pass. Coverage reports are generated as HTML in <code>docs/static/coverage/</code> and can be browsed at <code>/coverage/</code> on the running documentation site.</p>
+<h2 id="8-run-the-documentation-site">8. Run the Documentation Site</h2>
+<p>Hugo is installed in the container. From the <code>docs/</code> directory:</p>
+<div class="tab-panel" data-tab-group="537e180f7c2a12998e7f60f7e4d09987">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('537e180f7c2a12998e7f60f7e4d09987','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ cd docs
+</span></span><span style="display:flex;"><span>$ hugo server --bind 0.0.0.0</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>The <code>--bind 0.0.0.0</code> flag is needed to make the server reachable via VS Code&rsquo;s port forwarding. VS Code will prompt to forward port <code>1313</code> — open the forwarded URL in your browser to browse the docs locally. The site hot-reloads on file changes.</p>
+<h2 id="9-linting-and-formatting">9. Linting and Formatting</h2>
+<div class="tab-panel" data-tab-group="04e04916154b9b753522c1abd86ad298">
+  <div class="tab-nav">
+    <div class="tab-nav-title">&#8203;</div>
+    <button
+      data-tab-item="terminal"
+      class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
+      onclick="switchTab('04e04916154b9b753522c1abd86ad298','terminal')"
+    >
+      <span class="tab-nav-text">terminal</span>
+    </button>
+  </div>
+  <div class="tab-content-container">
+    <div
+      data-tab-item="terminal"
+      class="tab-content tab-panel-style cstyle initial active">
+      <div class="tab-content-text">
+<div class="highlight" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Auto-fix lint issues</span>
+</span></span><span style="display:flex;"><span>$ npm run lint
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Auto-format with Prettier</span>
+</span></span><span style="display:flex;"><span>$ npm run format</span></span></code></pre></div>
+      </div>
+    </div>
+  </div>
+</div><p>Both are run automatically as part of the <code>preversion</code> hook when cutting a release, but can be run at any time during development.</p>
+<h2 id="project-structure-summary">Project Structure Summary</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Path</th>
+          <th>Contents</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>src/</code></td>
+          <td>Library source code</td>
+      </tr>
+      <tr>
+          <td><code>test/</code></td>
+          <td>Unit tests (mirrors <code>src/</code> structure)</td>
+      </tr>
+      <tr>
+          <td><code>examples/provider/</code></td>
+          <td>Tool Provider example app</td>
+      </tr>
+      <tr>
+          <td><code>examples/consumer/</code></td>
+          <td>Tool Consumer example app</td>
+      </tr>
+      <tr>
+          <td><code>docs/</code></td>
+          <td>Hugo documentation site</td>
+      </tr>
+      <tr>
+          <td><code>docs/content/</code></td>
+          <td>Documentation markdown files</td>
+      </tr>
+      <tr>
+          <td><code>docs/static/coverage/</code></td>
+          <td>Generated coverage report (gitignored until release)</td>
+      </tr>
+      <tr>
+          <td><code>index.js</code></td>
+          <td>Library entry point</td>
+      </tr>
+      <tr>
+          <td><code>index.d.ts</code></td>
+          <td>TypeScript type declarations</td>
+      </tr>
+  </tbody>
+</table>
 
   <footer class="footline">
   </footer>
@@ -137,9 +554,9 @@
       
       
     </div>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1775849707" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1775849707" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1775849707" defer></script>
-  <script src="/lti-toolkit/js/embed-iframe.min.js?1775849707" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1781805999" defer></script>
+  <script src="/lti-toolkit/js/embed-iframe.min.js?1781805999" defer></script>
   </body>
 </html>

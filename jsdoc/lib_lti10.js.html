@@ -116,7 +116,7 @@ class LTI10Utils {
     // Part 1 - HTTP method in uppercase
     const part1 = LTI10Utils.#rfc3986(http_method.toUpperCase());
     // Part 2 - Base String URI
-    // TODO update this to read domain name from headers?
+    // domain_name must be the public-facing URL so this matches the URL the LMS signed
     const part2 = LTI10Utils.#rfc3986(new URL(base_uri, this.#domain_name).href);
     // Part 3 - Parameters
     const part3 = LTI10Utils.#rfc3986(LTI10Utils.#normalizeParams(params));
@@ -328,8 +328,10 @@ class LTI10Utils {
       signedParams,
       consumerKey.secret,
     );
-    // Compare extracted signature to computed
-    if (computedSignature !== oauth_signature) {
+    // Compare extracted signature to computed (timing-safe to prevent timing attacks)
+    const computedBuf = Buffer.from(computedSignature);
+    const providedBuf = Buffer.from(oauth_signature);
+    if (computedBuf.length !== providedBuf.length || !crypto.timingSafeEqual(computedBuf, providedBuf)) {
       throw new Error("Validation Error: Invalid OAuth Signature");
     }
 
@@ -490,6 +492,138 @@ class LTI10Utils {
       }
     } else {
       throw new Error("Failed to post grade: HTTP " + response.status + " - " + response.statusText);
+    }
+  }
+
+  /**
+   * Read a grade from a consumer via LTI 1.0 Basic Outcomes readResult
+   *
+   * @param {string} lms_grade_id - the LMS grade ID (sourcedId)
+   * @param {string} consumer_key - the consumer key
+   * @param {string} url - the grade passback URL
+   * @returns {number|null} the score (0.0 - 1.0), or null if no grade is on file
+   * @throws {Error} if required information is missing or if the request fails
+   */
+  async readOutcome(lms_grade_id, consumer_key, url) {
+    const envelope = {
+      imsx_POXEnvelopeRequest: {
+        $: { xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0" },
+        imsx_POXHeader: {
+          imsx_POXRequestHeaderInfo: {
+            imsx_version: "V1.0",
+            imsx_messageIdentifier: nanoid(),
+          },
+        },
+        imsx_POXBody: {
+          readResultRequest: {
+            resultRecord: {
+              sourcedGUID: { sourcedId: lms_grade_id },
+            },
+          },
+        },
+      },
+    };
+    const builder = new xml2js.Builder();
+    const content = builder.buildObject(envelope);
+
+    const providerKey = await this.#ConsumerKeyModel.findByPk(consumer_key, { attributes: ["key", "secret"] });
+    if (!providerKey) {
+      throw new Error("Error: Invalid Consumer Key");
+    }
+
+    const authHeader = await this.#signOauthBody(content, providerKey.key, providerKey.secret, "POST", url);
+    this.#logger.lti("Reading grade from LTI 1.0 Outcome Service at " + url);
+
+    const response = await ky.post(url, {
+      headers: { "Content-Type": "application/xml", Authorization: authHeader },
+      body: content,
+    });
+
+    if (response &amp;&amp; response.status === 200) {
+      const responseText = await response.text();
+      const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+      const responseXml = await parser.parseStringPromise(responseText);
+      this.#logger.silly("Response XML: " + JSON.stringify(responseXml, null, 2));
+      if (
+        responseXml.imsx_POXEnvelopeResponse.imsx_POXHeader.imsx_POXResponseHeaderInfo.imsx_statusInfo
+          .imsx_codeMajor === "success"
+      ) {
+        const body = responseXml.imsx_POXEnvelopeResponse.imsx_POXBody;
+        const textString = body?.readResultResponse?.result?.resultScore?.textString;
+        if (!textString) {
+          this.#logger.lti("No grade on file");
+          return null;
+        }
+        this.#logger.lti("Grade read successfully: " + textString);
+        return parseFloat(textString);
+      } else {
+        throw new Error("Failed to read grade: " + JSON.stringify(responseXml, null, 2));
+      }
+    } else {
+      throw new Error("Failed to read grade: HTTP " + response.status + " - " + response.statusText);
+    }
+  }
+
+  /**
+   * Delete a grade from a consumer via LTI 1.0 Basic Outcomes deleteResult
+   *
+   * @param {string} lms_grade_id - the LMS grade ID (sourcedId)
+   * @param {string} consumer_key - the consumer key
+   * @param {string} url - the grade passback URL
+   * @returns {boolean} true if the grade was deleted successfully
+   * @throws {Error} if required information is missing or if the request fails
+   */
+  async deleteOutcome(lms_grade_id, consumer_key, url) {
+    const envelope = {
+      imsx_POXEnvelopeRequest: {
+        $: { xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0" },
+        imsx_POXHeader: {
+          imsx_POXRequestHeaderInfo: {
+            imsx_version: "V1.0",
+            imsx_messageIdentifier: nanoid(),
+          },
+        },
+        imsx_POXBody: {
+          deleteResultRequest: {
+            resultRecord: {
+              sourcedGUID: { sourcedId: lms_grade_id },
+            },
+          },
+        },
+      },
+    };
+    const builder = new xml2js.Builder();
+    const content = builder.buildObject(envelope);
+
+    const providerKey = await this.#ConsumerKeyModel.findByPk(consumer_key, { attributes: ["key", "secret"] });
+    if (!providerKey) {
+      throw new Error("Error: Invalid Consumer Key");
+    }
+
+    const authHeader = await this.#signOauthBody(content, providerKey.key, providerKey.secret, "POST", url);
+    this.#logger.lti("Deleting grade from LTI 1.0 Outcome Service at " + url);
+
+    const response = await ky.post(url, {
+      headers: { "Content-Type": "application/xml", Authorization: authHeader },
+      body: content,
+    });
+
+    if (response &amp;&amp; response.status === 200) {
+      const responseText = await response.text();
+      const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+      const responseXml = await parser.parseStringPromise(responseText);
+      this.#logger.silly("Response XML: " + JSON.stringify(responseXml, null, 2));
+      if (
+        responseXml.imsx_POXEnvelopeResponse.imsx_POXHeader.imsx_POXResponseHeaderInfo.imsx_statusInfo
+          .imsx_codeMajor === "success"
+      ) {
+        this.#logger.lti("Grade deleted successfully");
+        return true;
+      } else {
+        throw new Error("Failed to delete grade: " + JSON.stringify(responseXml, null, 2));
+      }
+    } else {
+      throw new Error("Failed to delete grade: HTTP " + response.status + " - " + response.statusText);
     }
   }
 
@@ -693,6 +827,151 @@ class LTI10Utils {
       sourcedIdValue: sourcedId["sourcedid"],
     };
   }
+
+  /**
+   * Validate a Basic Outcomes Read or Delete Result Request
+   *
+   * @param {Object} request - The read/delete result request body extracted from the envelope
+   * @throws {Error} if the request is not a valid Basic Outcomes Read/Delete Result Request
+   * @returns {Object} an object containing the sourcedIdValue if the request is valid
+   */
+  validateSourcedIdRequest(request) {
+    if (!request["resultrecord"]) {
+      throw new Error("Read/Delete Result: Missing Result Record");
+    }
+    const resultRecord = request["resultrecord"];
+    if (!resultRecord["sourcedguid"]) {
+      throw new Error("Read/Delete Result: Missing Result Source ID");
+    }
+    const sourcedId = resultRecord["sourcedguid"];
+    if (!sourcedId["sourcedid"] || sourcedId["sourcedid"].length === 0) {
+      throw new Error("Read/Delete Result: Missing Result Source ID Value");
+    }
+    return { sourcedIdValue: sourcedId["sourcedid"] };
+  }
+
+  /**
+   * Validate an incoming LTI 1.0 XML Configuration Message
+   *
+   * @param {string} xml - the XML string to validate
+   * @throws {Error} if the XML is not a valid LTI 1.0 Configuration Message
+   * @returns {Object} an object containing the configuration data
+   */
+  async validateConfigXML(xml, url) {
+    // Either XML or URL must be included
+    if (!xml &amp;&amp; !url) {
+      throw new Error("Validation Error: Missing XML Configuration and URL");
+    }
+
+    // If URL is included, fetch XML from URL
+    if (url) {
+      try {
+        const response = await ky.get(url);
+        if (response &amp;&amp; response.status === 200) {
+          xml = await response.text();
+        } else {
+          throw new Error("HTTP " + response.status + " - " + response.statusText);
+        }
+      } catch (error) {
+        throw new Error("Failed to fetch XML from URL: " + error.message, { cause: error });
+      }
+    }
+
+    const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+    let config;
+    config = await parser.parseStringPromise(xml);
+    this.#logger.silly("Parsed LTI Configuration: " + JSON.stringify(config, null, 2));
+    /** Should look like this:
+     * &lt;cartridge_basiclti_link 
+  xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0" 
+  xmlns:blti="http://www.imsglobal.org/xsd/imsbasiclti_v1p0" 
+  xmlns:lticm="http://www.imsglobal.org/xsd/imslticm_v1p0" 
+  xmlns:lticp="http://www.imsglobal.org/xsd/imslticp_v1p0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.imsglobal.org/xsd/imslticc_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticc_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imsbasiclti_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imslticm_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imslticp_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd"
+  >
+  &lt;blti:title>LTI Toolkit&lt;/blti:title>
+  &lt;blti:description>LTI Toolkit for LTI Tool Providers&lt;/blti:description>
+  &lt;blti:icon>https://placehold.co/64x64.png&lt;/blti:icon>
+  &lt;blti:launch_url>https://ltidemo.home.russfeld.me/lti/provider/launch10&lt;/blti:launch_url>
+  &lt;blti:custom>
+    &lt;lticm:property name="custom_name">custom_value&lt;/lticm:property>
+  &lt;/blti:custom>
+  &lt;blti:extensions platform="canvas.instructure.com">
+    &lt;lticm:property name="tool_id">lti_toolkit&lt;/lticm:property>
+    &lt;lticm:property name="privacy_level">public&lt;/lticm:property>
+    &lt;lticm:property name="domain">ltidemo.home.russfeld.me&lt;/lticm:property>
+  &lt;/blti:extensions>
+  &lt;cartridge_bundle identifierref="BLTI001_Bundle"/>
+  &lt;cartridge_icon identifierref="BLTI001_Icon"/>
+&lt;/cartridge_basiclti_link>
+     */
+    if (!config.cartridge_basiclti_link) {
+      throw new Error("Invalid LTI Configuration: Missing Root Element");
+    }
+    if (!config.cartridge_basiclti_link["$"] || !config.cartridge_basiclti_link["$"]["xmlns"]) {
+      throw new Error("Invalid LTI Configuration: Missing Namespace");
+    }
+    if (config.cartridge_basiclti_link["$"]["xmlns"] !== "http://www.imsglobal.org/xsd/imslticc_v1p0") {
+      throw new Error("Invalid LTI Configuration: Invalid Namespace");
+    }
+    if (!config.cartridge_basiclti_link["blti:title"]) {
+      throw new Error("Invalid LTI Configuration: Missing Title");
+    }
+    if (!config.cartridge_basiclti_link["blti:description"]) {
+      throw new Error("Invalid LTI Configuration: Missing Description");
+    }
+    if (!config.cartridge_basiclti_link["blti:icon"]) {
+      throw new Error("Invalid LTI Configuration: Missing Icon");
+    }
+    if (!config.cartridge_basiclti_link["blti:launch_url"]) {
+      throw new Error("Invalid LTI Configuration: Missing Launch URL");
+    }
+    // Build configuration object
+    const configuration = {
+      title: config.cartridge_basiclti_link["blti:title"],
+      description: config.cartridge_basiclti_link["blti:description"],
+      icon: config.cartridge_basiclti_link["blti:icon"],
+      launch_url: config.cartridge_basiclti_link["blti:launch_url"],
+      custom: {},
+      extensions: {},
+    };
+    if (
+      config.cartridge_basiclti_link["blti:custom"] &amp;&amp;
+      config.cartridge_basiclti_link["blti:custom"]["lticm:property"]
+    ) {
+      const customProperties = config.cartridge_basiclti_link["blti:custom"]["lticm:property"];
+      if (Array.isArray(customProperties)) {
+        customProperties.forEach((prop) => {
+          configuration.custom[prop["$"]["name"]] = prop["_"];
+        });
+      } else {
+        configuration.custom[customProperties["$"]["name"]] = customProperties["_"];
+      }
+    }
+    if (
+      config.cartridge_basiclti_link["blti:extensions"] &amp;&amp;
+      config.cartridge_basiclti_link["blti:extensions"]["lticm:property"]
+    ) {
+      const extensionProperties = config.cartridge_basiclti_link["blti:extensions"]["lticm:property"];
+      if (Array.isArray(extensionProperties)) {
+        extensionProperties.forEach((prop) => {
+          configuration.extensions[prop["$"]["name"]] = prop["_"];
+        });
+      } else {
+        configuration.extensions[extensionProperties["$"]["name"]] = extensionProperties["_"];
+      }
+    }
+    this.#logger.silly("Validated LTI Configuration: " + JSON.stringify(configuration, null, 2));
+    return configuration;
+  }
 }
 
 export default LTI10Utils;
@@ -706,13 +985,13 @@ export default LTI10Utils;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti-consumer.module_js.html">controllers/lti-consumer.js</a></li><li><a href="controllers_lti-launch.module_js.html">controllers/lti-launch.js</a></li><li><a href="controllers_lti-provider.module_js.html">controllers/lti-provider.js</a></li><li><a href="controllers_lti-register.module_js.html">controllers/lti-register.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti-consumer.module_js-LTIConsumerController.html">LTIConsumerController</a></li><li><a href="controllers_lti-launch.module_js-LTILaunchController.html">LTILaunchController</a></li><li><a href="controllers_lti-provider.module_js-LTIProviderController.html">LTIProviderController</a></li><li><a href="controllers_lti-register.module_js-LTIRegistrationController.html">LTIRegistrationController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="config_database.module_js.html">config/database.js</a></li><li><a href="config_logger.module_js.html">config/logger.js</a></li><li><a href="config_migrations.module_js.html">config/migrations.js</a></li><li><a href="controllers_consumer.module_js.html">controllers/consumer.js</a></li><li><a href="controllers_lti-consumer.module_js.html">controllers/lti-consumer.js</a></li><li><a href="controllers_lti-launch.module_js.html">controllers/lti-launch.js</a></li><li><a href="controllers_lti-lms.module_js.html">controllers/lti-lms.js</a></li><li><a href="controllers_lti-provider.module_js.html">controllers/lti-provider.js</a></li><li><a href="controllers_lti-register.module_js.html">controllers/lti-register.js</a></li><li><a href="controllers_provider.module_js.html">controllers/provider.js</a></li><li><a href="lib_encryption.module_js.html">lib/encryption.js</a></li><li><a href="lib_lti10.module_js.html">lib/lti10.js</a></li><li><a href="lib_lti13.module_js.html">lib/lti13.js</a></li><li><a href="migrations_00_consumers.module_js.html">migrations/00_consumers.js</a></li><li><a href="migrations_00_providers.module_js.html">migrations/00_providers.js</a></li><li><a href="routes_consumer.module_js.html">routes/consumer.js</a></li><li><a href="routes_provider.module_js.html">routes/provider.js</a></li></ul><h3>Classes</h3><ul><li><a href="controllers_consumer.module_js-ConsumerController.html">ConsumerController</a></li><li><a href="controllers_lti-consumer.module_js-LTIConsumerController.html">LTIConsumerController</a></li><li><a href="controllers_lti-launch.module_js-LTILaunchController.html">LTILaunchController</a></li><li><a href="controllers_lti-lms.module_js-LTILMSController.html">LTILMSController</a></li><li><a href="controllers_lti-provider.module_js-LTIProviderController.html">LTIProviderController</a></li><li><a href="controllers_lti-register.module_js-LTIRegistrationController.html">LTIRegistrationController</a></li><li><a href="controllers_provider.module_js-ProviderController.html">ProviderController</a></li><li><a href="lib_lti10.module_js-LTI10Utils.html">LTI10Utils</a></li><li><a href="lib_lti13.module_js-LTI13Utils.html">LTI13Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ConsumerSchema">ConsumerSchema</a></li><li><a href="global.html#ProviderSchema">ProviderSchema</a></li><li><a href="global.html#assertGradeResult">assertGradeResult</a></li><li><a href="global.html#assertLineItem">assertLineItem</a></li><li><a href="global.html#assertLineItems">assertLineItems</a></li><li><a href="global.html#assertRedirectUrl">assertRedirectUrl</a></li><li><a href="global.html#assertResults">assertResults</a></li><li><a href="global.html#assertScoreResult">assertScoreResult</a></li><li><a href="global.html#clearJwksCache">clearJwksCache</a></li><li><a href="global.html#getJwksClient">getJwksClient</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Apr 10 2026 19:34:45 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jun 18 2026 18:06:18 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

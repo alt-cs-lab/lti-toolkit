@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr" itemscope itemtype="http://schema.org/Article" data-r-output-format="print">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.148.1">
+    <meta name="generator" content="Relearn 8.0.0">
+    <meta name="description" content="All notable changes to this project will be documented here. This project follows Semantic Versioning and the format is based on Keep a Changelog.
+[1.1.0] — 2026-06-18 Added LTI 1.3 Tool Consumer — the library can now initiate LTI 1.3 launches to registered Tool Providers using the OIDC login flow (generateLTI13LaunchFormData) LTI 1.3 Tool Consumer grade passback — Tool Providers can now post grades back via AGS; the consumer router handles score, line item, and results endpoints LTI 1.3 Dynamic Registration as a consumer — register remote Tool Providers by sending them an OpenID Configuration URL (lti13dynamicregistration) LTI 1.3 Deep Linking as a consumer — initiate Deep Linking requests to Tool Providers (generateLTI13DeepLinkFormData) and receive content items back via the handleDeeplink consumer config callback postGrade() activity and grading progress — LTIProviderController.postGrade() now accepts optional activityProgress and gradingProgress parameters validated against the LTI AGS spec; defaults are &#34;Submitted&#34; and &#34;FullyGraded&#34; getLineItems() — new LTIProviderController method to fetch the full AGS line items collection from a consumer; the AGS JWT claim now includes the lineitems collection URL alongside lineitem readGrade() and deleteGrade() — new LTIProviderController methods for LTI 1.0 Basic Outcomes readResult and deleteResult operations readProviderGrade and deleteProviderGrade callbacks — optional consumer config callbacks to serve readResult/deleteResult Basic Outcomes requests from Tool Providers getResults() — new LTIProviderController method to fetch AGS submission results from a consumer getProviderLineItem and getProviderLineItems callbacks — optional consumer config callbacks to serve AGS line item requests from Tool Providers At-rest encryption — all stored secrets and RSA private keys are now encrypted using AES-256-GCM; requires a new encryption_key config option (64-character hex string) External database support — pass a pre-configured Sequelize instance as database in the config to use any Sequelize-supported database instead of the built-in SQLite TypeScript type declarations — index.d.ts now includes typed interfaces for all four controllers (ConsumerRegistryController, ProviderRegistryController, LTIConsumerController, LTIProviderController) and their return shapes (ConsumerInstance, ProviderInstance, ConsumerKeyData, ProviderKeyData, LaunchFormData, etc.) Callback return validation — all user-provided callbacks are now validated at runtime; missing or wrong-typed fields produce descriptive errors rather than silent failures downstream Changed Controller accessor paths ⚠️ Breaking — lti.controllers.provider (was lti.controllers.lti.provider) and lti.controllers.consumer (was lti.controllers.lti.consumer); the intermediate .lti segment has been removed AGS token scopes — the token endpoint now advertises all three scopes this library implements: score, lineitem.readonly, and result.readonly (previously only score was listed) Dynamic Registration response — the registration response is now filtered to the fields required by the LTI 1.3 spec, dropping extra fields that caused errors with some Tool Providers OAuth 1.0 signature base URI — the base URI now reads X-Forwarded-Proto and X-Forwarded-Host headers so signature verification works correctly behind a reverse proxy Dynamic Registration URL validation — the registration endpoint URL is now validated by comparing URL origins rather than a startsWith prefix check, preventing bypass with crafted URLs Removed provider.key / provider.secret config shortcut ⚠️ Breaking — this option previously created a single LTI 1.0 consumer at startup but also destroyed all other consumers on every restart. It has been removed. Use consumerRegistry.createConsumer() in application startup code to seed a default consumer instead. Fixed LTI 1.3 launches now validate deployment_id against the stored consumer record; mismatches are rejected with a clear error LTI 1.3 login state is no longer destroyed before deployment_id validation, preventing a race condition that could cause valid launches to fail LTI 1.0 XML configuration now properly XML-escapes custom parameter keys and values The redirect_urls provider field was stored under an incorrect key in v1.0; it is now stored correctly Security All shared secrets and RSA private keys are now encrypted at rest using AES-256-GCM with a key derived from the new required encryption_key config option. Existing plaintext values in v1.0 databases must be re-entered after upgrading. LTI 1.3 deployment_id is now validated on every launch, preventing launches from unregistered deployments. [1.0.0] — 2025-02-04 Initial release.">
+    <meta name="author" content="K-State ALT&#43;CS Lab">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <meta name="twitter:title" content="Changelog :: LTI Toolkit">
+    <meta name="twitter:description" content="All notable changes to this project will be documented here. This project follows Semantic Versioning and the format is based on Keep a Changelog.
+[1.1.0] — 2026-06-18 Added LTI 1.3 Tool Consumer — the library can now initiate LTI 1.3 launches to registered Tool Providers using the OIDC login flow (generateLTI13LaunchFormData) LTI 1.3 Tool Consumer grade passback — Tool Providers can now post grades back via AGS; the consumer router handles score, line item, and results endpoints LTI 1.3 Dynamic Registration as a consumer — register remote Tool Providers by sending them an OpenID Configuration URL (lti13dynamicregistration) LTI 1.3 Deep Linking as a consumer — initiate Deep Linking requests to Tool Providers (generateLTI13DeepLinkFormData) and receive content items back via the handleDeeplink consumer config callback postGrade() activity and grading progress — LTIProviderController.postGrade() now accepts optional activityProgress and gradingProgress parameters validated against the LTI AGS spec; defaults are &#34;Submitted&#34; and &#34;FullyGraded&#34; getLineItems() — new LTIProviderController method to fetch the full AGS line items collection from a consumer; the AGS JWT claim now includes the lineitems collection URL alongside lineitem readGrade() and deleteGrade() — new LTIProviderController methods for LTI 1.0 Basic Outcomes readResult and deleteResult operations readProviderGrade and deleteProviderGrade callbacks — optional consumer config callbacks to serve readResult/deleteResult Basic Outcomes requests from Tool Providers getResults() — new LTIProviderController method to fetch AGS submission results from a consumer getProviderLineItem and getProviderLineItems callbacks — optional consumer config callbacks to serve AGS line item requests from Tool Providers At-rest encryption — all stored secrets and RSA private keys are now encrypted using AES-256-GCM; requires a new encryption_key config option (64-character hex string) External database support — pass a pre-configured Sequelize instance as database in the config to use any Sequelize-supported database instead of the built-in SQLite TypeScript type declarations — index.d.ts now includes typed interfaces for all four controllers (ConsumerRegistryController, ProviderRegistryController, LTIConsumerController, LTIProviderController) and their return shapes (ConsumerInstance, ProviderInstance, ConsumerKeyData, ProviderKeyData, LaunchFormData, etc.) Callback return validation — all user-provided callbacks are now validated at runtime; missing or wrong-typed fields produce descriptive errors rather than silent failures downstream Changed Controller accessor paths ⚠️ Breaking — lti.controllers.provider (was lti.controllers.lti.provider) and lti.controllers.consumer (was lti.controllers.lti.consumer); the intermediate .lti segment has been removed AGS token scopes — the token endpoint now advertises all three scopes this library implements: score, lineitem.readonly, and result.readonly (previously only score was listed) Dynamic Registration response — the registration response is now filtered to the fields required by the LTI 1.3 spec, dropping extra fields that caused errors with some Tool Providers OAuth 1.0 signature base URI — the base URI now reads X-Forwarded-Proto and X-Forwarded-Host headers so signature verification works correctly behind a reverse proxy Dynamic Registration URL validation — the registration endpoint URL is now validated by comparing URL origins rather than a startsWith prefix check, preventing bypass with crafted URLs Removed provider.key / provider.secret config shortcut ⚠️ Breaking — this option previously created a single LTI 1.0 consumer at startup but also destroyed all other consumers on every restart. It has been removed. Use consumerRegistry.createConsumer() in application startup code to seed a default consumer instead. Fixed LTI 1.3 launches now validate deployment_id against the stored consumer record; mismatches are rejected with a clear error LTI 1.3 login state is no longer destroyed before deployment_id validation, preventing a race condition that could cause valid launches to fail LTI 1.0 XML configuration now properly XML-escapes custom parameter keys and values The redirect_urls provider field was stored under an incorrect key in v1.0; it is now stored correctly Security All shared secrets and RSA private keys are now encrypted at rest using AES-256-GCM with a key derived from the new required encryption_key config option. Existing plaintext values in v1.0 databases must be re-entered after upgrading. LTI 1.3 deployment_id is now validated on every launch, preventing launches from unregistered deployments. [1.0.0] — 2025-02-04 Initial release.">
+    <meta property="og:url" content="https://alt.cs.ksu.edu/lti-toolkit/00-general/02-changelog/index.html">
+    <meta property="og:site_name" content="LTI Toolkit">
+    <meta property="og:title" content="Changelog :: LTI Toolkit">
+    <meta property="og:description" content="All notable changes to this project will be documented here. This project follows Semantic Versioning and the format is based on Keep a Changelog.
+[1.1.0] — 2026-06-18 Added LTI 1.3 Tool Consumer — the library can now initiate LTI 1.3 launches to registered Tool Providers using the OIDC login flow (generateLTI13LaunchFormData) LTI 1.3 Tool Consumer grade passback — Tool Providers can now post grades back via AGS; the consumer router handles score, line item, and results endpoints LTI 1.3 Dynamic Registration as a consumer — register remote Tool Providers by sending them an OpenID Configuration URL (lti13dynamicregistration) LTI 1.3 Deep Linking as a consumer — initiate Deep Linking requests to Tool Providers (generateLTI13DeepLinkFormData) and receive content items back via the handleDeeplink consumer config callback postGrade() activity and grading progress — LTIProviderController.postGrade() now accepts optional activityProgress and gradingProgress parameters validated against the LTI AGS spec; defaults are &#34;Submitted&#34; and &#34;FullyGraded&#34; getLineItems() — new LTIProviderController method to fetch the full AGS line items collection from a consumer; the AGS JWT claim now includes the lineitems collection URL alongside lineitem readGrade() and deleteGrade() — new LTIProviderController methods for LTI 1.0 Basic Outcomes readResult and deleteResult operations readProviderGrade and deleteProviderGrade callbacks — optional consumer config callbacks to serve readResult/deleteResult Basic Outcomes requests from Tool Providers getResults() — new LTIProviderController method to fetch AGS submission results from a consumer getProviderLineItem and getProviderLineItems callbacks — optional consumer config callbacks to serve AGS line item requests from Tool Providers At-rest encryption — all stored secrets and RSA private keys are now encrypted using AES-256-GCM; requires a new encryption_key config option (64-character hex string) External database support — pass a pre-configured Sequelize instance as database in the config to use any Sequelize-supported database instead of the built-in SQLite TypeScript type declarations — index.d.ts now includes typed interfaces for all four controllers (ConsumerRegistryController, ProviderRegistryController, LTIConsumerController, LTIProviderController) and their return shapes (ConsumerInstance, ProviderInstance, ConsumerKeyData, ProviderKeyData, LaunchFormData, etc.) Callback return validation — all user-provided callbacks are now validated at runtime; missing or wrong-typed fields produce descriptive errors rather than silent failures downstream Changed Controller accessor paths ⚠️ Breaking — lti.controllers.provider (was lti.controllers.lti.provider) and lti.controllers.consumer (was lti.controllers.lti.consumer); the intermediate .lti segment has been removed AGS token scopes — the token endpoint now advertises all three scopes this library implements: score, lineitem.readonly, and result.readonly (previously only score was listed) Dynamic Registration response — the registration response is now filtered to the fields required by the LTI 1.3 spec, dropping extra fields that caused errors with some Tool Providers OAuth 1.0 signature base URI — the base URI now reads X-Forwarded-Proto and X-Forwarded-Host headers so signature verification works correctly behind a reverse proxy Dynamic Registration URL validation — the registration endpoint URL is now validated by comparing URL origins rather than a startsWith prefix check, preventing bypass with crafted URLs Removed provider.key / provider.secret config shortcut ⚠️ Breaking — this option previously created a single LTI 1.0 consumer at startup but also destroyed all other consumers on every restart. It has been removed. Use consumerRegistry.createConsumer() in application startup code to seed a default consumer instead. Fixed LTI 1.3 launches now validate deployment_id against the stored consumer record; mismatches are rejected with a clear error LTI 1.3 login state is no longer destroyed before deployment_id validation, preventing a race condition that could cause valid launches to fail LTI 1.0 XML configuration now properly XML-escapes custom parameter keys and values The redirect_urls provider field was stored under an incorrect key in v1.0; it is now stored correctly Security All shared secrets and RSA private keys are now encrypted at rest using AES-256-GCM with a key derived from the new required encryption_key config option. Existing plaintext values in v1.0 databases must be re-entered after upgrading. LTI 1.3 deployment_id is now validated on every launch, preventing launches from unregistered deployments. [1.0.0] — 2025-02-04 Initial release.">
+    <meta property="og:locale" content="en_us">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Documentation">
+    <meta property="article:modified_time" content="2026-06-18T12:42:42-05:00">
+    <meta property="og:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <meta itemprop="name" content="Changelog :: LTI Toolkit">
+    <meta itemprop="description" content="All notable changes to this project will be documented here. This project follows Semantic Versioning and the format is based on Keep a Changelog.
+[1.1.0] — 2026-06-18 Added LTI 1.3 Tool Consumer — the library can now initiate LTI 1.3 launches to registered Tool Providers using the OIDC login flow (generateLTI13LaunchFormData) LTI 1.3 Tool Consumer grade passback — Tool Providers can now post grades back via AGS; the consumer router handles score, line item, and results endpoints LTI 1.3 Dynamic Registration as a consumer — register remote Tool Providers by sending them an OpenID Configuration URL (lti13dynamicregistration) LTI 1.3 Deep Linking as a consumer — initiate Deep Linking requests to Tool Providers (generateLTI13DeepLinkFormData) and receive content items back via the handleDeeplink consumer config callback postGrade() activity and grading progress — LTIProviderController.postGrade() now accepts optional activityProgress and gradingProgress parameters validated against the LTI AGS spec; defaults are &#34;Submitted&#34; and &#34;FullyGraded&#34; getLineItems() — new LTIProviderController method to fetch the full AGS line items collection from a consumer; the AGS JWT claim now includes the lineitems collection URL alongside lineitem readGrade() and deleteGrade() — new LTIProviderController methods for LTI 1.0 Basic Outcomes readResult and deleteResult operations readProviderGrade and deleteProviderGrade callbacks — optional consumer config callbacks to serve readResult/deleteResult Basic Outcomes requests from Tool Providers getResults() — new LTIProviderController method to fetch AGS submission results from a consumer getProviderLineItem and getProviderLineItems callbacks — optional consumer config callbacks to serve AGS line item requests from Tool Providers At-rest encryption — all stored secrets and RSA private keys are now encrypted using AES-256-GCM; requires a new encryption_key config option (64-character hex string) External database support — pass a pre-configured Sequelize instance as database in the config to use any Sequelize-supported database instead of the built-in SQLite TypeScript type declarations — index.d.ts now includes typed interfaces for all four controllers (ConsumerRegistryController, ProviderRegistryController, LTIConsumerController, LTIProviderController) and their return shapes (ConsumerInstance, ProviderInstance, ConsumerKeyData, ProviderKeyData, LaunchFormData, etc.) Callback return validation — all user-provided callbacks are now validated at runtime; missing or wrong-typed fields produce descriptive errors rather than silent failures downstream Changed Controller accessor paths ⚠️ Breaking — lti.controllers.provider (was lti.controllers.lti.provider) and lti.controllers.consumer (was lti.controllers.lti.consumer); the intermediate .lti segment has been removed AGS token scopes — the token endpoint now advertises all three scopes this library implements: score, lineitem.readonly, and result.readonly (previously only score was listed) Dynamic Registration response — the registration response is now filtered to the fields required by the LTI 1.3 spec, dropping extra fields that caused errors with some Tool Providers OAuth 1.0 signature base URI — the base URI now reads X-Forwarded-Proto and X-Forwarded-Host headers so signature verification works correctly behind a reverse proxy Dynamic Registration URL validation — the registration endpoint URL is now validated by comparing URL origins rather than a startsWith prefix check, preventing bypass with crafted URLs Removed provider.key / provider.secret config shortcut ⚠️ Breaking — this option previously created a single LTI 1.0 consumer at startup but also destroyed all other consumers on every restart. It has been removed. Use consumerRegistry.createConsumer() in application startup code to seed a default consumer instead. Fixed LTI 1.3 launches now validate deployment_id against the stored consumer record; mismatches are rejected with a clear error LTI 1.3 login state is no longer destroyed before deployment_id validation, preventing a race condition that could cause valid launches to fail LTI 1.0 XML configuration now properly XML-escapes custom parameter keys and values The redirect_urls provider field was stored under an incorrect key in v1.0; it is now stored correctly Security All shared secrets and RSA private keys are now encrypted at rest using AES-256-GCM with a key derived from the new required encryption_key config option. Existing plaintext values in v1.0 databases must be re-entered after upgrading. LTI 1.3 deployment_id is now validated on every launch, preventing launches from unregistered deployments. [1.0.0] — 2025-02-04 Initial release.">
+    <meta itemprop="dateModified" content="2026-06-18T12:42:42-05:00">
+    <meta itemprop="wordCount" content="685">
+    <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <title>Changelog :: LTI Toolkit</title>
+    <link href="https://alt.cs.ksu.edu/lti-toolkit/00-general/02-changelog/index.html" rel="canonical" type="text/html" title="Changelog :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/02-changelog/index.xml" rel="alternate" type="application/rss+xml" title="Changelog :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/02-changelog/tele.html" rel="alternate" type="text/html" title="Changelog :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/02-changelog/embed.html" rel="alternate" type="text/html" title="Changelog :: LTI Toolkit">
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1781805999" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1781805999" defer></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1781805999";
+    </script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1781805999" defer></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.contentLangs=['en'];
+    </script>
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1781805999" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1781805999" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1781805999" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1781805999" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-print.min.css?1781805999" rel="stylesheet" id="R-format-style">
+    <script>
+      window.relearn = window.relearn || {};
+      // configuration
+      window.relearn.min = `.min`;
+      window.relearn.path='\/00-general\/02-changelog\/index.html';
+      window.relearn.relBasePath='..\/..';
+      window.relearn.relBaseUri='..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/alt.cs.ksu.edu\/lti-toolkit';
+      window.relearn.disableAnchorCopy=false;
+      window.relearn.disableAnchorScrolling=false;
+      window.relearn.disableInlineCopyToClipboard=true;
+      window.relearn.enableBlockCodeWrap=false;
+      // legal
+      window.relearn.getItem = (s,n) => {return s.getItem(n)};
+      window.relearn.setItem = (s,n,v) => {return s.setItem(n,v)};
+      window.relearn.removeItem = (s,n) => {return s.removeItem(n)};
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+      // variant stuff
+      window.relearn.themevariants = [ 'light-theme' ];
+      window.relearn.customvariantname = "my-custom-variant";
+      // [x] russfeld
+      window.relearn.writeVariant=false;
+      window.relearn.changeVariant = function(variant) {
+        var oldVariant = document.documentElement.dataset.rThemeVariant;
+        window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
+        document.documentElement.dataset.rThemeVariant = variant;
+        if (oldVariant != variant) {
+          document.dispatchEvent( new CustomEvent('themeVariantLoaded', { detail: { variant, oldVariant } }) );
+          window.relearn.markVariant();
+        }
+      }
+      window.relearn.markVariant = function() {
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant");
+        document.querySelectorAll(".R-variantswitcher select").forEach((select) => {select.value = variant;});
+      }
+      window.relearn.initVariant = function() {
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant") ?? "";
+        if( variant == window.relearn.customvariantname ){
+        }else if( !variant || !window.relearn.themevariants.includes(variant) ){
+          variant = window.relearn.themevariants[0];
+          
+          if (window.relearn.writeVariant) {
+            window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
+          }
+        }
+        document.documentElement.dataset.rThemeVariant = variant;
+      }
+      window.relearn.initVariant();
+      window.relearn.markVariant();
+    </script>
+    <link href="/lti-toolkit/css/custom.css?1781805999" rel="stylesheet">
+  </head>
+  <body class="mobile-support print" data-url="/lti-toolkit/00-general/02-changelog/index.html">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="disable" data-width-s="show" data-width-m="hide" data-width-l="hide"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+            <div class="topbar-button topbar-button-toc" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="Table of Contents (CTRL&#43;ALT&#43;t)"><i class="fa-fw fas fa-list-alt"></i></button>
+              <div class="topbar-content">
+                <div class="topbar-content-wrapper">
+<nav class="TableOfContents">
+  <ul>
+    <li><a href="#110--2026-06-18">[1.1.0] — 2026-06-18</a>
+      <ul>
+        <li><a href="#added">Added</a></li>
+        <li><a href="#changed">Changed</a></li>
+        <li><a href="#removed">Removed</a></li>
+        <li><a href="#fixed">Fixed</a></li>
+        <li><a href="#security">Security</a></li>
+      </ul>
+    </li>
+    <li><a href="#100--2025-02-04">[1.0.0] — 2025-02-04</a></li>
+  </ul>
+</nav>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class="a11y-only"><a itemprop="item" href="/lti-toolkit/index.html"><span itemprop="name">LTI-Toolkit</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class=""><a itemprop="item" href="/lti-toolkit/00-general/index.html"><span itemprop="name">Documentation</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class=""><span itemprop="name">Changelog</span><meta itemprop="position" content="3"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+            <div class="topbar-button topbar-button-edit" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="https://github.com/alt-cs-lab/lti-toolkit/edit/main/docs/content/00-general/02-changelog/index.md" rel="external" target="_blank" title="Edit (CTRL+ALT+w)"><i class="fa-fw fas fa-pen"></i></a>
+            </div>
+            <div class="topbar-button topbar-button-print" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/lti-toolkit/00-general/02-changelog/index.print.html" title="Print whole chapter (CTRL+ALT+p)"><i class="fa-fw fas fa-print"></i></a>
+            </div>
+            <div class="topbar-button topbar-button-prev" data-content-empty="disable" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/lti-toolkit/00-general/01-database/index.html" title="Database Schema (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+            <div class="topbar-button topbar-button-next" data-content-empty="disable" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/lti-toolkit/01-setup/index.html" title="Dev Setup (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+            <div class="topbar-button topbar-button-more" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="More"><i class="fa-fw fas fa-ellipsis-v"></i></button>
+              <div class="topbar-content">
+                <div class="topbar-content-wrapper">
+                  <div class="topbar-area topbar-area-more" data-area="more">
+            <div class="topbar-button topbar-button-embed" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/lti-toolkit/00-general/02-changelog/embed.html" title="Embeddable Version"><i class="fa-fw fas fa-expand-arrows-alt"></i></a>
+            </div>
+            <div class="topbar-button topbar-button-tele" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/lti-toolkit/00-general/02-changelog/tele.html" title="Teleprompter View"><i class="fa-fw fas fa-tv"></i></a>
+            </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable 00-general" tabindex="-1">
+        <div class="flex-block-wrapper">
+<article class="default">
+  <header class="headline">
+  </header>
+
+<h1 id="changelog">Changelog</h1>
+
+<p>All notable changes to this project will be documented here. This project follows <a href="https://semver.org/" rel="external" target="_blank">Semantic Versioning</a> and the format is based on <a href="https://keepachangelog.com/en/1.1.0/" rel="external" target="_blank">Keep a Changelog</a>.</p>
+<hr>
+<h2 id="110--2026-06-18">[1.1.0] — 2026-06-18</h2>
+<h3 id="added">Added</h3>
+<ul>
+<li><strong>LTI 1.3 Tool Consumer</strong> — the library can now initiate LTI 1.3 launches to registered Tool Providers using the OIDC login flow (<code>generateLTI13LaunchFormData</code>)</li>
+<li><strong>LTI 1.3 Tool Consumer grade passback</strong> — Tool Providers can now post grades back via AGS; the consumer router handles score, line item, and results endpoints</li>
+<li><strong>LTI 1.3 Dynamic Registration as a consumer</strong> — register remote Tool Providers by sending them an OpenID Configuration URL (<code>lti13dynamicregistration</code>)</li>
+<li><strong>LTI 1.3 Deep Linking as a consumer</strong> — initiate Deep Linking requests to Tool Providers (<code>generateLTI13DeepLinkFormData</code>) and receive content items back via the <code>handleDeeplink</code> consumer config callback</li>
+<li><strong><code>postGrade()</code> activity and grading progress</strong> — <code>LTIProviderController.postGrade()</code> now accepts optional <code>activityProgress</code> and <code>gradingProgress</code> parameters validated against the LTI AGS spec; defaults are <code>&quot;Submitted&quot;</code> and <code>&quot;FullyGraded&quot;</code></li>
+<li><strong><code>getLineItems()</code></strong> — new <code>LTIProviderController</code> method to fetch the full AGS line items collection from a consumer; the AGS JWT claim now includes the <code>lineitems</code> collection URL alongside <code>lineitem</code></li>
+<li><strong><code>readGrade()</code> and <code>deleteGrade()</code></strong> — new <code>LTIProviderController</code> methods for LTI 1.0 Basic Outcomes <code>readResult</code> and <code>deleteResult</code> operations</li>
+<li><strong><code>readProviderGrade</code> and <code>deleteProviderGrade</code> callbacks</strong> — optional consumer config callbacks to serve <code>readResult</code>/<code>deleteResult</code> Basic Outcomes requests from Tool Providers</li>
+<li><strong><code>getResults()</code></strong> — new <code>LTIProviderController</code> method to fetch AGS submission results from a consumer</li>
+<li><strong><code>getProviderLineItem</code> and <code>getProviderLineItems</code> callbacks</strong> — optional consumer config callbacks to serve AGS line item requests from Tool Providers</li>
+<li><strong>At-rest encryption</strong> — all stored secrets and RSA private keys are now encrypted using AES-256-GCM; requires a new <code>encryption_key</code> config option (64-character hex string)</li>
+<li><strong>External database support</strong> — pass a pre-configured Sequelize instance as <code>database</code> in the config to use any Sequelize-supported database instead of the built-in SQLite</li>
+<li><strong>TypeScript type declarations</strong> — <code>index.d.ts</code> now includes typed interfaces for all four controllers (<code>ConsumerRegistryController</code>, <code>ProviderRegistryController</code>, <code>LTIConsumerController</code>, <code>LTIProviderController</code>) and their return shapes (<code>ConsumerInstance</code>, <code>ProviderInstance</code>, <code>ConsumerKeyData</code>, <code>ProviderKeyData</code>, <code>LaunchFormData</code>, etc.)</li>
+<li><strong>Callback return validation</strong> — all user-provided callbacks are now validated at runtime; missing or wrong-typed fields produce descriptive errors rather than silent failures downstream</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li><strong>Controller accessor paths</strong> ⚠️ <strong>Breaking</strong> — <code>lti.controllers.provider</code> (was <code>lti.controllers.lti.provider</code>) and <code>lti.controllers.consumer</code> (was <code>lti.controllers.lti.consumer</code>); the intermediate <code>.lti</code> segment has been removed</li>
+<li><strong>AGS token scopes</strong> — the token endpoint now advertises all three scopes this library implements: <code>score</code>, <code>lineitem.readonly</code>, and <code>result.readonly</code> (previously only <code>score</code> was listed)</li>
+<li><strong>Dynamic Registration response</strong> — the registration response is now filtered to the fields required by the LTI 1.3 spec, dropping extra fields that caused errors with some Tool Providers</li>
+<li><strong>OAuth 1.0 signature base URI</strong> — the base URI now reads <code>X-Forwarded-Proto</code> and <code>X-Forwarded-Host</code> headers so signature verification works correctly behind a reverse proxy</li>
+<li><strong>Dynamic Registration URL validation</strong> — the registration endpoint URL is now validated by comparing URL origins rather than a <code>startsWith</code> prefix check, preventing bypass with crafted URLs</li>
+</ul>
+<h3 id="removed">Removed</h3>
+<ul>
+<li><strong><code>provider.key</code> / <code>provider.secret</code> config shortcut</strong> ⚠️ <strong>Breaking</strong> — this option previously created a single LTI 1.0 consumer at startup but also destroyed all other consumers on every restart. It has been removed. Use <code>consumerRegistry.createConsumer()</code> in application startup code to seed a default consumer instead.</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>LTI 1.3 launches now validate <code>deployment_id</code> against the stored consumer record; mismatches are rejected with a clear error</li>
+<li>LTI 1.3 login state is no longer destroyed before <code>deployment_id</code> validation, preventing a race condition that could cause valid launches to fail</li>
+<li>LTI 1.0 XML configuration now properly XML-escapes custom parameter keys and values</li>
+<li>The <code>redirect_urls</code> provider field was stored under an incorrect key in v1.0; it is now stored correctly</li>
+</ul>
+<h3 id="security">Security</h3>
+<ul>
+<li>All shared secrets and RSA private keys are now encrypted at rest using AES-256-GCM with a key derived from the new required <code>encryption_key</code> config option. Existing plaintext values in v1.0 databases must be re-entered after upgrading.</li>
+<li>LTI 1.3 <code>deployment_id</code> is now validated on every launch, preventing launches from unregistered deployments.</li>
+</ul>
+<hr>
+<h2 id="100--2025-02-04">[1.0.0] — 2025-02-04</h2>
+<p>Initial release.</p>
+<ul>
+<li>LTI 1.0 Tool Provider support (launch, grade passback via Basic Outcomes, XML configuration)</li>
+<li>LTI 1.3 Tool Provider support (OIDC login, JWT launch, AGS grade passback, Dynamic Registration, Deep Linking)</li>
+<li>LTI 1.0 Tool Consumer support (launch, grade passback via Basic Outcomes)</li>
+<li>SQLite-backed consumer and provider registries</li>
+<li>Express router integration</li>
+</ul>
+
+  <footer class="footline">
+  </footer>
+</article>
+        </div>
+      </main>
+<div class="git-footer">
+  <p class="theme-version-footer">8.0.0</p>
+<p>Last modified by:
+              <i class='fa-fw fas fa-user'></i> Russell Feldhausen
+              <i class='fas fa-calendar'></i> <a href="https://github.com/alt-cs-lab/lti-toolkit/commit/fb27b81e5b02ea9f8e21b9efd223a27d7c9b0974">Jun 18, 2026</a>
+</p>
+
+</div>
+    </div>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1781805999" defer></script>
+  </body>
+</html>

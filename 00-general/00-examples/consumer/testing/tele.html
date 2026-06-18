@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+<html lang="en-us" dir="ltr" itemscope itemtype="http://schema.org/Article" data-r-output-format="html">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.148.1">
+    <meta name="generator" content="Relearn 8.0.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="This is a manual browser-based testing checklist for the Tool Consumer example application (/examples/consumer). It covers every user-facing feature accessible through the browser.
+The Consumer example is tested against the Tool Provider example (/examples/provider). Both apps must be running and mutually reachable before starting.
+A fresh consumer app (empty provider database) is assumed at the start.
+Prerequisites Consumer app is running at its configured DOMAIN_NAME Provider app is running at its own DOMAIN_NAME .env for the consumer is populated: DOMAIN_NAME, SESSION_SECRET, ENCRYPTION_KEY Visiting / shows the home page with an empty provider list and the three “Add Provider” forms Section 1 — Home Page / loads without error “LTI Tool Providers” list is empty on first run “Add LTI 1.3 Tool Provider via Dynamic Registration” form is present with a URL input “Add LTI 1.0 Tool Provider via XML” form is present with URL, XML, key, and secret fields “Manually Add LTI Tool Provider” form is present with all LTI 1.0 and LTI 1.3 fields Link to /grades (gradebook) is shown Section 2 — Add Provider — Manual LTI 1.0 On /, fill in the “Manually Add” form with: Name: Test LTI 1.0 Provider Launch URL: PROVIDER_DOMAIN/lti/provider/launch Domain: provider domain (no protocol) Key: value from Provider’s home page Secret: value from Provider’s home page Leave “LTI 1.3 Enabled” unchecked Submit — home page reloads with a success message Provider appears in the “LTI Tool Providers” list Section 3 — Add Provider — LTI 1.0 via XML On /, use the “Add LTI 1.0 Tool Provider via XML” form with: URL: PROVIDER_DOMAIN/lti/provider/config.xml Key and Secret: values from Provider’s home page Submit — home page reloads with the new provider in the list (name taken from the XML title) Alternatively, paste the raw XML content directly into the XML textarea and submit — same result Section 4 — Add Provider — LTI 1.3 Dynamic Registration On /, enter PROVIDER_DOMAIN/lti/provider/register in the Dynamic Registration URL field Submit — the provider app processes the registration Home page reloads with the new LTI 1.3 provider in the list Click the provider to verify LTI 1.3 is shown as true and Client ID and Deployment ID are populated Section 5 — Add Provider — Manual LTI 1.3 On /, fill in the “Manually Add” form with LTI 1.3 fields enabled: Name: Test LTI 1.3 Provider Launch URL: PROVIDER_DOMAIN/lti/provider/launch Domain: provider domain Key and Secret: any values (used for LTI 1.0 fallback; generated if blank) Check “LTI 1.3 Enabled” JWKS URL: PROVIDER_DOMAIN/lti/provider/jwks Auth URL: PROVIDER_DOMAIN/lti/provider/login Redirect URLs: PROVIDER_DOMAIN/lti/provider/launch Submit — provider appears in the list with lti13: true Section 6 — Provider Detail Page Click any provider in the list — /provider/:id loads Name, Launch URL, Key, masked Secret, Custom, LTI 1.3 flag, Client ID, and Deployment ID are shown “Reveal full secret” disclosure works and shows the full secret Launch configuration form (context, resource, user, instructor flag, gradebook key) is present For an LTI 1.3 provider: “Deep Link Request” section is visible “Edit Provider” form is present with current values pre-filled “Rotate Secret / Key Pair” form is present “Delete Provider” form is present Debugging section at the bottom can be expanded and shows provider JSON Section 7 — LTI 1.0 Launch Requires the LTI 1.0 provider from Section 2 or 3.">
+    <meta name="author" content="K-State ALT&#43;CS Lab">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <meta name="twitter:title" content="Consumer Testing Plan :: LTI Toolkit">
+    <meta name="twitter:description" content="This is a manual browser-based testing checklist for the Tool Consumer example application (/examples/consumer). It covers every user-facing feature accessible through the browser.
+The Consumer example is tested against the Tool Provider example (/examples/provider). Both apps must be running and mutually reachable before starting.
+A fresh consumer app (empty provider database) is assumed at the start.
+Prerequisites Consumer app is running at its configured DOMAIN_NAME Provider app is running at its own DOMAIN_NAME .env for the consumer is populated: DOMAIN_NAME, SESSION_SECRET, ENCRYPTION_KEY Visiting / shows the home page with an empty provider list and the three “Add Provider” forms Section 1 — Home Page / loads without error “LTI Tool Providers” list is empty on first run “Add LTI 1.3 Tool Provider via Dynamic Registration” form is present with a URL input “Add LTI 1.0 Tool Provider via XML” form is present with URL, XML, key, and secret fields “Manually Add LTI Tool Provider” form is present with all LTI 1.0 and LTI 1.3 fields Link to /grades (gradebook) is shown Section 2 — Add Provider — Manual LTI 1.0 On /, fill in the “Manually Add” form with: Name: Test LTI 1.0 Provider Launch URL: PROVIDER_DOMAIN/lti/provider/launch Domain: provider domain (no protocol) Key: value from Provider’s home page Secret: value from Provider’s home page Leave “LTI 1.3 Enabled” unchecked Submit — home page reloads with a success message Provider appears in the “LTI Tool Providers” list Section 3 — Add Provider — LTI 1.0 via XML On /, use the “Add LTI 1.0 Tool Provider via XML” form with: URL: PROVIDER_DOMAIN/lti/provider/config.xml Key and Secret: values from Provider’s home page Submit — home page reloads with the new provider in the list (name taken from the XML title) Alternatively, paste the raw XML content directly into the XML textarea and submit — same result Section 4 — Add Provider — LTI 1.3 Dynamic Registration On /, enter PROVIDER_DOMAIN/lti/provider/register in the Dynamic Registration URL field Submit — the provider app processes the registration Home page reloads with the new LTI 1.3 provider in the list Click the provider to verify LTI 1.3 is shown as true and Client ID and Deployment ID are populated Section 5 — Add Provider — Manual LTI 1.3 On /, fill in the “Manually Add” form with LTI 1.3 fields enabled: Name: Test LTI 1.3 Provider Launch URL: PROVIDER_DOMAIN/lti/provider/launch Domain: provider domain Key and Secret: any values (used for LTI 1.0 fallback; generated if blank) Check “LTI 1.3 Enabled” JWKS URL: PROVIDER_DOMAIN/lti/provider/jwks Auth URL: PROVIDER_DOMAIN/lti/provider/login Redirect URLs: PROVIDER_DOMAIN/lti/provider/launch Submit — provider appears in the list with lti13: true Section 6 — Provider Detail Page Click any provider in the list — /provider/:id loads Name, Launch URL, Key, masked Secret, Custom, LTI 1.3 flag, Client ID, and Deployment ID are shown “Reveal full secret” disclosure works and shows the full secret Launch configuration form (context, resource, user, instructor flag, gradebook key) is present For an LTI 1.3 provider: “Deep Link Request” section is visible “Edit Provider” form is present with current values pre-filled “Rotate Secret / Key Pair” form is present “Delete Provider” form is present Debugging section at the bottom can be expanded and shows provider JSON Section 7 — LTI 1.0 Launch Requires the LTI 1.0 provider from Section 2 or 3.">
+    <meta property="og:url" content="https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/consumer/testing/index.html">
+    <meta property="og:site_name" content="LTI Toolkit">
+    <meta property="og:title" content="Consumer Testing Plan :: LTI Toolkit">
+    <meta property="og:description" content="This is a manual browser-based testing checklist for the Tool Consumer example application (/examples/consumer). It covers every user-facing feature accessible through the browser.
+The Consumer example is tested against the Tool Provider example (/examples/provider). Both apps must be running and mutually reachable before starting.
+A fresh consumer app (empty provider database) is assumed at the start.
+Prerequisites Consumer app is running at its configured DOMAIN_NAME Provider app is running at its own DOMAIN_NAME .env for the consumer is populated: DOMAIN_NAME, SESSION_SECRET, ENCRYPTION_KEY Visiting / shows the home page with an empty provider list and the three “Add Provider” forms Section 1 — Home Page / loads without error “LTI Tool Providers” list is empty on first run “Add LTI 1.3 Tool Provider via Dynamic Registration” form is present with a URL input “Add LTI 1.0 Tool Provider via XML” form is present with URL, XML, key, and secret fields “Manually Add LTI Tool Provider” form is present with all LTI 1.0 and LTI 1.3 fields Link to /grades (gradebook) is shown Section 2 — Add Provider — Manual LTI 1.0 On /, fill in the “Manually Add” form with: Name: Test LTI 1.0 Provider Launch URL: PROVIDER_DOMAIN/lti/provider/launch Domain: provider domain (no protocol) Key: value from Provider’s home page Secret: value from Provider’s home page Leave “LTI 1.3 Enabled” unchecked Submit — home page reloads with a success message Provider appears in the “LTI Tool Providers” list Section 3 — Add Provider — LTI 1.0 via XML On /, use the “Add LTI 1.0 Tool Provider via XML” form with: URL: PROVIDER_DOMAIN/lti/provider/config.xml Key and Secret: values from Provider’s home page Submit — home page reloads with the new provider in the list (name taken from the XML title) Alternatively, paste the raw XML content directly into the XML textarea and submit — same result Section 4 — Add Provider — LTI 1.3 Dynamic Registration On /, enter PROVIDER_DOMAIN/lti/provider/register in the Dynamic Registration URL field Submit — the provider app processes the registration Home page reloads with the new LTI 1.3 provider in the list Click the provider to verify LTI 1.3 is shown as true and Client ID and Deployment ID are populated Section 5 — Add Provider — Manual LTI 1.3 On /, fill in the “Manually Add” form with LTI 1.3 fields enabled: Name: Test LTI 1.3 Provider Launch URL: PROVIDER_DOMAIN/lti/provider/launch Domain: provider domain Key and Secret: any values (used for LTI 1.0 fallback; generated if blank) Check “LTI 1.3 Enabled” JWKS URL: PROVIDER_DOMAIN/lti/provider/jwks Auth URL: PROVIDER_DOMAIN/lti/provider/login Redirect URLs: PROVIDER_DOMAIN/lti/provider/launch Submit — provider appears in the list with lti13: true Section 6 — Provider Detail Page Click any provider in the list — /provider/:id loads Name, Launch URL, Key, masked Secret, Custom, LTI 1.3 flag, Client ID, and Deployment ID are shown “Reveal full secret” disclosure works and shows the full secret Launch configuration form (context, resource, user, instructor flag, gradebook key) is present For an LTI 1.3 provider: “Deep Link Request” section is visible “Edit Provider” form is present with current values pre-filled “Rotate Secret / Key Pair” form is present “Delete Provider” form is present Debugging section at the bottom can be expanded and shows provider JSON Section 7 — LTI 1.0 Launch Requires the LTI 1.0 provider from Section 2 or 3.">
+    <meta property="og:locale" content="en_us">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Documentation">
+    <meta property="article:modified_time" content="2026-06-18T16:28:17+00:00">
+    <meta property="og:image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <meta itemprop="name" content="Consumer Testing Plan :: LTI Toolkit">
+    <meta itemprop="description" content="This is a manual browser-based testing checklist for the Tool Consumer example application (/examples/consumer). It covers every user-facing feature accessible through the browser.
+The Consumer example is tested against the Tool Provider example (/examples/provider). Both apps must be running and mutually reachable before starting.
+A fresh consumer app (empty provider database) is assumed at the start.
+Prerequisites Consumer app is running at its configured DOMAIN_NAME Provider app is running at its own DOMAIN_NAME .env for the consumer is populated: DOMAIN_NAME, SESSION_SECRET, ENCRYPTION_KEY Visiting / shows the home page with an empty provider list and the three “Add Provider” forms Section 1 — Home Page / loads without error “LTI Tool Providers” list is empty on first run “Add LTI 1.3 Tool Provider via Dynamic Registration” form is present with a URL input “Add LTI 1.0 Tool Provider via XML” form is present with URL, XML, key, and secret fields “Manually Add LTI Tool Provider” form is present with all LTI 1.0 and LTI 1.3 fields Link to /grades (gradebook) is shown Section 2 — Add Provider — Manual LTI 1.0 On /, fill in the “Manually Add” form with: Name: Test LTI 1.0 Provider Launch URL: PROVIDER_DOMAIN/lti/provider/launch Domain: provider domain (no protocol) Key: value from Provider’s home page Secret: value from Provider’s home page Leave “LTI 1.3 Enabled” unchecked Submit — home page reloads with a success message Provider appears in the “LTI Tool Providers” list Section 3 — Add Provider — LTI 1.0 via XML On /, use the “Add LTI 1.0 Tool Provider via XML” form with: URL: PROVIDER_DOMAIN/lti/provider/config.xml Key and Secret: values from Provider’s home page Submit — home page reloads with the new provider in the list (name taken from the XML title) Alternatively, paste the raw XML content directly into the XML textarea and submit — same result Section 4 — Add Provider — LTI 1.3 Dynamic Registration On /, enter PROVIDER_DOMAIN/lti/provider/register in the Dynamic Registration URL field Submit — the provider app processes the registration Home page reloads with the new LTI 1.3 provider in the list Click the provider to verify LTI 1.3 is shown as true and Client ID and Deployment ID are populated Section 5 — Add Provider — Manual LTI 1.3 On /, fill in the “Manually Add” form with LTI 1.3 fields enabled: Name: Test LTI 1.3 Provider Launch URL: PROVIDER_DOMAIN/lti/provider/launch Domain: provider domain Key and Secret: any values (used for LTI 1.0 fallback; generated if blank) Check “LTI 1.3 Enabled” JWKS URL: PROVIDER_DOMAIN/lti/provider/jwks Auth URL: PROVIDER_DOMAIN/lti/provider/login Redirect URLs: PROVIDER_DOMAIN/lti/provider/launch Submit — provider appears in the list with lti13: true Section 6 — Provider Detail Page Click any provider in the list — /provider/:id loads Name, Launch URL, Key, masked Secret, Custom, LTI 1.3 flag, Client ID, and Deployment ID are shown “Reveal full secret” disclosure works and shows the full secret Launch configuration form (context, resource, user, instructor flag, gradebook key) is present For an LTI 1.3 provider: “Deep Link Request” section is visible “Edit Provider” form is present with current values pre-filled “Rotate Secret / Key Pair” form is present “Delete Provider” form is present Debugging section at the bottom can be expanded and shows provider JSON Section 7 — LTI 1.0 Launch Requires the LTI 1.0 provider from Section 2 or 3.">
+    <meta itemprop="dateModified" content="2026-06-18T16:28:17+00:00">
+    <meta itemprop="wordCount" content="1248">
+    <meta itemprop="image" content="https://alt.cs.ksu.edu/lti-toolkit/images/hero.png">
+    <title>Consumer Testing Plan :: LTI Toolkit</title>
+    <link href="https://alt.cs.ksu.edu/lti-toolkit/00-general/00-examples/consumer/testing/index.html" rel="canonical" type="text/html" title="Consumer Testing Plan :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/00-examples/consumer/testing/index.xml" rel="alternate" type="application/rss+xml" title="Consumer Testing Plan :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/00-examples/consumer/testing/index.print.html" rel="alternate" type="text/html" title="Consumer Testing Plan :: LTI Toolkit">
+    <link href="/lti-toolkit/00-general/00-examples/consumer/testing/embed.html" rel="alternate" type="text/html" title="Consumer Testing Plan :: LTI Toolkit">
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1781805999" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1781805999" defer></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1781805999";
+    </script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1781805999" defer></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.contentLangs=['en'];
+    </script>
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1781805999" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1781805999" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1781805999" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1781805999" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-html.min.css?1781805999" rel="stylesheet" id="R-format-style">
+    <script>
+      window.relearn = window.relearn || {};
+      // configuration
+      window.relearn.min = `.min`;
+      window.relearn.path='\/00-general\/00-examples\/consumer\/testing\/index.html';
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/alt.cs.ksu.edu\/lti-toolkit';
+      window.relearn.disableAnchorCopy=false;
+      window.relearn.disableAnchorScrolling=false;
+      window.relearn.disableInlineCopyToClipboard=true;
+      window.relearn.enableBlockCodeWrap=false;
+      // legal
+      window.relearn.getItem = (s,n) => {return s.getItem(n)};
+      window.relearn.setItem = (s,n,v) => {return s.setItem(n,v)};
+      window.relearn.removeItem = (s,n) => {return s.removeItem(n)};
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+      // variant stuff
+      window.relearn.themevariants = [ 'light-theme' ];
+      window.relearn.customvariantname = "my-custom-variant";
+      // [x] russfeld
+      window.relearn.writeVariant=false;
+      window.relearn.changeVariant = function(variant) {
+        var oldVariant = document.documentElement.dataset.rThemeVariant;
+        window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
+        document.documentElement.dataset.rThemeVariant = variant;
+        if (oldVariant != variant) {
+          document.dispatchEvent( new CustomEvent('themeVariantLoaded', { detail: { variant, oldVariant } }) );
+          window.relearn.markVariant();
+        }
+      }
+      window.relearn.markVariant = function() {
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant");
+        document.querySelectorAll(".R-variantswitcher select").forEach((select) => {select.value = variant;});
+      }
+      window.relearn.initVariant = function() {
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant") ?? "";
+        if( variant == window.relearn.customvariantname ){
+        }else if( !variant || !window.relearn.themevariants.includes(variant) ){
+          variant = window.relearn.themevariants[0];
+          
+          if (window.relearn.writeVariant) {
+            window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
+          }
+        }
+        document.documentElement.dataset.rThemeVariant = variant;
+      }
+      window.relearn.initVariant();
+      window.relearn.markVariant();
+    </script>
+    <link href="/lti-toolkit/css/custom.css?1781805999" rel="stylesheet">
+  </head>
+  <body class="mobile-support html" data-url="/lti-toolkit/00-general/00-examples/consumer/testing/index.html">
+    
+    <div id="tele" class="tele mirror">
+    
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      
+      
+      
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable 00-general" tabindex="-1">
+        <div class="flex-block-wrapper">
+<article class="default">
+  <header class="headline">
+  </header>
+
+<h1 id="consumer-testing-plan">Consumer Testing Plan</h1>
+
+<p>This is a manual browser-based testing checklist for the Tool Consumer example application (<code>/examples/consumer</code>). It covers every user-facing feature accessible through the browser.</p>
+<p>The Consumer example is tested <strong>against the Tool Provider example</strong> (<code>/examples/provider</code>). Both apps must be running and mutually reachable before starting.</p>
+<p>A fresh consumer app (empty provider database) is assumed at the start.</p>
+<hr>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Consumer app is running at its configured <code>DOMAIN_NAME</code></li>
+<li><input disabled="" type="checkbox"> Provider app is running at its own <code>DOMAIN_NAME</code></li>
+<li><input disabled="" type="checkbox"> <code>.env</code> for the consumer is populated: <code>DOMAIN_NAME</code>, <code>SESSION_SECRET</code>, <code>ENCRYPTION_KEY</code></li>
+<li><input disabled="" type="checkbox"> Visiting <code>/</code> shows the home page with an empty provider list and the three &ldquo;Add Provider&rdquo; forms</li>
+</ul>
+<hr>
+<h2 id="section-1--home-page">Section 1 — Home Page</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <code>/</code> loads without error</li>
+<li><input disabled="" type="checkbox"> &ldquo;LTI Tool Providers&rdquo; list is empty on first run</li>
+<li><input disabled="" type="checkbox"> &ldquo;Add LTI 1.3 Tool Provider via Dynamic Registration&rdquo; form is present with a URL input</li>
+<li><input disabled="" type="checkbox"> &ldquo;Add LTI 1.0 Tool Provider via XML&rdquo; form is present with URL, XML, key, and secret fields</li>
+<li><input disabled="" type="checkbox"> &ldquo;Manually Add LTI Tool Provider&rdquo; form is present with all LTI 1.0 and LTI 1.3 fields</li>
+<li><input disabled="" type="checkbox"> Link to <code>/grades</code> (gradebook) is shown</li>
+</ul>
+<hr>
+<h2 id="section-2--add-provider--manual-lti-10">Section 2 — Add Provider — Manual LTI 1.0</h2>
+<ul>
+<li><input disabled="" type="checkbox"> On <code>/</code>, fill in the &ldquo;Manually Add&rdquo; form with:
+<ul>
+<li>Name: <code>Test LTI 1.0 Provider</code></li>
+<li>Launch URL: <code>PROVIDER_DOMAIN/lti/provider/launch</code></li>
+<li>Domain: provider domain (no protocol)</li>
+<li>Key: value from Provider&rsquo;s home page</li>
+<li>Secret: value from Provider&rsquo;s home page</li>
+<li>Leave &ldquo;LTI 1.3 Enabled&rdquo; unchecked</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Submit — home page reloads with a success message</li>
+<li><input disabled="" type="checkbox"> Provider appears in the &ldquo;LTI Tool Providers&rdquo; list</li>
+</ul>
+<hr>
+<h2 id="section-3--add-provider--lti-10-via-xml">Section 3 — Add Provider — LTI 1.0 via XML</h2>
+<ul>
+<li><input disabled="" type="checkbox"> On <code>/</code>, use the &ldquo;Add LTI 1.0 Tool Provider via XML&rdquo; form with:
+<ul>
+<li>URL: <code>PROVIDER_DOMAIN/lti/provider/config.xml</code></li>
+<li>Key and Secret: values from Provider&rsquo;s home page</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Submit — home page reloads with the new provider in the list (name taken from the XML title)</li>
+<li><input disabled="" type="checkbox"> Alternatively, paste the raw XML content directly into the XML textarea and submit — same result</li>
+</ul>
+<hr>
+<h2 id="section-4--add-provider--lti-13-dynamic-registration">Section 4 — Add Provider — LTI 1.3 Dynamic Registration</h2>
+<ul>
+<li><input disabled="" type="checkbox"> On <code>/</code>, enter <code>PROVIDER_DOMAIN/lti/provider/register</code> in the Dynamic Registration URL field</li>
+<li><input disabled="" type="checkbox"> Submit — the provider app processes the registration</li>
+<li><input disabled="" type="checkbox"> Home page reloads with the new LTI 1.3 provider in the list</li>
+<li><input disabled="" type="checkbox"> Click the provider to verify <code>LTI 1.3</code> is shown as true and Client ID and Deployment ID are populated</li>
+</ul>
+<hr>
+<h2 id="section-5--add-provider--manual-lti-13">Section 5 — Add Provider — Manual LTI 1.3</h2>
+<ul>
+<li><input disabled="" type="checkbox"> On <code>/</code>, fill in the &ldquo;Manually Add&rdquo; form with LTI 1.3 fields enabled:
+<ul>
+<li>Name: <code>Test LTI 1.3 Provider</code></li>
+<li>Launch URL: <code>PROVIDER_DOMAIN/lti/provider/launch</code></li>
+<li>Domain: provider domain</li>
+<li>Key and Secret: any values (used for LTI 1.0 fallback; generated if blank)</li>
+<li>Check &ldquo;LTI 1.3 Enabled&rdquo;</li>
+<li>JWKS URL: <code>PROVIDER_DOMAIN/lti/provider/jwks</code></li>
+<li>Auth URL: <code>PROVIDER_DOMAIN/lti/provider/login</code></li>
+<li>Redirect URLs: <code>PROVIDER_DOMAIN/lti/provider/launch</code></li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Submit — provider appears in the list with <code>lti13: true</code></li>
+</ul>
+<hr>
+<h2 id="section-6--provider-detail-page">Section 6 — Provider Detail Page</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Click any provider in the list — <code>/provider/:id</code> loads</li>
+<li><input disabled="" type="checkbox"> Name, Launch URL, Key, masked Secret, Custom, LTI 1.3 flag, Client ID, and Deployment ID are shown</li>
+<li><input disabled="" type="checkbox"> &ldquo;Reveal full secret&rdquo; disclosure works and shows the full secret</li>
+<li><input disabled="" type="checkbox"> Launch configuration form (context, resource, user, instructor flag, gradebook key) is present</li>
+<li><input disabled="" type="checkbox"> For an LTI 1.3 provider: &ldquo;Deep Link Request&rdquo; section is visible</li>
+<li><input disabled="" type="checkbox"> &ldquo;Edit Provider&rdquo; form is present with current values pre-filled</li>
+<li><input disabled="" type="checkbox"> &ldquo;Rotate Secret / Key Pair&rdquo; form is present</li>
+<li><input disabled="" type="checkbox"> &ldquo;Delete Provider&rdquo; form is present</li>
+<li><input disabled="" type="checkbox"> Debugging section at the bottom can be expanded and shows provider JSON</li>
+</ul>
+<hr>
+<h2 id="section-7--lti-10-launch">Section 7 — LTI 1.0 Launch</h2>
+<p>Requires the LTI 1.0 provider from Section 2 or 3.</p>
+<ul>
+<li><input disabled="" type="checkbox"> On the provider detail page, fill in context, resource, and user fields (defaults are fine)</li>
+<li><input disabled="" type="checkbox"> Leave &ldquo;Instructor?&rdquo; unchecked; click Submit — a <strong>new tab</strong> opens on the provider&rsquo;s student view
+<ul>
+<li><input disabled="" type="checkbox"> Student user name and email match the values entered in the form</li>
+<li><input disabled="" type="checkbox"> Course name and label match the context fields</li>
+<li><input disabled="" type="checkbox"> Assignment name matches the resource name</li>
+<li><input disabled="" type="checkbox"> <code>launch_type</code> in the debugging section is <code>&quot;lti1.0&quot;</code></li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Repeat with &ldquo;Instructor?&rdquo; checked — <code>/instructor</code> view loads in the provider
+<ul>
+<li><input disabled="" type="checkbox"> &ldquo;Read Grade from LMS&rdquo; and &ldquo;Delete Grade from LMS&rdquo; buttons appear</li>
+<li><input disabled="" type="checkbox"> No &ldquo;LTI 1.3 AGS&rdquo; section appears</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="section-8--lti-10-grade-passback">Section 8 — LTI 1.0 Grade Passback</h2>
+<p>Requires a student launch from Section 7.</p>
+<h3 id="8a--student-submits-a-grade">8A — Student submits a grade</h3>
+<ul>
+<li><input disabled="" type="checkbox"> In the provider&rsquo;s student view, enter a grade (0.00–1.00) and submit</li>
+<li><input disabled="" type="checkbox"> Success message appears in the provider app</li>
+<li><input disabled="" type="checkbox"> In the consumer app, open <code>/grades</code></li>
+<li><input disabled="" type="checkbox"> The grade is listed under the correct course, assignment, and user with score, activity progress, grading progress, and timestamp</li>
+</ul>
+<h3 id="8b--instructor-updates-a-grade">8B — Instructor updates a grade</h3>
+<ul>
+<li><input disabled="" type="checkbox"> In the consumer app, re-launch the same provider as instructor</li>
+<li><input disabled="" type="checkbox"> In the provider&rsquo;s instructor view, update the student&rsquo;s grade to a new value</li>
+<li><input disabled="" type="checkbox"> In the consumer app, open <code>/grades</code> — grade is updated</li>
+</ul>
+<hr>
+<h2 id="section-9--lti-13-launch">Section 9 — LTI 1.3 Launch</h2>
+<p>Requires the LTI 1.3 provider from Section 4 or 5 with a matching consumer record configured in the provider app. See the Provider testing plan Section 3 for how to configure the consumer record on the provider side.</p>
+<ul>
+<li><input disabled="" type="checkbox"> On the LTI 1.3 provider detail page, fill in context, resource, and user fields</li>
+<li><input disabled="" type="checkbox"> Leave &ldquo;Instructor?&rdquo; unchecked; click Submit — a <strong>new tab</strong> opens on the provider&rsquo;s student view
+<ul>
+<li><input disabled="" type="checkbox"> <code>launch_type</code> in debugging is <code>&quot;lti1.3&quot;</code></li>
+<li><input disabled="" type="checkbox"> Activity Progress and Grading Progress dropdowns appear</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Repeat with &ldquo;Instructor?&rdquo; checked — <code>/instructor</code> view loads in the provider
+<ul>
+<li><input disabled="" type="checkbox"> &ldquo;LTI 1.3 Assignment and Grade Services (AGS)&rdquo; section appears</li>
+<li><input disabled="" type="checkbox"> Line Item info (label and score maximum) is displayed</li>
+<li><input disabled="" type="checkbox"> Results table is shown (empty until a student submits)</li>
+<li><input disabled="" type="checkbox"> &ldquo;All Line Items in Course&rdquo; table lists all assignments for the context key</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="section-10--lti-13-grade-passback">Section 10 — LTI 1.3 Grade Passback</h2>
+<p>Requires an LTI 1.3 student launch from Section 9.</p>
+<ul>
+<li><input disabled="" type="checkbox"> In the provider&rsquo;s student view, select progress values and enter a grade; submit</li>
+<li><input disabled="" type="checkbox"> Success message appears in the provider app</li>
+<li><input disabled="" type="checkbox"> In the consumer app, open <code>/grades</code></li>
+<li><input disabled="" type="checkbox"> Grade appears with <code>scoreGiven</code>, <code>scoreMaximum</code>, <code>activityProgress</code>, <code>gradingProgress</code>, and <code>timestamp</code></li>
+</ul>
+<hr>
+<h2 id="section-11--lti-13-deep-linking">Section 11 — LTI 1.3 Deep Linking</h2>
+<p>Requires an LTI 1.3 provider (Section 4 or 5) and a matching LTI 1.3 consumer record in the provider app.</p>
+<ul>
+<li><input disabled="" type="checkbox"> On the LTI 1.3 provider detail page, scroll to &ldquo;Deep Link Request&rdquo;</li>
+<li><input disabled="" type="checkbox"> Fill in context and user fields; click &ldquo;Launch Deep Link&rdquo;</li>
+<li><input disabled="" type="checkbox"> Provider&rsquo;s <code>/deeplink</code> view opens (in the same tab)
+<ul>
+<li><input disabled="" type="checkbox"> User name and course info are shown</li>
+<li><input disabled="" type="checkbox"> &ldquo;Create a New Assignment&rdquo; form with Title and ID fields is present</li>
+<li><input disabled="" type="checkbox"> Deep Link launch data is visible in the debugging section</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Enter a title (e.g. <code>Test Assignment</code>) and an ID (e.g. <code>assign001</code>); click Submit</li>
+<li><input disabled="" type="checkbox"> Browser is redirected to <code>/deeplink-result</code> on the <strong>consumer</strong> app
+<ul>
+<li><input disabled="" type="checkbox"> The page shows the returned content items (title and URL/ID returned by the provider)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="section-12--provider-management">Section 12 — Provider Management</h2>
+<h3 id="12a--edit-provider">12A — Edit provider</h3>
+<ul>
+<li><input disabled="" type="checkbox"> On <code>/provider/:id</code>, change the name in the &ldquo;Edit Provider&rdquo; form and submit</li>
+<li><input disabled="" type="checkbox"> Page reloads with a success message and the updated name is shown</li>
+<li><input disabled="" type="checkbox"> The updated name appears in the provider list on the home page</li>
+</ul>
+<h3 id="12b--rotate-credentials">12B — Rotate credentials</h3>
+<ul>
+<li><input disabled="" type="checkbox"> On <code>/provider/:id</code>, click &ldquo;Rotate Credentials&rdquo;</li>
+<li><input disabled="" type="checkbox"> Page reloads; new Key and Secret are shown (different from the previous values)</li>
+<li><input disabled="" type="checkbox"> Note: after rotating credentials on an LTI 1.0 provider, any new launches from the consumer must use the new key/secret. Re-launch to confirm the new credentials work.</li>
+</ul>
+<h3 id="12c--delete-provider">12C — Delete provider</h3>
+<ul>
+<li><input disabled="" type="checkbox"> On <code>/provider/:id</code>, click &ldquo;Delete Provider&rdquo; — a browser confirm dialog appears</li>
+<li><input disabled="" type="checkbox"> Click Cancel — provider is not deleted, page stays</li>
+<li><input disabled="" type="checkbox"> Click &ldquo;Delete Provider&rdquo; again, then OK — redirected to <code>/</code> (home page)</li>
+<li><input disabled="" type="checkbox"> Provider no longer appears in the list on the home page</li>
+</ul>
+<hr>
+<h2 id="section-13--gradebook">Section 13 — Gradebook</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Navigate to <code>/grades</code></li>
+<li><input disabled="" type="checkbox"> All grade submissions received so far appear, grouped by course, assignment, and user</li>
+<li><input disabled="" type="checkbox"> Each grade entry shows: score given, score maximum, activity progress, grading progress, timestamp, and user ID</li>
+<li><input disabled="" type="checkbox"> An empty gradebook shows &ldquo;No courses found!&rdquo;</li>
+<li><input disabled="" type="checkbox"> After fresh grade submissions (from any test above), refresh the page and confirm new entries appear</li>
+</ul>
+
+  <footer class="footline">
+  </footer>
+</article>
+        </div>
+      </main>
+      
+      
+      
+    </div>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1781805999" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1781805999" defer></script>
+      
+      
+      
+    </div> 
+  <script src="/lti-toolkit/js/tele-scroll.min.js?1781805999" defer></script>
+  </body>
+</html>
