@@ -56,7 +56,7 @@ TypeScript users: type declarations are published alongside the library (`index.
 
 ## Documentation
 
-Full documentation is available in the `docs/` directory and covers:
+[Full documentation is available](https://alt.cs.ksu.edu/lti-toolkit/) and covers:
 
 - Configuration reference
 - Full API reference

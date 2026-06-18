@@ -6,6 +6,8 @@ weight: 10
 
 A fully-featured LTI Tool Provider example can be found in `/examples/provider`. This document will walk through the details of how that application works.
 
+[Testing Plan]({{% relref "testing.md" %}})
+
 ## Environment
 
 The application expects the following environment variables (typically loaded from `.env`): 

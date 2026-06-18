@@ -6,6 +6,8 @@ weight: 16
 
 A fully-featured LTI Tool Consumer example can be found in `/examples/consumer`. This document will walk through the details of how that application works.
 
+[Testing PLan]({{% relref "testing.md" %}})
+
 ## Environment
 
 The application expects the following environment variables (typically loaded from `.env`): 
