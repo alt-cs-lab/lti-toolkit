@@ -10,6 +10,7 @@ import crypto from "crypto";
 // Import Utilities
 import LTI10Utils from "../lib/lti10.js";
 import LTI13Utils from "../lib/lti13.js";
+import { assertRedirectUrl } from "../lib/callback-validation.js";
 
 class LTILaunchController {
   // Private fields for LTI utilities
@@ -104,6 +105,7 @@ class LTILaunchController {
       assignment_name: launchResult.resource_link_title,
       return_url: launchResult.launch_presentation_return_url,
       outcome_url: launchResult.lis_outcome_service_url,
+      outcome_lineitems: null,
       outcome_id: launchResult.lis_result_sourcedid,
       outcome_ags: null,
       user_lis_id: launchResult.user_id,
@@ -163,6 +165,7 @@ class LTILaunchController {
         assignment_name: launchResult[baseUrl + "resource_link"]?.title,
         return_url: launchResult[baseUrl + "launch_presentation"]?.return_url,
         outcome_url: launchResult[agsUrl + "endpoint"]?.lineitem,
+        outcome_lineitems: launchResult[agsUrl + "endpoint"]?.lineitems,
         outcome_id: null,
         outcome_ags: JSON.stringify(launchResult[agsUrl + "endpoint"]),
         user_lis_id: launchResult[baseUrl + "lti1p1"]?.user_id,
@@ -250,9 +253,7 @@ class LTILaunchController {
       updated.tc_name = name;
     }
     if (changed) {
-      // HACK Are changes to these values a problem?
-      // If so, we should consider not updating them and instead just logging the changes and maybe alerting the admin
-      // For now, we will just log the changes
+      // Log changes to TC metadata but update them — these fields are informational and set by the LMS on each launch
       this.#logger.warn("Tool Consumer Data Changed!");
       this.#logger.warn("Old: " + JSON.stringify(prior, null, 2));
       this.#logger.warn("New: " + JSON.stringify(updated, null, 2));
@@ -270,7 +271,9 @@ class LTILaunchController {
     this.#logger.lti("Handling LTI Launch");
     this.#logger.silly("Launch Data: " + JSON.stringify(launchData, null, 2));
     if (this.#provider_config && typeof this.#provider_config.handleLaunch === "function") {
-      return await this.#provider_config.handleLaunch(launchData, consumer, req);
+      const result = await this.#provider_config.handleLaunch(launchData, consumer, req);
+      assertRedirectUrl(result, "handleLaunch");
+      return result;
     } else {
       throw new Error("Launch Error: No provider.handleLaunch function defined!");
     }
@@ -284,7 +287,9 @@ class LTILaunchController {
     this.#logger.lti("Handling LTI Deeplink");
     this.#logger.silly("Launch Data: " + JSON.stringify(launchData, null, 2));
     if (this.#provider_config && typeof this.#provider_config.handleDeeplink === "function") {
-      return await this.#provider_config.handleDeeplink(launchData, consumer, req);
+      const result = await this.#provider_config.handleDeeplink(launchData, consumer, req);
+      assertRedirectUrl(result, "handleDeeplink");
+      return result;
     } else {
       throw new Error("Deeplink Error: No provider.handleDeeplink function defined!");
     }

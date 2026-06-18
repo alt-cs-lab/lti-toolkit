@@ -29,7 +29,7 @@ The XML below has been reformatted a bit for readability
   <blti:title>LTI Toolkit</blti:title>
   <blti:description>LTI Toolkit for LTI Tool Providers</blti:description>
   <blti:icon>https://placehold.co/64x64.png</blti:icon>
-  <blti:launch_url>https://ltidemo.home.russfeld.me/lti/provider/launch10</blti:launch_url>
+  <blti:launch_url>https://ltidemo.home.russfeld.me/lti/provider/launch</blti:launch_url>
   <blti:custom>
     <lticm:property name="custom_name">custom_value</lticm:property>
   </blti:custom>
@@ -52,7 +52,7 @@ Helpful references:
 
 #### Initial Request
 
-The process begins with the LMS sending a request to the dynamic configuration URL for the tool (`register13`). These are the query parameters received from Canvas sent in that POST request.
+The process begins with the LMS sending a request to the dynamic configuration URL for the tool (`register`). These are the query parameters received from Canvas sent in that POST request.
 
 ```json
 {
@@ -69,7 +69,7 @@ From Canvas, the token is a JWT containing the following information (this is ge
   "user_id": 1,
   "root_account_global_id": 10000000000001,
   "root_account_domain": "canvas.home.russfeld.me",
-  "registration_url": "https://ltidemo.home.russfeld.me/lti/provider/register13",
+  "registration_url": "https://ltidemo.home.russfeld.me/lti/provider/register",
   "exp": 1770412761
 }
 ```
@@ -401,20 +401,20 @@ The tool then sends a POST request to the LMS using the `registration_endpoint` 
   "application_type": "web",
   "response_types": ["id_token"],
   "grant_types": ["implicit", "client_credentials"],
-  "initiate_login_uri": "https://example.com/lti/provider/login13",
+  "initiate_login_uri": "https://example.com/lti/provider/login",
   "redirect_uris": [
-    "https://example.com/lti/provider/redirect13",
+    "https://example.com/lti/provider/launch",
   ],
   "client_name": "LTI Toolkit",
   "logo_uri": "https://example.com/icon.png",
   "token_endpoint_auth_method": "private_key_jwt",
-  "jwks_uri": "https://example.com/lti/provider/key13",
+  "jwks_uri": "https://example.com/lti/provider/jwks",
   "contacts": ["admin@example.com"],   
   "scope": "https://purl.imsglobal.org/spec/lti-ags/scope/score",
   "https://purl.imsglobal.org/spec/lti-tool-configuration": {
     "domain": "ltidemo.home.russfeld.me",
     "description": "LTI Demo Tool Description",
-    "target_link_uri": "https://example.com/lti/provider//launch13",
+    "target_link_uri": "https://example.com/lti/provider/launch",
     "custom_parameters": {
       "custom_name": "custom_value"
     },
@@ -436,15 +436,15 @@ If successful, the LMS will return a JSON response containing information about 
     "client_credentials",
     "implicit"
   ],
-  "initiate_login_uri": "https://ltidemo.home.russfeld.me/lti/provider/login13",
+  "initiate_login_uri": "https://ltidemo.home.russfeld.me/lti/provider/login",
   "redirect_uris": [
-    "https://ltidemo.home.russfeld.me/lti/provider/redirect13"
+    "https://ltidemo.home.russfeld.me/lti/provider/launch"
   ],
   "response_types": [
     "id_token"
   ],
   "client_name": "LTI Toolkit",
-  "jwks_uri": "https://ltidemo.home.russfeld.me/lti/provider/key13",
+  "jwks_uri": "https://ltidemo.home.russfeld.me/lti/provider/jwks",
   "logo_uri": "https://placehold.co/64x64.png",
   "token_endpoint_auth_method": "private_key_jwt",
   "scope": "https://purl.imsglobal.org/spec/lti-ags/scope/score",
@@ -460,7 +460,7 @@ If successful, the LMS will return a JSON response containing information about 
       "email",
       "picture"
     ],
-    "target_link_uri": "https://ltidemo.home.russfeld.me/lti/provider/launch13",
+    "target_link_uri": "https://ltidemo.home.russfeld.me/lti/provider/launch",
     "custom_parameters": {},
     "description": "LTI Toolkit for LTI Tool Providers",
     "https://canvas.instructure.com/lti/registration_config_url": "https://canvas.home.russfeld.me/api/lti/registrations/10000000000001/view"
@@ -470,6 +470,62 @@ If successful, the LMS will return a JSON response containing information about 
 ```
 
 This provides the `client_id` and `deployment_id`, which is needed to complete the registration. 
+
+## LTI Toolkit Consumer Registration Response
+
+When this library acts as an LTI consumer (platform) and receives a dynamic registration request from a tool, it returns an explicit response built from the fields it recognizes and stores. Unknown vendor-specific fields sent by the registering tool are intentionally omitted from the response.
+
+The response always includes:
+
+| Field | Source |
+|---|---|
+| `client_id` | Assigned by this platform |
+| `deployment_id` | Assigned by this platform (top-level, per Canvas; also inside `lti-tool-configuration` per IMS spec) |
+| `application_type` | Echoed from request, or `"web"` |
+| `grant_types` | Echoed from request, or `["implicit", "client_credentials"]` |
+| `response_types` | Echoed from request, or `["id_token"]` |
+| `token_endpoint_auth_method` | Echoed from request, or `"private_key_jwt"` |
+| `client_name` | From stored provider name |
+| `initiate_login_uri` | From stored provider `auth_url` |
+| `jwks_uri` | From stored provider `keyset_url` |
+| `https://purl.imsglobal.org/spec/lti-tool-configuration` | Reconstructed from stored provider fields |
+
+The following fields are included **only if present** in the request:
+
+| Field | Notes |
+|---|---|
+| `redirect_uris` | Echoed from request |
+| `logo_uri` | Echoed from request |
+| `contacts` | Echoed from request |
+| `scope` | From stored provider scopes (space-separated string) |
+| `lti-tool-configuration.custom_parameters` | From stored provider `custom` |
+| `lti-tool-configuration.claims` | From stored provider `claims` |
+| `lti-tool-configuration.messages` | Echoed from request |
+| `lti-tool-configuration.description` | Echoed from request |
+
+Example response from this library:
+
+```json
+{
+  "client_id": "abc123",
+  "deployment_id": "1:deploy456",
+  "application_type": "web",
+  "grant_types": ["implicit", "client_credentials"],
+  "response_types": ["id_token"],
+  "token_endpoint_auth_method": "private_key_jwt",
+  "client_name": "My LTI Tool",
+  "initiate_login_uri": "https://tool.example.com/lti/login",
+  "jwks_uri": "https://tool.example.com/lti/jwks",
+  "redirect_uris": ["https://tool.example.com/lti/redirect"],
+  "scope": "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+  "https://purl.imsglobal.org/spec/lti-tool-configuration": {
+    "domain": "tool.example.com",
+    "target_link_uri": "https://tool.example.com/lti/launch",
+    "deployment_id": "1:deploy456",
+    "claims": ["sub", "name", "email"]
+  }
+}
+```
 
 ## Helpful Resources
 

@@ -24,13 +24,26 @@ services:
       # Docker Network
       - "traefik.docker.network=traefik"
       # Routing Rule
-      - "traefik.http.routers.ltidemo.rule=Host(`ltidemo.home.russfeld.me`)"
+      - "traefik.http.routers.ltitool.rule=Host(`ltitool.home.russfeld.me`)"
       # Change Port
-      - "traefik.http.services.ltidemo.loadbalancer.server.port=3000"
+      - "traefik.http.services.ltitool.loadbalancer.server.port=3000"
       # Enable TLS
-      - "traefik.http.routers.ltidemo.tls=true"
+      - "traefik.http.routers.ltitool.tls=true"
+      # Link Service to Router
+      - "traefik.http.routers.ltitool.service=ltitool"
       # TLS Certificate Resolver
-      - "traefik.http.routers.ltidemo.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.ltitool.tls.certresolver=letsencrypt"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Routing Rule
+      - "traefik.http.routers.ltilms.rule=Host(`ltilms.home.russfeld.me`)"
+      # Change Port
+      - "traefik.http.services.ltilms.loadbalancer.server.port=3001"
+      # Enable TLS
+      - "traefik.http.routers.ltilms.tls=true"
+      # Link Service to Router
+      - "traefik.http.routers.ltilms.service=ltilms"
+      # TLS Certificate Resolver
+      - "traefik.http.routers.ltilms.tls.certresolver=letsencrypt"
       # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.

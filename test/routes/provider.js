@@ -265,7 +265,8 @@ describe("/routes/provider.js", function () {
 
       // Assert response
       expect(res.status).to.equal(200);
-      expect(res.body).to.deep.equal(keys);
+      expect(res.body).to.have.property("keys").that.is.an("array").with.lengthOf(2);
+      expect(res.body.keys).to.deep.equal(keys);
       expect(LTILaunchController.generateConsumerJWKS.calledOnce).to.be.true;
     });
 

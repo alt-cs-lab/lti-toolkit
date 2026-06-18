@@ -20,17 +20,18 @@ async function ProviderLaunchHandler(req, res) {
   const providerId = req.params.id;
 
   // Get Provider
-  const provider = await lti.controllers.provider.getById(providerId);
+  const provider = await lti.controllers.providerRegistry.getById(providerId);
   if (!provider) {
     return res.status(404).send("Provider not found");
   }
 
   // Get Secret
-  const providerSecret = await lti.controllers.provider.getSecret(provider.id);
+  const providerSecret = await lti.controllers.providerRegistry.getSecret(provider.id);
 
-  // Formatted provider including secret
+  // Formatted provider including secret and masked secret (last 4 chars)
   const providerData = provider.toJSON();
   providerData.secret = providerSecret.secret;
+  providerData.maskedSecret = "••••••••" + providerSecret.secret.slice(-4);
 
   // Get Form Data
   const data = {
@@ -58,7 +59,7 @@ async function ProviderLaunchHandler(req, res) {
   // Handle custom parameters
   if (req.body.custom) {
     try {
-      const customParams = JSON.parse("{" + req.body.custom + "}");
+      const customParams = JSON.parse(req.body.custom);
       data.custom = customParams;
     } catch (err) {
       error = "Invalid custom parameters: " + err.message;
@@ -133,19 +134,38 @@ async function ProviderLaunchHandler(req, res) {
     // Store launch data in local data store
     updateDataStoreWithLaunch(data, providerData, req);
 
-    // Create LTI Launch
-    const launch = lti.controllers.lti.consumer.generateLTI10LaunchFormData(
-      providerData.key,
-      providerData.secret,
-      providerData.launch_url,
-      "/provider/" + providerData.id,
-      data.context,
-      data.resource,
-      data.user,
-      data.manager,
-      data.gradebook_id,
-      data.custom,
-    );
+    let launch;
+
+    if (providerData.lti13) {
+      // Create LTI 1.3 Launch
+      launch = await lti.controllers.consumer.generateLTI13LoginFormData(
+        providerData.key,
+        providerData.client_id,
+        providerData.deployment_id,
+        providerData.launch_url,
+        "/provider/" + providerData.id,
+        data.context,
+        data.resource,
+        data.user,
+        data.manager,
+        data.gradebook_id,
+        data.custom,
+      );
+    } else {
+      // Create LTI 1.0 Launch
+      launch = await lti.controllers.consumer.generateLTI10LaunchFormData(
+        providerData.key,
+        providerData.secret,
+        providerData.launch_url,
+        "/provider/" + providerData.id,
+        data.context,
+        data.resource,
+        data.user,
+        data.manager,
+        data.gradebook_id,
+        data.custom,
+      );
+    }
 
     // Render template
     res.render("launch.njk", {

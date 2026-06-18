@@ -16,7 +16,16 @@
             <p>Grades: </p>
             <ul>
             {% for gradeID, grade in user.grades %}
-              <li>{{ gradeID }} - {{ grade.score }}</li>
+              <li>
+                <b>{{ gradeID }}</b>
+                <ul>
+                  <li><b>Score: </b>{{ grade.scoreGiven }} / {{ grade.scoreMaximum }}</li>
+                  <li><b>Activity Progress: </b>{{ grade.activityProgress }}</li>
+                  <li><b>Grading Progress: </b>{{ grade.gradingProgress }}</li>
+                  <li><b>Timestamp: </b>{{ grade.timestamp }}</li>
+                  <li><b>User ID: </b>{{ grade.userId }}</li>
+                </ul>
+              </li>
             {% else %}
               <li><b>No grades found!</b></li>
             {% endfor %}

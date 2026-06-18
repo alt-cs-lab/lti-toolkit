@@ -88,7 +88,7 @@ class LTI10Utils {
     // Part 1 - HTTP method in uppercase
     const part1 = LTI10Utils.#rfc3986(http_method.toUpperCase());
     // Part 2 - Base String URI
-    // TODO update this to read domain name from headers?
+    // domain_name must be the public-facing URL so this matches the URL the LMS signed
     const part2 = LTI10Utils.#rfc3986(new URL(base_uri, this.#domain_name).href);
     // Part 3 - Parameters
     const part3 = LTI10Utils.#rfc3986(LTI10Utils.#normalizeParams(params));
@@ -300,8 +300,10 @@ class LTI10Utils {
       signedParams,
       consumerKey.secret,
     );
-    // Compare extracted signature to computed
-    if (computedSignature !== oauth_signature) {
+    // Compare extracted signature to computed (timing-safe to prevent timing attacks)
+    const computedBuf = Buffer.from(computedSignature);
+    const providedBuf = Buffer.from(oauth_signature);
+    if (computedBuf.length !== providedBuf.length || !crypto.timingSafeEqual(computedBuf, providedBuf)) {
       throw new Error("Validation Error: Invalid OAuth Signature");
     }
 
@@ -462,6 +464,138 @@ class LTI10Utils {
       }
     } else {
       throw new Error("Failed to post grade: HTTP " + response.status + " - " + response.statusText);
+    }
+  }
+
+  /**
+   * Read a grade from a consumer via LTI 1.0 Basic Outcomes readResult
+   *
+   * @param {string} lms_grade_id - the LMS grade ID (sourcedId)
+   * @param {string} consumer_key - the consumer key
+   * @param {string} url - the grade passback URL
+   * @returns {number|null} the score (0.0 - 1.0), or null if no grade is on file
+   * @throws {Error} if required information is missing or if the request fails
+   */
+  async readOutcome(lms_grade_id, consumer_key, url) {
+    const envelope = {
+      imsx_POXEnvelopeRequest: {
+        $: { xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0" },
+        imsx_POXHeader: {
+          imsx_POXRequestHeaderInfo: {
+            imsx_version: "V1.0",
+            imsx_messageIdentifier: nanoid(),
+          },
+        },
+        imsx_POXBody: {
+          readResultRequest: {
+            resultRecord: {
+              sourcedGUID: { sourcedId: lms_grade_id },
+            },
+          },
+        },
+      },
+    };
+    const builder = new xml2js.Builder();
+    const content = builder.buildObject(envelope);
+
+    const providerKey = await this.#ConsumerKeyModel.findByPk(consumer_key, { attributes: ["key", "secret"] });
+    if (!providerKey) {
+      throw new Error("Error: Invalid Consumer Key");
+    }
+
+    const authHeader = await this.#signOauthBody(content, providerKey.key, providerKey.secret, "POST", url);
+    this.#logger.lti("Reading grade from LTI 1.0 Outcome Service at " + url);
+
+    const response = await ky.post(url, {
+      headers: { "Content-Type": "application/xml", Authorization: authHeader },
+      body: content,
+    });
+
+    if (response && response.status === 200) {
+      const responseText = await response.text();
+      const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+      const responseXml = await parser.parseStringPromise(responseText);
+      this.#logger.silly("Response XML: " + JSON.stringify(responseXml, null, 2));
+      if (
+        responseXml.imsx_POXEnvelopeResponse.imsx_POXHeader.imsx_POXResponseHeaderInfo.imsx_statusInfo
+          .imsx_codeMajor === "success"
+      ) {
+        const body = responseXml.imsx_POXEnvelopeResponse.imsx_POXBody;
+        const textString = body?.readResultResponse?.result?.resultScore?.textString;
+        if (!textString) {
+          this.#logger.lti("No grade on file");
+          return null;
+        }
+        this.#logger.lti("Grade read successfully: " + textString);
+        return parseFloat(textString);
+      } else {
+        throw new Error("Failed to read grade: " + JSON.stringify(responseXml, null, 2));
+      }
+    } else {
+      throw new Error("Failed to read grade: HTTP " + response.status + " - " + response.statusText);
+    }
+  }
+
+  /**
+   * Delete a grade from a consumer via LTI 1.0 Basic Outcomes deleteResult
+   *
+   * @param {string} lms_grade_id - the LMS grade ID (sourcedId)
+   * @param {string} consumer_key - the consumer key
+   * @param {string} url - the grade passback URL
+   * @returns {boolean} true if the grade was deleted successfully
+   * @throws {Error} if required information is missing or if the request fails
+   */
+  async deleteOutcome(lms_grade_id, consumer_key, url) {
+    const envelope = {
+      imsx_POXEnvelopeRequest: {
+        $: { xmlns: "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0" },
+        imsx_POXHeader: {
+          imsx_POXRequestHeaderInfo: {
+            imsx_version: "V1.0",
+            imsx_messageIdentifier: nanoid(),
+          },
+        },
+        imsx_POXBody: {
+          deleteResultRequest: {
+            resultRecord: {
+              sourcedGUID: { sourcedId: lms_grade_id },
+            },
+          },
+        },
+      },
+    };
+    const builder = new xml2js.Builder();
+    const content = builder.buildObject(envelope);
+
+    const providerKey = await this.#ConsumerKeyModel.findByPk(consumer_key, { attributes: ["key", "secret"] });
+    if (!providerKey) {
+      throw new Error("Error: Invalid Consumer Key");
+    }
+
+    const authHeader = await this.#signOauthBody(content, providerKey.key, providerKey.secret, "POST", url);
+    this.#logger.lti("Deleting grade from LTI 1.0 Outcome Service at " + url);
+
+    const response = await ky.post(url, {
+      headers: { "Content-Type": "application/xml", Authorization: authHeader },
+      body: content,
+    });
+
+    if (response && response.status === 200) {
+      const responseText = await response.text();
+      const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+      const responseXml = await parser.parseStringPromise(responseText);
+      this.#logger.silly("Response XML: " + JSON.stringify(responseXml, null, 2));
+      if (
+        responseXml.imsx_POXEnvelopeResponse.imsx_POXHeader.imsx_POXResponseHeaderInfo.imsx_statusInfo
+          .imsx_codeMajor === "success"
+      ) {
+        this.#logger.lti("Grade deleted successfully");
+        return true;
+      } else {
+        throw new Error("Failed to delete grade: " + JSON.stringify(responseXml, null, 2));
+      }
+    } else {
+      throw new Error("Failed to delete grade: HTTP " + response.status + " - " + response.statusText);
     }
   }
 
@@ -664,6 +798,151 @@ class LTI10Utils {
       score,
       sourcedIdValue: sourcedId["sourcedid"],
     };
+  }
+
+  /**
+   * Validate a Basic Outcomes Read or Delete Result Request
+   *
+   * @param {Object} request - The read/delete result request body extracted from the envelope
+   * @throws {Error} if the request is not a valid Basic Outcomes Read/Delete Result Request
+   * @returns {Object} an object containing the sourcedIdValue if the request is valid
+   */
+  validateSourcedIdRequest(request) {
+    if (!request["resultrecord"]) {
+      throw new Error("Read/Delete Result: Missing Result Record");
+    }
+    const resultRecord = request["resultrecord"];
+    if (!resultRecord["sourcedguid"]) {
+      throw new Error("Read/Delete Result: Missing Result Source ID");
+    }
+    const sourcedId = resultRecord["sourcedguid"];
+    if (!sourcedId["sourcedid"] || sourcedId["sourcedid"].length === 0) {
+      throw new Error("Read/Delete Result: Missing Result Source ID Value");
+    }
+    return { sourcedIdValue: sourcedId["sourcedid"] };
+  }
+
+  /**
+   * Validate an incoming LTI 1.0 XML Configuration Message
+   *
+   * @param {string} xml - the XML string to validate
+   * @throws {Error} if the XML is not a valid LTI 1.0 Configuration Message
+   * @returns {Object} an object containing the configuration data
+   */
+  async validateConfigXML(xml, url) {
+    // Either XML or URL must be included
+    if (!xml && !url) {
+      throw new Error("Validation Error: Missing XML Configuration and URL");
+    }
+
+    // If URL is included, fetch XML from URL
+    if (url) {
+      try {
+        const response = await ky.get(url);
+        if (response && response.status === 200) {
+          xml = await response.text();
+        } else {
+          throw new Error("HTTP " + response.status + " - " + response.statusText);
+        }
+      } catch (error) {
+        throw new Error("Failed to fetch XML from URL: " + error.message, { cause: error });
+      }
+    }
+
+    const parser = new xml2js.Parser({ explicitArray: false, trim: true });
+    let config;
+    config = await parser.parseStringPromise(xml);
+    this.#logger.silly("Parsed LTI Configuration: " + JSON.stringify(config, null, 2));
+    /** Should look like this:
+     * <cartridge_basiclti_link 
+  xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0" 
+  xmlns:blti="http://www.imsglobal.org/xsd/imsbasiclti_v1p0" 
+  xmlns:lticm="http://www.imsglobal.org/xsd/imslticm_v1p0" 
+  xmlns:lticp="http://www.imsglobal.org/xsd/imslticp_v1p0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.imsglobal.org/xsd/imslticc_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticc_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imsbasiclti_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imslticm_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imslticp_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd"
+  >
+  <blti:title>LTI Toolkit</blti:title>
+  <blti:description>LTI Toolkit for LTI Tool Providers</blti:description>
+  <blti:icon>https://placehold.co/64x64.png</blti:icon>
+  <blti:launch_url>https://ltidemo.home.russfeld.me/lti/provider/launch10</blti:launch_url>
+  <blti:custom>
+    <lticm:property name="custom_name">custom_value</lticm:property>
+  </blti:custom>
+  <blti:extensions platform="canvas.instructure.com">
+    <lticm:property name="tool_id">lti_toolkit</lticm:property>
+    <lticm:property name="privacy_level">public</lticm:property>
+    <lticm:property name="domain">ltidemo.home.russfeld.me</lticm:property>
+  </blti:extensions>
+  <cartridge_bundle identifierref="BLTI001_Bundle"/>
+  <cartridge_icon identifierref="BLTI001_Icon"/>
+</cartridge_basiclti_link>
+     */
+    if (!config.cartridge_basiclti_link) {
+      throw new Error("Invalid LTI Configuration: Missing Root Element");
+    }
+    if (!config.cartridge_basiclti_link["$"] || !config.cartridge_basiclti_link["$"]["xmlns"]) {
+      throw new Error("Invalid LTI Configuration: Missing Namespace");
+    }
+    if (config.cartridge_basiclti_link["$"]["xmlns"] !== "http://www.imsglobal.org/xsd/imslticc_v1p0") {
+      throw new Error("Invalid LTI Configuration: Invalid Namespace");
+    }
+    if (!config.cartridge_basiclti_link["blti:title"]) {
+      throw new Error("Invalid LTI Configuration: Missing Title");
+    }
+    if (!config.cartridge_basiclti_link["blti:description"]) {
+      throw new Error("Invalid LTI Configuration: Missing Description");
+    }
+    if (!config.cartridge_basiclti_link["blti:icon"]) {
+      throw new Error("Invalid LTI Configuration: Missing Icon");
+    }
+    if (!config.cartridge_basiclti_link["blti:launch_url"]) {
+      throw new Error("Invalid LTI Configuration: Missing Launch URL");
+    }
+    // Build configuration object
+    const configuration = {
+      title: config.cartridge_basiclti_link["blti:title"],
+      description: config.cartridge_basiclti_link["blti:description"],
+      icon: config.cartridge_basiclti_link["blti:icon"],
+      launch_url: config.cartridge_basiclti_link["blti:launch_url"],
+      custom: {},
+      extensions: {},
+    };
+    if (
+      config.cartridge_basiclti_link["blti:custom"] &&
+      config.cartridge_basiclti_link["blti:custom"]["lticm:property"]
+    ) {
+      const customProperties = config.cartridge_basiclti_link["blti:custom"]["lticm:property"];
+      if (Array.isArray(customProperties)) {
+        customProperties.forEach((prop) => {
+          configuration.custom[prop["$"]["name"]] = prop["_"];
+        });
+      } else {
+        configuration.custom[customProperties["$"]["name"]] = customProperties["_"];
+      }
+    }
+    if (
+      config.cartridge_basiclti_link["blti:extensions"] &&
+      config.cartridge_basiclti_link["blti:extensions"]["lticm:property"]
+    ) {
+      const extensionProperties = config.cartridge_basiclti_link["blti:extensions"]["lticm:property"];
+      if (Array.isArray(extensionProperties)) {
+        extensionProperties.forEach((prop) => {
+          configuration.extensions[prop["$"]["name"]] = prop["_"];
+        });
+      } else {
+        configuration.extensions[extensionProperties["$"]["name"]] = extensionProperties["_"];
+      }
+    }
+    this.#logger.silly("Validated LTI Configuration: " + JSON.stringify(configuration, null, 2));
+    return configuration;
   }
 }
 

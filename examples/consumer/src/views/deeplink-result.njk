@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <main>
+      <h1>LTI Deep Link Result</h1>
+      <p>The provider returned {{ content_items | length }} content item(s).</p>
+      {% if content_items | length > 0 %}
+      <h2>Content Items</h2>
+      <ul>
+        {% for item in content_items %}
+        <li>
+          <b>Type:</b> {{ item.type }}
+          {% if item.title %} &mdash; <b>Title:</b> {{ item.title }}{% endif %}
+          {% if item.url %} &mdash; <b>URL:</b> {{ item.url }}{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No content items were returned.</p>
+      {% endif %}
+      <hr />
+      <a href="/provider/{{ context.context.key }}">Back to Provider</a>
+      <hr />
+      <details>
+        <summary>LTI Debugging Information</summary>
+        <p><b>Content Items</b></p>
+        <pre>
+{{ content_items | dump(2) | safe }}
+        </pre>
+        <p><b>Context</b></p>
+        <pre>
+{{ context | dump(2) | safe }}
+        </pre>
+      </details>
+    </main>
+  </body>
+</html>

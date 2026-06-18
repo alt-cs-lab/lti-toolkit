@@ -17,7 +17,12 @@
         <ul>
           <li><b>LTI 1.3:</b> {{ consumer.lti13 }}</li>
           <li><b>Key:</b> {{ consumer.key }}</li>
-          <li><b>Secret:</b> {{ consumer.secret }}</li>
+          <li><b>Secret:</b> {{ consumer.maskedSecret }}
+            <details>
+              <summary>Reveal full secret</summary>
+              {{ consumer.secret }}
+            </details>
+          </li>
           {% if consumer.lti13 %}
           <li><b>Client ID:</b> {{ consumer.client_id }}</li>
           <li><b>Platform ID:</b> {{ consumer.platform_id }}</li>
@@ -27,6 +32,51 @@
           <li><b>Auth URL:</b> {{ consumer.auth_url }}</li>
           {% endif %}
         </ul>
+        <hr />
+        <h2>Update LTI Consumer Configuration</h2>
+        <form method="POST" action="/consumer/{{consumer.id}}/config">
+          <label for="name">Consumer Name</label><br>
+          <input type="text" id="name" name="name" value="{{ consumer.name }}" size="50">
+          <br>
+          <label for="lti13">LTI 1.3 Enabled</label>
+          {% if consumer.lti13 %}
+          <input type="checkbox" id="lti13" name="lti13" value="true" checked>
+          {% else %}
+          <input type="checkbox" id="lti13" name="lti13" value="true">
+          {% endif %}
+          <hr />
+          <label for="client_id">LTI 1.3 Client ID (e.g. "10000000000001")</label><br>
+          <input type="text" id="client_id" name="client_id" value="{{ consumer.client_id | d(10000000000001, true) }}" size="50">
+          <br>
+          <label for="platform_id">LTI 1.3 Platform ID (e.g. "{{ lmsDomain }}")</label><br>
+          <input type="url" id="platform_id" name="platform_id" value="{{ consumer.platform_id | d(lmsDomain, true) }}" size="50">
+          <br>
+          <label for="deployment_id">LTI 1.3 Deployment ID</label><br>
+          <input type="text" id="deployment_id" name="deployment_id" size="50">
+          <br>
+          <label for="keyset_url">LTI 1.3 JWKS Keyset URL (e.g. "{{ lmsDomain }}/api/lti/security/jwks")</label><br>
+          <input type="url" id="keyset_url" name="keyset_url" value="{{ consumer.keyset_url | d(lmsDomain + '/api/lti/security/jwks', true) }}" size="50">
+          <br>
+          <label for="token_url">LTI 1.3 Token URL (e.g. "{{ lmsDomain }}/login/oauth2/token")</label><br>
+          <input type="url" id="token_url" name="token_url" value="{{ consumer.token_url | d(lmsDomain + '/login/oauth2/token', true) }}" size="50">
+          <br>
+          <label for="auth_url">LTI 1.3 Auth URL (e.g. "{{ lmsDomain }}/api/lti/authorize_redirect")</label><br>
+          <input type="url" id="auth_url" name="auth_url" value="{{ consumer.auth_url | d(lmsDomain + '/api/lti/authorize_redirect', true) }}" size="50">
+          <br><br>
+          <input type="submit" value="Submit">
+        </form>
+        <hr />
+        <h2>Rotate Secret / Key Pair</h2>
+        <p>Generates a new random secret (LTI 1.0) and RSA key pair (LTI 1.3). The old credentials will no longer work.</p>
+        <form method="POST" action="/consumer/{{ consumer.id }}/rotate">
+          <input type="submit" value="Rotate Credentials">
+        </form>
+        <hr />
+        <h2>Delete Consumer</h2>
+        <p>Permanently removes this consumer and all associated keys. This cannot be undone.</p>
+        <form method="POST" action="/consumer/{{ consumer.id }}/delete">
+          <input type="submit" value="Delete Consumer" onclick="return confirm('Are you sure you want to delete this consumer?')">
+        </form>
         <hr />
         <details>
           <summary>LTI Debugging Information</summary>

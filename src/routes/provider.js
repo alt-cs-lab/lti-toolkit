@@ -17,6 +17,9 @@ export default function setupProviderRoutes(LTILaunchController, LTIRegistration
   // Create Express router
   const router = express.Router();
 
+  // Configure nunjucks once for auto-submitting form templates
+  nunjucks.configure({ autoescape: true });
+
   /**
    * LTI Launch Target
    *
@@ -110,7 +113,6 @@ export default function setupProviderRoutes(LTILaunchController, LTIRegistration
       const authResult = await LTILaunchController.login13(req);
       res.header("Content-Type", "text/html");
       res.header("Content-Security-Policy", "form-action " + authResult.url);
-      nunjucks.configure({ autoescape: true });
       const output = nunjucks.renderString(
         '<!doctype html>\
 <head>\
@@ -149,7 +151,9 @@ export default function setupProviderRoutes(LTILaunchController, LTIRegistration
   router.get("/jwks", async function (req, res, next) {
     try {
       const keys = await LTILaunchController.generateConsumerJWKS();
-      res.json(keys);
+      res.json({
+        keys: keys,
+      });
     } catch (err) {
       logger.lti(err);
       return res.status(500).send("Server Error");
@@ -234,14 +238,13 @@ export default function setupProviderRoutes(LTILaunchController, LTIRegistration
    *     tags: [lti-provider]
    */
   router.all("/register", async function (req, res, next) {
-    logger.lti("Login Request Received");
+    logger.lti("Register Request Received");
     logger.silly(JSON.stringify(req.params, null, 2));
     logger.silly(JSON.stringify(req.query, null, 2));
     logger.silly(JSON.stringify(req.body, null, 2));
 
     try {
       await LTIRegistrationController.dynamicRegistration(req.query);
-      nunjucks.configure({ autoescape: true });
       const output = nunjucks.renderString(
         '<!doctype html>\
   <head>\

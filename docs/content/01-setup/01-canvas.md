@@ -13,7 +13,7 @@ weight: 10
 
 This was configured for my local development machine. It has the following already installed/configured:
 
-* Ubuntu 24.04 LTS
+* Ubuntu 26.04 LTS
 * Docker: https://docs.docker.com/engine/install/ubuntu/
   * The local user account was already added to the `docker` group
 * A working Traefik proxy configured for `home.russfeld.me` with Let's Encrypt SSL certificates enabled: https://traefik.io/traefik/
@@ -32,7 +32,16 @@ There may have been other tools installed earlier that I did not account for her
 $ git clone git@github.com:instructure/canvas-lms.git
 ```
 
+Recommended to switch to the `prod` branch for a production setup
+
+```bash {title="terminal"}
+$ cd canvas-lms
+$ git checkout prod
+```
+
 2. Modify Setup Script
+
+_May no longer be needed as of May 2026_
 
 The setup script insists that Docker Compose be installed separately; it is now part of the default Docker installation on Ubuntu and does not appear as a separate item on my system. So, it can be removed from the setup script.
 
@@ -59,6 +68,8 @@ $ export COMPOSE_DOCKER_CLI_BUILD=0
 
 4. Set Gemfile Permissions
 
+Ubuntu 26.04 does not include the `acl` package, so it must be installed manually.
+
 There are several file permission errors that will crop up during the build. The best fix is to give Canvas user permission to all files in the build folder via `setfacl`:
 
 ```bash {title="terminal"}
@@ -73,6 +84,8 @@ $ setfacl -dRm u:9999:rwX,g:9999:rwX .
 * https://github.com/instructure/canvas-lms/issues/2199 
 
 5. Run Setup Script
+
+As of May 2026, `prod` is missing an entry from the `package.json` file. See https://github.com/instructure/canvas-lms/issues/2626 for the fix. 
 
 ```bash {title="terminal"}
 $ ./script/docker_dev_setup.sh
@@ -225,6 +238,8 @@ web:
 +     - "traefik.http.routers.canvas.tls=true"
 +     # TLS Certificate Resolver
 +     - "traefik.http.routers.canvas.tls.certresolver=letsencrypt"
++     # Watchtower Disable
++     - "com.centurylinklabs.watchtower.enable=false"
 +     # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 +#Bottom of the file
@@ -266,6 +281,8 @@ services:
 +     - "traefik.http.routers.mailcatcher.tls=true"
 +     # TLS Certificate Resolver
 +     - "traefik.http.routers.mailcatcher.tls.certresolver=letsencrypt"
++     # Watchtower Disable
++     - "com.centurylinklabs.watchtower.enable=false"
 +     # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 +#Bottom of the file

@@ -6,6 +6,8 @@ weight: 10
 
 A fully-featured LTI Tool Provider example can be found in `/examples/provider`. This document will walk through the details of how that application works.
 
+[Testing Plan]({{% relref "testing.md" %}})
+
 ## Environment
 
 The application expects the following environment variables (typically loaded from `.env`): 
@@ -23,7 +25,13 @@ DOMAIN_NAME=https://ltidemo.home.russfeld.me
 # Admin Email Address
 ADMIN_EMAIL=admin@domain.tld
 
-# LTI Consumer Key and Secret
+# Admin Password for HTTP Basic Auth on admin routes
+# Any username is accepted; only the password is checked
+ADMIN_PASSWORD=your_admin_password
+
+# LTI 1.0 Consumer Key and Secret
+# Used at startup to create a single LTI 1.0 consumer if one doesn't already exist.
+# Remove or leave blank to skip automatic consumer creation.
 LTI_CONSUMER_KEY=your_lti_consumer_key
 LTI_CONSUMER_SECRET=your_lti_consumer_secret
 
@@ -90,10 +98,6 @@ const lti = await LTIToolkit({
   provider: {
     // Incoming LTI Launch Handler
     handleLaunch: LTILaunch,
-    // // LTI 1.0 Consumer Key and Shared Secret
-    // // for single LTI consumer setup
-    key: process.env.LTI_CONSUMER_KEY,
-    secret: process.env.LTI_CONSUMER_SECRET,
     // Enable Deeplinking
     handleDeeplink: LTIDeepLink,
     // Enable Course Navigation Link
@@ -101,10 +105,27 @@ const lti = await LTIToolkit({
   },
 });
 
+// Create a single LTI 1.0 consumer on startup if one with this key doesn't already exist.
+// Using getByKey + createConsumer is safe across restarts: on an in-memory database the
+// consumer is always absent; on a persistent database it is only created once.
+if (process.env.LTI_CONSUMER_KEY && process.env.LTI_CONSUMER_SECRET) {
+  const existing = await lti.controllers.consumerRegistry.getByKey(process.env.LTI_CONSUMER_KEY);
+  if (!existing) {
+    await lti.controllers.consumerRegistry.createConsumer({
+      name: "My LMS",
+      key: process.env.LTI_CONSUMER_KEY,
+      secret: process.env.LTI_CONSUMER_SECRET,
+      lti13: false,
+    });
+  }
+}
+
 export default lti;
 ```
 
-It configures a default LTI 1.0 Tool Provider using the domain, key and secret provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library to the `LTILaunch` function provided by one of the routes as the handler for incoming LTI Launch Requests, and the `LTIDeepLink` function to handle LTI Deeplink requests. It also configures the LTI 1.0 configuration XML and LTI 1.3 Dynamic Registration process to add the tool to the course navigation menu in Canvas.
+It configures a default LTI 1.0 Tool Provider using the domain provided in the environment. It also configures the log level and tells the system to use an in-memory database instance. Finally, it directs the library to the `LTILaunch` function provided by one of the routes as the handler for incoming LTI Launch Requests, and the `LTIDeepLink` function to handle LTI Deeplink requests. It also configures the LTI 1.0 configuration XML and LTI 1.3 Dynamic Registration process to add the tool to the course navigation menu in Canvas.
+
+After initialization, a single LTI 1.0 consumer is created from the `LTI_CONSUMER_KEY` and `LTI_CONSUMER_SECRET` environment variables if one with that key doesn't already exist. This pattern is safe across restarts: on an in-memory database the consumer is always created fresh; on a persistent database it is only created once. To add or manage additional consumers, use the `consumerRegistry` controller directly.
 
 ## Integrating Application Routes
 
@@ -113,6 +134,9 @@ The `app.js` file creates a basic [Express](https://www.npmjs.com/package/expres
 ```js {title="app.js"}
 // Import LTI configuration
 import lti from "./configs/lti.js";
+
+// Import Middleware
+import { requireAdmin } from "./middlewares/require-admin.js";
 
 // Other imports here
 
@@ -123,9 +147,29 @@ var app = express();
 
 // Add LTI Toolkit Routes
 app.use("/lti/provider", lti.routers.provider);
+
+// Public routes (no auth required)
+app.get("/", IndexHandler);
+
+// Admin routes — protected by HTTP Basic Auth via ADMIN_PASSWORD env var
+app.get("/admin", requireAdmin, AdminHandler);
+app.get("/consumer/:id", requireAdmin, ConsumerHandler);
+app.post("/consumer/:id/config", requireAdmin, ConsumerConfigHandler);
+app.post("/consumer/:id/rotate", requireAdmin, ConsumerRotateHandler);
+app.post("/consumer/:id/delete", requireAdmin, ConsumerDeleteHandler);
+
+// Global error handler — must be registered after all routes and middleware.
+// The 4-argument signature is required for Express to treat this as an error handler.
+// A real application should extend this with appropriate logging and error reporting.
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).render("error.njk", { title: "Error" });
+});
 ```
 
 The details of that file are omitted (_read the source, you must_), but the notable configuration is shown above. The configured LTI Toolkit is imported, and then the LTI Provider Router is connected to the application at the `/lti/provider` path. So, any incoming requests sent to that URL will be passed to the LTI Toolkit for handling. This matches the route used when configuring the tool in Canvas as shown above.
+
+Admin routes (`/admin`, `/consumer/:id`, `/consumer/:id/config`, `/consumer/:id/rotate`, and `/consumer/:id/delete`) are protected by the `requireAdmin` middleware, which checks for an HTTP Basic Auth password matching the `ADMIN_PASSWORD` environment variable. If the variable is not set, all admin requests are rejected. Any username is accepted — only the password is checked. This is the bare minimum for demo purposes; a real application should use a proper authentication and authorization system (e.g. OAuth 2.0 or SSO).
 
 ## LTI Launch Handler
 
@@ -281,6 +325,8 @@ async function StudentGradeHandler(req, res) {
 
   // Get grade from form submission
   const grade = parseFloat(req.body.grade);
+  const activityProgress = req.body.activityProgress || "Submitted";
+  const gradingProgress = req.body.gradingProgress || "FullyGraded";
   if (isNaN(grade) || grade < 0 || grade > 1) {
     error = "Invalid grade value. Must be between 0 and 1.";
   } else {
@@ -308,13 +354,15 @@ async function StudentGradeHandler(req, res) {
     };
     try {
       if (
-        lti.controllers.lti.provider.postGrade(
+        await lti.controllers.provider.postGrade(
           consumer.key,
           gradeObject.grade_url,
           gradeObject.lms_grade_id,
           gradeObject.score,
           gradeObject.user_lis13_id,
           gradeObject.debug,
+          activityProgress,
+          gradingProgress,
         )
       ) {
         message = `Successfully posted grade of ${grade} back to the LMS.`;
@@ -365,6 +413,8 @@ async function InstructorGradeHandler(req, res) {
   const assignmentId = req.body.assignment;
   const userId = req.body.user;
   const grade = parseFloat(req.body.grade);
+  const activityProgress = req.body.activityProgress || "Submitted";
+  const gradingProgress = req.body.gradingProgress || "FullyGraded";
 
   // Get assignment and user info from local data store
   // This is a placeholder function for updating a local data store
@@ -404,13 +454,15 @@ async function InstructorGradeHandler(req, res) {
     };
     try {
       if (
-        lti.controllers.lti.provider.postGrade(
+        await lti.controllers.provider.postGrade(
           consumer.key,
           gradeObject.grade_url,
           gradeObject.lms_grade_id,
           gradeObject.score,
           gradeObject.user_lis13_id,
           gradeObject.debug,
+          activityProgress,
+          gradingProgress,
         )
       ) {
         message = `Successfully posted grade of ${grade} back to the LMS.`;
@@ -438,6 +490,147 @@ async function InstructorGradeHandler(req, res) {
 ```
 
 In this example, the same data required to build a grade object is read from the shared data structure stored in memory. Again, in practice, this data would be read from a database or another storage mechanism, but this code should be instructive.
+
+## LTI 1.3 AGS: Fetching Line Item and Results
+
+When an instructor is launched via LTI 1.3, the instructor view can use the `getLineItem` and `getResults` methods to retrieve the current assignment metadata and submission results from the LMS. This is done on page load using data from the launch:
+
+```js {title="src/routes/instructor.js"}
+/**
+ * Handle LTI Instructor Launch
+ */
+async function InstructorHandler(req, res) {
+  const launchData = req.session.ltiLaunchData;
+  const consumer = req.session.ltiConsumer;
+
+  let lineItem = null;
+  let results = null;
+  let lineItems = null;
+  let agsError = null;
+
+  // For LTI 1.3 launches, fetch line item info and results from the consumer
+  if (launchData.launch_type === "lti1.3" && launchData.outcome_url) {
+    try {
+      lineItem = await lti.controllers.provider.getLineItem(consumer.key, launchData.outcome_url);
+      results = await lti.controllers.provider.getResults(consumer.key, launchData.outcome_url + "/results");
+    } catch (err) {
+      agsError = "Error fetching AGS data: " + err.message;
+    }
+  }
+
+  // For LTI 1.3 launches, also fetch the full line items collection for this course
+  if (launchData.launch_type === "lti1.3" && launchData.outcome_lineitems) {
+    try {
+      lineItems = await lti.controllers.provider.getLineItems(consumer.key, launchData.outcome_lineitems);
+    } catch (err) {
+      agsError = agsError || ("Error fetching AGS line items: " + err.message);
+    }
+  }
+
+  res.render("instructor.njk", {
+    title: "LTI Tool Provider - Instructor View",
+    courses: req.app.locals.dataStore.courses,
+    launchData: launchData,
+    consumer: consumer,
+    lineItem: lineItem,
+    lineItems: lineItems,
+    results: results,
+    agsError: agsError,
+  });
+}
+```
+
+- `launchData.outcome_url` contains the AGS line item URL for the specific assignment provided during the LTI 1.3 launch.
+- The results URL is built by appending `/results` to the line item URL, which maps to the AGS results endpoint on the consumer.
+- `getLineItem` returns an object with `label` and `scoreMaximum` for the specific assignment.
+- `getResults` returns an array of result objects, each containing `userId`, `resultScore`, `resultMaximum`, and `comment`.
+- `launchData.outcome_lineitems` contains the AGS collection URL for all line items in the course. `getLineItems` returns an array of objects each containing `label`, `scoreMaximum`, `resourceKey`, and `gradebookKey`.
+
+## LTI 1.0 Read and Delete Grade
+
+For LTI 1.0 launches, the instructor view provides buttons to read or delete a student's grade directly from the LMS using the LTI 1.0 Basic Outcomes service:
+
+```js {title="src/routes/instructor-read-grade.js"}
+/**
+ * Handle LTI Instructor Read Grade Request (LTI 1.0 Basic Outcomes)
+ */
+async function InstructorReadGradeHandler(req, res) {
+  const launchData = req.session.ltiLaunchData;
+  const consumer = req.session.ltiConsumer;
+
+  const courseId = req.body.course;
+  const assignmentId = req.body.assignment;
+  const userId = req.body.user;
+
+  const courses = req.app.locals.dataStore.courses;
+  const assignment = courses[courseId]?.assignments[assignmentId];
+  const studentGrade = assignment?.grades[userId];
+
+  let error = null;
+  let message = null;
+
+  if (!studentGrade || !studentGrade.outcome_id) {
+    error = "No LTI 1.0 outcome ID found for this student.";
+  } else {
+    try {
+      const score = await lti.controllers.provider.readGrade(
+        consumer.key,
+        assignment.grade_url,
+        studentGrade.outcome_id,
+      );
+      if (score === null) {
+        message = `No grade on file for ${studentGrade.name}.`;
+      } else {
+        message = `Current grade for ${studentGrade.name}: ${score} (${Math.round(score * 100)}%)`;
+      }
+    } catch (err) {
+      error = "Error reading grade from the LMS: " + err.message;
+    }
+  }
+
+  res.render("instructor.njk", { ... });
+}
+```
+
+```js {title="src/routes/instructor-delete-grade.js"}
+/**
+ * Handle LTI Instructor Delete Grade Request (LTI 1.0 Basic Outcomes)
+ */
+async function InstructorDeleteGradeHandler(req, res) {
+  const launchData = req.session.ltiLaunchData;
+  const consumer = req.session.ltiConsumer;
+
+  const courseId = req.body.course;
+  const assignmentId = req.body.assignment;
+  const userId = req.body.user;
+
+  const courses = req.app.locals.dataStore.courses;
+  const assignment = courses[courseId]?.assignments[assignmentId];
+  const studentGrade = assignment?.grades[userId];
+
+  let error = null;
+  let message = null;
+
+  if (!studentGrade || !studentGrade.outcome_id) {
+    error = "No LTI 1.0 outcome ID found for this student.";
+  } else {
+    try {
+      await lti.controllers.provider.deleteGrade(consumer.key, assignment.grade_url, studentGrade.outcome_id);
+      message = `Grade deleted successfully for ${studentGrade.name}.`;
+      studentGrade.score = null;
+    } catch (err) {
+      error = "Error deleting grade from the LMS: " + err.message;
+    }
+  }
+
+  res.render("instructor.njk", { ... });
+}
+```
+
+- `readGrade(consumer_key, grade_url, lms_grade_id)` sends a `readResultRequest` to the LMS and returns the stored score as a float (0.0–1.0), or `null` if no grade is on file.
+- `deleteGrade(consumer_key, grade_url, lms_grade_id)` sends a `deleteResultRequest` and returns `true` on success.
+- The `outcome_id` (sourcedId) is stored from the student's original launch via `launchData.outcome_id`.
+- These buttons are only shown in the instructor view when `launch_type === "lti1.0"` and the student has a stored `outcome_id`.
 
 ## LTI 1.3 Configuration
 
@@ -538,19 +731,20 @@ From this point onward, students and teachers can access the LTI Demo Applicatio
 
 Within the sample application, the Admin Configuration handler gives a demonstration for using this library's controllers to manage the LTI Consumers available within the application.
 
-```js {title="src/routes/admin-config.js"}
+```js {title="src/routes/consumer-config.js"}
 /**
- * Handle LTI Admin Launch
+ * Handle LTI Consumer Configuration
  *
  * @param {Object} req - the Express request object
  * @param {Object} res - the Express response object
  */
-async function AdminConfigHandler(req, res) {
+async function ConsumerConfigHandler(req, res) {
   let error = null;
   let message = null;
 
   // Get Form Data
   const data = {
+    name: req.body.name,
     lti13: true,
     client_id: req.body.client_id,
     platform_id: req.body.platform_id,
@@ -561,24 +755,16 @@ async function AdminConfigHandler(req, res) {
   };
 
   // Check if any required fields are missing
-  const requiredFields = [
-    "client_id",
-    "platform_id",
-    "deployment_id",
-    "keyset_url",
-    "token_url",
-    "auth_url",
-  ];
+  const requiredFields = ["name", "client_id", "platform_id", "deployment_id", "keyset_url", "token_url", "auth_url"];
   const missingFields = requiredFields.filter(
     (field) => !data[field] || data[field].trim() === ""
   );
   if (missingFields.length > 0) {
-    error =
-      "Missing required fields: " + missingFields.join(", ");
+    error = "Missing required fields: " + missingFields.join(", ");
   } else {
     // Update Consumer
     try {
-      const returnValue = await lti.controllers.consumer.updateConsumer(1, data);
+      const returnValue = await lti.controllers.consumerRegistry.updateConsumer(req.params.id, data);
       if (!returnValue) {
         throw new Error("Consumer not found");
       }
@@ -590,33 +776,43 @@ async function AdminConfigHandler(req, res) {
     }
   }
 
-  // Get Updated LTI Consumer
-  const consumers = await lti.controllers.consumer.getAll();
-  const consumer = consumers[0].toJSON();
+  // Get Updated LTI Consumers
+  const consumers = await lti.controllers.consumerRegistry.getAll();
 
   // Get LMS Domain
-  const lmsDomain =
-    process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
+  const lmsDomain = process.env.LTI_13_LMS_DOMAIN || "https://canvas.instructure.com";
 
   res.render("admin.njk", {
     title: "LTI Tool Provider - Admin Configuration View",
-    consumer: consumer,
+    consumers: consumers,
     lmsDomain: lmsDomain,
     domain: process.env.DOMAIN_NAME,
-    key: process.env.LTI_CONSUMER_KEY,
     error: error,
     message: message,
   });
 }
 ```
 
-This handler receives data provided in the LTI 1.3 configuration form, validates that all items are present (more validation could be performed as desired), and then it uses the Consumer controller provided through the library to update the default LTI Consumer (with ID `1`) to include the LTI 1.3 configuration options. The Consumer controller provides additional methods to add and delete additional consumers as desired. 
+This handler receives data provided in the LTI 1.3 configuration form (including the consumer's display name), validates that all required fields are present, and then uses the Consumer controller to update the consumer record. The consumer is identified by `req.params.id` from the route parameter (`/consumer/:id/config`). The consumer registry provides additional methods for rotating secrets and deleting consumers:
 
-{{% notice warning %}}
+```js {title="src/routes/consumer-rotate.js"}
+async function ConsumerRotateHandler(req, res) {
+  const result = await lti.controllers.consumerRegistry.updateSecret(req.params.id);
+  // updateSecret(id) with no key/secret arguments auto-generates new random credentials
+  // ...reload consumer and re-render
+}
+```
 
-Be aware that, by providing both a `key` and `secret` as part of the `provider` configuration in the LTI Toolkit configuration (see `src/configs/lti.js`), all existing LTI consumers will be removed from the database each time the application is launched. So, those options must be removed and LTI Consumers must be configured directly through the controller if multiple consumers are desired.
+```js {title="src/routes/consumer-delete.js"}
+async function ConsumerDeleteHandler(req, res) {
+  const result = await lti.controllers.consumerRegistry.deleteConsumer(req.params.id);
+  if (!result) return res.status(404).send("Consumer not found");
+  res.redirect("/admin");
+}
+```
 
-{{% /notice %}}
+- `updateSecret(id)` — rotates both the LTI 1.0 shared secret and the LTI 1.3 RSA key pair. Called with no `key`/`secret` arguments so the library auto-generates new credentials. Old credentials stop working immediately.
+- `deleteConsumer(id)` — permanently removes the consumer record and its associated keys in a single database transaction.
 
 ## LTI Deep Link Handler
 
@@ -670,7 +866,7 @@ In a production system, this form might show all of the available assignments to
 
 ![Deeplink Select With ID](images/lti13deeplink2.png)
 
-Behind the scenes, the handler in `deeplink-select.js` will send this data back to the LMS using the `lti.controllers.lti.provider.createDeepLink` method:
+Behind the scenes, the handler in `deeplink-select.js` will send this data back to the LMS using the `lti.controllers.provider.createDeepLink` method:
 
 ```js {title="src/routes/deeplink-select.js"}
 /**
@@ -689,7 +885,7 @@ async function DeepLinkSelect(req, res) {
   const title = req.body.title;
 
   // Submit Deeplink Selection
-  await lti.controllers.lti.provider.createDeepLink(res, consumer, deeplinkData.deep_link_return_url, id, title);
+  await lti.controllers.provider.createDeepLink(res, consumer, deeplinkData.deep_link_return_url, id, title);
 }
 ```
 

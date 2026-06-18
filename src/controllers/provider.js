@@ -4,6 +4,13 @@
  * @exports ProviderController a provider controller
  */
 
+// Import libraries
+import { nanoid } from "nanoid";
+import crypto from "crypto";
+import { promisify } from "util";
+
+const generateKeyPairAsync = promisify(crypto.generateKeyPair);
+
 class ProviderController {
   // Private Attributes
   #ProviderModel;
@@ -58,69 +65,16 @@ class ProviderController {
   }
 
   /**
-   * Get the secret for an LTI provider
+   * Get a provider by name
    *
-   * @param {number} id the ID of the provider
-   * @return {ProviderKey} the updated provider key
+   * @param {string} name the name of the provider
+   * @return {Provider} the provider with the given name
    */
-  async getSecret(id) {
-    const provider = await this.#ProviderModel.findByPk(id);
-    if (!provider) {
-      return null;
-    }
-    const providerkey = await this.#ProviderKeyModel.findOne({
+  async getByName(name) {
+    const provider = await this.#ProviderModel.findOne({
       where: {
-        key: provider.key,
+        name: name,
       },
-    });
-    if (!providerkey) {
-      return null;
-    }
-    return providerkey;
-  }
-
-  /**
-   * Update an existing provider
-   *
-   * @param {number} id the ID of the provider to update
-   * @param {Object} data the provider data to update
-   * @returns {Provider} the updated provider
-   */
-  async updateProvider(id, data) {
-    let provider = null;
-    await this.#database.transaction(async (t) => {
-      provider = await this.#ProviderModel.findByPk(id);
-      if (!provider) {
-        return null;
-      }
-      const oldKey = provider.key;
-      await provider.update(
-        {
-          name: data.name,
-          lti13: data.lti13 || false,
-          key: data.key,
-          launch_url: data.launch_url,
-          domain: data.domain,
-          custom: data.custom,
-          use_section: data.use_section || false,
-        },
-        { transaction: t },
-      );
-      // If the key or secret has changed, update the provider key and secret
-      if (oldKey !== data.key || data.secret) {
-        await this.#ProviderKeyModel.update(
-          {
-            key: data.key,
-            secret: data.secret,
-          },
-          {
-            where: {
-              key: oldKey,
-            },
-            transaction: t,
-          },
-        );
-      }
     });
     return provider;
   }
@@ -134,6 +88,12 @@ class ProviderController {
   async createProvider(data) {
     let provider = null;
     await this.#database.transaction(async (t) => {
+      if (!data.key) {
+        data.key = nanoid();
+      }
+      if (!data.secret) {
+        data.secret = nanoid();
+      }
       provider = await this.#ProviderModel.create(
         {
           name: data.name,
@@ -143,17 +103,54 @@ class ProviderController {
           domain: data.domain,
           custom: data.custom,
           use_section: data.use_section || false,
+          keyset_url: data.keyset_url,
+          auth_url: data.auth_url,
+          redirect_urls: data.redirect_urls,
+          scopes: data.scopes,
+          claims: data.claims,
+          // client_id and deployment_id will be generated automatically by the model hooks for LTI 1.3 providers
         },
         { transaction: t },
       );
-      // Generate keys for the provider
+      const { publicKey, privateKey } = await this.#generateKeys();
       await this.#ProviderKeyModel.create(
         {
           key: provider.key,
           secret: data.secret,
+          public: publicKey,
+          private: privateKey,
         },
         { transaction: t },
       );
+    });
+    return provider;
+  }
+
+  /**
+   * Update an existing provider
+   *
+   * @param {number} id the ID of the provider to update
+   * @param {Object} data the provider data to update
+   * @returns {Provider} the updated provider
+   */
+  async updateProvider(id, data) {
+    const provider = await this.#ProviderModel.findByPk(id);
+    if (!provider) {
+      return null;
+    }
+    await provider.update({
+      name: data.name,
+      lti13: data.lti13 || false,
+      key: data.key,
+      launch_url: data.launch_url,
+      domain: data.domain,
+      custom: data.custom,
+      use_section: data.use_section || false,
+      keyset_url: data.keyset_url,
+      auth_url: data.auth_url,
+      redirect_urls: data.redirect_urls,
+      scopes: data.scopes,
+      claims: data.claims,
     });
     return provider;
   }
@@ -181,6 +178,103 @@ class ProviderController {
       await provider.destroy({ transaction: t });
     });
     return true;
+  }
+
+  /**
+   * Get the secret for an LTI provider
+   *
+   * @param {number} id the ID of the provider
+   * @return {ProviderKey} the updated provider key
+   */
+  async getSecret(id) {
+    const provider = await this.#ProviderModel.findByPk(id);
+    if (!provider) {
+      return null;
+    }
+    const providerkey = await this.#ProviderKeyModel.findOne({
+      attributes: ["key", "secret"],
+      where: {
+        key: provider.key,
+      },
+    });
+    if (!providerkey) {
+      return null;
+    }
+    return providerkey;
+  }
+
+  /**
+   * Update the secret for an LTI provider
+   *
+   * @param {number} id the ID of the provider
+   * @param {string|null} key the new key for the provider (if null, a new key will be generated)
+   * @param {string|null} secret the new secret for the provider (if null, a new secret will be generated)
+   * @return {ProviderKey} the updated provider key
+   */
+  async updateSecret(id, key = null, secret = null) {
+    const provider = await this.#ProviderModel.findByPk(id);
+    if (!provider) {
+      return null;
+    }
+
+    let providerkey = null;
+
+    await this.#database.transaction(async (t) => {
+      // Remove old key and secret for the provider
+      await this.#ProviderKeyModel.destroy({
+        where: {
+          key: provider.key,
+        },
+        transaction: t,
+      });
+
+      // Generate new key and secret for the provider
+      const newKey = key || nanoid();
+      const newSecret = secret || nanoid();
+      provider.key = newKey;
+      await provider.save({ transaction: t });
+
+      // Generate new keys for the provider
+      const { publicKey, privateKey } = await this.#generateKeys();
+
+      // Save the new key, secret, and keys for the provider
+      providerkey = await this.#ProviderKeyModel.create(
+        {
+          key: newKey,
+          secret: newSecret,
+          public: publicKey,
+          private: privateKey,
+        },
+        { transaction: t },
+      );
+    });
+
+    return providerkey;
+  }
+
+  /**
+   * Get all public keys for all providers
+   *
+   * @return {Array} an array of objects containing the key and public key for each provider
+   */
+  async getAllKeys() {
+    const keys = await this.#ProviderKeyModel.findAll({
+      attributes: ["key", "public"],
+    });
+    return keys;
+  }
+
+  /**
+   * Generate keys for an LTI provider
+   *
+   * @return {Object} the generated keys
+   */
+  async #generateKeys() {
+    return await generateKeyPairAsync("rsa", {
+      modulusLength: 4096,
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs1", format: "pem" },
+    });
   }
 }
 

@@ -5,6 +5,7 @@
 
 // Import libraries
 import Sequelize from "sequelize";
+import { encrypt, decrypt } from "../lib/encryption.js";
 
 /**
  * @swagger
@@ -157,7 +158,8 @@ const ConsumerSchema = {
   },
 };
 
-const ConsumerKeySchema = {
+// secret and private are encrypted at rest (AES-256-GCM) using the configured encryption_key
+const ConsumerKeySchema = (encryptionKey) => ({
   key: {
     type: Sequelize.STRING,
     primaryKey: true,
@@ -168,22 +170,39 @@ const ConsumerKeySchema = {
     },
   },
   secret: {
-    type: Sequelize.STRING,
+    // TEXT, not STRING: encrypted values and PEM keys exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+    type: Sequelize.TEXT,
     allowNull: false,
-    // force null if empty string
+    // force null if empty string, otherwise encrypt before storing
     set(value) {
-      this.setDataValue("secret", value === "" ? null : value);
+      this.setDataValue("secret", value === "" ? null : encrypt(value, encryptionKey));
+    },
+    get() {
+      return decrypt(this.getDataValue("secret"), encryptionKey);
     },
   },
   public: {
-    type: Sequelize.STRING,
+    // TEXT, not STRING: PEM-encoded public keys exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+    type: Sequelize.TEXT,
     allowNull: true,
   },
   private: {
-    type: Sequelize.STRING,
+    // TEXT, not STRING: encrypted PEM-encoded private keys exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+    type: Sequelize.TEXT,
     allowNull: true,
+    // force null if empty string, otherwise encrypt before storing
+    set(value) {
+      this.setDataValue(
+        "private",
+        value === "" || value === null || value === undefined ? null : encrypt(value, encryptionKey),
+      );
+    },
+    get() {
+      const value = this.getDataValue("private");
+      return value ? decrypt(value, encryptionKey) : value;
+    },
   },
-};
+});
 
 const ConsumerLoginSchema = {
   key: {
@@ -210,6 +229,10 @@ const ConsumerLoginSchema = {
     allowNull: false,
   },
   keyset_url: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  deployment_id: {
     type: Sequelize.STRING,
     allowNull: false,
   },
@@ -282,7 +305,33 @@ const OauthNonceSchema = {
  *           description: a JSON string of custom variables
  *         use_section:
  *           type: boolean
- *           description: whether to use the section ID in the launch
+ *           description: flag to differentiate between LTI Tool Providers that may need different handling (not implemented within this library itself; available for applications built on this library to use as needed)
+ *         client_id:
+ *           type: string
+ *           description: the LTI 1.3 client ID (LTI 1.3 only)
+ *         deployment_id:
+ *           type: string
+ *           description: the LTI 1.3 deployment ID (LTI 1.3 only)
+ *         keyset_url:
+ *           type: string
+ *           format: url
+ *           description: the URL to request the JWKS (LTI 1.3 only)
+ *         auth_url:
+ *           type: string
+ *           format: url
+ *           description: the URL to redirect to for authentication (LTI 1.3 only)
+ *         redirect_urls:
+ *           type: string
+ *           format: json
+ *           description: a JSON string of allowed redirect URLs (LTI 1.3 only)
+ *         scopes:
+ *           type: string
+ *           format: json
+ *           description: a JSON string of scopes to request (LTI 1.3 only)
+ *         claims:
+ *           type: string
+ *           format: json
+ *           description: a JSON string of claims to request (LTI 1.3 only)
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -346,7 +395,44 @@ const ProviderSchema = {
     },
   },
   custom: {
+    // TEXT, not STRING: JSON-stringified content can exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+    type: Sequelize.TEXT,
+    allowNull: true,
+  },
+  use_section: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  client_id: {
     type: Sequelize.STRING,
+    allowNull: true,
+    unique: true,
+  },
+  deployment_id: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  keyset_url: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  auth_url: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  redirect_urls: {
+    // TEXT, not STRING: JSON-stringified content can exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+    type: Sequelize.TEXT,
+    allowNull: true,
+  },
+  scopes: {
+    // TEXT, not STRING: JSON-stringified content can exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+    type: Sequelize.TEXT,
+    allowNull: true,
+  },
+  claims: {
+    // TEXT, not STRING: JSON-stringified content can exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+    type: Sequelize.TEXT,
     allowNull: true,
   },
   createdAt: {
@@ -359,7 +445,8 @@ const ProviderSchema = {
   },
 };
 
-const ProviderKeySchema = {
+// secret and private are encrypted at rest (AES-256-GCM) using the configured encryption_key
+const ProviderKeySchema = (encryptionKey) => ({
   key: {
     type: Sequelize.STRING,
     primaryKey: true,
@@ -370,13 +457,117 @@ const ProviderKeySchema = {
     },
   },
   secret: {
-    type: Sequelize.STRING,
+    // TEXT, not STRING: encrypted values and PEM keys exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+    type: Sequelize.TEXT,
     allowNull: false,
-    // force null if empty string
+    // force null if empty string, otherwise encrypt before storing
     set(value) {
-      this.setDataValue("secret", value === "" ? null : value);
+      this.setDataValue("secret", value === "" ? null : encrypt(value, encryptionKey));
     },
+    get() {
+      return decrypt(this.getDataValue("secret"), encryptionKey);
+    },
+  },
+  public: {
+    // TEXT, not STRING: PEM-encoded public keys exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+    type: Sequelize.TEXT,
+    allowNull: true,
+  },
+  private: {
+    // TEXT, not STRING: encrypted PEM-encoded private keys exceed VARCHAR(255) on strict dialects (e.g. Postgres)
+    type: Sequelize.TEXT,
+    allowNull: true,
+    // force null if empty string, otherwise encrypt before storing
+    set(value) {
+      this.setDataValue(
+        "private",
+        value === "" || value === null || value === undefined ? null : encrypt(value, encryptionKey),
+      );
+    },
+    get() {
+      const value = this.getDataValue("private");
+      return value ? decrypt(value, encryptionKey) : value;
+    },
+  },
+});
+
+const ProviderLoginSchema = {
+  client_id: {
+    type: Sequelize.STRING,
+    primaryKey: true,
+    allowNull: false,
+  },
+  login_hint: {
+    type: Sequelize.STRING,
+    primaryKey: true,
+    allowNull: false,
+  },
+  data: {
+    type: Sequelize.JSON,
+    allowNull: true,
+  },
+  createdAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
   },
 };
 
-export { ConsumerSchema, ConsumerKeySchema, ConsumerLoginSchema, OauthNonceSchema, ProviderSchema, ProviderKeySchema };
+const ProviderRegistrationSchema = {
+  token: {
+    type: Sequelize.STRING,
+    primaryKey: true,
+    allowNull: false,
+  },
+  url: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  createdAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+  },
+};
+
+const ProviderDeepLinkSchema = {
+  token: {
+    type: Sequelize.STRING,
+    primaryKey: true,
+    allowNull: false,
+  },
+  provider_key: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  context: {
+    type: Sequelize.JSON,
+    allowNull: true,
+  },
+  createdAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+  },
+};
+
+export {
+  ConsumerSchema,
+  ConsumerKeySchema,
+  ConsumerLoginSchema,
+  OauthNonceSchema,
+  ProviderSchema,
+  ProviderKeySchema,
+  ProviderLoginSchema,
+  ProviderRegistrationSchema,
+  ProviderDeepLinkSchema,
+};

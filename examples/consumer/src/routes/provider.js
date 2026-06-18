@@ -17,17 +17,18 @@ async function ProviderHandler(req, res) {
   const providerId = req.params.id;
 
   // Get Provider
-  const provider = await lti.controllers.provider.getById(providerId);
+  const provider = await lti.controllers.providerRegistry.getById(providerId);
   if (!provider) {
     return res.status(404).send("Provider not found");
   }
 
   // Get Secret
-  const providerSecret = await lti.controllers.provider.getSecret(provider.id);
+  const providerSecret = await lti.controllers.providerRegistry.getSecret(provider.id);
 
-  // Formatted provider including secret
+  // Formatted provider including secret and masked secret (last 4 chars)
   const providerData = provider.toJSON();
   providerData.secret = providerSecret.secret;
+  providerData.maskedSecret = "••••••••" + providerSecret.secret.slice(-4);
 
   // Render provider view
   res.render("provider.njk", {

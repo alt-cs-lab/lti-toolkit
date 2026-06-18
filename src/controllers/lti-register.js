@@ -49,8 +49,10 @@ class LTIRegistrationController {
     // Build custom properties XML
     let custom = "";
     if (this.#provider_config.custom_params) {
+      const escapeXml = (s) =>
+        String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
       for (const [key, value] of Object.entries(this.#provider_config.custom_params)) {
-        custom += `<lticm:property name="${key}">${value}</lticm:property> \n    `;
+        custom += `<lticm:property name="${escapeXml(key)}">${escapeXml(value)}</lticm:property> \n    `;
       }
       custom = `<blti:custom> \n    ${custom}</blti:custom>\n`;
     }
@@ -110,6 +112,12 @@ class LTIRegistrationController {
     // If Canvas, try to get account name for better identification of consumer
     if (lmsDetails[confURL][canvasURL + "account_name"]) {
       name = lmsDetails[confURL][canvasURL + "account_name"];
+    }
+
+    // Check for duplicate name in database and append random string if duplicate exists
+    const existingConsumer = await this.#ConsumerController.getByName(name);
+    if (existingConsumer) {
+      name += " (" + Math.random().toString(36).substring(2, 8) + ")";
     }
 
     // Build consumer object for database

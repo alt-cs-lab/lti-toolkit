@@ -417,4 +417,19 @@ describe("/controllers/consumer.js", () => {
     expect(models.ConsumerKey.findAll.calledWith({ attributes: ["key", "public"] })).to.be.true;
     expect(result).to.deep.equal(consumerKeys);
   });
+
+  it("getByName should return a consumer by name from the database", async () => {
+    // Create mock dependencies
+    const models = { Consumer: { findOne: sinon.stub().resolves(consumerFixtures[0]) } };
+
+    // Create instance of ConsumerController
+    const controller = new ConsumerController(models, database);
+
+    // Call method under test
+    const result = await controller.getByName("Test Consumer");
+
+    // Assertions
+    expect(models.Consumer.findOne.calledOnceWith({ where: { name: "Test Consumer" } })).to.be.true;
+    expect(result).to.deep.equal(consumerFixtures[0]);
+  });
 });

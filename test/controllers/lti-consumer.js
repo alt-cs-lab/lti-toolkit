@@ -13,6 +13,7 @@ import LTIConsumerController from "../../src/controllers/lti-consumer.js";
 
 // Utilities to stub
 import LTI10Utils from "../../src/lib/lti10.js";
+import LTI13Utils from "../../src/lib/lti13.js";
 
 // Load logger
 import configureLogger from "../../src/config/logger.js";
@@ -590,479 +591,1186 @@ describe("/controllers/lti-consumer.js", () => {
     }
   });
 
-  it("should properly handle a basic outomes grade passback request", async () => {
+  it("should generate LTI 1.3 launch form data correctly", async () => {
     // Create mock dependencies
     const consumer = {
-      postProviderGrade: sinon.stub().resolves({ success: true, message: "Grade posted successfully" }),
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
     };
-    const models = {};
-
-    // Stub LTI10Utils.parseOAuthRequest to return a known value
-    const mockKeys = sinon.mock({
-      key: "test_consumer_key",
-      secret: "test_consumer_secret",
-    });
-    const validateOauthStub = sinon.stub(LTI10Utils.prototype, "validateOauthBody").resolves(mockKeys);
-    const mockRequest = sinon.mock({
-      sourcedid: "test_sourcedid",
-    });
-    const validateBasicOutcomesStub = sinon.stub(LTI10Utils.prototype, "validateBasicOutcomesRequest").returns({
-      message_id: "test_message_id",
-      body: {
-        replaceresultrequest: mockRequest,
+    // Create Provider Model
+    const models = {
+      Provider: {
+        findOne: sinon.stub().resolves({
+          name: "Test Provider",
+          auth_url: "http://example.com/auth",
+        }),
       },
-    });
-
-    // Construct controller with stubbed dependencies
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
-
-    // Stub interal function for other tests
-    const mockResult = sinon.mock({
-      content: "<xml>Grade Passback Response</xml>",
-      headers: "OAuth header",
-    });
-    controller.replaceResultRequest = sinon.stub().resolves(mockResult);
+      ProviderLogin: {
+        create: sinon.stub().resolvesArg(0), // Echo back the created login
+      },
+    };
 
     // Call the function under test
-    const mockReq = {
-      body: {
-        imsx_POXEnvelopeRequest: "some request body",
-      },
-      originalUrl: "http://localhost:3000/lti/consumer/grade",
-    };
-    const result = await controller.basicOutcomesHandler(mockReq);
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+    const formData = await controller.generateLTI13LoginFormData(
+      "test_consumer_key",
+      "test_client_id",
+      "test_deployment_id",
+      "http://example.com/launch",
+      "http://example.com/return",
+      testContext,
+      testResource,
+      testUser,
+      true,
+      "test_gradebook_key",
+      testCustomParams,
+    );
 
     // Assertions
-    expect(validateOauthStub.calledOnce).to.be.true;
-    expect(validateBasicOutcomesStub.calledOnce).to.be.true;
-    expect(controller.replaceResultRequest.calledOnce).to.be.true;
-    expect(controller.replaceResultRequest.firstCall.args[0]).to.deep.equal(mockRequest);
-    expect(controller.replaceResultRequest.firstCall.args[1]).to.deep.equal(mockKeys);
-    expect(controller.replaceResultRequest.firstCall.args[2]).to.equal("http://localhost:3000/lti/consumer/grade");
-    expect(controller.replaceResultRequest.firstCall.args[3]).to.equal("test_message_id");
-    expect(controller.replaceResultRequest.firstCall.args[4]).to.deep.equal(mockReq);
-    expect(result).to.deep.equal(mockResult);
-
-    // Restore stubbed methods
-    validateOauthStub.restore();
-    validateBasicOutcomesStub.restore();
-  });
-
-  it("should return an error response when basic outcomes request oauth validation fails", async () => {
-    // Create mock dependencies
-    const consumer = {};
-    const models = {};
-
-    // Stub LTI10Utils.validateOauthBody to throw an error
-    const validateOauthStub = sinon
-      .stub(LTI10Utils.prototype, "validateOauthBody")
-      .throws(new Error("Invalid OAuth Request"));
-
-    // Stub result builder to return a known value
-    const mockResult = sinon.mock({
-      content: "<xml>Grade Passback Response</xml>",
-      headers: "OAuth header",
-    });
-    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").returns(mockResult);
-
-    // Construct controller with stubbed dependencies
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
-
-    // Call the function under test and assert that it throws the expected error
-    const result = await controller.basicOutcomesHandler({
-      body: {
-        imsx_POXEnvelopeRequest: "some request body",
+    expect(formData).to.shallowDeepEqual({
+      action: "http://example.com/auth",
+      fields: {
+        iss: "http://localhost:3000/",
+        client_id: "test_client_id",
+        lti_deployment_id: "test_deployment_id",
+        target_link_uri: "http://example.com/launch",
+        lti_storage_target: "post_message_forwarding",
       },
-      originalUrl: "http://localhost:3000/lti/consumer/grade",
     });
-
-    expect(validateOauthStub.calledOnce).to.be.true;
-    expect(buildResponseStub.calledOnce).to.be.true;
-    expect(buildResponseStub.firstCall.args[0]).to.equal("failure");
-    expect(buildResponseStub.firstCall.args[1]).to.equal("invalidtargetdatafail");
-    expect(buildResponseStub.firstCall.args[2]).to.equal("Invalid OAuth Request");
-    expect(buildResponseStub.firstCall.args[3]).to.equal(null);
-    expect(buildResponseStub.firstCall.args[4]).to.equal("http://localhost:3000/lti/consumer/grade");
-    expect(buildResponseStub.firstCall.args[5]).to.equal(null);
-    expect(result).to.deep.equal(mockResult);
-
-    // Restore stubbed method
-    validateOauthStub.restore();
-    buildResponseStub.restore();
-  });
-
-  it("should return an error response when basic outcomes request validation fails", async () => {
-    // Create mock dependencies
-    const consumer = {};
-    const models = {};
-
-    // Stub LTI10Utils.validateOauthBody to throw an error
-    // Stub LTI10Utils.parseOAuthRequest to return a known value
-    const mockKeys = sinon.mock({
+    const login_hint = formData.fields.login_hint;
+    expect(models.Provider.findOne.calledOnce).to.be.true;
+    expect(models.Provider.findOne.firstCall.args[0]).to.deep.equal({ where: { key: "test_consumer_key" } });
+    expect(models.ProviderLogin.create.calledOnce).to.be.true;
+    const createdLoginArgs = models.ProviderLogin.create.firstCall.args[0];
+    expect(createdLoginArgs).to.include({
+      client_id: "test_client_id",
+      login_hint: login_hint,
+    });
+    const data = JSON.parse(createdLoginArgs.data);
+    expect(data).to.deep.equal({
       key: "test_consumer_key",
-      secret: "test_consumer_secret",
+      url: "http://example.com/launch",
+      deployment_id: "test_deployment_id",
+      ret_url: "http://example.com/return",
+      context: testContext,
+      resource: testResource,
+      user: testUser,
+      manager: true,
+      gradebook_key: "test_gradebook_key",
+      custom: testCustomParams,
     });
-    const validateOauthStub = sinon.stub(LTI10Utils.prototype, "validateOauthBody").resolves(mockKeys);
-    const validateBasicOutcomesStub = sinon
-      .stub(LTI10Utils.prototype, "validateBasicOutcomesRequest")
-      .throws(new Error("Invalid Basic Outcomes Request"));
-
-    // Stub result builder to return a known value
-    const mockResult = sinon.mock({
-      content: "<xml>Grade Passback Response</xml>",
-      headers: "OAuth header",
-    });
-    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").returns(mockResult);
-
-    // Construct controller with stubbed dependencies
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
-
-    // Call the function under test and assert that it throws the expected error
-    const result = await controller.basicOutcomesHandler({
-      body: {
-        imsx_POXEnvelopeRequest: "some request body",
-      },
-      originalUrl: "http://localhost:3000/lti/consumer/grade",
-    });
-
-    expect(validateOauthStub.calledOnce).to.be.true;
-    expect(buildResponseStub.calledOnce).to.be.true;
-    expect(buildResponseStub.firstCall.args[0]).to.equal("failure");
-    expect(buildResponseStub.firstCall.args[1]).to.equal("invalidtargetdatafail");
-    expect(buildResponseStub.firstCall.args[2]).to.equal("Invalid Basic Outcomes Request");
-    expect(buildResponseStub.firstCall.args[3]).to.deep.equal(mockKeys);
-    expect(buildResponseStub.firstCall.args[4]).to.equal("http://localhost:3000/lti/consumer/grade");
-    expect(buildResponseStub.firstCall.args[5]).to.equal(null);
-    expect(result).to.deep.equal(mockResult);
-
-    // Restore stubbed method
-    validateOauthStub.restore();
-    validateBasicOutcomesStub.restore();
-    buildResponseStub.restore();
   });
 
-  it("should return an error response when an unrecognized request is received", async () => {
+  it("should throw errors when LTI 1.3 login form required parameters are missing", async () => {
     // Create mock dependencies
     const consumer = {
-      postProviderGrade: sinon.stub().resolves({ success: true, message: "Grade posted successfully" }),
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
     };
     const models = {};
-
-    // Stub LTI10Utils.parseOAuthRequest to return a known value
-    const mockKeys = sinon.mock({
-      key: "test_consumer_key",
-      secret: "test_consumer_secret",
-    });
-    const validateOauthStub = sinon.stub(LTI10Utils.prototype, "validateOauthBody").resolves(mockKeys);
-    const mockRequest = sinon.mock({
-      sourcedid: "test_sourcedid",
-    });
-    const validateBasicOutcomesStub = sinon.stub(LTI10Utils.prototype, "validateBasicOutcomesRequest").returns({
-      message_id: "test_message_id",
-      body: {
-        deleteresultrequest: mockRequest,
-      },
-    });
-
-    // Stub result builder to return a known value
-    const mockResult = sinon.mock({
-      content: "<xml>Grade Passback Response</xml>",
-      headers: "OAuth header",
-    });
-    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").returns(mockResult);
-
-    // Construct controller with stubbed dependencies
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
 
     // Call the function under test
-    const mockReq = {
-      body: {
-        imsx_POXEnvelopeRequest: "some request body",
-      },
-      originalUrl: "http://localhost:3000/lti/consumer/grade",
-    };
-    const result = await controller.basicOutcomesHandler(mockReq);
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
 
-    expect(validateOauthStub.calledOnce).to.be.true;
-    expect(buildResponseStub.calledOnce).to.be.true;
-    expect(buildResponseStub.firstCall.args[0]).to.equal("unsupported");
-    expect(buildResponseStub.firstCall.args[1]).to.equal("status");
-    expect(buildResponseStub.firstCall.args[2]).to.equal(
-      "The operation deleteresult is not supported by this LTI Tool Consumer",
-    );
-    expect(buildResponseStub.firstCall.args[3]).to.deep.equal(mockKeys);
-    expect(buildResponseStub.firstCall.args[4]).to.equal("http://localhost:3000/lti/consumer/grade");
-    expect(buildResponseStub.firstCall.args[5]).to.equal("test_message_id");
-    expect(buildResponseStub.firstCall.args[6]).to.equal("deleteresultrequest");
-    expect(result).to.deep.equal(mockResult);
+    // Assertions for missing parameters
+    try {
+      await controller.generateLTI13LoginFormData(
+        null,
+        "test_client_id",
+        "test_deployment_id",
+        "http://example.com/launch",
+        "http://example.com/return",
+        testContext,
+        testResource,
+        testUser,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for missing consumer key");
+    } catch (err) {
+      expect(err.message).to.equal("Consumer Key is required to generate LTI 1.3 Login Data");
+    }
 
-    // Restore stubbed method
-    validateOauthStub.restore();
-    validateBasicOutcomesStub.restore();
-    buildResponseStub.restore();
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        null,
+        "test_deployment_id",
+        "http://example.com/launch",
+        "http://example.com/return",
+        testContext,
+        testResource,
+        testUser,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for missing client ID");
+    } catch (err) {
+      expect(err.message).to.equal("Client ID is required to generate LTI 1.3 Login Data");
+    }
+
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        "test_deployment_id",
+        null,
+        "http://example.com/return",
+        testContext,
+        testResource,
+        testUser,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for missing launch URL");
+    } catch (err) {
+      expect(err.message).to.equal("Launch URL is required to generate LTI 1.3 Login Data");
+    }
+
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        "test_deployment_id",
+        "http://example.com/launch",
+        null,
+        testContext,
+        testResource,
+        testUser,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for missing return URL");
+    } catch (err) {
+      expect(err.message).to.equal("Return URL is required to generate LTI 1.3 Login Data");
+    }
+
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        "test_deployment_id",
+        "http://example.com/launch",
+        "http://example.com/return",
+        null,
+        testResource,
+        testUser,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for missing context");
+    } catch (err) {
+      expect(err.message).to.equal("Context with key, label, and name is required to generate LTI 1.3 Login Data");
+    }
+
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        "test_deployment_id",
+        "http://example.com/launch",
+        "http://example.com/return",
+        testContext,
+        null,
+        testUser,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for missing resource");
+    } catch (err) {
+      expect(err.message).to.equal("Resource with key and name is required to generate LTI 1.3 Login Data");
+    }
+
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        "test_deployment_id",
+        "http://example.com/launch",
+        "http://example.com/return",
+        testContext,
+        testResource,
+        null,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for missing user");
+    } catch (err) {
+      expect(err.message).to.equal("User with key and email is required to generate LTI 1.3 Login Data");
+    }
+
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        "test_deployment_id",
+        "http://example.com/launch",
+        "http://example.com/return",
+        testContext,
+        testResource,
+        testUser,
+        "false",
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for missing manager status");
+    } catch (err) {
+      expect(err.message).to.equal("Manager status is required to generate LTI 1.3 Login Data");
+    }
+
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        "test_deployment_id",
+        "http://example.com/launch",
+        "http://example.com/return",
+        testContext,
+        testResource,
+        testUser,
+        true,
+        null,
+        testCustomParams,
+      );
+      throw new Error("Expected error for missing gradebook key");
+    } catch (err) {
+      expect(err.message).to.equal("Gradebook Key is required to generate LTI 1.3 Login Data");
+    }
+
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        null,
+        "http://example.com/launch",
+        "http://example.com/return",
+        testContext,
+        testResource,
+        testUser,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for missing deployment ID");
+    } catch (err) {
+      expect(err.message).to.equal("Deployment ID is required to generate LTI 1.3 Login Data");
+    }
   });
 
-  it("should handle a replace result request properly and return the result", async () => {
+  it("should throw an error if the Provider is not found in the database when generating LTI 1.3 login form data", async () => {
     // Create mock dependencies
     const consumer = {
-      postProviderGrade: sinon.stub().resolves({ success: true, message: "Grade posted successfully" }),
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
     };
-    const models = {};
-
-    // Stub LTI10Utils.validateReplaceResultRequest to return a known value
-    const mockGrade = {
-      score: 0.95,
-      sourcedIdValue: "context_key:resource_key:user_key:gradebook_key",
+    const models = {
+      Provider: {
+        findOne: sinon.stub().resolves(null), // Simulate provider not found
+      },
     };
-    const validateReplaceResultStub = sinon
-      .stub(LTI10Utils.prototype, "validateReplaceResultRequest")
-      .returns(mockGrade);
-
-    // Stub result builder to return a known value
-    const mockResult = {
-      content: "<xml>Grade Passback Response</xml>",
-      headers: "OAuth header",
-    };
-    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").returns(mockResult);
-
-    // Construct controller with stubbed dependencies
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
 
     // Call the function under test
-    const mockRequest = {
-      sourcedid: "context_key:resource_key:user_key:gradebook_key",
-    };
-    const mockKeys = {
-      key: "test_consumer_key",
-      secret: "test_consumer_secret",
-    };
-    const mockReq = {
-      originalUrl: "http://localhost:3000/lti/consumer/grade",
-    };
-    const result = await controller.replaceResultRequest(
-      mockRequest,
-      mockKeys,
-      "http://localhost:3000/lti/consumer/grade",
-      "test_message_id",
-      mockReq,
-    );
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
 
-    // Assertions
-    expect(validateReplaceResultStub.calledOnce).to.be.true;
-    expect(validateReplaceResultStub.firstCall.args[0]).to.deep.equal(mockRequest);
-    expect(consumer.postProviderGrade.calledOnce).to.be.true;
-    expect(consumer.postProviderGrade.firstCall.args[0]).to.equal("test_consumer_key");
-    expect(consumer.postProviderGrade.firstCall.args[1]).to.equal("context_key");
-    expect(consumer.postProviderGrade.firstCall.args[2]).to.equal("resource_key");
-    expect(consumer.postProviderGrade.firstCall.args[3]).to.equal("user_key");
-    expect(consumer.postProviderGrade.firstCall.args[4]).to.equal("gradebook_key");
-    expect(consumer.postProviderGrade.firstCall.args[5]).to.equal(0.95);
-    expect(consumer.postProviderGrade.firstCall.args[6]).to.deep.equal(mockReq);
-    expect(buildResponseStub.calledOnce).to.be.true;
-    expect(buildResponseStub.firstCall.args[0]).to.equal("success");
-    expect(buildResponseStub.firstCall.args[1]).to.equal("status");
-    expect(buildResponseStub.firstCall.args[2]).to.equal("Grade posted successfully");
-    expect(buildResponseStub.firstCall.args[3]).to.deep.equal(mockKeys);
-    expect(buildResponseStub.firstCall.args[4]).to.equal("http://localhost:3000/lti/consumer/grade");
-    expect(buildResponseStub.firstCall.args[5]).to.equal("test_message_id");
-    expect(buildResponseStub.firstCall.args[6]).to.equal("replaceResult");
-    expect(buildResponseStub.firstCall.args[7]).to.deep.equal({
-      replaceResultResponse: {},
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        "test_deployment_id",
+        "http://example.com/launch",
+        "http://example.com/return",
+        testContext,
+        testResource,
+        testUser,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for provider not found");
+    } catch (err) {
+      expect(err.message).to.equal("No provider found with key " + "test_consumer_key");
+    }
+  });
+
+  it("should throw an error if the provider doe snot have a valid auth_url when generating LTI 1.3 login form data", async () => {
+    // Create mock dependencies
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const models = {
+      Provider: {
+        findOne: sinon.stub().resolves({
+          name: "Test Provider",
+          auth_url: null, // Simulate missing auth_url
+        }),
+      },
+    };
+
+    // Call the function under test
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        "test_deployment_id",
+        "http://example.com/launch",
+        "http://example.com/return",
+        testContext,
+        testResource,
+        testUser,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for provider with invalid auth_url");
+    } catch (err) {
+      expect(err.message).to.equal("No auth URL found for provider Test Provider");
+    }
+  });
+
+  it("should throw an error if there is a database error when creating the ProviderLogin record while generating LTI 1.3 login form data", async () => {
+    // Create mock dependencies
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const models = {
+      Provider: {
+        findOne: sinon.stub().resolves({
+          name: "Test Provider",
+          auth_url: "http://example.com/auth",
+        }),
+      },
+      ProviderLogin: {
+        create: sinon.stub().rejects(new Error("Database error")), // Simulate database error
+      },
+    };
+
+    // Call the function under test
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        "test_deployment_id",
+        "http://example.com/launch",
+        "http://example.com/return",
+        testContext,
+        testResource,
+        testUser,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for database error when creating ProviderLogin");
+    } catch (err) {
+      expect(err.message).to.equal("Database error");
+    }
+  });
+
+  it("should throw an error if there is an unexpected error when generating LTI 1.3 login form data", async () => {
+    // Create mock dependencies
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const models = {
+      Provider: {
+        findOne: sinon.stub().resolves({
+          name: "Test Provider",
+          auth_url: "http://example.com/auth",
+        }),
+      },
+      ProviderLogin: {
+        create: sinon.stub().resolves(null), // Simulate database error
+      },
+    };
+
+    // Call the function under test
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+    try {
+      await controller.generateLTI13LoginFormData(
+        "test_consumer_key",
+        "test_client_id",
+        "test_deployment_id",
+        "http://example.com/launch",
+        "http://example.com/return",
+        testContext,
+        testResource,
+        testUser,
+        true,
+        "test_gradebook_key",
+        testCustomParams,
+      );
+      throw new Error("Expected error for unexpected error when generating LTI 1.3 login form data");
+    } catch (err) {
+      expect(err.message).to.equal("Validation Error: Unable to save LTI 1.3 Login - Aborting!");
+    }
+  });
+
+  it("should register a new LTI provider using LTI 1.0 xml configuration", async () => {
+    // Create mock dependencies
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const provider_controller = {
+      getByName: sinon.stub().resolves(null), // Simulate provider not found
+      createProvider: sinon.stub().resolvesArg(0), // Echo back the created provider
+    };
+    const models = {};
+
+    // Stub LTI10Utils.validateConfigXML to return a known value
+    const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
+      title: "Test Provider",
+      launch_url: "http://example.com/launch",
+      extensions: {
+        domain: "example.com",
+      },
+      custom: {
+        param1: "value1",
+        param2: "value2",
+      },
     });
-    expect(result).to.deep.equal(mockResult);
+
+    // Call the function under test
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
+    const result = await controller.lti10configxml({
+      xml: "<xml>Test LTI 1.0 Config</xml>",
+      url: null,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+    });
+
+    // Assertions
+    expect(validateConfigXMLStub.calledOnce).to.be.true;
+    expect(validateConfigXMLStub.firstCall.args[0]).to.equal("<xml>Test LTI 1.0 Config</xml>");
+    expect(provider_controller.getByName.calledOnce).to.be.true;
+    expect(provider_controller.getByName.firstCall.args[0]).to.equal("Test Provider");
+    expect(provider_controller.createProvider.calledOnce).to.be.true;
+    const createdProviderArgs = provider_controller.createProvider.firstCall.args[0];
+    expect(createdProviderArgs).to.include({
+      name: "Test Provider",
+      lti13: false,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+      launch_url: "http://example.com/launch",
+      domain: "example.com",
+      custom: JSON.stringify({
+        param1: "value1",
+        param2: "value2",
+      }),
+      use_section: false,
+    });
+    expect(result).to.deep.equal({
+      name: "Test Provider",
+      lti13: false,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+      launch_url: "http://example.com/launch",
+      domain: "example.com",
+      custom: JSON.stringify({
+        param1: "value1",
+        param2: "value2",
+      }),
+      use_section: false,
+    });
 
     // Restore stubbed method
-    validateReplaceResultStub.restore();
-    buildResponseStub.restore();
+    validateConfigXMLStub.restore();
   });
 
-  it("should handle errors thrown during replace result processing and return an appropriate error response", async () => {
+  it("should rename when the same name already exists when registering using LTI 1.0 xml configuration", async () => {
     // Create mock dependencies
     const consumer = {
-      postProviderGrade: sinon.stub().resolves({ success: true, message: "Grade posted successfully" }),
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const existingProvider = {
+      name: "Test Provider",
+      launch_url: "http://example.com/launch",
+    };
+    const provider_controller = {
+      getByName: sinon.stub().resolves(existingProvider), // Simulate provider found
+      createProvider: sinon.stub(), // Should not be called
     };
     const models = {};
 
-    // Stub LTI10Utils.validateReplaceResultRequest to throw an error
-    const validateReplaceResultStub = sinon
-      .stub(LTI10Utils.prototype, "validateReplaceResultRequest")
-      .throws(new Error("Invalid Replace Result Request"));
+    // Stub LTI10Utils.validateConfigXML to return a known value
+    const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
+      title: "Test Provider",
+      launch_url: "http://example.com/launch",
+      extensions: {
+        domain: "example.com",
+      },
+      custom: {
+        param1: "value1",
+        param2: "value2",
+      },
+    });
 
-    // Stub result builder to return a known value
-    const mockResult = {
-      content: "<xml>Grade Passback Response</xml>",
-      headers: "OAuth header",
-    };
-    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").returns(mockResult);
-
-    // Construct controller with stubbed dependencies
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
-
-    // Call the function under test and assert that it returns the expected error response
-    const mockRequest = {
-      sourcedid: "context_key:resource_key:user_key:gradebook_key",
-    };
-    const mockKeys = {
+    // Call the function under test
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
+    await controller.lti10configxml({
+      xml: "<xml>Test LTI 1.0 Config</xml>",
+      url: null,
       key: "test_consumer_key",
       secret: "test_consumer_secret",
-    };
-    const mockReq = {
-      originalUrl: "http://localhost:3000/lti/consumer/grade",
-    };
-    const result = await controller.replaceResultRequest(
-      mockRequest,
-      mockKeys,
-      "http://localhost:3000/lti/consumer/grade",
-      "test_message_id",
-      mockReq,
-    );
+    });
 
     // Assertions
-    expect(validateReplaceResultStub.calledOnce).to.be.true;
-    expect(validateReplaceResultStub.firstCall.args[0]).to.deep.equal(mockRequest);
-    expect(consumer.postProviderGrade.notCalled).to.be.true;
-    expect(buildResponseStub.calledOnce).to.be.true;
-    expect(buildResponseStub.firstCall.args[0]).to.equal("failure");
-    expect(buildResponseStub.firstCall.args[1]).to.equal("invalidtargetdatafail");
-    expect(buildResponseStub.firstCall.args[2]).to.equal("Invalid Replace Result Request");
-    expect(buildResponseStub.firstCall.args[3]).to.deep.equal(mockKeys);
-    expect(buildResponseStub.firstCall.args[4]).to.equal("http://localhost:3000/lti/consumer/grade");
-    expect(buildResponseStub.firstCall.args[5]).to.equal("test_message_id");
-    expect(buildResponseStub.firstCall.args[6]).to.equal("replaceResult");
-    expect(result).to.deep.equal(mockResult);
+    expect(validateConfigXMLStub.calledOnce).to.be.true;
+    expect(validateConfigXMLStub.firstCall.args[0]).to.equal("<xml>Test LTI 1.0 Config</xml>");
+    expect(provider_controller.getByName.calledOnce).to.be.true;
+    expect(provider_controller.getByName.firstCall.args[0]).to.equal("Test Provider");
+    expect(provider_controller.createProvider.calledOnce).to.be.true;
+    const createdProviderArgs = provider_controller.createProvider.firstCall.args[0];
+    expect(createdProviderArgs.name).to.match(/^Test Provider \(\w+\)$/); // Name should be renamed with a suffix
 
     // Restore stubbed method
-    validateReplaceResultStub.restore();
-    buildResponseStub.restore();
+    validateConfigXMLStub.restore();
   });
 
-  it("should handle errors thrown during replace result processing due to bad sourcedid and return an appropriate error response", async () => {
+  it("should throw an error if the LTI 1.0 xml configuration is invalid when registering a new provider", async () => {
     // Create mock dependencies
     const consumer = {
-      postProviderGrade: sinon.stub().resolves({ success: true, message: "Grade posted successfully" }),
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const provider_controller = {
+      getByName: sinon.stub(), // Should not be called
+      createProvider: sinon.stub(), // Should not be called
     };
     const models = {};
 
-    // Stub LTI10Utils.validateReplaceResultRequest to return a known value
-    const mockGrade = {
-      score: 0.95,
-      sourcedIdValue: "context_key:resource_key:user_key",
-    };
-    const validateReplaceResultStub = sinon
-      .stub(LTI10Utils.prototype, "validateReplaceResultRequest")
-      .returns(mockGrade);
+    // Stub LTI10Utils.validateConfigXML to throw an error
+    const validateConfigXMLStub = sinon
+      .stub(LTI10Utils.prototype, "validateConfigXML")
+      .throws(new Error("Invalid XML"));
 
-    // Stub result builder to return a known value
-    const mockResult = {
-      content: "<xml>Grade Passback Response</xml>",
-      headers: "OAuth header",
-    };
-    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").returns(mockResult);
-
-    // Construct controller with stubbed dependencies
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
-
-    // Call the function under test and assert that it returns the expected error response
-    const mockRequest = {
-      sourcedid: "context_key:resource_key:user_key",
-    };
-    const mockKeys = {
-      key: "test_consumer_key",
-      secret: "test_consumer_secret",
-    };
-    const mockReq = {
-      originalUrl: "http://localhost:3000/lti/consumer/grade",
-    };
-    const result = await controller.replaceResultRequest(
-      mockRequest,
-      mockKeys,
-      "http://localhost:3000/lti/consumer/grade",
-      "test_message_id",
-      mockReq,
+    // Call the function under test
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
     );
-
-    // Assertions
-    expect(validateReplaceResultStub.calledOnce).to.be.true;
-    expect(validateReplaceResultStub.firstCall.args[0]).to.deep.equal(mockRequest);
-    expect(consumer.postProviderGrade.notCalled).to.be.true;
-    expect(buildResponseStub.calledOnce).to.be.true;
-    expect(buildResponseStub.firstCall.args[0]).to.equal("failure");
-    expect(buildResponseStub.firstCall.args[1]).to.equal("invalididfail");
-    expect(buildResponseStub.firstCall.args[2]).to.equal(
-      "Invalid Source ID context_key:resource_key:user_key - expected 4 parts",
-    );
-    expect(buildResponseStub.firstCall.args[3]).to.deep.equal(mockKeys);
-    expect(buildResponseStub.firstCall.args[4]).to.equal("http://localhost:3000/lti/consumer/grade");
-    expect(buildResponseStub.firstCall.args[5]).to.equal("test_message_id");
-    expect(buildResponseStub.firstCall.args[6]).to.equal("replaceResult");
-    expect(result).to.deep.equal(mockResult);
+    try {
+      await controller.lti10configxml({
+        xml: "<xml>Invalid LTI 1.0 Config</xml>",
+        url: null,
+        key: "test_consumer_key",
+        secret: "test_consumer_secret",
+      });
+      throw new Error("Expected error for invalid LTI 1.0 XML configuration");
+    } catch (err) {
+      expect(err.message).to.equal("Invalid XML");
+    }
+    expect(validateConfigXMLStub.calledOnce).to.be.true;
+    expect(validateConfigXMLStub.firstCall.args[0]).to.equal("<xml>Invalid LTI 1.0 Config</xml>");
+    expect(provider_controller.getByName.notCalled).to.be.true;
+    expect(provider_controller.createProvider.notCalled).to.be.true;
 
     // Restore stubbed method
-    validateReplaceResultStub.restore();
-    buildResponseStub.restore();
+    validateConfigXMLStub.restore();
   });
 
-  it("should handle unsuccessful grade posting to the provider", async () => {
+  it("should throw an error if there is a database error when creating the provider while registering using LTI 1.0 xml configuration", async () => {
     // Create mock dependencies
     const consumer = {
-      postProviderGrade: sinon.stub().resolves({ success: false, message: "Grade posting failed" }),
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const provider_controller = {
+      getByName: sinon.stub().resolves(null), // Simulate provider not found
+      createProvider: sinon.stub().rejects(new Error("Database error")), // Simulate database error
     };
     const models = {};
 
-    // Stub LTI10Utils.validateReplaceResultRequest to return a known value
-    const mockGrade = {
-      score: 0.95,
-      sourcedIdValue: "context_key:resource_key:user_key:gradebook_key",
-    };
-    const validateReplaceResultStub = sinon
-      .stub(LTI10Utils.prototype, "validateReplaceResultRequest")
-      .returns(mockGrade);
+    // Stub LTI10Utils.validateConfigXML to return a known value
+    const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
+      title: "Test Provider",
+      launch_url: "http://example.com/launch",
+      extensions: {
+        domain: "example.com",
+      },
+      custom: {
+        param1: "value1",
+        param2: "value2",
+      },
+    });
 
-    // Stub result builder to return a known value
-    const mockResult = {
-      content: "<xml>Grade Passback Response</xml>",
-      headers: "OAuth header",
-    };
-    const buildResponseStub = sinon.stub(LTI10Utils.prototype, "buildResponse").returns(mockResult);
-
-    // Construct controller with stubbed dependencies
-    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
-
-    // Call the function under test and assert that it returns the expected error response
-    const mockRequest = {
-      sourcedid: "context_key:resource_key:user_key:gradebook_key",
-    };
-    const mockKeys = {
+    // Call the function under test
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
+    try {
+      await controller.lti10configxml({
+        xml: "<xml>Test LTI 1.0 Config</xml>",
+        url: null,
+        key: "test_consumer_key",
+        secret: "test_consumer_secret",
+      });
+      throw new Error("Expected error for database error when creating provider");
+    } catch (err) {
+      expect(err.message).to.equal("Database error");
+    }
+    expect(validateConfigXMLStub.calledOnce).to.be.true;
+    expect(validateConfigXMLStub.firstCall.args[0]).to.equal("<xml>Test LTI 1.0 Config</xml>");
+    expect(provider_controller.getByName.calledOnce).to.be.true;
+    expect(provider_controller.getByName.firstCall.args[0]).to.equal("Test Provider");
+    expect(provider_controller.createProvider.calledOnce).to.be.true;
+    const createdProviderArgs = provider_controller.createProvider.firstCall.args[0];
+    expect(createdProviderArgs).to.include({
+      name: "Test Provider",
+      lti13: false,
       key: "test_consumer_key",
       secret: "test_consumer_secret",
-    };
-    const mockReq = {
-      originalUrl: "http://localhost:3000/lti/consumer/grade",
-    };
-    const result = await controller.replaceResultRequest(
-      mockRequest,
-      mockKeys,
-      "http://localhost:3000/lti/consumer/grade",
-      "test_message_id",
-      mockReq,
-    );
-
-    // Assertions
-    expect(validateReplaceResultStub.calledOnce).to.be.true;
-    expect(validateReplaceResultStub.firstCall.args[0]).to.deep.equal(mockRequest);
-    expect(consumer.postProviderGrade.calledOnce).to.be.true;
-    expect(buildResponseStub.calledOnce).to.be.true;
-    expect(buildResponseStub.firstCall.args[0]).to.equal("failure");
-    expect(buildResponseStub.firstCall.args[1]).to.equal("processingfail");
-    expect(buildResponseStub.firstCall.args[2]).to.equal("Failed to Post Grade: Grade posting failed");
-    expect(buildResponseStub.firstCall.args[3]).to.deep.equal(mockKeys);
-    expect(buildResponseStub.firstCall.args[4]).to.equal("http://localhost:3000/lti/consumer/grade");
-    expect(buildResponseStub.firstCall.args[5]).to.equal("test_message_id");
-    expect(buildResponseStub.firstCall.args[6]).to.equal("replaceResult");
-    expect(result).to.deep.equal(mockResult);
+      launch_url: "http://example.com/launch",
+      domain: "example.com",
+      custom: JSON.stringify({
+        param1: "value1",
+        param2: "value2",
+      }),
+      use_section: false,
+    });
 
     // Restore stubbed method
-    validateReplaceResultStub.restore();
-    buildResponseStub.restore();
+    validateConfigXMLStub.restore();
+  });
+
+  it("should throw an error if the key or secret is missing when registering using LTI 1.0 xml configuration", async () => {
+    // Create mock dependencies
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const provider_controller = {
+      getByName: sinon.stub(), // Should not be called
+      createProvider: sinon.stub(), // Should not be called
+    };
+    const models = {};
+
+    // Call the function under test
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
+    try {
+      await controller.lti10configxml({
+        xml: "<xml>Test LTI 1.0 Config</xml>",
+        url: null,
+        key: null,
+        secret: "test_consumer_secret",
+      });
+      throw new Error("Expected error for missing key");
+    } catch (err) {
+      expect(err.message).to.equal("Invalid LTI 1.0 Configuration: Missing Key");
+    }
+
+    try {
+      await controller.lti10configxml({
+        xml: "<xml>Test LTI 1.0 Config</xml>",
+        url: null,
+        key: "test_consumer_key",
+        secret: null,
+      });
+      throw new Error("Expected error for missing secret");
+    } catch (err) {
+      expect(err.message).to.equal("Invalid LTI 1.0 Configuration: Missing Secret");
+    }
+  });
+
+  it("should handle missing domain in LTI 1.0 xml configuration by using the launch URL domain as fallback", async () => {
+    // Create mock dependencies
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const provider_controller = {
+      getByName: sinon.stub().resolves(null), // Simulate provider not found
+      createProvider: sinon.stub().resolvesArg(0), // Echo back the created provider
+    };
+    const models = {};
+
+    // Stub LTI10Utils.validateConfigXML to return a known value without domain
+    const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
+      title: "Test Provider",
+      launch_url: "http://example.com/launch",
+      extensions: {
+        // No domain provided
+      },
+      custom: {
+        param1: "value1",
+        param2: "value2",
+      },
+    });
+
+    // Call the function under test
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
+    const result = await controller.lti10configxml({
+      xml: "<xml>Test LTI 1.0 Config</xml>",
+      url: null,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+    });
+
+    // Assertions
+    expect(validateConfigXMLStub.calledOnce).to.be.true;
+    expect(validateConfigXMLStub.firstCall.args[0]).to.equal("<xml>Test LTI 1.0 Config</xml>");
+    expect(provider_controller.getByName.calledOnce).to.be.true;
+    expect(provider_controller.getByName.firstCall.args[0]).to.equal("Test Provider");
+    expect(provider_controller.createProvider.calledOnce).to.be.true;
+    const createdProviderArgs = provider_controller.createProvider.firstCall.args[0];
+    expect(createdProviderArgs).to.include({
+      name: "Test Provider",
+      lti13: false,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+      launch_url: "http://example.com/launch",
+      domain: "example.com", // Domain should be extracted from launch URL
+      custom: JSON.stringify({
+        param1: "value1",
+        param2: "value2",
+      }),
+      use_section: false,
+    });
+    expect(result).to.deep.equal({
+      name: "Test Provider",
+      lti13: false,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+      launch_url: "http://example.com/launch",
+      domain: "example.com", // Domain should be extracted from launch URL
+      custom: JSON.stringify({
+        param1: "value1",
+        param2: "value2",
+      }),
+      use_section: false,
+    });
+
+    // Restore stubbed method
+    validateConfigXMLStub.restore();
+  });
+
+  it("should handle empty custom parameters in LTI 1.0 xml configuration", async () => {
+    // Create mock dependencies
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const provider_controller = {
+      getByName: sinon.stub().resolves(null), // Simulate provider not found
+      createProvider: sinon.stub().resolvesArg(0), // Echo back the created provider
+    };
+    const models = {};
+
+    // Stub LTI10Utils.validateConfigXML to return a known value with empty custom parameters
+    const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
+      title: "Test Provider",
+      launch_url: "http://example.com/launch",
+      extensions: {
+        domain: "example.com",
+      },
+      custom: {
+        // No custom parameters
+      },
+    });
+
+    // Call the function under test
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
+    const result = await controller.lti10configxml({
+      xml: "<xml>Test LTI 1.0 Config</xml>",
+      url: null,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+    });
+
+    // Assertions
+    expect(validateConfigXMLStub.calledOnce).to.be.true;
+    expect(validateConfigXMLStub.firstCall.args[0]).to.equal("<xml>Test LTI 1.0 Config</xml>");
+    expect(provider_controller.getByName.calledOnce).to.be.true;
+    expect(provider_controller.getByName.firstCall.args[0]).to.equal("Test Provider");
+    expect(provider_controller.createProvider.calledOnce).to.be.true;
+    const createdProviderArgs = provider_controller.createProvider.firstCall.args[0];
+    expect(createdProviderArgs).to.include({
+      name: "Test Provider",
+      lti13: false,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+      launch_url: "http://example.com/launch",
+      domain: "example.com", // Domain should be extracted from launch URL
+      custom: JSON.stringify({}), // Custom should be an empty object
+      use_section: false,
+    });
+    expect(result).to.deep.equal({
+      name: "Test Provider",
+      lti13: false,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+      launch_url: "http://example.com/launch",
+      domain: "example.com", // Domain should be extracted from launch URL
+      custom: JSON.stringify({}), // Custom should be an empty object
+      use_section: false,
+    });
+
+    // Restore stubbed method
+    validateConfigXMLStub.restore();
+  });
+
+  it("should handle missing custom parameters in LTI 1.0 xml configuration", async () => {
+    // Create mock dependencies
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const provider_controller = {
+      getByName: sinon.stub().resolves(null), // Simulate provider not found
+      createProvider: sinon.stub().resolvesArg(0), // Echo back the created provider
+    };
+    const models = {};
+
+    // Stub LTI10Utils.validateConfigXML to return a known value with empty custom parameters
+    const validateConfigXMLStub = sinon.stub(LTI10Utils.prototype, "validateConfigXML").returns({
+      title: "Test Provider",
+      launch_url: "http://example.com/launch",
+      extensions: {
+        domain: "example.com",
+      },
+      // No custom parameters provided
+    });
+
+    // Call the function under test
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
+    const result = await controller.lti10configxml({
+      xml: "<xml>Test LTI 1.0 Config</xml>",
+      url: null,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+    });
+
+    // Assertions
+    expect(validateConfigXMLStub.calledOnce).to.be.true;
+    expect(validateConfigXMLStub.firstCall.args[0]).to.equal("<xml>Test LTI 1.0 Config</xml>");
+    expect(provider_controller.getByName.calledOnce).to.be.true;
+    expect(provider_controller.getByName.firstCall.args[0]).to.equal("Test Provider");
+    expect(provider_controller.createProvider.calledOnce).to.be.true;
+    const createdProviderArgs = provider_controller.createProvider.firstCall.args[0];
+    expect(createdProviderArgs).to.include({
+      name: "Test Provider",
+      lti13: false,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+      launch_url: "http://example.com/launch",
+      domain: "example.com", // Domain should be extracted from launch URL
+      custom: null, // Custom should be null when not provided
+      use_section: false,
+    });
+    expect(result).to.deep.equal({
+      name: "Test Provider",
+      lti13: false,
+      key: "test_consumer_key",
+      secret: "test_consumer_secret",
+      launch_url: "http://example.com/launch",
+      domain: "example.com", // Domain should be extracted from launch URL
+      custom: null, // Custom should be null when not provided
+      use_section: false,
+    });
+
+    // Restore stubbed method
+    validateConfigXMLStub.restore();
+  });
+
+  it("should handle an LTI 1.3 dynamic registration URL", async () => {
+    // Create mock dependencies
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const provider_controller = {
+      getByName: sinon.stub().resolves(null), // Simulate provider not found
+      createProvider: sinon.stub().resolvesArg(0), // Echo back the created provider
+    };
+    const models = {};
+
+    // Stub LTI13Utils.handleDynamicRegistrationRequest to return a known value
+    const handleDynamicRegistrationRequestStub = sinon
+      .stub(LTI13Utils.prototype, "handleDynamicRegistrationRequest")
+      .resolves("<html>Dynamic Registration Form</html>");
+
+    // Call the function under test
+    const controller = new LTIConsumerController(
+      consumer,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      provider_controller,
+    );
+    const result = await controller.lti13dynamicregistration("https://example.com/registration");
+
+    // Assertions
+    expect(handleDynamicRegistrationRequestStub.calledOnce).to.be.true;
+    expect(handleDynamicRegistrationRequestStub.firstCall.args[0]).to.equal("https://example.com/registration");
+    expect(handleDynamicRegistrationRequestStub.firstCall.args[1]).to.equal("/lti/consumer");
+    expect(result).to.equal("<html>Dynamic Registration Form</html>");
+  });
+
+  it("should generate LTI 1.3 deep link form data correctly", async () => {
+    // Create mock dependencies
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const models = {
+      Provider: {
+        findOne: sinon.stub().resolves({
+          name: "Test Provider",
+          auth_url: "http://example.com/auth",
+        }),
+      },
+      ProviderDeepLink: {
+        create: sinon.stub().resolvesArg(0),
+      },
+      ProviderLogin: {
+        create: sinon.stub().resolvesArg(0),
+      },
+    };
+
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+    const formData = await controller.generateLTI13DeepLinkFormData(
+      "test_consumer_key",
+      "test_client_id",
+      "test_deployment_id",
+      "http://example.com/launch",
+      "http://example.com/return",
+      testContext,
+      testUser,
+      { accept_types: ["ltiResourceLink"], accept_multiple: true },
+    );
+
+    expect(formData).to.shallowDeepEqual({
+      action: "http://example.com/auth",
+      fields: {
+        iss: "http://localhost:3000/",
+        client_id: "test_client_id",
+        lti_deployment_id: "test_deployment_id",
+        target_link_uri: "http://example.com/launch",
+        lti_storage_target: "post_message_forwarding",
+      },
+    });
+    expect(models.Provider.findOne.calledOnce).to.be.true;
+    expect(models.ProviderDeepLink.create.calledOnce).to.be.true;
+    const deepLinkArgs = models.ProviderDeepLink.create.firstCall.args[0];
+    expect(deepLinkArgs.provider_key).to.equal("test_consumer_key");
+    expect(deepLinkArgs.context).to.deep.include({ context: testContext, user: testUser, ret_url: "http://example.com/return" });
+    expect(models.ProviderLogin.create.calledOnce).to.be.true;
+    const loginArgs = models.ProviderLogin.create.firstCall.args[0];
+    expect(loginArgs.client_id).to.equal("test_client_id");
+    const loginData = JSON.parse(loginArgs.data);
+    expect(loginData.message_type).to.equal("LtiDeepLinkingRequest");
+    expect(loginData.key).to.equal("test_consumer_key");
+    expect(loginData.settings.accept_types).to.deep.equal(["ltiResourceLink"]);
+    expect(loginData.settings.accept_multiple).to.be.true;
+  });
+
+  it("should throw errors when LTI 1.3 deep link form required parameters are missing", async () => {
+    const consumer = {
+      route_prefix: "/lti/consumer",
+      product_name: "Test LTI Consumer",
+      product_version: "1.0",
+      deployment_id: "test-deployment",
+      deployment_name: "Test Deployment",
+    };
+    const models = {};
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    const cases = [
+      [null, "test_client_id", "test_deployment_id", "http://ex.com/l", "http://ex.com/r", testContext, testUser, "Consumer Key is required to generate LTI 1.3 Deep Link Data"],
+      ["key", null, "test_deployment_id", "http://ex.com/l", "http://ex.com/r", testContext, testUser, "Client ID is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", null, "http://ex.com/l", "http://ex.com/r", testContext, testUser, "Deployment ID is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", null, "http://ex.com/r", testContext, testUser, "Launch URL is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", "http://ex.com/l", null, testContext, testUser, "Return URL is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", null, testUser, "Context with key, label, and name is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", { key: "k" }, testUser, "Context with key, label, and name is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, null, "User with key and email is required to generate LTI 1.3 Deep Link Data"],
+      ["key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, { key: "k" }, "User with key and email is required to generate LTI 1.3 Deep Link Data"],
+    ];
+
+    for (const [key, client_id, deployment_id, url, ret_url, context, user, expectedMessage] of cases) {
+      try {
+        await controller.generateLTI13DeepLinkFormData(key, client_id, deployment_id, url, ret_url, context, user);
+        throw new Error("Expected error: " + expectedMessage);
+      } catch (err) {
+        expect(err.message).to.equal(expectedMessage);
+      }
+    }
+  });
+
+  it("should throw an error if the provider is not found when generating LTI 1.3 deep link form data", async () => {
+    const consumer = { route_prefix: "/lti/consumer" };
+    const models = {
+      Provider: { findOne: sinon.stub().resolves(null) },
+    };
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    try {
+      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      throw new Error("Expected error");
+    } catch (err) {
+      expect(err.message).to.equal("No provider found with key key");
+    }
+  });
+
+  it("should throw an error if the provider has no auth_url when generating LTI 1.3 deep link form data", async () => {
+    const consumer = { route_prefix: "/lti/consumer" };
+    const models = {
+      Provider: { findOne: sinon.stub().resolves({ name: "Test Provider", auth_url: null }) },
+    };
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    try {
+      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      throw new Error("Expected error");
+    } catch (err) {
+      expect(err.message).to.equal("No auth URL found for provider Test Provider");
+    }
+  });
+
+  it("should throw an error if the ProviderDeepLink record cannot be created", async () => {
+    const consumer = { route_prefix: "/lti/consumer" };
+    const models = {
+      Provider: { findOne: sinon.stub().resolves({ name: "Test Provider", auth_url: "http://example.com/auth" }) },
+      ProviderDeepLink: { create: sinon.stub().resolves(null) },
+    };
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    try {
+      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      throw new Error("Expected error");
+    } catch (err) {
+      expect(err.message).to.equal("Validation Error: Unable to save LTI 1.3 Deep Link record - Aborting!");
+    }
+  });
+
+  it("should throw an error if the ProviderLogin record cannot be created during deep link form data generation", async () => {
+    const consumer = { route_prefix: "/lti/consumer" };
+    const models = {
+      Provider: { findOne: sinon.stub().resolves({ name: "Test Provider", auth_url: "http://example.com/auth" }) },
+      ProviderDeepLink: { create: sinon.stub().resolvesArg(0) },
+      ProviderLogin: { create: sinon.stub().resolves(null) },
+    };
+    const controller = new LTIConsumerController(consumer, models, logger, domain_name, admin_email);
+
+    try {
+      await controller.generateLTI13DeepLinkFormData("key", "cid", "did", "http://ex.com/l", "http://ex.com/r", testContext, testUser);
+      throw new Error("Expected error");
+    } catch (err) {
+      expect(err.message).to.equal("Validation Error: Unable to save LTI 1.3 Login - Aborting!");
+    }
   });
 });

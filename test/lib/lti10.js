@@ -11,6 +11,7 @@ import { nanoid } from "nanoid";
 import sinon from "sinon";
 import crypto from "crypto";
 import ky from "ky";
+import xml2js from "xml2js";
 
 // NOTE: This uses https://www.npmjs.com/package/oauth-sign
 // as a sanity check against my own signing code based on that library
@@ -1385,6 +1386,255 @@ describe("/lib/lti10.js", function () {
     });
   });
 
+  describe("readOutcome", function () {
+    it("should read an outcome with a score successfully", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({
+        status: 200,
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
+            <imsx_POXHeader>\n\
+              <imsx_POXResponseHeaderInfo>\n\
+                <imsx_statusInfo>\n\
+                  <imsx_codeMajor>success</imsx_codeMajor>\n\
+                </imsx_statusInfo>\n\
+              </imsx_POXResponseHeaderInfo>\n\
+            </imsx_POXHeader>\n\
+            <imsx_POXBody>\n\
+              <readResultResponse>\n\
+                <result>\n\
+                  <resultScore>\n\
+                    <textString>0.85</textString>\n\
+                  </resultScore>\n\
+                </result>\n\
+              </readResultResponse>\n\
+            </imsx_POXBody>\n\
+          </imsx_POXEnvelopeResponse>",
+        ),
+      });
+
+      const result = await lti10Utils.readOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+
+      expect(result).to.equal(0.85);
+      sinon.assert.calledWith(models.ConsumerKey.findByPk, "thisisatestkey");
+      const body = ky.post.getCall(0).args[1].body;
+      expect(body).to.include("<sourcedId>thisisagradeid</sourcedId>");
+      expect(body).to.include("readResultRequest");
+    });
+
+    it("should return null when no grade is on file", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({
+        status: 200,
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
+            <imsx_POXHeader>\n\
+              <imsx_POXResponseHeaderInfo>\n\
+                <imsx_statusInfo>\n\
+                  <imsx_codeMajor>success</imsx_codeMajor>\n\
+                </imsx_statusInfo>\n\
+              </imsx_POXResponseHeaderInfo>\n\
+            </imsx_POXHeader>\n\
+            <imsx_POXBody>\n\
+              <readResultResponse/>\n\
+            </imsx_POXBody>\n\
+          </imsx_POXEnvelopeResponse>",
+        ),
+      });
+
+      const result = await lti10Utils.readOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+
+      expect(result).to.be.null;
+    });
+
+    it("should reject with an invalid Consumer Key", async function () {
+      const models = {
+        ConsumerKey: { findByPk: sinon.stub().resolves(null) },
+      };
+      const logger = {};
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      try {
+        await lti10Utils.readOutcome("thisisagradeid", "invalidkey", "http://example.com/grade");
+        throw new Error("Expected readOutcome to throw an error for invalid Consumer Key");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Error: Invalid Consumer Key");
+      }
+    });
+
+    it("should throw when LMS returns a non-success response", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({
+        status: 200,
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
+            <imsx_POXHeader>\n\
+              <imsx_POXResponseHeaderInfo>\n\
+                <imsx_statusInfo>\n\
+                  <imsx_codeMajor>failure</imsx_codeMajor>\n\
+                </imsx_statusInfo>\n\
+              </imsx_POXResponseHeaderInfo>\n\
+            </imsx_POXHeader>\n\
+          </imsx_POXEnvelopeResponse>",
+        ),
+      });
+
+      try {
+        await lti10Utils.readOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+        throw new Error("Expected readOutcome to throw for non-success response");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.startWith("Failed to read grade: ");
+      }
+    });
+
+    it("should throw when the HTTP request fails", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({ status: 500, statusText: "Internal Server Error" });
+
+      try {
+        await lti10Utils.readOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+        throw new Error("Expected readOutcome to throw for HTTP failure");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Failed to read grade: HTTP 500 - Internal Server Error");
+      }
+    });
+  });
+
+  describe("deleteOutcome", function () {
+    it("should delete an outcome successfully", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({
+        status: 200,
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
+            <imsx_POXHeader>\n\
+              <imsx_POXResponseHeaderInfo>\n\
+                <imsx_statusInfo>\n\
+                  <imsx_codeMajor>success</imsx_codeMajor>\n\
+                </imsx_statusInfo>\n\
+              </imsx_POXResponseHeaderInfo>\n\
+            </imsx_POXHeader>\n\
+          </imsx_POXEnvelopeResponse>",
+        ),
+      });
+
+      const result = await lti10Utils.deleteOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+
+      expect(result).to.be.true;
+      sinon.assert.calledWith(models.ConsumerKey.findByPk, "thisisatestkey");
+      const body = ky.post.getCall(0).args[1].body;
+      expect(body).to.include("<sourcedId>thisisagradeid</sourcedId>");
+      expect(body).to.include("deleteResultRequest");
+    });
+
+    it("should reject with an invalid Consumer Key", async function () {
+      const models = {
+        ConsumerKey: { findByPk: sinon.stub().resolves(null) },
+      };
+      const logger = {};
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      try {
+        await lti10Utils.deleteOutcome("thisisagradeid", "invalidkey", "http://example.com/grade");
+        throw new Error("Expected deleteOutcome to throw an error for invalid Consumer Key");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Error: Invalid Consumer Key");
+      }
+    });
+
+    it("should throw when LMS returns a non-success response", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({
+        status: 200,
+        text: sinon.stub().resolves(
+          "<imsx_POXEnvelopeResponse>\n\
+            <imsx_POXHeader>\n\
+              <imsx_POXResponseHeaderInfo>\n\
+                <imsx_statusInfo>\n\
+                  <imsx_codeMajor>failure</imsx_codeMajor>\n\
+                </imsx_statusInfo>\n\
+              </imsx_POXResponseHeaderInfo>\n\
+            </imsx_POXHeader>\n\
+          </imsx_POXEnvelopeResponse>",
+        ),
+      });
+
+      try {
+        await lti10Utils.deleteOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+        throw new Error("Expected deleteOutcome to throw for non-success response");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.startWith("Failed to delete grade: ");
+      }
+    });
+
+    it("should throw when the HTTP request fails", async function () {
+      const models = {
+        ConsumerKey: {
+          findByPk: sinon.stub().resolves({ key: "thisisatestkey", secret: "thisisatestsecret" }),
+        },
+      };
+      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      sinon.stub(ky, "post").resolves({ status: 500, statusText: "Internal Server Error" });
+
+      try {
+        await lti10Utils.deleteOutcome("thisisagradeid", "thisisatestkey", "http://example.com/grade");
+        throw new Error("Expected deleteOutcome to throw for HTTP failure");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Failed to delete grade: HTTP 500 - Internal Server Error");
+      }
+    });
+  });
+
   describe("buildResponse", async function () {
     it("should build a valid LTI 1.0 response", async function () {
       // Mock Library Dependencies
@@ -1892,6 +2142,573 @@ describe("/lib/lti10.js", function () {
         expect(err).to.be.an("error");
         expect(err.message).to.equal("Replace Result: Missing Result Source ID");
       }
+    });
+  });
+
+  describe("validateSourcedIdRequest", function () {
+    const sourcedIdRequest = {
+      resultrecord: {
+        sourcedguid: {
+          sourcedid: "thisisagradeid",
+        },
+      },
+    };
+
+    it("should validate a valid sourced id request", async function () {
+      const lti10Utils = new LTI10Utils({}, {}, domain_name);
+      const result = lti10Utils.validateSourcedIdRequest(sourcedIdRequest);
+      expect(result).to.be.an("object");
+      expect(result).to.have.property("sourcedIdValue", "thisisagradeid");
+    });
+
+    it("should reject a request with a missing resultrecord", async function () {
+      const lti10Utils = new LTI10Utils({}, {}, domain_name);
+      const invalidRequest = {};
+      try {
+        lti10Utils.validateSourcedIdRequest(invalidRequest);
+        throw new Error("Expected validateSourcedIdRequest to throw");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Read/Delete Result: Missing Result Record");
+      }
+    });
+
+    it("should reject a request with a missing sourcedguid", async function () {
+      const lti10Utils = new LTI10Utils({}, {}, domain_name);
+      const invalidRequest = { resultrecord: {} };
+      try {
+        lti10Utils.validateSourcedIdRequest(invalidRequest);
+        throw new Error("Expected validateSourcedIdRequest to throw");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Read/Delete Result: Missing Result Source ID");
+      }
+    });
+
+    it("should reject a request with a missing sourcedid value", async function () {
+      const lti10Utils = new LTI10Utils({}, {}, domain_name);
+      const invalidRequest = { resultrecord: { sourcedguid: {} } };
+      try {
+        lti10Utils.validateSourcedIdRequest(invalidRequest);
+        throw new Error("Expected validateSourcedIdRequest to throw");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Read/Delete Result: Missing Result Source ID Value");
+      }
+    });
+  });
+
+  const validConfigXML = `
+  <cartridge_basiclti_link
+  xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0" 
+  xmlns:blti="http://www.imsglobal.org/xsd/imsbasiclti_v1p0" 
+  xmlns:lticm="http://www.imsglobal.org/xsd/imslticm_v1p0" 
+  xmlns:lticp="http://www.imsglobal.org/xsd/imslticp_v1p0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.imsglobal.org/xsd/imslticc_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticc_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imsbasiclti_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imslticm_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd 
+    http://www.imsglobal.org/xsd/imslticp_v1p0 
+    http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd"
+  >
+  <blti:title>LTI Toolkit</blti:title>
+  <blti:description>LTI Toolkit for LTI Tool Providers</blti:description>
+  <blti:icon>https://placehold.co/64x64.png</blti:icon>
+  <blti:launch_url>https://ltidemo.home.russfeld.me/lti/provider/launch10</blti:launch_url>
+  <blti:custom>
+    <lticm:property name="custom_name">custom_value</lticm:property>
+    <lticm:property name="custom_name2">custom_value2</lticm:property>
+  </blti:custom>
+  <blti:extensions platform="canvas.instructure.com">
+    <lticm:property name="tool_id">lti_toolkit</lticm:property>
+    <lticm:property name="privacy_level">public</lticm:property>
+    <lticm:property name="domain">ltidemo.home.russfeld.me</lticm:property>
+  </blti:extensions>
+  <cartridge_bundle identifierref="BLTI001_Bundle"/>
+  <cartridge_icon identifierref="BLTI001_Icon"/>
+</cartridge_basiclti_link>
+`;
+
+  describe("validateConfigXML", function () {
+    it("should validate a valid config XML", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test
+      const result = await lti10Utils.validateConfigXML(validConfigXML);
+
+      // Assert that the config XML is valid and correctly parsed
+      expect(result).to.be.a("object");
+      expect(result).to.deep.equal({
+        title: "LTI Toolkit",
+        description: "LTI Toolkit for LTI Tool Providers",
+        icon: "https://placehold.co/64x64.png",
+        launch_url: "https://ltidemo.home.russfeld.me/lti/provider/launch10",
+        custom: {
+          custom_name: "custom_value",
+          custom_name2: "custom_value2",
+        },
+        extensions: {
+          tool_id: "lti_toolkit",
+          privacy_level: "public",
+          domain: "ltidemo.home.russfeld.me",
+        },
+      });
+    });
+
+    it("should throw an error if xml and url are not provided", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test without xml or url
+      try {
+        await lti10Utils.validateConfigXML();
+        throw new Error("Expected validateConfigXML to throw an error when xml and url are not provided");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Validation Error: Missing XML Configuration and URL");
+      }
+    });
+
+    it("should throw an error if the XML is invalid", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test with invalid XML
+      try {
+        await lti10Utils.validateConfigXML("invalidxml");
+        throw new Error("Expected validateConfigXML to throw an error for invalid XML");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        // catch assertion error from xml2js if the XML is not well-formed
+        expect(err.message).to.match(/Unexpected end|Non-whitespace before first tag|Invalid character/);
+      }
+    });
+
+    it("should throw an error if the XML is missing the root element", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Stub xmljs library to return a parsed XML object that is missing required fields
+      sinon.stub(xml2js, "Parser").returns({
+        parseStringPromise: sinon.stub().resolves({
+          // Return an empty object to simulate missing required fields
+        }),
+      });
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test with XML missing required fields
+      try {
+        await lti10Utils.validateConfigXML(validConfigXML);
+        throw new Error("Expected validateConfigXML to throw an error for XML missing required fields");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Invalid LTI Configuration: Missing Root Element");
+      }
+
+      // Restore the original xml2js behavior for other tests
+      xml2js.Parser.restore();
+    });
+
+    it("should throw an error if the XML is missing namespace elements", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Stub xmljs library to return a parsed XML object that is missing required fields
+      sinon.stub(xml2js, "Parser").returns({
+        parseStringPromise: sinon.stub().resolves({
+          cartridge_basiclti_link: {
+            $: {
+              // Missing xmlns attribute to simulate missing namespace elements
+            },
+            // Missing other required elements
+          },
+        }),
+      });
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test with XML missing required fields
+      try {
+        await lti10Utils.validateConfigXML(validConfigXML);
+        throw new Error("Expected validateConfigXML to throw an error for XML missing required fields");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Invalid LTI Configuration: Missing Namespace");
+      }
+
+      // Restore the original xml2js behavior for other tests
+      xml2js.Parser.restore();
+    });
+
+    it("should throw an error if the XML has incorrect namespace", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Stub xmljs library to return a parsed XML object that is missing required fields
+      sinon.stub(xml2js, "Parser").returns({
+        parseStringPromise: sinon.stub().resolves({
+          cartridge_basiclti_link: {
+            $: {
+              // Incorrect xmlns attribute to simulate incorrect namespace
+              xmlns: "http://www.imsglobal.org/xsd/lti/lti_v1p0",
+            },
+            // Missing other required elements
+          },
+        }),
+      });
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test with XML missing required fields
+      try {
+        await lti10Utils.validateConfigXML(validConfigXML);
+        throw new Error("Expected validateConfigXML to throw an error for XML missing required fields");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Invalid LTI Configuration: Invalid Namespace");
+      }
+
+      // Restore the original xml2js behavior for other tests
+      xml2js.Parser.restore();
+    });
+
+    it("should throw an error if the XML is missing title", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Stub xmljs library to return a parsed XML object that is missing required fields
+      sinon.stub(xml2js, "Parser").returns({
+        parseStringPromise: sinon.stub().resolves({
+          cartridge_basiclti_link: {
+            $: {
+              xmlns: "http://www.imsglobal.org/xsd/imslticc_v1p0",
+            },
+            // Missing other required elements
+          },
+        }),
+      });
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test with XML missing required fields
+      try {
+        await lti10Utils.validateConfigXML(validConfigXML);
+        throw new Error("Expected validateConfigXML to throw an error for XML missing required fields");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Invalid LTI Configuration: Missing Title");
+      }
+
+      // Restore the original xml2js behavior for other tests
+      xml2js.Parser.restore();
+    });
+
+    it("should throw an error if the XML is missing description", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Stub xmljs library to return a parsed XML object that is missing required fields
+      sinon.stub(xml2js, "Parser").returns({
+        parseStringPromise: sinon.stub().resolves({
+          cartridge_basiclti_link: {
+            $: {
+              xmlns: "http://www.imsglobal.org/xsd/imslticc_v1p0",
+            },
+            "blti:title": "LTI Toolkit",
+            // Missing other required elements
+          },
+        }),
+      });
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test with XML missing required fields
+      try {
+        await lti10Utils.validateConfigXML(validConfigXML);
+        throw new Error("Expected validateConfigXML to throw an error for XML missing required fields");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Invalid LTI Configuration: Missing Description");
+      }
+
+      // Restore the original xml2js behavior for other tests
+      xml2js.Parser.restore();
+    });
+
+    it("should throw an error if the XML is missing icon", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Stub xmljs library to return a parsed XML object that is missing required fields
+      sinon.stub(xml2js, "Parser").returns({
+        parseStringPromise: sinon.stub().resolves({
+          cartridge_basiclti_link: {
+            $: {
+              xmlns: "http://www.imsglobal.org/xsd/imslticc_v1p0",
+            },
+            "blti:title": "LTI Toolkit",
+            "blti:description": "LTI Toolkit Description",
+            // Missing other required elements
+          },
+        }),
+      });
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test with XML missing required fields
+      try {
+        await lti10Utils.validateConfigXML(validConfigXML);
+        throw new Error("Expected validateConfigXML to throw an error for XML missing required fields");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Invalid LTI Configuration: Missing Icon");
+      }
+
+      // Restore the original xml2js behavior for other tests
+      xml2js.Parser.restore();
+    });
+
+    it("should throw an error if the XML is missing launch url", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Stub xmljs library to return a parsed XML object that is missing required fields
+      sinon.stub(xml2js, "Parser").returns({
+        parseStringPromise: sinon.stub().resolves({
+          cartridge_basiclti_link: {
+            $: {
+              xmlns: "http://www.imsglobal.org/xsd/imslticc_v1p0",
+            },
+            "blti:title": "LTI Toolkit",
+            "blti:description": "LTI Toolkit Description",
+            "blti:icon": "LTI Toolkit Icon",
+            // Missing other required elements
+          },
+        }),
+      });
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test with XML missing required fields
+      try {
+        await lti10Utils.validateConfigXML(validConfigXML);
+        throw new Error("Expected validateConfigXML to throw an error for XML missing required fields");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Invalid LTI Configuration: Missing Launch URL");
+      }
+
+      // Restore the original xml2js behavior for other tests
+      xml2js.Parser.restore();
+    });
+
+    it("should handle non-arrays of custom properties and extensions", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Stub xmljs library to return a parsed XML object with arrays for custom properties and extensions
+      sinon.stub(xml2js, "Parser").returns({
+        parseStringPromise: sinon.stub().resolves({
+          cartridge_basiclti_link: {
+            $: {
+              xmlns: "http://www.imsglobal.org/xsd/imslticc_v1p0",
+            },
+            "blti:title": "LTI Toolkit",
+            "blti:description": "LTI Toolkit Description",
+            "blti:icon": "LTI Toolkit Icon",
+            "blti:launch_url": "https://example.com/launch",
+            "blti:custom": {
+              "lticm:property": {
+                $: { name: "custom_name1" },
+                _: "custom_value1",
+              },
+            },
+            "blti:extensions": {
+              $: { platform: "canvas.instructure.com" },
+              "lticm:property": {
+                $: { name: "tool_id" },
+                _: "lti_toolkit",
+              },
+            },
+          },
+        }),
+      });
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test
+      const result = await lti10Utils.validateConfigXML(validConfigXML);
+
+      // Assert that the config XML is valid and correctly parsed with arrays
+      expect(result).to.be.a("object");
+      expect(result).to.deep.equal({
+        title: "LTI Toolkit",
+        description: "LTI Toolkit Description",
+        icon: "LTI Toolkit Icon",
+        launch_url: "https://example.com/launch",
+        custom: {
+          custom_name1: "custom_value1",
+        },
+        extensions: {
+          tool_id: "lti_toolkit",
+        },
+      });
+
+      // Restore the original xml2js behavior for other tests
+      xml2js.Parser.restore();
+    });
+
+    it("should read XML from given URL", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Stub ky to return the validConfigXML when the URL is requested
+      sinon.stub(ky, "get").resolves({
+        status: 200,
+        text: async () => validConfigXML,
+      });
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test with a URL instead of XML
+      const result = await lti10Utils.validateConfigXML(null, "https://example.com/config.xml");
+
+      // Assert that the config XML is valid and correctly parsed
+      expect(ky.get.calledWith("https://example.com/config.xml")).to.be.true;
+      expect(result).to.be.a("object");
+      expect(result).to.deep.equal({
+        title: "LTI Toolkit",
+        description: "LTI Toolkit for LTI Tool Providers",
+        icon: "https://placehold.co/64x64.png",
+        launch_url: "https://ltidemo.home.russfeld.me/lti/provider/launch10",
+        custom: {
+          custom_name: "custom_value",
+          custom_name2: "custom_value2",
+        },
+        extensions: {
+          tool_id: "lti_toolkit",
+          privacy_level: "public",
+          domain: "ltidemo.home.russfeld.me",
+        },
+      });
+
+      // Restore the original ky behavior for other tests
+      ky.get.restore();
+    });
+
+    it("should throw an error if fetching XML from URL fails", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Stub ky to simulate a failed fetch request
+      sinon.stub(ky, "get").rejects(new Error("Network Error"));
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test with a URL that fails to fetch
+      try {
+        await lti10Utils.validateConfigXML(null, "https://example.com/config.xml");
+        throw new Error("Expected validateConfigXML to throw an error when fetching XML from URL fails");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Failed to fetch XML from URL: Network Error");
+      }
+
+      // Restore the original ky behavior for other tests
+      ky.get.restore();
+    });
+
+    it("should throw an error if the response is not 200", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        silly: sinon.stub(),
+      };
+
+      // Stub ky to return a non-200 status when the URL is requested
+      sinon.stub(ky, "get").resolves({
+        status: 404,
+        statusText: "Not Found",
+        text: async () => "Not Found",
+      });
+
+      // Instantiate library
+      const lti10Utils = new LTI10Utils(models, logger, domain_name);
+
+      // Call the function to test with a URL that returns a non-200 status
+      try {
+        await lti10Utils.validateConfigXML(null, "https://example.com/config.xml");
+        throw new Error("Expected validateConfigXML to throw an error when response status is not 200");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Failed to fetch XML from URL: HTTP 404 - Not Found");
+      }
+
+      // Restore the original ky behavior for other tests
+      ky.get.restore();
     });
   });
 });

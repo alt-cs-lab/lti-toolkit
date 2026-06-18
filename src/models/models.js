@@ -15,9 +15,12 @@ import {
   OauthNonceSchema,
   ProviderSchema,
   ProviderKeySchema,
+  ProviderLoginSchema,
+  ProviderRegistrationSchema,
+  ProviderDeepLinkSchema,
 } from "./schemas.js";
 
-export default function configureModels(database, logger) {
+export default function configureModels(database, logger, encryptionKey) {
   // Create OauthNonce Model
   const OauthNonce = database.define(
     // Model Name
@@ -47,7 +50,7 @@ export default function configureModels(database, logger) {
     // Model Name
     "ConsumerKey",
     // Schema
-    ConsumerKeySchema,
+    ConsumerKeySchema(encryptionKey),
     // Other options
     {
       tableName: "lti_consumer_keys",
@@ -84,7 +87,7 @@ export default function configureModels(database, logger) {
     // Model Name
     "ProviderKey",
     // Schema
-    ProviderKeySchema,
+    ProviderKeySchema(encryptionKey),
     // Other options
     {
       tableName: "lti_provider_keys",
@@ -93,10 +96,54 @@ export default function configureModels(database, logger) {
     },
   );
 
+  // Create Provider Login Model
+  const ProviderLogin = database.define(
+    // Model Name
+    "ProviderLogin",
+    // Schema
+    ProviderLoginSchema,
+    // Other options
+    {
+      tableName: "lti_provider_logins",
+    },
+  );
+
+  // Create Provider Registration Model
+  const ProviderRegistration = database.define(
+    // Model Name
+    "ProviderRegistration",
+    // Schema
+    ProviderRegistrationSchema,
+    // Other options
+    {
+      tableName: "lti_provider_registrations",
+    },
+  );
+
+  // Create Provider Deep Link Model
+  const ProviderDeepLink = database.define(
+    // Model Name
+    "ProviderDeepLink",
+    // Schema
+    ProviderDeepLinkSchema,
+    // Other options
+    {
+      tableName: "lti_provider_deep_links",
+    },
+  );
+
   Consumer.beforeValidate((consumer) => {
     // Generate a unique key for the consumer
     if (consumer.isNewRecord && !consumer.key) {
       consumer.setDataValue("key", nanoid());
+    }
+  });
+
+  Provider.beforeValidate((provider) => {
+    // Generate a unique client_id and deployment_id for the provider
+    if (provider.isNewRecord) {
+      provider.setDataValue("client_id", nanoid());
+      provider.setDataValue("deployment_id", nanoid());
     }
   });
 
@@ -115,6 +162,21 @@ export default function configureModels(database, logger) {
         where: { createdAt: { [Op.lte]: new Date(Date.now() - expireAfter) } },
       }).then((count) => {
         logger.lti("Removed " + count + " Expired Consumer Logins");
+      });
+      ProviderLogin.destroy({
+        where: { createdAt: { [Op.lte]: new Date(Date.now() - expireAfter) } },
+      }).then((count) => {
+        logger.lti("Removed " + count + " Expired Provider Logins");
+      });
+      ProviderRegistration.destroy({
+        where: { createdAt: { [Op.lte]: new Date(Date.now() - expireAfter) } },
+      }).then((count) => {
+        logger.lti("Removed " + count + " Expired Provider Registrations");
+      });
+      ProviderDeepLink.destroy({
+        where: { createdAt: { [Op.lte]: new Date(Date.now() - expireAfter) } },
+      }).then((count) => {
+        logger.lti("Removed " + count + " Expired Provider Deep Links");
       });
       /* c8 ignore next 4 */
     } catch (error) {
@@ -138,6 +200,9 @@ export default function configureModels(database, logger) {
       ConsumerLogin,
       Provider,
       ProviderKey,
+      ProviderLogin,
+      ProviderRegistration,
+      ProviderDeepLink,
     },
     initializeExpiration,
   };

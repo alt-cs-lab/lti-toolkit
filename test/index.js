@@ -7,15 +7,21 @@
 import { should } from "chai";
 import sinon from "sinon";
 import { Sequelize } from "sequelize";
+import { newDb } from "pg-mem";
 
 // Modify Object.prototype for BDD style assertions
 should();
 
 // Import Library
 import LTIToolkit from "../index.js";
+
+// 64-character hex string (32 bytes) for AES-256-GCM, used across these tests
+const TEST_ENCRYPTION_KEY = "0123456789abcdef".repeat(4);
+
 const lti = await LTIToolkit({
   domain_name: "http://localhost:3000",
   admin_email: "admin@localhost.local",
+  encryption_key: TEST_ENCRYPTION_KEY,
   provider: {
     handleLaunch: async function () {},
   },
@@ -99,6 +105,7 @@ describe("Index", () => {
     const validConfig = {
       domain_name: "http://localhost:3000",
       admin_email: "admin@localhost.local",
+      encryption_key: TEST_ENCRYPTION_KEY,
       provider: {
         handleLaunch: async function () {},
       },
@@ -114,10 +121,34 @@ describe("Index", () => {
     shouldThrowConfigurationErrors(validConfig, "domain_name", "A valid domain name is required in configuration");
     shouldThrowConfigurationErrors(validConfig, "admin_email", "A valid admin email is required in configuration");
 
+    // Encryption Key
+    shouldThrowConfigurationErrors(
+      validConfig,
+      "encryption_key",
+      "A valid encryption key is required in configuration",
+      "encryption_key missing",
+      undefined,
+    );
+    shouldThrowConfigurationErrors(
+      validConfig,
+      "encryption_key",
+      "encryption_key must be a 64-character hex string",
+      "encryption_key wrong length",
+      "abc123",
+    );
+    shouldThrowConfigurationErrors(
+      validConfig,
+      "encryption_key",
+      "encryption_key must be a 64-character hex string",
+      "encryption_key non-hex",
+      "z".repeat(64),
+    );
+
     // Provider & Consumer Configs Exist
     const noProviderNoConsumerConfig = {
       domain_name: "http://localhost:3000",
       admin_email: "admin@localhost.local",
+      encryption_key: TEST_ENCRYPTION_KEY,
     };
     shouldThrowConfigurationErrors(
       noProviderNoConsumerConfig,
@@ -136,14 +167,6 @@ describe("Index", () => {
       validConfig,
       "provider.handleLaunch",
       "provider.handleLaunch function is required in Provider configuration",
-    );
-    shouldThrowConfigurationErrors(validConfig, "provider.key", "provider.key must be a string", "provider.key", 123);
-    shouldThrowConfigurationErrors(
-      validConfig,
-      "provider.secret",
-      "provider.secret must be a string",
-      "provider.secret",
-      123,
     );
     shouldThrowConfigurationErrors(
       validConfig,
@@ -205,6 +228,7 @@ describe("Index", () => {
         product_name: {},
         product_version: {},
         route_prefix: {},
+        handleDeeplink: "not a function",
       },
     };
     shouldSuccessfullyInitializeWithConfig(badConsumerConfig, "with non-function optional consumer fields");
@@ -216,6 +240,7 @@ describe("Index", () => {
         const validConfig = {
           domain_name: "http://localhost:3000",
           admin_email: "admin@localhost.local",
+          encryption_key: TEST_ENCRYPTION_KEY,
           provider: {
             handleLaunch: async function () {},
           },
@@ -230,58 +255,11 @@ describe("Index", () => {
         instance.routers.should.have.property("provider");
         instance.routers.provider.should.be.a("function");
         instance.controllers.should.be.an("object");
-        instance.controllers.should.have.property("lti");
-        instance.controllers.lti.should.be.an("object");
-        instance.controllers.lti.should.have.property("provider");
-        instance.controllers.lti.provider.should.be.an("object");
-        instance.controllers.should.have.property("consumer");
-        instance.controllers.consumer.should.be.an("object");
+        instance.controllers.should.have.property("provider");
+        instance.controllers.provider.should.be.an("object");
+        instance.controllers.should.have.property("consumerRegistry");
+        instance.controllers.consumerRegistry.should.be.an("object");
         instance.models.should.have.property("Consumer");
-      } catch (error) {
-        throw new Error("Initialization failed with valid configuration: " + error.message, { cause: error });
-      }
-    });
-
-    it("should initialize with valid provider configuration and single consumer", async () => {
-      try {
-        const validConfig = {
-          domain_name: "http://localhost:3000",
-          admin_email: "admin@localhost.local",
-          provider: {
-            handleLaunch: async function () {},
-            key: "test-provider-key",
-            secret: "test-provider-secret",
-          },
-          test: true, // Indicate that we are in a test environment
-        };
-        const instance = await LTIToolkit(validConfig);
-        instance.should.exist;
-
-        // Check types of return object
-        instance.should.have.property("routers");
-        instance.should.have.property("controllers");
-        instance.routers.should.be.an("object");
-        instance.routers.should.have.property("provider");
-        instance.routers.provider.should.be.a("function");
-        instance.controllers.should.be.an("object");
-        instance.controllers.should.have.property("consumer");
-        instance.controllers.consumer.should.be.an("object");
-        instance.controllers.should.have.property("lti");
-        instance.controllers.lti.should.be.an("object");
-        instance.controllers.lti.should.have.property("provider");
-        instance.controllers.lti.provider.should.be.an("object");
-        instance.controllers.should.have.property("consumer");
-        instance.controllers.consumer.should.be.an("object");
-        instance.models.should.have.property("Consumer");
-
-        // Check that consumer exists with correct key and secret
-        const consumer = await instance.controllers.consumer.getByKey("test-provider-key");
-        consumer.should.exist;
-        consumer.key.should.equal("test-provider-key");
-        const key = await instance.controllers.consumer.getSecret(consumer.id);
-        key.should.exist;
-        key.key.should.equal("test-provider-key");
-        key.secret.should.equal("test-provider-secret");
       } catch (error) {
         throw new Error("Initialization failed with valid configuration: " + error.message, { cause: error });
       }
@@ -292,6 +270,7 @@ describe("Index", () => {
         const validConfig = {
           domain_name: "http://localhost:3000",
           admin_email: "admin@localhost.local",
+          encryption_key: TEST_ENCRYPTION_KEY,
           consumer: {
             postProviderGrade: async function () {},
             deployment_name: "LTI Toolkit Dev",
@@ -308,14 +287,10 @@ describe("Index", () => {
         instance.routers.should.have.property("consumer");
         instance.routers.consumer.should.be.a("function");
         instance.controllers.should.be.an("object");
-        instance.controllers.should.have.property("provider");
-        instance.controllers.provider.should.be.an("object");
-        instance.controllers.should.have.property("lti");
-        instance.controllers.lti.should.be.an("object");
-        instance.controllers.lti.should.have.property("consumer");
-        instance.controllers.lti.consumer.should.be.an("object");
-        instance.controllers.should.have.property("provider");
-        instance.controllers.provider.should.be.an("object");
+        instance.controllers.should.have.property("providerRegistry");
+        instance.controllers.providerRegistry.should.be.an("object");
+        instance.controllers.should.have.property("consumer");
+        instance.controllers.consumer.should.be.an("object");
         instance.models.should.have.property("Provider");
       } catch (error) {
         throw new Error("Initialization failed with valid configuration: " + error.message, { cause: error });
@@ -348,6 +323,7 @@ describe("Index", () => {
     const validConfig = {
       domain_name: "http://localhost:3000",
       admin_email: "admin@localhost.local",
+      encryption_key: TEST_ENCRYPTION_KEY,
       provider: {
         handleLaunch: async function () {},
       },
@@ -387,6 +363,7 @@ describe("Index", () => {
         const instance = await LTIToolkit({
           domain_name: "http://localhost:3000",
           admin_email: "admin@localhost.local",
+          encryption_key: TEST_ENCRYPTION_KEY,
           test: true,
           provider: {
             handleLaunch: async function () {},
@@ -405,6 +382,7 @@ describe("Index", () => {
         const instance = await LTIToolkit({
           domain_name: "http://localhost:3000",
           admin_email: "admin@localhost.local",
+          encryption_key: TEST_ENCRYPTION_KEY,
           db_storage: ":memory:",
           provider: {
             handleLaunch: async function () {},
@@ -423,6 +401,7 @@ describe("Index", () => {
         await LTIToolkit({
           domain_name: "http://localhost:3000",
           admin_email: "admin@localhost.local",
+          encryption_key: TEST_ENCRYPTION_KEY,
           database: "invalid_database_config",
           provider: {
             handleLaunch: async function () {},
@@ -440,6 +419,7 @@ describe("Index", () => {
         const instance = await LTIToolkit({
           domain_name: "http://localhost:3000",
           admin_email: "admin@localhost.local",
+          encryption_key: TEST_ENCRYPTION_KEY,
           database: sequelizeInstance,
           provider: {
             handleLaunch: async function () {},
@@ -449,6 +429,46 @@ describe("Index", () => {
       } catch (error) {
         throw new Error("Failed to initialize with custom Sequelize instance: " + error.message, { cause: error });
       }
+    });
+
+    it("should support a non-SQLite dialect (Postgres) via a custom Sequelize instance", async () => {
+      // pg-mem provides a pure-JS, Postgres-compatible SQL engine, letting this test exercise the
+      // library's migrations/schemas against real Postgres SQL semantics without a live server.
+      const memDb = newDb();
+      const { Pool, Client } = memDb.adapters.createPg();
+      const sequelizeInstance = new Sequelize({
+        dialect: "postgres",
+        dialectModule: { Pool, Client },
+        logging: false,
+      });
+
+      const instance = await LTIToolkit({
+        domain_name: "http://localhost:3000",
+        admin_email: "admin@localhost.local",
+        encryption_key: TEST_ENCRYPTION_KEY,
+        database: sequelizeInstance,
+        provider: {
+          handleLaunch: async function () {},
+        },
+      });
+      instance.should.exist;
+
+      // Round-trip a Consumer + auto-generated key through Postgres-flavored SQL, including
+      // the encrypted secret/private fields that previously overflowed VARCHAR(255).
+      const consumer = await instance.controllers.consumerRegistry.createConsumer({
+        name: "Postgres Test Consumer",
+        key: "postgres_test_key",
+      });
+      consumer.should.exist;
+
+      // Models defined internally by the library (e.g. ConsumerKey) are still reachable on the
+      // shared Sequelize instance, demonstrating the deeper cross-model integration pattern.
+      const storedKey = await sequelizeInstance.models.ConsumerKey.findOne({
+        where: { key: "postgres_test_key" },
+        raw: true,
+      });
+      storedKey.private.should.be.a("string");
+      storedKey.private.length.should.be.greaterThan(255);
     });
   });
 });

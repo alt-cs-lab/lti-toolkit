@@ -7,6 +7,9 @@
 // Import libraries
 import { nanoid } from "nanoid";
 import crypto from "crypto";
+import { promisify } from "util";
+
+const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
 class ConsumerController {
   // Private Attributes
@@ -57,6 +60,21 @@ class ConsumerController {
     const consumer = await this.#ConsumerModel.findOne({
       where: {
         key: key,
+      },
+    });
+    return consumer;
+  }
+
+  /**
+   * Get a consumer by name
+   *
+   * @param {string} name the name of the consumer
+   * @return {Consumer} the consumer with the given name
+   */
+  async getByName(name) {
+    const consumer = await this.#ConsumerModel.findOne({
+      where: {
+        name: name,
       },
     });
     return consumer;
@@ -239,20 +257,11 @@ class ConsumerController {
    * @return {Object} the generated keys
    */
   async #generateKeys() {
-    let publicKey;
-    let privateKey;
-    ({ publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+    return await generateKeyPairAsync("rsa", {
       modulusLength: 4096,
-      publicKeyEncoding: {
-        type: "spki",
-        format: "pem",
-      },
-      privateKeyEncoding: {
-        type: "pkcs1",
-        format: "pem",
-      },
-    }));
-    return { publicKey, privateKey };
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs1", format: "pem" },
+    });
   }
 }
 
