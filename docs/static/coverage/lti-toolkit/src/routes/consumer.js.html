@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>371/371</span>
+                <span class='fraction'>363/363</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>371/371</span>
+                <span class='fraction'>363/363</span>
             </div>
         
             
@@ -426,15 +426,7 @@
 <a name='L361'></a><a href='#L361'>361</a>
 <a name='L362'></a><a href='#L362'>362</a>
 <a name='L363'></a><a href='#L363'>363</a>
-<a name='L364'></a><a href='#L364'>364</a>
-<a name='L365'></a><a href='#L365'>365</a>
-<a name='L366'></a><a href='#L366'>366</a>
-<a name='L367'></a><a href='#L367'>367</a>
-<a name='L368'></a><a href='#L368'>368</a>
-<a name='L369'></a><a href='#L369'>369</a>
-<a name='L370'></a><a href='#L370'>370</a>
-<a name='L371'></a><a href='#L371'>371</a>
-<a name='L372'></a><a href='#L372'>372</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L364'></a><a href='#L364'>364</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -628,9 +620,6 @@
 <span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -658,7 +647,6 @@
 <span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -670,9 +658,6 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">27x</span>
@@ -700,7 +685,6 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">27x</span>
@@ -998,23 +982,19 @@ export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, 
    *    description: LTI 1.3 AGS Line Items collection for a context. Accepts optional ?resource_link_id= filter.
    *    tags: [lti-consumer]
    */
-  router.get(
-    "/ags/:context_key/line_items",
-    lti13TokenMiddleware,
-    async function (req, res, next) {
-      logger.lti("LTI 1.3 AGS Get Line Items Request Received");
-      logger.silly(JSON.stringify(req.params, null, 2));
-      logger.silly(JSON.stringify(req.query, null, 2));
-      try {
-        const result = await LTILMSController.agsGetLineItemsHandler(req);
-        res.setHeader("Content-Type", "application/vnd.ims.lis.v2.lineitemcontainer+json");
-        res.status(200).json(result);
-      } catch (err) {
-        logger.lti(err);
-        return res.status(500).send("Error processing AGS line items request");
-      }
-    },
-  );
+  router.get("/ags/:context_key/line_items", lti13TokenMiddleware, async function (req, res, next) {
+    logger.lti("LTI 1.3 AGS Get Line Items Request Received");
+    logger.silly(JSON.stringify(req.params, null, 2));
+    logger.silly(JSON.stringify(req.query, null, 2));
+    try {
+      const result = await LTILMSController.agsGetLineItemsHandler(req);
+      res.setHeader("Content-Type", "application/vnd.ims.lis.v2.lineitemcontainer+json");
+      res.status(200).json(result);
+    } catch (err) {
+      logger.lti(err);
+      return res.status(500).send("Error processing AGS line items request");
+    }
+  });
 &nbsp;
   /**
    * LTI 1.3 AGS Get Results
@@ -1054,25 +1034,21 @@ export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, 
    *    description: LTI 1.3 AGS Get a specific line item
    *    tags: [lti-consumer]
    */
-  router.get(
-    "/ags/:context_key/:resource_key/:gradebook_key",
-    lti13TokenMiddleware,
-    async function (req, res, next) {
-      logger.lti("LTI 1.3 AGS Get Line Item Request Received");
-      logger.silly(JSON.stringify(req.params, null, 2));
-      try {
-        const result = await LTILMSController.agsGetLineItemHandler(req);
-        if (!result) {
-          return res.status(404).send("Line item not found");
-        }
-        res.setHeader("Content-Type", "application/vnd.ims.lis.v2.lineitem+json");
-        res.status(200).json(result);
-      } catch (err) {
-        logger.lti(err);
-        return res.status(500).send("Error processing AGS line item request");
+  router.get("/ags/:context_key/:resource_key/:gradebook_key", lti13TokenMiddleware, async function (req, res, next) {
+    logger.lti("LTI 1.3 AGS Get Line Item Request Received");
+    logger.silly(JSON.stringify(req.params, null, 2));
+    try {
+      const result = await LTILMSController.agsGetLineItemHandler(req);
+      if (!result) {
+        return res.status(404).send("Line item not found");
       }
-    },
-  );
+      res.setHeader("Content-Type", "application/vnd.ims.lis.v2.lineitem+json");
+      res.status(200).json(result);
+    } catch (err) {
+      logger.lti(err);
+      return res.status(500).send("Error processing AGS line item request");
+    }
+  });
 &nbsp;
   /**
    * LTI 1.3 AGS Grade Passback
@@ -1183,7 +1159,7 @@ export default function setupConsumerRoutes(LTILMSController, ProviderKeyModel, 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-18T18:06:12.958Z
+                at 2026-08-06T13:55:39.580Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

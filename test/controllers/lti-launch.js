@@ -745,9 +745,7 @@ describe("/controllers/lti-launch.js", () => {
 
   it("should fail if no handleLaunch function is defined on the provider for LTI 1.3 messages", async () => {
     // Create mock dependencies
-    const provider = {
-      /* No handleLaunch function */
-    };
+    const provider = {/* No handleLaunch function */};
 
     const models = { ConsumerKey: { findOne: sinon.stub(), findAll: sinon.stub() } };
     const consumer_controller = { getByKey: sinon.stub().resolves(consumerProduct13Stub) };
@@ -771,9 +769,7 @@ describe("/controllers/lti-launch.js", () => {
 
   it("should fail if no handleDeeplink function is defined on the provider for LTI 1.3 deep linking messages", async () => {
     // Create mock dependencies
-    const provider = {
-      /* No handleDeeplink function */
-    };
+    const provider = {/* No handleDeeplink function */};
 
     const models = { ConsumerKey: { findOne: sinon.stub(), findAll: sinon.stub() } };
     const consumer_controller = { getByKey: sinon.stub().resolves(consumerProduct13DLStub) };
