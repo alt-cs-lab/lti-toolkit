@@ -222,6 +222,168 @@
     
 
     
+    <h4 class="name" id=""><span class="type-signature"></span><span class="signature">(url)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Force a URL to use the https:// scheme. LTI 1.3 mandates TLS for all
+endpoints, but some platforms report AGS URLs with an http:// scheme
+(e.g. due to misconfigured reverse proxies), which causes the
+Authorization header to be dropped on the resulting redirect.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the URL to normalize</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line58">line 58</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    the URL with an https:// scheme
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="authRequest"><span class="type-signature">(async) </span>authRequest<span class="signature">(req)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
@@ -323,7 +485,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line56">line 56</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line69">line 69</a>
     </li></ul></dd>
     
 
@@ -534,7 +696,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line723">line 723</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line737">line 737</a>
     </li></ul></dd>
     
 
@@ -722,7 +884,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line628">line 628</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line642">line 642</a>
     </li></ul></dd>
     
 
@@ -933,7 +1095,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line365">line 365</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line378">line 378</a>
     </li></ul></dd>
     
 
@@ -1144,7 +1306,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1051">line 1051</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1065">line 1065</a>
     </li></ul></dd>
     
 
@@ -1397,7 +1559,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1084">line 1084</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1099">line 1099</a>
     </li></ul></dd>
     
 
@@ -1650,7 +1812,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1122">line 1122</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1138">line 1138</a>
     </li></ul></dd>
     
 
@@ -1861,7 +2023,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line243">line 243</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line256">line 256</a>
     </li></ul></dd>
     
 
@@ -2023,7 +2185,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line312">line 312</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line325">line 325</a>
     </li></ul></dd>
     
 
@@ -2211,7 +2373,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1158">line 1158</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1175">line 1175</a>
     </li></ul></dd>
     
 
@@ -2399,7 +2561,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line155">line 155</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line168">line 168</a>
     </li></ul></dd>
     
 
@@ -2536,7 +2698,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line467">line 467</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line480">line 480</a>
     </li></ul></dd>
     
 
@@ -2793,7 +2955,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line526">line 526</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line540">line 540</a>
     </li></ul></dd>
     
 
@@ -3073,7 +3235,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line392">line 392</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line405">line 405</a>
     </li></ul></dd>
     
 
@@ -3261,7 +3423,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line963">line 963</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line977">line 977</a>
     </li></ul></dd>
     
 
@@ -3449,7 +3611,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1013">line 1013</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1027">line 1027</a>
     </li></ul></dd>
     
 
@@ -3615,7 +3777,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1033">line 1033</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1047">line 1047</a>
     </li></ul></dd>
     
 
@@ -3781,7 +3943,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line559">line 559</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line573">line 573</a>
     </li></ul></dd>
     
 
@@ -3969,7 +4131,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line852">line 852</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line866">line 866</a>
     </li></ul></dd>
     
 
@@ -4157,7 +4319,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line793">line 793</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line807">line 807</a>
     </li></ul></dd>
     
 
@@ -4260,7 +4422,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Aug 06 2026 14:00:40 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Aug 06 2026 15:50:47 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
