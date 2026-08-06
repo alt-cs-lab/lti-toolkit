@@ -1,4 +1,4 @@
-json"---
+---
 title: "LTI Deeplink"
 pre: "6. "
 weight: 60
@@ -79,6 +79,8 @@ weight: 60
   key: "7zPyT2Y3FqkkEDyRRgv5o"
 }
 ```
+
+Note the `lineitems` claim above uses `http://` rather than `https://` — some platforms (observed on self-hosted Canvas) are inconsistent about the scheme they use across claim fields. The toolkit automatically normalizes these to `https://` before making AGS requests, so this quirk shouldn't need any handling in your application code.
 
 ## Deeplink Data Object
 

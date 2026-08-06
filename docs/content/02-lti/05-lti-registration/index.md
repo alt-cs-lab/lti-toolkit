@@ -410,7 +410,7 @@ The tool then sends a POST request to the LMS using the `registration_endpoint` 
   "token_endpoint_auth_method": "private_key_jwt",
   "jwks_uri": "https://example.com/lti/provider/jwks",
   "contacts": ["admin@example.com"],   
-  "scope": "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+  "scope": "https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
   "https://purl.imsglobal.org/spec/lti-tool-configuration": {
     "domain": "ltidemo.home.russfeld.me",
     "description": "LTI Demo Tool Description",
@@ -447,7 +447,7 @@ If successful, the LMS will return a JSON response containing information about 
   "jwks_uri": "https://ltidemo.home.russfeld.me/lti/provider/jwks",
   "logo_uri": "https://placehold.co/64x64.png",
   "token_endpoint_auth_method": "private_key_jwt",
-  "scope": "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+  "scope": "https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
   "https://purl.imsglobal.org/spec/lti-tool-configuration": {
     "domain": "ltidemo.home.russfeld.me",
     "messages": [],

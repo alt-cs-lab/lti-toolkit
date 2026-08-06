@@ -176,6 +176,8 @@ Sent to the `handleLaunch` endpoint:
 }
 ```
 
+Note the `outcome_ags` claim above reports `lineitem` as `https://` but `lineitems` as `http://` for the same launch — some platforms (observed on self-hosted Canvas) are inconsistent about the scheme they use across claim fields. The toolkit automatically normalizes these to `https://` before making AGS requests, so this quirk shouldn't need any handling in your application code.
+
 Stored in the database:
 
 ```js

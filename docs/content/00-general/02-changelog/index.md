@@ -8,6 +8,16 @@ All notable changes to this project will be documented here. This project follow
 
 ---
 
+## [1.1.2] — 2026-08-06
+
+### Changed
+
+- **Dynamic Registration scope request** — the tool now requests `lineitem.readonly` and `result.readonly` AGS scopes in addition to `score` during LTI 1.3 Dynamic Registration, so Tool Providers can read line items and results from Canvas without a separate manual scope grant
+
+### Fixed
+
+- **AGS request URL normalization** — `postGrade()`, `getLineItem()`, `getLineItems()`, and `getResults()` now force `https://` on platform-supplied AGS endpoint URLs before requesting. This works around platforms (observed on self-hosted Canvas) that report some AGS claim URLs with an `http://` scheme, which previously caused the `Authorization` header to be dropped on the resulting redirect and requests to fail with 401 errors
+
 ## [1.1.0] — 2026-06-18
 
 ### Added

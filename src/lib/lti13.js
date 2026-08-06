@@ -47,6 +47,19 @@ class LTI13Utils {
   }
 
   /**
+   * Force a URL to use the https:// scheme. LTI 1.3 mandates TLS for all
+   * endpoints, but some platforms report AGS URLs with an http:// scheme
+   * (e.g. due to misconfigured reverse proxies), which causes the
+   * Authorization header to be dropped on the resulting redirect.
+   *
+   * @param {string} url the URL to normalize
+   * @return {string} the URL with an https:// scheme
+   */
+  #ensureHttps(url) {
+    return url.replace(/^http:\/\//, "https://");
+  }
+
+  /**
    * Validate an LTI 1.3 Login Request
    *
    * @param {Object} req - Express request object
@@ -472,6 +485,7 @@ class LTI13Utils {
     activityProgress = "Submitted",
     gradingProgress = "FullyGraded",
   ) {
+    grade_url = this.#ensureHttps(grade_url);
     const validActivityProgress = ["Initialized", "Started", "InProgress", "Submitted", "Completed"];
     const validGradingProgress = ["FullyGraded", "Pending", "PendingManual", "Failed", "NotReady"];
     if (!validActivityProgress.includes(activityProgress)) {
@@ -1049,6 +1063,7 @@ class LTI13Utils {
    * @throws {Error} if the request fails
    */
   async getAGSLineItem(consumer_key, lineitem_url) {
+    lineitem_url = this.#ensureHttps(lineitem_url);
     const token = await this.getAccessToken(
       consumer_key,
       "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
@@ -1082,6 +1097,7 @@ class LTI13Utils {
    * @throws {Error} if the request fails
    */
   async getAGSLineItems(consumer_key, lineitems_url, resource_link_id = null) {
+    lineitems_url = this.#ensureHttps(lineitems_url);
     const token = await this.getAccessToken(
       consumer_key,
       "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
@@ -1120,6 +1136,7 @@ class LTI13Utils {
    * @throws {Error} if the request fails
    */
   async getAGSResults(consumer_key, results_url, user_id = null) {
+    results_url = this.#ensureHttps(results_url);
     const token = await this.getAccessToken(
       consumer_key,
       "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",

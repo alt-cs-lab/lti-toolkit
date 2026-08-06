@@ -150,7 +150,8 @@ describe("/controllers/lti-register.js", () => {
     token_endpoint_auth_method: "private_key_jwt",
     jwks_uri: "http://localhost:3000/lti/provider/jwks",
     contacts: [admin_email],
-    scope: "https://purl.imsglobal.org/spec/lti-ags/scope/score ",
+    scope:
+      "https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
     "https://purl.imsglobal.org/spec/lti-tool-configuration": {
       domain: "localhost:3000",
       description: "A test LTI tool for unit testing",

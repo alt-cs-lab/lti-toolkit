@@ -1915,7 +1915,7 @@ describe("/lib/lti13.js", function () {
           "https://purl.imsglobal.org/spec/lti-ags/scope/score",
         ),
       ).to.be.true;
-      expect(ky.post.firstCall.args[0]).to.equal("http://localhost:3000/lti/ags/endpoint/scores");
+      expect(ky.post.firstCall.args[0]).to.equal("https://localhost:3000/lti/ags/endpoint/scores");
       expect(ky.post.firstCall.args[1]).to.shallowDeepEqual({
         json: {
           scoreGiven: 0.95,
@@ -3579,7 +3579,7 @@ describe("/lib/lti13.js", function () {
           "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
         ),
       ).to.be.true;
-      expect(ky.get.firstCall.args[0]).to.equal("http://example.com/lineitems/1");
+      expect(ky.get.firstCall.args[0]).to.equal("https://example.com/lineitems/1");
       expect(ky.get.firstCall.args[1]).to.shallowDeepEqual({
         headers: {
           Authorization: "Bearer thisisatoken",
@@ -3640,7 +3640,7 @@ describe("/lib/lti13.js", function () {
           "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
         ),
       ).to.be.true;
-      expect(ky.get.firstCall.args[0]).to.equal("http://example.com/lineitems");
+      expect(ky.get.firstCall.args[0]).to.equal("https://example.com/lineitems");
       expect(ky.get.firstCall.args[1]).to.shallowDeepEqual({
         headers: {
           Authorization: "Bearer thisisatoken",
@@ -3666,7 +3666,7 @@ describe("/lib/lti13.js", function () {
 
       await lti13Utils.getAGSLineItems("thisisaconsumerkey", "http://example.com/lineitems", "resource1");
 
-      expect(ky.get.firstCall.args[0]).to.equal("http://example.com/lineitems?resource_link_id=resource1");
+      expect(ky.get.firstCall.args[0]).to.equal("https://example.com/lineitems?resource_link_id=resource1");
 
       lti13Utils.getAccessToken.restore();
       ky.get.restore();
@@ -3727,7 +3727,7 @@ describe("/lib/lti13.js", function () {
           "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
         ),
       ).to.be.true;
-      expect(ky.get.firstCall.args[0]).to.equal("http://example.com/results");
+      expect(ky.get.firstCall.args[0]).to.equal("https://example.com/results");
       expect(ky.get.firstCall.args[1]).to.shallowDeepEqual({
         headers: {
           Authorization: "Bearer thisisatoken",
@@ -3753,7 +3753,7 @@ describe("/lib/lti13.js", function () {
 
       await lti13Utils.getAGSResults("thisisaconsumerkey", "http://example.com/results", "user1");
 
-      expect(ky.get.firstCall.args[0]).to.equal("http://example.com/results?user_id=user1");
+      expect(ky.get.firstCall.args[0]).to.equal("https://example.com/results?user_id=user1");
 
       lti13Utils.getAccessToken.restore();
       ky.get.restore();
