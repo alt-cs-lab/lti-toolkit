@@ -448,6 +448,48 @@ describe("/controllers/lti-register.js", () => {
     expect(registrationToken).to.equal("abcd1234");
   });
 
+  it("should request both the lineitem.readonly and lineitem scopes when line item management is enabled", async () => {
+    // Update registration config with line item management enabled
+    const updatedConfig = { ...registrationConfig, enableLineItemManagement: true };
+
+    const updatedExpectedConfig = structuredClone(expectedConfig);
+    updatedExpectedConfig.scope =
+      "https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly https://purl.imsglobal.org/spec/lti-ags/scope/lineitem https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly";
+
+    // Create mock dependencies
+    const models = {};
+    const consumer_controller = {
+      createConsumer: sinon.stub().resolves(createdConsumer),
+      getByName: sinon.stub().resolves(null),
+    };
+
+    // Stub the LTI 1.3 utility function to return a successful launch response
+    sinon.stub(LTI13Utils.prototype, "getLMSDetails").resolves(lmsDetails);
+
+    // Spy the LTI 1.3 utility function to send registration to the LMS
+    const registrationSpy = sinon.stub(LTI13Utils.prototype, "sendRegistrationResponse").resolves();
+
+    // Create instance
+    const controller = new LTIRegistrationController(
+      updatedConfig,
+      models,
+      logger,
+      domain_name,
+      admin_email,
+      consumer_controller,
+    );
+
+    // Call dynamic registration method
+    await controller.dynamicRegistration({ registration_token: "abcd1234" });
+
+    // Assert that the registration response was sent to the LMS with both line item scopes requested
+    expect(registrationSpy.calledOnce).to.be.true;
+    const [config] = registrationSpy.firstCall.args;
+    expect(config).to.deep.equal(updatedExpectedConfig);
+    expect(config.scope).to.include("https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly");
+    expect(config.scope).to.include("https://purl.imsglobal.org/spec/lti-ags/scope/lineitem");
+  });
+
   it("should fail when getting LMS details fails", async () => {
     // Create mock dependencies
     const models = {};

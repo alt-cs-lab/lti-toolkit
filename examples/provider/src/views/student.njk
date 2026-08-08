@@ -15,7 +15,19 @@
         <p><b>Logged in as: </b>{{ launchData.user_name | d("Anonymous Student", true) }} &lt;{{ launchData.user_email | d("no email", true) }}&gt;</p>
         <h2>{{ launchData.course_name }} ({{ launchData.course_label }})</h2>
         <h3>{{ launchData.assignment_name }}</h3>
+        {% if agsError %}
+        <p style="color: red">{{ agsError }}</p>
+        {% endif %}
         <form method="POST" action="/student/grade">
+          {% if lineItems %}
+          <label for="lineitem_url"><b>Line Item: </b></label>
+          <select id="lineitem_url" name="lineitem_url">
+            {% for item in lineItems %}
+              <option value="{{ item.id }}"{% if item.id == launchData.outcome_url %} selected{% endif %}>{{ item.label }} (max {{ item.scoreMaximum }})</option>
+            {% endfor %}
+          </select>
+          <br>
+          {% endif %}
           <label for="grade">Enter your desired grade as a value between 0.00 and 1.00</label>
           <input type="number" id="grade" name="grade" min="0" max="1" step="0.01">
           {% if launchData.launch_type == "lti1.3" %}

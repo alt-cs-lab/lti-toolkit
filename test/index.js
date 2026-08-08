@@ -188,6 +188,7 @@ describe("Index", () => {
         privacy_level: {},
         handleDeeplink: "not a function",
         navigation: "string",
+        enableLineItemManagement: "string",
       },
     };
     shouldSuccessfullyInitializeWithConfig(badProviderConfig, "with non-function optional provider fields");

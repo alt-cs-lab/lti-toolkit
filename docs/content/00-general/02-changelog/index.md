@@ -8,6 +8,20 @@ All notable changes to this project will be documented here. This project follow
 
 ---
 
+## [1.2.0] — 2026-08-08
+
+### Added
+
+- **`createLineItem()` and `updateLineItem()`** — new `LTIProviderController` methods to create and update LTI 1.3 AGS line items on a Tool Consumer. Gated behind a new `provider.enableLineItemManagement` config flag (default `false`), which also requests the `https://purl.imsglobal.org/spec/lti-ags/scope/lineitem` scope (in addition to `lineitem.readonly`, not instead of it) during LTI 1.3 Dynamic Registration
+- **`startDateTime`/`endDateTime` support for line items** — `createLineItem()`/`updateLineItem()` accept optional `startDateTime`/`endDateTime` fields and validate them as ISO 8601 date-time strings with a mandatory timezone designator, per the AGS spec
+- **Grade any student on any line item (example Provider app)** — the example Provider app's instructor and student views now support posting/submitting grades against any AGS line item in the course, not just the one tied to the current launch. Instructors pick from a course-level roster of students who have launched the tool; students get a line item selector on their own grade form
+
+### Fixed
+
+- **HTTP error visibility** — failed requests to the LMS (access token, line item, results, grade passback, and Dynamic Registration requests) now log the platform's actual error response body (e.g. Canvas's `{ error, error_description }`) at the `error` log level, instead of only a generic message that discarded the useful detail
+- **Line item date/time inputs now use the browser's local timezone (example Provider app)** — the create/update line item forms previously treated entered times as if they were already UTC; they're now correctly converted from the instructor's browser-local time
+- **Student grade score local-cache key mismatch (example Provider app)** — the student grade form was looking up its local display cache with the wrong key, so a student's own submitted score never updated in the local UI (the grade was still posted to the LMS correctly)
+
 ## [1.1.2] — 2026-08-06
 
 ### Changed

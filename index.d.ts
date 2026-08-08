@@ -15,12 +15,25 @@ export interface GradeScore {
   timestamp: string;
 }
 
-/** An AGS line item, as returned by getLineItem / getLineItems */
+/** An AGS line item, as passed to the getProviderLineItem / getProviderLineItems consumer callbacks */
 export interface LineItem {
   label: string;
   scoreMaximum: number;
   resourceKey: string;
   gradebookKey: string;
+}
+
+/** An AGS line item as sent to / returned by createLineItem / updateLineItem, matching the IMS AGS LineItem resource shape */
+export interface AGSLineItem {
+  id?: string;
+  scoreMaximum: number;
+  label: string;
+  resourceId?: string;
+  resourceLinkId?: string;
+  tag?: string;
+  startDateTime?: string;
+  endDateTime?: string;
+  gradesReleased?: boolean;
 }
 
 /** An AGS result, as returned by getResults */
@@ -246,10 +259,22 @@ export interface LTIProviderController {
   ): Promise<boolean>;
 
   /** Fetch a single AGS line item from the consumer (LTI 1.3 only) */
-  getLineItem(consumer_key: string, lineitem_url: string): Promise<LineItem | null>;
+  getLineItem(consumer_key: string, lineitem_url: string): Promise<AGSLineItem>;
 
   /** Fetch all AGS line items for a context from the consumer (LTI 1.3 only) */
-  getLineItems(consumer_key: string, lineitems_url: string, resource_link_id?: string | null): Promise<LineItem[]>;
+  getLineItems(consumer_key: string, lineitems_url: string, resource_link_id?: string | null): Promise<AGSLineItem[]>;
+
+  /**
+   * Create a new AGS line item on the consumer (LTI 1.3 only).
+   * Requires `enableLineItemManagement: true` in the provider configuration.
+   */
+  createLineItem(consumer_key: string, lineitems_url: string, lineItem: AGSLineItem): Promise<AGSLineItem>;
+
+  /**
+   * Update an existing AGS line item on the consumer (LTI 1.3 only).
+   * Requires `enableLineItemManagement: true` in the provider configuration.
+   */
+  updateLineItem(consumer_key: string, lineitem_url: string, lineItem: AGSLineItem): Promise<AGSLineItem>;
 
   /** Read a grade from the consumer via LTI 1.0 Basic Outcomes. Returns score (0.0–1.0) or null. */
   readGrade(consumer_key: string, grade_url: string, lms_grade_id: string): Promise<number | null>;
@@ -354,6 +379,7 @@ export interface ProviderConfig {
   privacy_level?: string;
   navigation?: boolean;
   handleDeeplink?: HandleDeeplinkCallback;
+  enableLineItemManagement?: boolean;
 }
 
 export interface ConsumerConfig {

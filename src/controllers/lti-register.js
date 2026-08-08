@@ -199,8 +199,14 @@ class LTIRegistrationController {
       token_endpoint_auth_method: "private_key_jwt",
       jwks_uri: new URL(`${this.#provider_config.route_prefix}/jwks`, this.#domain_name).href,
       contacts: [this.#admin_email],
-      scope:
-        "https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+      scope: [
+        "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+        "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+        ...(this.#provider_config.enableLineItemManagement
+          ? ["https://purl.imsglobal.org/spec/lti-ags/scope/lineitem"]
+          : []),
+        "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+      ].join(" "),
       "https://purl.imsglobal.org/spec/lti-tool-configuration": {
         domain: domain,
         description: this.#provider_config.description,

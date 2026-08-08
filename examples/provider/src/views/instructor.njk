@@ -57,19 +57,102 @@
                   <tr>
                     <th>Label</th>
                     <th>Max Score</th>
-                    <th>Resource Key</th>
-                    <th>Gradebook Key</th>
+                    <th>Resource ID</th>
+                    <th>Tag</th>
+                    <th>Update</th>
                   </tr>
                   {% for item in lineItems %}
                     <tr>
                       <td>{{ item.label }}</td>
                       <td>{{ item.scoreMaximum }}</td>
-                      <td>{{ item.resourceKey }}</td>
-                      <td>{{ item.gradebookKey }}</td>
+                      <td>{{ item.resourceId }}</td>
+                      <td>{{ item.tag }}</td>
+                      <td>
+                        <form method="POST" action="/instructor/lineitem/update">
+                          <input type="hidden" name="lineitem_id" value="{{ item.id }}">
+                          <label>Label: <input type="text" name="label" value="{{ item.label }}" required></label>
+                          <label>Max Score: <input type="number" name="scoreMaximum" value="{{ item.scoreMaximum }}" step="any" required></label>
+                          <label>Resource ID: <input type="text" name="resourceId" value="{{ item.resourceId }}"></label>
+                          <label>Tag: <input type="text" name="tag" value="{{ item.tag }}"></label>
+                          <label>Start (your local time): <input type="datetime-local" name="startDateTime" data-utc="{{ item.startDateTime }}"></label>
+                          <label>End (your local time): <input type="datetime-local" name="endDateTime" data-utc="{{ item.endDateTime }}"></label>
+                          <input type="submit" value="Update Line Item">
+                        </form>
+                      </td>
                     </tr>
                   {% endfor %}
                 </table>
               {% endif %}
+              <h3>Post a Grade</h3>
+              {% set roster = courses[launchData.course_id].students %}
+              {% if lineItems.length == 0 %}
+                <p>No line items available to grade yet. Create one below.</p>
+              {% elif not roster %}
+                <p>No students have launched this course yet, so there's no one to grade. Have a student launch the tool first.</p>
+              {% else %}
+                <form method="POST" action="/instructor/lineitem/grade">
+                  <label for="grade-lineitem"><b>Line Item: </b></label>
+                  <select id="grade-lineitem" name="lineitem_url" required>
+                    {% for item in lineItems %}
+                      <option value="{{ item.id }}">{{ item.label }} (max {{ item.scoreMaximum }})</option>
+                    {% endfor %}
+                  </select>
+                  <br>
+                  <label for="grade-student"><b>Student: </b></label>
+                  <select id="grade-student" name="user_lis13_id" required>
+                    {% for email, student in roster %}
+                      {% if student.lis13_id %}
+                        <option value="{{ student.lis13_id }}">{{ student.name }} ({{ student.email }})</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                  <br>
+                  <label for="grade-score"><b>Score: </b></label>
+                  <input type="number" id="grade-score" name="grade" min="0" max="1" step="0.01" required>
+                  <br>
+                  <label for="grade-activityProgress"><b>Activity Progress: </b></label>
+                  <select id="grade-activityProgress" name="activityProgress">
+                    <option value="Submitted" selected>Submitted</option>
+                    <option value="Initialized">Initialized</option>
+                    <option value="Started">Started</option>
+                    <option value="InProgress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                  <br>
+                  <label for="grade-gradingProgress"><b>Grading Progress: </b></label>
+                  <select id="grade-gradingProgress" name="gradingProgress">
+                    <option value="FullyGraded" selected>Fully Graded</option>
+                    <option value="Pending">Pending</option>
+                    <option value="PendingManual">Pending Manual</option>
+                    <option value="Failed">Failed</option>
+                    <option value="NotReady">Not Ready</option>
+                  </select>
+                  <br>
+                  <input type="submit" value="Post Grade">
+                </form>
+              {% endif %}
+              <h3>Create New Line Item</h3>
+              <form method="POST" action="/instructor/lineitem/create">
+                <label for="lineitem-label"><b>Label: </b></label>
+                <input type="text" id="lineitem-label" name="label" required>
+                <br>
+                <label for="lineitem-scoreMaximum"><b>Max Score: </b></label>
+                <input type="number" id="lineitem-scoreMaximum" name="scoreMaximum" step="any" required>
+                <br>
+                <label for="lineitem-resourceId"><b>Resource ID (optional): </b></label>
+                <input type="text" id="lineitem-resourceId" name="resourceId">
+                <br>
+                <label for="lineitem-tag"><b>Tag (optional): </b></label>
+                <input type="text" id="lineitem-tag" name="tag">
+                <br>
+                <label for="lineitem-startDateTime"><b>Start Date/Time (your local time, optional): </b></label>
+                <input type="datetime-local" id="lineitem-startDateTime" name="startDateTime">
+                <br>
+                <label for="lineitem-endDateTime"><b>End Date/Time (your local time, optional): </b></label>
+                <input type="datetime-local" id="lineitem-endDateTime" name="endDateTime">
+                <br>
+                <input type="submit" value="Create Line Item">
+              </form>
             {% endif %}
           {% endif %}
         {% endif %}
@@ -170,5 +253,60 @@
           </pre>
         </details>
     </main>
+    <script>
+      // Line item startDateTime/endDateTime inputs are "datetime-local" (no timezone attached) -
+      // they always represent wall-clock time in the browser's own local timezone. The server only
+      // ever stores/sends full ISO 8601 UTC strings, so conversion has to happen here, where the
+      // real local timezone is actually known.
+
+      // Format a Date's local wall-clock time as a "datetime-local" input value (YYYY-MM-DDTHH:mm).
+      function toLocalDatetimeValue(date) {
+        function pad(n) {
+          return String(n).padStart(2, "0");
+        }
+        return (
+          date.getFullYear() +
+          "-" +
+          pad(date.getMonth() + 1) +
+          "-" +
+          pad(date.getDate()) +
+          "T" +
+          pad(date.getHours()) +
+          ":" +
+          pad(date.getMinutes())
+        );
+      }
+
+      // On load, convert each stored UTC value (in data-utc) into the viewer's local time for display.
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("input[type='datetime-local'][data-utc]").forEach(function (input) {
+          var utc = input.getAttribute("data-utc");
+          if (utc) {
+            input.value = toLocalDatetimeValue(new Date(utc));
+          }
+        });
+      });
+
+      // On submit, convert each local wall-clock value back to a full UTC ISO 8601 string.
+      // A "datetime-local" input's value has no timezone suffix, so `new Date(...)` parses it
+      // as local time (per the ECMAScript Date spec); `.toISOString()` then gives UTC.
+      // Switching away from type="datetime-local" first is required because the browser
+      // otherwise rejects any value that doesn't match its native picker format.
+      document.addEventListener(
+        "submit",
+        function (event) {
+          var form = event.target;
+          if (!(form instanceof HTMLFormElement)) {
+            return;
+          }
+          form.querySelectorAll("input[type='datetime-local']").forEach(function (input) {
+            var value = input.value ? new Date(input.value).toISOString() : "";
+            input.type = "text";
+            input.value = value;
+          });
+        },
+        true,
+      );
+    </script>
   </body>
 </html>

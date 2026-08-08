@@ -170,6 +170,10 @@ The LTI Toolkit library is initialized by providing a configuration options obje
     privacy_level: "public"
     // Boolean to show LTI Tool in course navigation menu in Canvas
     navigation: true
+    // Boolean to enable creating/updating LTI 1.3 AGS line items via createLineItem/updateLineItem
+    // Requests the "lineitem" scope in addition to "lineitem.readonly" during Dynamic Registration
+    // Default: false
+    enableLineItemManagement: false
 
     // OPTIONAL Information for LTI 1.3 DeepLinking
     // User-provided function to handle LTI Deeplink Requests
@@ -590,6 +594,34 @@ The initialized LTI Toolkit is a complex object containing the following items:
         lineitems_url,
         // Optional resource link ID filter (default: null)
         resource_link_id,
+      ),
+      // Create a New Line Item on an LTI Consumer via AGS (LTI 1.3 only)
+      // Requires provider.enableLineItemManagement to be set to true
+      // Returns the created line item object from the LMS, including its server-assigned id
+      createLineItem(
+        // LTI Consumer Key
+        consumer_key,
+        // Line items collection URL (from launchData.outcome_lineitems)
+        lineitems_url,
+        // Line item data - must include label and scoreMaximum
+        // May also include resourceId, resourceLinkId, tag, startDateTime, endDateTime
+        // startDateTime/endDateTime, if provided, must be ISO 8601 date-time strings
+        // with a timezone designator (e.g. "2018-03-06T20:05:02Z")
+        lineItem,
+      ),
+      // Update an Existing Line Item on an LTI Consumer via AGS (LTI 1.3 only)
+      // Requires provider.enableLineItemManagement to be set to true
+      // Returns the updated line item object from the LMS
+      updateLineItem(
+        // LTI Consumer Key
+        consumer_key,
+        // URL of the line item to update (its id, from a previous createLineItem/getLineItem/getLineItems call)
+        lineitem_url,
+        // Line item data - must include label and scoreMaximum
+        // May also include resourceId, resourceLinkId, tag, startDateTime, endDateTime
+        // startDateTime/endDateTime, if provided, must be ISO 8601 date-time strings
+        // with a timezone designator (e.g. "2018-03-06T20:05:02Z")
+        lineItem,
       ),
       // Read a Grade from an LTI Consumer via LTI 1.0 Basic Outcomes
       // Returns the current score (float 0.0–1.0), or null if no grade is on file

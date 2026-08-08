@@ -118,6 +118,19 @@ function updateDataStore(launchData, isStudent, req) {
       outcome_id: outcomeId,
       score: null,
     };
+
+    // Also record the student in a course-level roster, independent of which
+    // assignment they launched. This lets instructors grade a student on any
+    // line item in the course, not just the one they personally launched.
+    if (!courses[courseId].students) {
+      courses[courseId].students = {};
+    }
+    courses[courseId].students[userEmail] = {
+      name: userName,
+      email: userEmail,
+      lis_id: userId,
+      lis13_id: userId13,
+    };
   }
 }
 

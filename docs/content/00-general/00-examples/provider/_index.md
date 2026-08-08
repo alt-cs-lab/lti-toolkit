@@ -102,6 +102,9 @@ const lti = await LTIToolkit({
     handleDeeplink: LTIDeepLink,
     // Enable Course Navigation Link
     navigation: true,
+    // Enable creating/updating LTI 1.3 AGS line items (requests the "lineitem" scope
+    // in addition to "lineitem.readonly" during Dynamic Registration)
+    enableLineItemManagement: true,
   },
 });
 
@@ -298,6 +301,19 @@ function updateDataStore(launchData, isStudent, req) {
       outcome_id: outcomeId,
       score: null,
     };
+
+    // Also record the student in a course-level roster, independent of which
+    // assignment they launched. This lets instructors grade a student on any
+    // line item in the course, not just the one they personally launched.
+    if (!courses[courseId].students) {
+      courses[courseId].students = {};
+    }
+    courses[courseId].students[userEmail] = {
+      name: userName,
+      email: userEmail,
+      lis_id: userId,
+      lis13_id: userId13,
+    };
   }
 }
 ```
@@ -327,6 +343,9 @@ async function StudentGradeHandler(req, res) {
   const grade = parseFloat(req.body.grade);
   const activityProgress = req.body.activityProgress || "Submitted";
   const gradingProgress = req.body.gradingProgress || "FullyGraded";
+  // Students may optionally pick a different line item from the AGS line items
+  // list; falls back to the line item for the resource link they actually launched.
+  const lineitemUrl = req.body.lineitem_url || launchData.outcome_url;
   if (isNaN(grade) || grade < 0 || grade > 1) {
     error = "Invalid grade value. Must be between 0 and 1.";
   } else {
@@ -334,7 +353,7 @@ async function StudentGradeHandler(req, res) {
     // Build Grade Object
     const gradeObject = {
       // LTI 1.0 Outcome Information
-      grade_url: launchData.outcome_url,
+      grade_url: lineitemUrl,
       lms_grade_id: launchData.outcome_id,
       // Grade value between 0.0 and 1.0
       score: grade,
@@ -367,7 +386,7 @@ async function StudentGradeHandler(req, res) {
       ) {
         message = `Successfully posted grade of ${grade} back to the LMS.`;
         // Record grade in local data store
-        updateDataStoreWithGrade(launchData, grade, req);
+        updateDataStoreWithGrade(launchData, grade, lineitemUrl, req);
       } else {
         error = "Failed to post grade back to the LMS.";
       }
@@ -387,7 +406,7 @@ async function StudentGradeHandler(req, res) {
 }
 ```
 
-This method constructs the grade object required by the `postGrade` method using data from the LTI Launch Data and the LTI Consumer originally provided to the LTI Launch Handler. In this example, those values are read directly from the user's session. 
+This method constructs the grade object required by the `postGrade` method using data from the LTI Launch Data and the LTI Consumer originally provided to the LTI Launch Handler. In this example, those values are read directly from the user's session. When the student's `student.njk` form includes a line item selector (see below), `lineitemUrl` may point at any line item in the course rather than only the one tied to the student's own launch.
 
 ## Instructor Grade Passback
 
@@ -544,7 +563,105 @@ async function InstructorHandler(req, res) {
 - The results URL is built by appending `/results` to the line item URL, which maps to the AGS results endpoint on the consumer.
 - `getLineItem` returns an object with `label` and `scoreMaximum` for the specific assignment.
 - `getResults` returns an array of result objects, each containing `userId`, `resultScore`, `resultMaximum`, and `comment`.
-- `launchData.outcome_lineitems` contains the AGS collection URL for all line items in the course. `getLineItems` returns an array of objects each containing `label`, `scoreMaximum`, `resourceKey`, and `gradebookKey`.
+- `launchData.outcome_lineitems` contains the AGS collection URL for all line items in the course. `getLineItems` returns an array of objects matching the raw AGS LineItem shape — `id`, `label`, `scoreMaximum`, and optionally `resourceId`, `resourceLinkId`, `tag`, `startDateTime`, `endDateTime`, and `gradesReleased`.
+
+## LTI 1.3 AGS: Creating and Updating Line Items
+
+An instructor can also create new gradebook line items directly from the tool, and update existing ones, using the LTI Controller's `createLineItem` and `updateLineItem` methods. This requires `enableLineItemManagement: true` in the toolkit's `provider` configuration (see the LTI Toolkit Configuration section above) — without it, both methods throw immediately rather than making a request to the LMS. Enabling the flag also changes what scope is requested during LTI 1.3 Dynamic Registration, so an already-registered tool needs to be re-registered after turning it on.
+
+```js {title="src/routes/instructor-create-lineitem.js"}
+/**
+ * Handle LTI Instructor Create Line Item Request (LTI 1.3 AGS)
+ *
+ * @param {Object} req - the Express request object
+ * @param {Object} res - the Express response object
+ */
+async function InstructorCreateLineItemHandler(req, res) {
+  // Get LTI Launch Data and Consumer from session
+  const launchData = req.session.ltiLaunchData;
+  const consumer = req.session.ltiConsumer;
+
+  let error = null;
+  let message = null;
+
+  // Get form data
+  const label = req.body.label;
+  const scoreMaximum = parseFloat(req.body.scoreMaximum);
+  const resourceId = req.body.resourceId || undefined;
+  const tag = req.body.tag || undefined;
+  // Client-side JS converts the datetime-local inputs to full UTC ISO strings before submit
+  const startDateTime = req.body.startDateTime || undefined;
+  const endDateTime = req.body.endDateTime || undefined;
+
+  if (!launchData.outcome_lineitems) {
+    error = "No line items URL found for this launch.";
+  } else if (!label || isNaN(scoreMaximum)) {
+    error = "A label and a valid maximum score are required to create a line item.";
+  } else {
+    try {
+      const lineItem = await lti.controllers.provider.createLineItem(consumer.key, launchData.outcome_lineitems, {
+        label,
+        scoreMaximum,
+        resourceId,
+        tag,
+        startDateTime,
+        endDateTime,
+      });
+      message = `Successfully created line item "${lineItem.label}".`;
+    } catch (err) {
+      error = "Error creating line item on the LMS: " + err.message;
+    }
+  }
+
+  // ...re-fetch lineItem/lineItems/results and re-render instructor.njk, as above
+}
+```
+
+- `createLineItem` takes the consumer key, the AGS line items collection URL (`launchData.outcome_lineitems`), and a line item object — `label` and `scoreMaximum` are required; `resourceId`, `resourceLinkId`, `tag`, `startDateTime`, and `endDateTime` are optional. It returns the created line item, including its server-assigned `id`.
+- `instructor-update-lineitem.js` is nearly identical, but calls `updateLineItem(consumer.key, lineitem_id, {...})` with the target line item's own `id` (taken from a hidden form field, populated from a previous `getLineItems` call) instead of the collection URL.
+- `startDateTime`/`endDateTime` must be ISO 8601 date-time strings with a timezone designator (e.g. `"2018-03-06T20:05:02Z"`) — both methods validate this locally before contacting the LMS. Since the form fields are plain `datetime-local` inputs (which have no timezone of their own), `instructor.njk` includes a small inline script that converts the instructor's browser-local time to the required UTC string on submit, and converts stored UTC values back to browser-local time to pre-fill the update form.
+
+## LTI 1.3 AGS: Grading Any Student on Any Line Item
+
+Grading in this example is otherwise scoped to whatever a specific launch established — an instructor grading a student who launched the same resource link, or a student grading themselves against the line item they personally launched. For LTI 1.3, AGS itself has no such restriction: `postGrade` can post to any line item URL for any student's LTI 1.3 user ID, regardless of the current launch. Two small additions expose that:
+
+**A course-level student roster.** `updateDataStore` (above) also records every student who launches into a `students` map keyed by email, independent of which specific assignment they launched — this is what lets an instructor pick a student to grade who never launched the *same* resource link they did.
+
+**The instructor's "Post a Grade" form** combines the course's line items (`getLineItems`, already fetched above) with that roster into two dropdowns, then posts to a new handler:
+
+```js {title="src/routes/instructor-lineitem-grade.js"}
+async function InstructorLineItemGradeHandler(req, res) {
+  const launchData = req.session.ltiLaunchData;
+  const consumer = req.session.ltiConsumer;
+
+  const lineitemUrl = req.body.lineitem_url;
+  const userLis13Id = req.body.user_lis13_id;
+  const grade = parseFloat(req.body.grade);
+  const activityProgress = req.body.activityProgress || "Submitted";
+  const gradingProgress = req.body.gradingProgress || "FullyGraded";
+
+  // No lms_grade_id is available for an arbitrary student/line item combination,
+  // so this always takes the LTI 1.3 AGS path via postGrade.
+  await lti.controllers.provider.postGrade(
+    consumer.key,
+    lineitemUrl,
+    null,
+    grade,
+    userLis13Id,
+    {},
+    activityProgress,
+    gradingProgress,
+  );
+
+  // ...re-fetch lineItem/lineItems/results and re-render instructor.njk, as above
+}
+```
+
+Passing `null` for `lms_grade_id` forces `postGrade` down its LTI 1.3 AGS branch, since that branch is chosen purely by whether an LMS grade ID is present rather than by anything about the current launch.
+
+**The student's grade form** gets the same `getLineItems` fetch as the instructor view (in `student.js`), and a `lineitem_url` `<select>` is added to `student.njk`, defaulting to the student's own launched line item. `student-grade.js` then uses `req.body.lineitem_url || launchData.outcome_url` as the target, falling back to today's behavior for LTI 1.0 (which has no such selector, since Basic Outcomes has no equivalent of "any line item in the course").
+
+Since a grade posted to a different line item than the one tied to the current launch doesn't correspond to any locally-known `assignmentId`, it isn't mirrored into `dataStore`'s per-assignment cache — the LMS's own AGS results (shown above) remain the source of truth for those.
 
 ## LTI 1.0 Read and Delete Grade
 

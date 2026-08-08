@@ -35,6 +35,9 @@ const lti = await LTIToolkit({
     handleDeeplink: LTIDeepLink,
     // Enable Course Navigation Link
     navigation: true,
+    // Enable creating/updating LTI 1.3 AGS line items (requests the "lineitem" scope
+    // in addition to "lineitem.readonly" during Dynamic Registration)
+    enableLineItemManagement: true,
   },
 });
 

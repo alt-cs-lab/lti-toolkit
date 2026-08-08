@@ -494,6 +494,332 @@ describe("/controllers/lti-provider.js", () => {
     }
   });
 
+  it("should create a line item via createLineItem", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const requestLineItem = { label: "Chapter 5 Test", scoreMaximum: 60 };
+    const createdLineItem = { id: "http://example.com/lineitems/1", ...requestLineItem };
+
+    sinon.stub(LTI13Utils.prototype, "createAGSLineItem").resolves(createdLineItem);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    const result = await controller.createLineItem("consumer_key", "http://example.com/lineitems", requestLineItem);
+
+    expect(
+      LTI13Utils.prototype.createAGSLineItem.calledOnceWith(
+        "consumer_key",
+        "http://example.com/lineitems",
+        requestLineItem,
+      ),
+    ).to.be.true;
+    expect(result).to.deep.equal(createdLineItem);
+
+    LTI13Utils.prototype.createAGSLineItem.restore();
+  });
+
+  it("should throw from createLineItem if line item management is not enabled", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.createLineItem("consumer_key", "http://example.com/lineitems", {
+        label: "Chapter 5 Test",
+        scoreMaximum: 60,
+      });
+      throw new Error("Expected createLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Create Line Item: Line item management is not enabled in provider configuration");
+    }
+  });
+
+  it("should throw from createLineItem if consumer_key is missing", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.createLineItem(null, "http://example.com/lineitems", {
+        label: "Chapter 5 Test",
+        scoreMaximum: 60,
+      });
+      throw new Error("Expected createLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Create Line Item: Consumer Key is required");
+    }
+  });
+
+  it("should throw from createLineItem if lineitems_url is missing", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.createLineItem("consumer_key", null, { label: "Chapter 5 Test", scoreMaximum: 60 });
+      throw new Error("Expected createLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Create Line Item: Line items URL is required");
+    }
+  });
+
+  it("should throw from createLineItem if scoreMaximum is missing", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.createLineItem("consumer_key", "http://example.com/lineitems", { label: "Chapter 5 Test" });
+      throw new Error("Expected createLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Create Line Item: Line item scoreMaximum is required");
+    }
+  });
+
+  it("should throw from createLineItem if label is missing", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.createLineItem("consumer_key", "http://example.com/lineitems", { scoreMaximum: 60 });
+      throw new Error("Expected createLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Create Line Item: Line item label is required");
+    }
+  });
+
+  it("should create a line item via createLineItem with valid startDateTime and endDateTime", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const requestLineItem = {
+      label: "Chapter 5 Test",
+      scoreMaximum: 60,
+      startDateTime: "2018-03-06T20:05:02Z",
+      endDateTime: "2018-04-06T22:05:03Z",
+    };
+    const createdLineItem = { id: "http://example.com/lineitems/1", ...requestLineItem };
+
+    sinon.stub(LTI13Utils.prototype, "createAGSLineItem").resolves(createdLineItem);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    const result = await controller.createLineItem("consumer_key", "http://example.com/lineitems", requestLineItem);
+
+    expect(
+      LTI13Utils.prototype.createAGSLineItem.calledOnceWith(
+        "consumer_key",
+        "http://example.com/lineitems",
+        requestLineItem,
+      ),
+    ).to.be.true;
+    expect(result).to.deep.equal(createdLineItem);
+
+    LTI13Utils.prototype.createAGSLineItem.restore();
+  });
+
+  it("should throw from createLineItem if startDateTime is missing a timezone designator", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.createLineItem("consumer_key", "http://example.com/lineitems", {
+        label: "Chapter 5 Test",
+        scoreMaximum: 60,
+        startDateTime: "2018-03-06T20:05:02",
+      });
+      throw new Error("Expected createLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal(
+        'Create Line Item: Line item startDateTime must be an ISO 8601 date-time string with a timezone designator (e.g. "2018-03-06T20:05:02Z")',
+      );
+    }
+  });
+
+  it("should throw from createLineItem if endDateTime is not a valid date", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.createLineItem("consumer_key", "http://example.com/lineitems", {
+        label: "Chapter 5 Test",
+        scoreMaximum: 60,
+        endDateTime: "not-a-date",
+      });
+      throw new Error("Expected createLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal(
+        'Create Line Item: Line item endDateTime must be an ISO 8601 date-time string with a timezone designator (e.g. "2018-03-06T20:05:02Z")',
+      );
+    }
+  });
+
+  it("should update a line item via updateLineItem", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const requestLineItem = { label: "Chapter 5 Test", scoreMaximum: 50 };
+    const updatedLineItem = { id: "http://example.com/lineitems/1", ...requestLineItem };
+
+    sinon.stub(LTI13Utils.prototype, "updateAGSLineItem").resolves(updatedLineItem);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    const result = await controller.updateLineItem("consumer_key", "http://example.com/lineitems/1", requestLineItem);
+
+    expect(
+      LTI13Utils.prototype.updateAGSLineItem.calledOnceWith(
+        "consumer_key",
+        "http://example.com/lineitems/1",
+        requestLineItem,
+      ),
+    ).to.be.true;
+    expect(result).to.deep.equal(updatedLineItem);
+
+    LTI13Utils.prototype.updateAGSLineItem.restore();
+  });
+
+  it("should throw from updateLineItem if line item management is not enabled", async () => {
+    const provider = {};
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.updateLineItem("consumer_key", "http://example.com/lineitems/1", {
+        label: "Chapter 5 Test",
+        scoreMaximum: 50,
+      });
+      throw new Error("Expected updateLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Update Line Item: Line item management is not enabled in provider configuration");
+    }
+  });
+
+  it("should throw from updateLineItem if consumer_key is missing", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.updateLineItem(null, "http://example.com/lineitems/1", {
+        label: "Chapter 5 Test",
+        scoreMaximum: 50,
+      });
+      throw new Error("Expected updateLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Update Line Item: Consumer Key is required");
+    }
+  });
+
+  it("should throw from updateLineItem if lineitem_url is missing", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.updateLineItem("consumer_key", null, { label: "Chapter 5 Test", scoreMaximum: 50 });
+      throw new Error("Expected updateLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Update Line Item: Line item URL is required");
+    }
+  });
+
+  it("should throw from updateLineItem if scoreMaximum is missing", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.updateLineItem("consumer_key", "http://example.com/lineitems/1", {
+        label: "Chapter 5 Test",
+      });
+      throw new Error("Expected updateLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Update Line Item: Line item scoreMaximum is required");
+    }
+  });
+
+  it("should throw from updateLineItem if label is missing", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.updateLineItem("consumer_key", "http://example.com/lineitems/1", { scoreMaximum: 50 });
+      throw new Error("Expected updateLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal("Update Line Item: Line item label is required");
+    }
+  });
+
+  it("should update a line item via updateLineItem with valid startDateTime and endDateTime", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const requestLineItem = {
+      label: "Chapter 5 Test",
+      scoreMaximum: 50,
+      startDateTime: "2018-03-06T20:05:02Z",
+      endDateTime: "2018-04-06T22:05:03Z",
+    };
+    const updatedLineItem = { id: "http://example.com/lineitems/1", ...requestLineItem };
+
+    sinon.stub(LTI13Utils.prototype, "updateAGSLineItem").resolves(updatedLineItem);
+
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    const result = await controller.updateLineItem("consumer_key", "http://example.com/lineitems/1", requestLineItem);
+
+    expect(
+      LTI13Utils.prototype.updateAGSLineItem.calledOnceWith(
+        "consumer_key",
+        "http://example.com/lineitems/1",
+        requestLineItem,
+      ),
+    ).to.be.true;
+    expect(result).to.deep.equal(updatedLineItem);
+
+    LTI13Utils.prototype.updateAGSLineItem.restore();
+  });
+
+  it("should throw from updateLineItem if startDateTime is missing a timezone designator", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.updateLineItem("consumer_key", "http://example.com/lineitems/1", {
+        label: "Chapter 5 Test",
+        scoreMaximum: 50,
+        startDateTime: "2018-03-06T20:05:02",
+      });
+      throw new Error("Expected updateLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal(
+        'Update Line Item: Line item startDateTime must be an ISO 8601 date-time string with a timezone designator (e.g. "2018-03-06T20:05:02Z")',
+      );
+    }
+  });
+
+  it("should throw from updateLineItem if endDateTime is not a valid date", async () => {
+    const provider = { enableLineItemManagement: true };
+    const models = {};
+    const controller = new LTIProviderController(provider, models, logger, domain_name);
+
+    try {
+      await controller.updateLineItem("consumer_key", "http://example.com/lineitems/1", {
+        label: "Chapter 5 Test",
+        scoreMaximum: 50,
+        endDateTime: "not-a-date",
+      });
+      throw new Error("Expected updateLineItem to throw");
+    } catch (err) {
+      expect(err.message).to.equal(
+        'Update Line Item: Line item endDateTime must be an ISO 8601 date-time string with a timezone designator (e.g. "2018-03-06T20:05:02Z")',
+      );
+    }
+  });
+
   it("should read a grade via readGrade", async () => {
     const provider = {};
     const models = {};

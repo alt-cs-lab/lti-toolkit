@@ -60,6 +60,30 @@ class LTI13Utils {
   }
 
   /**
+   * Log the response body of a failed ky HTTP request, if one is available, so the
+   * platform's actual error details (e.g. Canvas's { error, error_description }) are
+   * visible in the logs instead of only in a generic "message" string. The Winston
+   * logger's printf format only ever prints the "message" (and "stack") fields, so
+   * any extra detail must be folded into the logged message string itself.
+   *
+   * @param {string} context a short description of what request failed
+   * @param {Error} error the error thrown by ky (may or may not carry a .response)
+   */
+  async #logHttpError(context, error) {
+    let body = null;
+    if (error.response) {
+      try {
+        body = await error.response.json();
+      } catch {
+        body = null;
+      }
+    }
+    this.#logger.error(
+      context + ": " + error.message + (body ? "\nResponse body: " + JSON.stringify(body, null, 2) : ""),
+    );
+  }
+
+  /**
    * Validate an LTI 1.3 Login Request
    *
    * @param {Object} req - Express request object
@@ -305,6 +329,7 @@ class LTI13Utils {
         })
         .json();
     } catch (error) {
+      await this.#logHttpError("Error requesting access token", error);
       throw new Error("Error requesting access token: " + error.message, { cause: error });
     }
     if (!result || !result.access_token) {
@@ -330,7 +355,7 @@ class LTI13Utils {
     try {
       response = await ky.get(query.openid_configuration).json();
     } catch (error) {
-      this.#logger.lti("Error fetching OpenID Configuration: " + error.message);
+      await this.#logHttpError("Error fetching OpenID Configuration", error);
       throw new Error("Dynamic Registration: Failed to fetch OpenID Configuration from LMS", { cause: error });
     }
     // validate registration endpoint is present and is based on issuer
@@ -422,11 +447,7 @@ class LTI13Utils {
         headers: headers,
       });
     } catch (error) {
-      this.#logger.lti("Error sending registration response: " + error.message);
-      if (error.response) {
-        this.#logger.lti("Response Status: " + error.response.status);
-        this.#logger.silly(JSON.stringify(await error.response.json(), null, 2));
-      }
+      await this.#logHttpError("Error sending registration response", error);
       throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS: " + error.message, {
         cause: error,
       });
@@ -438,8 +459,13 @@ class LTI13Utils {
       // Get response JSON
       responseData = await response.json();
     } else {
-      this.#logger.lti("Failed to register LTI 1.3 configuration with LMS");
-      this.#logger.silly(JSON.stringify(await response.json(), null, 2));
+      const body = await response.json();
+      this.#logger.error(
+        "Failed to register LTI 1.3 configuration with LMS: unexpected status " +
+          response.status +
+          "\nResponse body: " +
+          JSON.stringify(body, null, 2),
+      );
       throw new Error("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS");
     }
 
@@ -510,20 +536,33 @@ class LTI13Utils {
     this.#logger.silly(JSON.stringify(lineitem, null, 2));
 
     // Post grade to AGS endpoint
-    const response = await ky.post(grade_url + "/scores", {
-      json: lineitem,
-      headers: {
-        Authorization: `${token.token_type} ${token.access_token}`,
-        "Content-Type": "application/vnd.ims.lis.v1.score+json",
-      },
-    });
+    let response;
+    try {
+      response = await ky.post(grade_url + "/scores", {
+        json: lineitem,
+        headers: {
+          Authorization: `${token.token_type} ${token.access_token}`,
+          "Content-Type": "application/vnd.ims.lis.v1.score+json",
+        },
+      });
+    } catch (error) {
+      await this.#logHttpError("Error posting grade to LTI 1.3 AGS", error);
+      throw new Error("Failed to post grade: " + error.message, { cause: error });
+    }
 
     // Check response
     if (response && response.status === 200) {
       this.#logger.lti("Grade posted successfully");
       return true;
     } else {
-      throw new Error("Failed to post grade: " + JSON.stringify(await response.json(), null, 2));
+      const body = await response.json();
+      this.#logger.error(
+        "Failed to post grade: unexpected status " +
+          response.status +
+          "\nResponse body: " +
+          JSON.stringify(body, null, 2),
+      );
+      throw new Error("Failed to post grade: " + JSON.stringify(body, null, 2));
     }
   }
 
@@ -1080,6 +1119,7 @@ class LTI13Utils {
         })
         .json();
     } catch (error) {
+      await this.#logHttpError("Error fetching AGS line item", error);
       throw new Error("Get AGS Line Item: Failed to fetch line item: " + error.message, { cause: error });
     }
     this.#logger.lti("AGS line item fetched successfully");
@@ -1119,9 +1159,78 @@ class LTI13Utils {
         })
         .json();
     } catch (error) {
+      await this.#logHttpError("Error fetching AGS line items", error);
       throw new Error("Get AGS Line Items: Failed to fetch line items: " + error.message, { cause: error });
     }
     this.#logger.lti("AGS line items fetched successfully");
+    this.#logger.silly(JSON.stringify(result, null, 2));
+    return result;
+  }
+
+  /**
+   * Create a new line item on an LTI 1.3 AGS lineitems endpoint
+   *
+   * @param {string} consumer_key the key of the consumer
+   * @param {string} lineitems_url the URL of the lineitems collection to create the line item in
+   * @param {Object} lineItem the line item data (label, scoreMaximum, and any other AGS LineItem properties)
+   * @returns {Object} the created line item object from the LMS
+   * @throws {Error} if the request fails
+   */
+  async createAGSLineItem(consumer_key, lineitems_url, lineItem) {
+    lineitems_url = this.#ensureHttps(lineitems_url);
+    const token = await this.getAccessToken(consumer_key, "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem");
+    this.#logger.lti("Creating AGS line item at " + lineitems_url);
+    this.#logger.silly(JSON.stringify(lineItem, null, 2));
+    let result;
+    try {
+      result = await ky
+        .post(lineitems_url, {
+          json: lineItem,
+          headers: {
+            Authorization: `${token.token_type} ${token.access_token}`,
+            "Content-Type": "application/vnd.ims.lis.v2.lineitem+json",
+          },
+        })
+        .json();
+    } catch (error) {
+      await this.#logHttpError("Error creating AGS line item", error);
+      throw new Error("Create AGS Line Item: Failed to create line item: " + error.message, { cause: error });
+    }
+    this.#logger.lti("AGS line item created successfully");
+    this.#logger.silly(JSON.stringify(result, null, 2));
+    return result;
+  }
+
+  /**
+   * Update an existing line item on an LTI 1.3 AGS endpoint
+   *
+   * @param {string} consumer_key the key of the consumer
+   * @param {string} lineitem_url the URL of the line item to update
+   * @param {Object} lineItem the line item data (label, scoreMaximum, and any other AGS LineItem properties)
+   * @returns {Object} the updated line item object from the LMS
+   * @throws {Error} if the request fails
+   */
+  async updateAGSLineItem(consumer_key, lineitem_url, lineItem) {
+    lineitem_url = this.#ensureHttps(lineitem_url);
+    const token = await this.getAccessToken(consumer_key, "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem");
+    this.#logger.lti("Updating AGS line item at " + lineitem_url);
+    this.#logger.silly(JSON.stringify(lineItem, null, 2));
+    let result;
+    try {
+      result = await ky
+        .put(lineitem_url, {
+          json: lineItem,
+          headers: {
+            Authorization: `${token.token_type} ${token.access_token}`,
+            "Content-Type": "application/vnd.ims.lis.v2.lineitem+json",
+          },
+        })
+        .json();
+    } catch (error) {
+      await this.#logHttpError("Error updating AGS line item", error);
+      throw new Error("Update AGS Line Item: Failed to update line item: " + error.message, { cause: error });
+    }
+    this.#logger.lti("AGS line item updated successfully");
     this.#logger.silly(JSON.stringify(result, null, 2));
     return result;
   }
@@ -1158,6 +1267,7 @@ class LTI13Utils {
         })
         .json();
     } catch (error) {
+      await this.#logHttpError("Error fetching AGS results", error);
       throw new Error("Get AGS Results: Failed to fetch results: " + error.message, { cause: error });
     }
     this.#logger.lti("AGS results fetched successfully");

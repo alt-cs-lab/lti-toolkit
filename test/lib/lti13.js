@@ -949,6 +949,7 @@ describe("/lib/lti13.js", function () {
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
+        error: sinon.stub(),
       };
 
       // Create instance of LTI13Utils
@@ -968,6 +969,7 @@ describe("/lib/lti13.js", function () {
         throw new Error("Expected getAccessToken to throw an error");
       } catch (err) {
         expect(err.message).to.equal("Error requesting access token: Token request failed");
+        expect(logger.error.calledOnceWith("Error requesting access token: Token request failed")).to.be.true;
       } finally {
         // Restore stubbed methods
         ky.post.restore();
@@ -1183,6 +1185,7 @@ describe("/lib/lti13.js", function () {
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
+        error: sinon.stub(),
       };
 
       // Create instance of LTI13Utils
@@ -1201,6 +1204,8 @@ describe("/lib/lti13.js", function () {
         throw new Error("Expected getLMSDetails to throw an error");
       } catch (err) {
         expect(err.message).to.equal("Dynamic Registration: Failed to fetch OpenID Configuration from LMS");
+        expect(logger.error.calledOnceWith("Error fetching OpenID Configuration: LMS details request failed")).to.be
+          .true;
       } finally {
         // Restore stubbed methods
         ky.get.restore();
@@ -1639,6 +1644,7 @@ describe("/lib/lti13.js", function () {
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
+        error: sinon.stub(),
       };
       const consumer = {
         save: sinon.stub().resolves(),
@@ -1663,6 +1669,8 @@ describe("/lib/lti13.js", function () {
         expect(err.message).to.equal(
           "Dynamic Registration: Failed to register LTI 1.3 configuration with LMS: Registration response request failed",
         );
+        expect(logger.error.calledOnceWith("Error sending registration response: Registration response request failed"))
+          .to.be.true;
       } finally {
         // Restore stubbed methods
         ky.post.restore();
@@ -1801,6 +1809,7 @@ describe("/lib/lti13.js", function () {
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
+        error: sinon.stub(),
       };
       const consumer = {
         save: sinon.stub().resolves(),
@@ -1826,6 +1835,8 @@ describe("/lib/lti13.js", function () {
         throw new Error("Expected sendRegistrationResponse to throw an error");
       } catch (err) {
         expect(err.message).to.equal("Dynamic Registration: Failed to register LTI 1.3 configuration with LMS");
+        expect(logger.error.calledOnce).to.be.true;
+        expect(logger.error.firstCall.args[0]).to.include("unexpected status 400");
       } finally {
         // Restore stubbed methods
         ky.post.restore();
@@ -1838,6 +1849,7 @@ describe("/lib/lti13.js", function () {
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
+        error: sinon.stub(),
       };
       const consumer = {
         save: sinon.stub().resolves(),
@@ -1865,7 +1877,9 @@ describe("/lib/lti13.js", function () {
         );
         throw new Error("Expected sendRegistrationResponse to throw an error");
       } catch (err) {
-        expect(logger.lti.calledWith("Response Status: 500")).to.be.true;
+        expect(
+          logger.error.calledOnceWith('Error sending registration response: Bad Request\nResponse body: "Bad Request"'),
+        ).to.be.true;
         expect(err.message).to.equal(
           "Dynamic Registration: Failed to register LTI 1.3 configuration with LMS: Bad Request",
         );
@@ -1995,6 +2009,7 @@ describe("/lib/lti13.js", function () {
       const logger = {
         lti: sinon.stub(),
         silly: sinon.stub(),
+        error: sinon.stub(),
       };
 
       // Create instance of LTI13Utils
@@ -2023,6 +2038,48 @@ describe("/lib/lti13.js", function () {
         throw new Error("Expected postAGSGrade to throw an error");
       } catch (err) {
         expect(err.message).to.equal('Failed to post grade: "Internal Server Error"');
+        expect(logger.error.calledOnce).to.be.true;
+        expect(logger.error.firstCall.args[0]).to.include("unexpected status 500");
+      } finally {
+        // Restore stubbed methods
+        lti13Utils.getAccessToken.restore();
+        ky.post.restore();
+      }
+    });
+
+    it("should throw a wrapped error and log the failure if the HTTP request itself fails", async function () {
+      // Mock Library Dependencies
+      const models = {};
+      const logger = {
+        lti: sinon.stub(),
+        silly: sinon.stub(),
+        error: sinon.stub(),
+      };
+
+      // Create instance of LTI13Utils
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      // Stub access token retrieval
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      // Stub ky to simulate a network-level failure (ky throws before a response is received)
+      sinon.stub(ky, "post").rejects(new Error("Connection refused"));
+
+      try {
+        // Call the method under test
+        await lti13Utils.postAGSGrade(
+          "thisisauserid",
+          0.95,
+          "thisisaconsumerkey",
+          "http://localhost:3000/lti/ags/endpoint",
+        );
+        throw new Error("Expected postAGSGrade to throw an error");
+      } catch (err) {
+        expect(err.message).to.equal("Failed to post grade: Connection refused");
+        expect(logger.error.calledOnceWith("Error posting grade to LTI 1.3 AGS: Connection refused")).to.be.true;
       } finally {
         // Restore stubbed methods
         lti13Utils.getAccessToken.restore();
@@ -3593,7 +3650,7 @@ describe("/lib/lti13.js", function () {
 
     it("should throw a wrapped error if the HTTP request fails", async function () {
       const models = {};
-      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const logger = { lti: sinon.stub(), silly: sinon.stub(), error: sinon.stub() };
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
 
       sinon.stub(lti13Utils, "getAccessToken").resolves({
@@ -3608,6 +3665,7 @@ describe("/lib/lti13.js", function () {
         throw new Error("Expected getAGSLineItem to throw");
       } catch (err) {
         expect(err.message).to.equal("Get AGS Line Item: Failed to fetch line item: Connection refused");
+        expect(logger.error.calledOnceWith("Error fetching AGS line item: Connection refused")).to.be.true;
       } finally {
         lti13Utils.getAccessToken.restore();
         ky.get.restore();
@@ -3674,7 +3732,7 @@ describe("/lib/lti13.js", function () {
 
     it("should throw a wrapped error if the HTTP request fails", async function () {
       const models = {};
-      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const logger = { lti: sinon.stub(), silly: sinon.stub(), error: sinon.stub() };
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
 
       sinon.stub(lti13Utils, "getAccessToken").resolves({
@@ -3689,9 +3747,159 @@ describe("/lib/lti13.js", function () {
         throw new Error("Expected getAGSLineItems to throw");
       } catch (err) {
         expect(err.message).to.equal("Get AGS Line Items: Failed to fetch line items: Connection refused");
+        expect(logger.error.calledOnceWith("Error fetching AGS line items: Connection refused")).to.be.true;
       } finally {
         lti13Utils.getAccessToken.restore();
         ky.get.restore();
+      }
+    });
+  });
+
+  describe("createAGSLineItem", function () {
+    it("should create a line item with the correct token, headers, and body", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub(), error: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      const requestLineItem = { label: "Chapter 5 Test", scoreMaximum: 60 };
+      const createdLineItem = { id: "http://example.com/lineitems/1", ...requestLineItem };
+      sinon.stub(ky, "post").returns({ json: sinon.stub().resolves(createdLineItem) });
+
+      const result = await lti13Utils.createAGSLineItem(
+        "thisisaconsumerkey",
+        "http://example.com/lineitems",
+        requestLineItem,
+      );
+
+      expect(result).to.deep.equal(createdLineItem);
+      expect(
+        lti13Utils.getAccessToken.calledOnceWith(
+          "thisisaconsumerkey",
+          "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
+        ),
+      ).to.be.true;
+      expect(ky.post.firstCall.args[0]).to.equal("https://example.com/lineitems");
+      expect(ky.post.firstCall.args[1]).to.shallowDeepEqual({
+        json: requestLineItem,
+        headers: {
+          Authorization: "Bearer thisisatoken",
+          "Content-Type": "application/vnd.ims.lis.v2.lineitem+json",
+        },
+      });
+
+      lti13Utils.getAccessToken.restore();
+      ky.post.restore();
+    });
+
+    it("should throw a wrapped error and log the response body if the HTTP request fails", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub(), error: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      const httpError = new Error("Bad Request");
+      httpError.response = {
+        json: sinon.stub().resolves({ error: "invalid_scope", error_description: "not granted" }),
+      };
+      sinon.stub(ky, "post").returns({ json: sinon.stub().rejects(httpError) });
+
+      try {
+        await lti13Utils.createAGSLineItem("thisisaconsumerkey", "http://example.com/lineitems", {
+          label: "Chapter 5 Test",
+          scoreMaximum: 60,
+        });
+        throw new Error("Expected createAGSLineItem to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Create AGS Line Item: Failed to create line item: Bad Request");
+        expect(
+          logger.error.calledOnceWith(
+            'Error creating AGS line item: Bad Request\nResponse body: {\n  "error": "invalid_scope",\n  "error_description": "not granted"\n}',
+          ),
+        ).to.be.true;
+      } finally {
+        lti13Utils.getAccessToken.restore();
+        ky.post.restore();
+      }
+    });
+  });
+
+  describe("updateAGSLineItem", function () {
+    it("should update a line item with the correct token, headers, and body", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub(), error: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      const requestLineItem = { label: "Chapter 5 Test", scoreMaximum: 50 };
+      const updatedLineItem = { id: "http://example.com/lineitems/1", ...requestLineItem };
+      sinon.stub(ky, "put").returns({ json: sinon.stub().resolves(updatedLineItem) });
+
+      const result = await lti13Utils.updateAGSLineItem(
+        "thisisaconsumerkey",
+        "http://example.com/lineitems/1",
+        requestLineItem,
+      );
+
+      expect(result).to.deep.equal(updatedLineItem);
+      expect(
+        lti13Utils.getAccessToken.calledOnceWith(
+          "thisisaconsumerkey",
+          "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
+        ),
+      ).to.be.true;
+      expect(ky.put.firstCall.args[0]).to.equal("https://example.com/lineitems/1");
+      expect(ky.put.firstCall.args[1]).to.shallowDeepEqual({
+        json: requestLineItem,
+        headers: {
+          Authorization: "Bearer thisisatoken",
+          "Content-Type": "application/vnd.ims.lis.v2.lineitem+json",
+        },
+      });
+
+      lti13Utils.getAccessToken.restore();
+      ky.put.restore();
+    });
+
+    it("should throw a wrapped error if the HTTP request fails and the response body cannot be parsed", async function () {
+      const models = {};
+      const logger = { lti: sinon.stub(), silly: sinon.stub(), error: sinon.stub() };
+      const lti13Utils = new LTI13Utils(models, logger, domain_name);
+
+      sinon.stub(lti13Utils, "getAccessToken").resolves({
+        token_type: "Bearer",
+        access_token: "thisisatoken",
+      });
+
+      const httpError = new Error("Bad Request");
+      // Response body is not valid JSON (e.g. an HTML error page) - #logHttpError should fall back gracefully
+      httpError.response = { json: sinon.stub().rejects(new Error("Unexpected token")) };
+      sinon.stub(ky, "put").returns({ json: sinon.stub().rejects(httpError) });
+
+      try {
+        await lti13Utils.updateAGSLineItem("thisisaconsumerkey", "http://example.com/lineitems/1", {
+          label: "Chapter 5 Test",
+          scoreMaximum: 50,
+        });
+        throw new Error("Expected updateAGSLineItem to throw");
+      } catch (err) {
+        expect(err.message).to.equal("Update AGS Line Item: Failed to update line item: Bad Request");
+        expect(logger.error.calledOnceWith("Error updating AGS line item: Bad Request")).to.be.true;
+      } finally {
+        lti13Utils.getAccessToken.restore();
+        ky.put.restore();
       }
     });
   });
@@ -3761,7 +3969,7 @@ describe("/lib/lti13.js", function () {
 
     it("should throw a wrapped error if the HTTP request fails", async function () {
       const models = {};
-      const logger = { lti: sinon.stub(), silly: sinon.stub() };
+      const logger = { lti: sinon.stub(), silly: sinon.stub(), error: sinon.stub() };
       const lti13Utils = new LTI13Utils(models, logger, domain_name);
 
       sinon.stub(lti13Utils, "getAccessToken").resolves({
@@ -3776,6 +3984,7 @@ describe("/lib/lti13.js", function () {
         throw new Error("Expected getAGSResults to throw");
       } catch (err) {
         expect(err.message).to.equal("Get AGS Results: Failed to fetch results: Connection refused");
+        expect(logger.error.calledOnceWith("Error fetching AGS results: Connection refused")).to.be.true;
       } finally {
         lti13Utils.getAccessToken.restore();
         ky.get.restore();

@@ -424,6 +424,8 @@ The tool then sends a POST request to the LMS using the `registration_endpoint` 
 }
 ```
 
+The `scope` value shown above is the default. If `provider.enableLineItemManagement` is set to `true` in the toolkit configuration, the `https://purl.imsglobal.org/spec/lti-ags/scope/lineitem` scope is also requested (alongside `lineitem.readonly`, not instead of it), which grants the tool permission to create and update AGS line items via `createLineItem`/`updateLineItem`.
+
 #### Registration Response
 
 If successful, the LMS will return a JSON response containing information about the registration. An example from Canvas is below:

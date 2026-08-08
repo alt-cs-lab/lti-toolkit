@@ -51,6 +51,7 @@ import LTILMSController from "./src/controllers/lti-lms.js";
  * @param {string|None} [config.provider.privacy_level] - Optional privacy level for configuration XML (e.g., "public")
  * @param {string|None} [config.provider.handleDeeplink] - Optional LTI 1.3 Deeplink Handler
  * @param {boolean|None} [config.provider.navigation] - Optional show LTI tool in course navigation
+ * @param {boolean|None} [config.provider.enableLineItemManagement] - Optional enable creating/updating LTI 1.3 AGS line items (requests the "lineitem" scope in addition to "lineitem.readonly" during Dynamic Registration)
  * @param {Object|None} [config.consumer] - LTI Consumer Configuration
  * @param {Function} [config.consumer.postProviderGrade] - Required function to handle posting grades to the provider
  * @param {Function} [config.consumer.handleDeeplink] - Optional function to handle LTI 1.3 Deep Linking responses from providers
@@ -269,6 +270,9 @@ function validateProviderConfig(providerConfig) {
     }
     if (!providerConfig.navigation || typeof providerConfig.navigation !== "boolean") {
       providerConfig.navigation = true;
+    }
+    if (typeof providerConfig.enableLineItemManagement !== "boolean") {
+      providerConfig.enableLineItemManagement = false;
     }
   } else {
     providerConfig = null;
