@@ -384,6 +384,170 @@ Authorization header to be dropped on the resulting redirect.
     
 
     
+    <h4 class="name" id=""><span class="type-signature">(async) </span><span class="signature">(context, error)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Log the response body of a failed ky HTTP request, if one is available, so the
+platform's actual error details (e.g. Canvas's { error, error_description }) are
+visible in the logs instead of only in a generic "message" string. The Winston
+logger's printf format only ever prints the "message" (and "stack") fields, so
+any extra detail must be folded into the logged message string itself.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">a short description of what request failed</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Error</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the error thrown by ky (may or may not carry a .response)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line72">line 72</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="authRequest"><span class="type-signature">(async) </span>authRequest<span class="signature">(req)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
@@ -485,7 +649,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line69">line 69</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line93">line 93</a>
     </li></ul></dd>
     
 
@@ -696,7 +860,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line737">line 737</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line776">line 776</a>
     </li></ul></dd>
     
 
@@ -884,7 +1048,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line642">line 642</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line681">line 681</a>
     </li></ul></dd>
     
 
@@ -954,6 +1118,240 @@ Authorization header to be dropped on the resulting redirect.
     <dd>
         
 <span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="createAGSLineItem"><span class="type-signature">(async) </span>createAGSLineItem<span class="signature">(consumer_key, lineitems_url, lineItem)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Create a new line item on an LTI 1.3 AGS lineitems endpoint
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>consumer_key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the key of the consumer</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lineitems_url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the URL of the lineitems collection to create the line item in</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lineItem</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the line item data (label, scoreMaximum, and any other AGS LineItem properties)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1179">line 1179</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        if the request fails
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    the created line item object from the LMS
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
 
 
     </dd>
@@ -1095,7 +1493,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line378">line 378</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line403">line 403</a>
     </li></ul></dd>
     
 
@@ -1306,7 +1704,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1065">line 1065</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1104">line 1104</a>
     </li></ul></dd>
     
 
@@ -1559,7 +1957,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1099">line 1099</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1139">line 1139</a>
     </li></ul></dd>
     
 
@@ -1812,7 +2210,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1138">line 1138</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1247">line 1247</a>
     </li></ul></dd>
     
 
@@ -2023,7 +2421,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line256">line 256</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line280">line 280</a>
     </li></ul></dd>
     
 
@@ -2185,7 +2583,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line325">line 325</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line350">line 350</a>
     </li></ul></dd>
     
 
@@ -2373,7 +2771,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1175">line 1175</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1285">line 1285</a>
     </li></ul></dd>
     
 
@@ -2561,7 +2959,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line168">line 168</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line192">line 192</a>
     </li></ul></dd>
     
 
@@ -2698,7 +3096,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line480">line 480</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line506">line 506</a>
     </li></ul></dd>
     
 
@@ -2955,7 +3353,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line540">line 540</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line579">line 579</a>
     </li></ul></dd>
     
 
@@ -3235,7 +3633,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line405">line 405</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line430">line 430</a>
     </li></ul></dd>
     
 
@@ -3294,6 +3692,240 @@ Authorization header to be dropped on the resulting redirect.
         
 <div class="param-desc">
     the response from the LMS
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="updateAGSLineItem"><span class="type-signature">(async) </span>updateAGSLineItem<span class="signature">(consumer_key, lineitem_url, lineItem)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Update an existing line item on an LTI 1.3 AGS endpoint
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>consumer_key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the key of the consumer</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lineitem_url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the URL of the line item to update</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lineItem</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the line item data (label, scoreMaximum, and any other AGS LineItem properties)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1213">line 1213</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        if the request fails
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    the updated line item object from the LMS
 </div>
 
 
@@ -3423,7 +4055,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line977">line 977</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1016">line 1016</a>
     </li></ul></dd>
     
 
@@ -3611,7 +4243,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1027">line 1027</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1066">line 1066</a>
     </li></ul></dd>
     
 
@@ -3777,7 +4409,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1047">line 1047</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1086">line 1086</a>
     </li></ul></dd>
     
 
@@ -3943,7 +4575,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line573">line 573</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line612">line 612</a>
     </li></ul></dd>
     
 
@@ -4131,7 +4763,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line866">line 866</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line905">line 905</a>
     </li></ul></dd>
     
 
@@ -4319,7 +4951,7 @@ Authorization header to be dropped on the resulting redirect.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line807">line 807</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line846">line 846</a>
     </li></ul></dd>
     
 
@@ -4422,7 +5054,7 @@ Authorization header to be dropped on the resulting redirect.
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Aug 06 2026 15:50:47 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Aug 08 2026 18:49:41 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
