@@ -222,6 +222,332 @@
     
 
     
+    <h4 class="name" id=""><span class="type-signature"></span><span class="signature">(url)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Force a URL to use the https:// scheme. LTI 1.3 mandates TLS for all
+endpoints, but some platforms report AGS URLs with an http:// scheme
+(e.g. due to misconfigured reverse proxies), which causes the
+Authorization header to be dropped on the resulting redirect.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the URL to normalize</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line58">line 58</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    the URL with an https:// scheme
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=""><span class="type-signature">(async) </span><span class="signature">(context, error)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Log the response body of a failed ky HTTP request, if one is available, so the
+platform's actual error details (e.g. Canvas's { error, error_description }) are
+visible in the logs instead of only in a generic "message" string. The Winston
+logger's printf format only ever prints the "message" (and "stack") fields, so
+any extra detail must be folded into the logged message string itself.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">a short description of what request failed</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Error</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the error thrown by ky (may or may not carry a .response)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line72">line 72</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="authRequest"><span class="type-signature">(async) </span>authRequest<span class="signature">(req)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
@@ -323,7 +649,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line56">line 56</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line93">line 93</a>
     </li></ul></dd>
     
 
@@ -534,7 +860,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line723">line 723</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line776">line 776</a>
     </li></ul></dd>
     
 
@@ -722,7 +1048,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line628">line 628</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line681">line 681</a>
     </li></ul></dd>
     
 
@@ -792,6 +1118,240 @@
     <dd>
         
 <span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="createAGSLineItem"><span class="type-signature">(async) </span>createAGSLineItem<span class="signature">(consumer_key, lineitems_url, lineItem)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Create a new line item on an LTI 1.3 AGS lineitems endpoint
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>consumer_key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the key of the consumer</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lineitems_url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the URL of the lineitems collection to create the line item in</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lineItem</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the line item data (label, scoreMaximum, and any other AGS LineItem properties)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1179">line 1179</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        if the request fails
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    the created line item object from the LMS
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
 
 
     </dd>
@@ -933,7 +1493,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line365">line 365</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line403">line 403</a>
     </li></ul></dd>
     
 
@@ -1144,7 +1704,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1051">line 1051</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1104">line 1104</a>
     </li></ul></dd>
     
 
@@ -1397,7 +1957,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1084">line 1084</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1139">line 1139</a>
     </li></ul></dd>
     
 
@@ -1650,7 +2210,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1122">line 1122</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1247">line 1247</a>
     </li></ul></dd>
     
 
@@ -1861,7 +2421,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line243">line 243</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line280">line 280</a>
     </li></ul></dd>
     
 
@@ -2023,7 +2583,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line312">line 312</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line350">line 350</a>
     </li></ul></dd>
     
 
@@ -2211,7 +2771,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1158">line 1158</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1285">line 1285</a>
     </li></ul></dd>
     
 
@@ -2399,7 +2959,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line155">line 155</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line192">line 192</a>
     </li></ul></dd>
     
 
@@ -2536,7 +3096,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line467">line 467</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line506">line 506</a>
     </li></ul></dd>
     
 
@@ -2793,7 +3353,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line526">line 526</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line579">line 579</a>
     </li></ul></dd>
     
 
@@ -3073,7 +3633,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line392">line 392</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line430">line 430</a>
     </li></ul></dd>
     
 
@@ -3132,6 +3692,240 @@
         
 <div class="param-desc">
     the response from the LMS
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="updateAGSLineItem"><span class="type-signature">(async) </span>updateAGSLineItem<span class="signature">(consumer_key, lineitem_url, lineItem)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Update an existing line item on an LTI 1.3 AGS endpoint
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>consumer_key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the key of the consumer</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lineitem_url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the URL of the line item to update</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lineItem</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the line item data (label, scoreMaximum, and any other AGS LineItem properties)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1213">line 1213</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        if the request fails
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    the updated line item object from the LMS
 </div>
 
 
@@ -3261,7 +4055,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line963">line 963</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1016">line 1016</a>
     </li></ul></dd>
     
 
@@ -3449,7 +4243,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1013">line 1013</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1066">line 1066</a>
     </li></ul></dd>
     
 
@@ -3615,7 +4409,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1033">line 1033</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line1086">line 1086</a>
     </li></ul></dd>
     
 
@@ -3781,7 +4575,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line559">line 559</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line612">line 612</a>
     </li></ul></dd>
     
 
@@ -3969,7 +4763,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line852">line 852</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line905">line 905</a>
     </li></ul></dd>
     
 
@@ -4157,7 +4951,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line793">line 793</a>
+        <a href="lib_lti13.js.html">lib/lti13.js</a>, <a href="lib_lti13.js.html#line846">line 846</a>
     </li></ul></dd>
     
 
@@ -4260,7 +5054,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Aug 06 2026 14:00:40 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Aug 08 2026 18:49:41 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

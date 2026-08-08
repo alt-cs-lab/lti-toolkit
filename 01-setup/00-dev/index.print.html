@@ -39,26 +39,26 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
     <link href="/lti-toolkit/01-setup/00-dev/index.xml" rel="alternate" type="application/rss+xml" title="Developing :: LTI Toolkit">
     <link href="/lti-toolkit/01-setup/00-dev/tele.html" rel="alternate" type="text/html" title="Developing :: LTI Toolkit">
     <link href="/lti-toolkit/01-setup/00-dev/embed.html" rel="alternate" type="text/html" title="Developing :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1786024871" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1786024871" defer></script>
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1786215006" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1786215006" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1786024871";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1786215006";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1786024871" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1786215006" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1786024871" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1786024871" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1786024871" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1786024871" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-print.min.css?1786024871" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1786215006" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1786215006" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1786215006" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1786215006" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-print.min.css?1786215006" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -117,9 +117,12 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1786024871" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1786215006" rel="stylesheet">
   </head>
-  <body class="mobile-support embed print" data-url="/lti-toolkit/01-setup/00-dev/index.html">
+  <body class="mobile-support print" data-url="/lti-toolkit/01-setup/00-dev/index.html">
+    
+    <div id="tele" class="tele mirror">
+    
     <div id="R-body" class="default-animation">
       <div id="R-body-overlay"></div>
       
@@ -149,13 +152,13 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
 </li>
 </ul>
 <h2 id="1-clone-the-repository">1. Clone the Repository</h2>
-<div class="tab-panel" data-tab-group="88bc7c020c553f90ab30cde2b36ddf2a">
+<div class="tab-panel" data-tab-group="356752bc522f0df2e048ee0731a21782">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('88bc7c020c553f90ab30cde2b36ddf2a','terminal')"
+      onclick="switchTab('356752bc522f0df2e048ee0731a21782','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -174,13 +177,13 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
 <p>Two files need to be customized before opening the container.</p>
 <h3 id="composeyml">compose.yml</h3>
 <p><code>.devcontainer/compose.yml</code> contains the Traefik routing labels. Replace the domain names with your own subdomains. The provider example listens on port <code>3000</code> and the consumer example on port <code>3001</code>.</p>
-<div class="tab-panel" data-tab-group="381d18f025edb27a473fc8636033e856">
+<div class="tab-panel" data-tab-group="55d5d8c927ad525d805a6fcd221a923e">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="devcontainercomposeyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('381d18f025edb27a473fc8636033e856','devcontainercomposeyml')"
+      onclick="switchTab('55d5d8c927ad525d805a6fcd221a923e','devcontainercomposeyml')"
     >
       <span class="tab-nav-text">.devcontainer/compose.yml</span>
     </button>
@@ -204,13 +207,13 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
 </div><p>The router names (<code>ltitool</code>, <code>ltilms</code>) can also be changed if they conflict with existing Traefik routes.</p>
 <h3 id="devcontainerjson">devcontainer.json</h3>
 <p><code>.devcontainer/devcontainer.json</code> includes a <code>mounts</code> entry that bind-mounts the host&rsquo;s GPG keyring into the container, enabling GPG-signed commits from inside VS Code. Update the source path to match your host username:</p>
-<div class="tab-panel" data-tab-group="9c505e119c0fda65ca0532c12be69d57">
+<div class="tab-panel" data-tab-group="a6de3b8a0672fcbc93e9d784aa98b749">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="devcontainerdevcontainerjson"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('9c505e119c0fda65ca0532c12be69d57','devcontainerdevcontainerjson')"
+      onclick="switchTab('a6de3b8a0672fcbc93e9d784aa98b749','devcontainerdevcontainerjson')"
     >
       <span class="tab-nav-text">.devcontainer/devcontainer.json</span>
     </button>
@@ -239,13 +242,13 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
 <h2 id="4-configure-the-example-applications">4. Configure the Example Applications</h2>
 <p>Each example app has its own environment file. Copy the example and fill in your values.</p>
 <h3 id="tool-provider-examplesprovider">Tool Provider (<code>examples/provider</code>)</h3>
-<div class="tab-panel" data-tab-group="e08c3d27d708d65c89d968e1ee131cb6">
+<div class="tab-panel" data-tab-group="32a643f54b83ff114c340319968a197a">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('e08c3d27d708d65c89d968e1ee131cb6','terminal')"
+      onclick="switchTab('32a643f54b83ff114c340319968a197a','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -307,13 +310,13 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
   </tbody>
 </table>
 <h3 id="tool-consumer-examplesconsumer">Tool Consumer (<code>examples/consumer</code>)</h3>
-<div class="tab-panel" data-tab-group="eccdaed1e437232b7527294ef74fd7ba">
+<div class="tab-panel" data-tab-group="7a3e7fe1f881ad8126d13e5375df4c6b">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('eccdaed1e437232b7527294ef74fd7ba','terminal')"
+      onclick="switchTab('7a3e7fe1f881ad8126d13e5375df4c6b','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -368,13 +371,13 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
 </table>
 <h2 id="5-install-example-dependencies">5. Install Example Dependencies</h2>
 <p>The root <code>npm install</code> (run automatically on container creation) only installs library dependencies. Each example app needs its own install:</p>
-<div class="tab-panel" data-tab-group="cc432f67afacca891945ac5b3e9fdb16">
+<div class="tab-panel" data-tab-group="81444f4932aa33e455ca0a901b5d402a">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('cc432f67afacca891945ac5b3e9fdb16','terminal')"
+      onclick="switchTab('81444f4932aa33e455ca0a901b5d402a','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -391,13 +394,13 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
   </div>
 </div><h2 id="6-run-the-example-applications">6. Run the Example Applications</h2>
 <p>Each example has a <code>dev</code> script that uses <code>nodemon</code> for automatic reloading on file changes.</p>
-<div class="tab-panel" data-tab-group="0e1d015f40aac9759b2911145996cce2">
+<div class="tab-panel" data-tab-group="5c788e77451941ffd8f1ed0a850386a4">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('0e1d015f40aac9759b2911145996cce2','terminal')"
+      onclick="switchTab('5c788e77451941ffd8f1ed0a850386a4','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -422,13 +425,13 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
 <p>The SQLite database for each app is created automatically on first run in the app&rsquo;s root directory (<code>examples/provider/database.sqlite</code>, <code>examples/consumer/database.sqlite</code>). To reset all state, stop the server and delete the file.</p>
 <h2 id="7-run-the-library-tests">7. Run the Library Tests</h2>
 <p>From the repository root:</p>
-<div class="tab-panel" data-tab-group="d5d2fd55990cd700eab2483e2aaab7c0">
+<div class="tab-panel" data-tab-group="7743478703614f9b791b0833c466b465">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('d5d2fd55990cd700eab2483e2aaab7c0','terminal')"
+      onclick="switchTab('7743478703614f9b791b0833c466b465','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -449,13 +452,13 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
 </div><p>The test suite requires 100% code coverage to pass. Coverage reports are generated as HTML in <code>docs/static/coverage/</code> and can be browsed at <code>/coverage/</code> on the running documentation site.</p>
 <h2 id="8-run-the-documentation-site">8. Run the Documentation Site</h2>
 <p>Hugo is installed in the container. From the <code>docs/</code> directory:</p>
-<div class="tab-panel" data-tab-group="7cc1117f29976c8b56f296ef126ba02f">
+<div class="tab-panel" data-tab-group="8057dafc470f32be76a9d6427edf1918">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('7cc1117f29976c8b56f296ef126ba02f','terminal')"
+      onclick="switchTab('8057dafc470f32be76a9d6427edf1918','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -472,13 +475,13 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
   </div>
 </div><p>The <code>--bind 0.0.0.0</code> flag is needed to make the server reachable via VS Code&rsquo;s port forwarding. VS Code will prompt to forward port <code>1313</code> — open the forwarded URL in your browser to browse the docs locally. The site hot-reloads on file changes.</p>
 <h2 id="9-linting-and-formatting">9. Linting and Formatting</h2>
-<div class="tab-panel" data-tab-group="b5b778e8c4d8a7cc73f8b6eab6506ae8">
+<div class="tab-panel" data-tab-group="c1ee470dd41b6e973109e8bb7d05306d">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('b5b778e8c4d8a7cc73f8b6eab6506ae8','terminal')"
+      onclick="switchTab('c1ee470dd41b6e973109e8bb7d05306d','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -554,9 +557,13 @@ Docker Engine (or Docker Desktop) — the local user should be in the docker gro
       
       
     </div>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1786024871" defer></script>
-  <script src="/lti-toolkit/js/embed-iframe.min.js?1786024871" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1786215006" defer></script>
+      
+      
+      
+    </div> 
+  <script src="/lti-toolkit/js/tele-scroll.min.js?1786215006" defer></script>
   </body>
 </html>

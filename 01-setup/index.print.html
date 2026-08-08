@@ -29,26 +29,26 @@
     <link href="/lti-toolkit/01-setup/index.xml" rel="alternate" type="application/rss+xml" title="Dev Setup :: LTI Toolkit">
     <link href="/lti-toolkit/01-setup/tele.html" rel="alternate" type="text/html" title="Dev Setup :: LTI Toolkit">
     <link href="/lti-toolkit/01-setup/embed.html" rel="alternate" type="text/html" title="Dev Setup :: LTI Toolkit">
-    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1786024871" rel="stylesheet">
-    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/search-lunr.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/search.min.js?1786024871" defer></script>
+    <link href="/lti-toolkit/css/auto-complete/auto-complete.min.css?1786215006" rel="stylesheet">
+    <script src="/lti-toolkit/js/auto-complete/auto-complete.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/search-lunr.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/search.min.js?1786215006" defer></script>
     <script>
       window.relearn = window.relearn || {};
-      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1786024871";
+      window.relearn.index_js_url="/lti-toolkit/searchindex.en.js?1786215006";
     </script>
-    <script src="/lti-toolkit/js/lunr/lunr.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1786024871" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.stemmer.support.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.multi.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/lunr/lunr.en.min.js?1786215006" defer></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.contentLangs=['en'];
     </script>
-    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1786024871" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1786024871" rel="stylesheet"></noscript>
-    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1786024871" rel="stylesheet">
-    <link href="/lti-toolkit/css/theme.min.css?1786024871" rel="stylesheet">
-    <link href="/lti-toolkit/css/format-print.min.css?1786024871" rel="stylesheet" id="R-format-style">
+    <link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1786215006" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/lti-toolkit/fonts/fontawesome/css/fontawesome-all.min.css?1786215006" rel="stylesheet"></noscript>
+    <link href="/lti-toolkit/css/perfect-scrollbar/perfect-scrollbar.min.css?1786215006" rel="stylesheet">
+    <link href="/lti-toolkit/css/theme.min.css?1786215006" rel="stylesheet">
+    <link href="/lti-toolkit/css/format-print.min.css?1786215006" rel="stylesheet" id="R-format-style">
     <script>
       window.relearn = window.relearn || {};
       // configuration
@@ -107,9 +107,12 @@
       window.relearn.initVariant();
       window.relearn.markVariant();
     </script>
-    <link href="/lti-toolkit/css/custom.css?1786024871" rel="stylesheet">
+    <link href="/lti-toolkit/css/custom.css?1786215006" rel="stylesheet">
   </head>
-  <body class="mobile-support embed print" data-url="/lti-toolkit/01-setup/index.html">
+  <body class="mobile-support print" data-url="/lti-toolkit/01-setup/index.html">
+    
+    <div id="tele" class="tele mirror">
+    
     <div id="R-body" class="default-animation">
       <div id="R-body-overlay"></div>
       
@@ -152,13 +155,13 @@
 </li>
 </ul>
 <h2 id="1-clone-the-repository">1. Clone the Repository</h2>
-<div class="tab-panel" data-tab-group="88bc7c020c553f90ab30cde2b36ddf2a">
+<div class="tab-panel" data-tab-group="356752bc522f0df2e048ee0731a21782">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('88bc7c020c553f90ab30cde2b36ddf2a','terminal')"
+      onclick="switchTab('356752bc522f0df2e048ee0731a21782','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -177,13 +180,13 @@
 <p>Two files need to be customized before opening the container.</p>
 <h3 id="composeyml">compose.yml</h3>
 <p><code>.devcontainer/compose.yml</code> contains the Traefik routing labels. Replace the domain names with your own subdomains. The provider example listens on port <code>3000</code> and the consumer example on port <code>3001</code>.</p>
-<div class="tab-panel" data-tab-group="381d18f025edb27a473fc8636033e856">
+<div class="tab-panel" data-tab-group="55d5d8c927ad525d805a6fcd221a923e">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="devcontainercomposeyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('381d18f025edb27a473fc8636033e856','devcontainercomposeyml')"
+      onclick="switchTab('55d5d8c927ad525d805a6fcd221a923e','devcontainercomposeyml')"
     >
       <span class="tab-nav-text">.devcontainer/compose.yml</span>
     </button>
@@ -207,13 +210,13 @@
 </div><p>The router names (<code>ltitool</code>, <code>ltilms</code>) can also be changed if they conflict with existing Traefik routes.</p>
 <h3 id="devcontainerjson">devcontainer.json</h3>
 <p><code>.devcontainer/devcontainer.json</code> includes a <code>mounts</code> entry that bind-mounts the host&rsquo;s GPG keyring into the container, enabling GPG-signed commits from inside VS Code. Update the source path to match your host username:</p>
-<div class="tab-panel" data-tab-group="9c505e119c0fda65ca0532c12be69d57">
+<div class="tab-panel" data-tab-group="a6de3b8a0672fcbc93e9d784aa98b749">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="devcontainerdevcontainerjson"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('9c505e119c0fda65ca0532c12be69d57','devcontainerdevcontainerjson')"
+      onclick="switchTab('a6de3b8a0672fcbc93e9d784aa98b749','devcontainerdevcontainerjson')"
     >
       <span class="tab-nav-text">.devcontainer/devcontainer.json</span>
     </button>
@@ -242,13 +245,13 @@
 <h2 id="4-configure-the-example-applications">4. Configure the Example Applications</h2>
 <p>Each example app has its own environment file. Copy the example and fill in your values.</p>
 <h3 id="tool-provider-examplesprovider">Tool Provider (<code>examples/provider</code>)</h3>
-<div class="tab-panel" data-tab-group="e08c3d27d708d65c89d968e1ee131cb6">
+<div class="tab-panel" data-tab-group="32a643f54b83ff114c340319968a197a">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('e08c3d27d708d65c89d968e1ee131cb6','terminal')"
+      onclick="switchTab('32a643f54b83ff114c340319968a197a','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -310,13 +313,13 @@
   </tbody>
 </table>
 <h3 id="tool-consumer-examplesconsumer">Tool Consumer (<code>examples/consumer</code>)</h3>
-<div class="tab-panel" data-tab-group="eccdaed1e437232b7527294ef74fd7ba">
+<div class="tab-panel" data-tab-group="7a3e7fe1f881ad8126d13e5375df4c6b">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('eccdaed1e437232b7527294ef74fd7ba','terminal')"
+      onclick="switchTab('7a3e7fe1f881ad8126d13e5375df4c6b','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -371,13 +374,13 @@
 </table>
 <h2 id="5-install-example-dependencies">5. Install Example Dependencies</h2>
 <p>The root <code>npm install</code> (run automatically on container creation) only installs library dependencies. Each example app needs its own install:</p>
-<div class="tab-panel" data-tab-group="cc432f67afacca891945ac5b3e9fdb16">
+<div class="tab-panel" data-tab-group="81444f4932aa33e455ca0a901b5d402a">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('cc432f67afacca891945ac5b3e9fdb16','terminal')"
+      onclick="switchTab('81444f4932aa33e455ca0a901b5d402a','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -394,13 +397,13 @@
   </div>
 </div><h2 id="6-run-the-example-applications">6. Run the Example Applications</h2>
 <p>Each example has a <code>dev</code> script that uses <code>nodemon</code> for automatic reloading on file changes.</p>
-<div class="tab-panel" data-tab-group="0e1d015f40aac9759b2911145996cce2">
+<div class="tab-panel" data-tab-group="5c788e77451941ffd8f1ed0a850386a4">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('0e1d015f40aac9759b2911145996cce2','terminal')"
+      onclick="switchTab('5c788e77451941ffd8f1ed0a850386a4','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -425,13 +428,13 @@
 <p>The SQLite database for each app is created automatically on first run in the app&rsquo;s root directory (<code>examples/provider/database.sqlite</code>, <code>examples/consumer/database.sqlite</code>). To reset all state, stop the server and delete the file.</p>
 <h2 id="7-run-the-library-tests">7. Run the Library Tests</h2>
 <p>From the repository root:</p>
-<div class="tab-panel" data-tab-group="d5d2fd55990cd700eab2483e2aaab7c0">
+<div class="tab-panel" data-tab-group="7743478703614f9b791b0833c466b465">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('d5d2fd55990cd700eab2483e2aaab7c0','terminal')"
+      onclick="switchTab('7743478703614f9b791b0833c466b465','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -452,13 +455,13 @@
 </div><p>The test suite requires 100% code coverage to pass. Coverage reports are generated as HTML in <code>docs/static/coverage/</code> and can be browsed at <code>/coverage/</code> on the running documentation site.</p>
 <h2 id="8-run-the-documentation-site">8. Run the Documentation Site</h2>
 <p>Hugo is installed in the container. From the <code>docs/</code> directory:</p>
-<div class="tab-panel" data-tab-group="7cc1117f29976c8b56f296ef126ba02f">
+<div class="tab-panel" data-tab-group="8057dafc470f32be76a9d6427edf1918">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('7cc1117f29976c8b56f296ef126ba02f','terminal')"
+      onclick="switchTab('8057dafc470f32be76a9d6427edf1918','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -475,13 +478,13 @@
   </div>
 </div><p>The <code>--bind 0.0.0.0</code> flag is needed to make the server reachable via VS Code&rsquo;s port forwarding. VS Code will prompt to forward port <code>1313</code> — open the forwarded URL in your browser to browse the docs locally. The site hot-reloads on file changes.</p>
 <h2 id="9-linting-and-formatting">9. Linting and Formatting</h2>
-<div class="tab-panel" data-tab-group="b5b778e8c4d8a7cc73f8b6eab6506ae8">
+<div class="tab-panel" data-tab-group="c1ee470dd41b6e973109e8bb7d05306d">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('b5b778e8c4d8a7cc73f8b6eab6506ae8','terminal')"
+      onclick="switchTab('c1ee470dd41b6e973109e8bb7d05306d','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -585,13 +588,13 @@
 <ol>
 <li>Clone Repository</li>
 </ol>
-<div class="tab-panel" data-tab-group="3b25f2f7afec879406e50ee54a96f471">
+<div class="tab-panel" data-tab-group="b0a3f3749f85e164d4519ada15df6129">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('3b25f2f7afec879406e50ee54a96f471','terminal')"
+      onclick="switchTab('b0a3f3749f85e164d4519ada15df6129','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -606,13 +609,13 @@
     </div>
   </div>
 </div><p>Recommended to switch to the <code>prod</code> branch for a production setup</p>
-<div class="tab-panel" data-tab-group="cc928172ca81605d91015b09a714ecac">
+<div class="tab-panel" data-tab-group="45fbb98a0d30439db79d723f05dc4d03">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('cc928172ca81605d91015b09a714ecac','terminal')"
+      onclick="switchTab('45fbb98a0d30439db79d723f05dc4d03','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -632,13 +635,13 @@
 </ol>
 <p><em>May no longer be needed as of May 2026</em></p>
 <p>The setup script insists that Docker Compose be installed separately; it is now part of the default Docker installation on Ubuntu and does not appear as a separate item on my system. So, it can be removed from the setup script.</p>
-<div class="tab-panel" data-tab-group="542879d21a48289a489e70c47dca4f76">
+<div class="tab-panel" data-tab-group="85a4770a11dbc00b7a7b2bb5bae23e71">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="scriptcommonoslinuxdev_setupsh"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('542879d21a48289a489e70c47dca4f76','scriptcommonoslinuxdev_setupsh')"
+      onclick="switchTab('85a4770a11dbc00b7a7b2bb5bae23e71','scriptcommonoslinuxdev_setupsh')"
     >
       <span class="tab-nav-text">script/common/os/linux/dev_setup.sh</span>
     </button>
@@ -665,13 +668,13 @@
 <li>Export Environment Settings</li>
 </ol>
 <p>My development environment seems to require these settings:</p>
-<div class="tab-panel" data-tab-group="dac9c36f73b21257eb36600a68b8d639">
+<div class="tab-panel" data-tab-group="a8866d9679a36d6608183456a57a2794">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('dac9c36f73b21257eb36600a68b8d639','terminal')"
+      onclick="switchTab('a8866d9679a36d6608183456a57a2794','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -691,13 +694,13 @@
 </ol>
 <p>Ubuntu 26.04 does not include the <code>acl</code> package, so it must be installed manually.</p>
 <p>There are several file permission errors that will crop up during the build. The best fix is to give Canvas user permission to all files in the build folder via <code>setfacl</code>:</p>
-<div class="tab-panel" data-tab-group="d91e2819a88a494af8e51d80c79235b7">
+<div class="tab-panel" data-tab-group="b70945e7c48b637fa837a6f1789a2729">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('d91e2819a88a494af8e51d80c79235b7','terminal')"
+      onclick="switchTab('b70945e7c48b637fa837a6f1789a2729','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -722,13 +725,13 @@
 <li>Run Setup Script</li>
 </ol>
 <p>As of May 2026, <code>prod</code> is missing an entry from the <code>package.json</code> file. See <a href="https://github.com/instructure/canvas-lms/issues/2626" rel="external" target="_blank">https://github.com/instructure/canvas-lms/issues/2626</a> for the fix.</p>
-<div class="tab-panel" data-tab-group="5b4a649d7439bb53a0019da24396abb0">
+<div class="tab-panel" data-tab-group="6be0af823f7a55d1dc23d2101af44020">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('5b4a649d7439bb53a0019da24396abb0','terminal')"
+      onclick="switchTab('6be0af823f7a55d1dc23d2101af44020','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -801,13 +804,13 @@
 <li>Edit Configuration Files</li>
 </ol>
 <p><strong>Domain Configuration</strong></p>
-<div class="tab-panel" data-tab-group="06219d65c8a7f203a9fe2b9fd78ae06e">
+<div class="tab-panel" data-tab-group="5ddf4cff5b2eae41cb969d6ff899cf44">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="configdomainyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('06219d65c8a7f203a9fe2b9fd78ae06e','configdomainyml')"
+      onclick="switchTab('5ddf4cff5b2eae41cb969d6ff899cf44','configdomainyml')"
     >
       <span class="tab-nav-text">config/domain.yml</span>
     </button>
@@ -829,13 +832,13 @@
     </div>
   </div>
 </div><p><strong>Email Configuration</strong></p>
-<div class="tab-panel" data-tab-group="f1759a790c996e1abbd615ed713b71a4">
+<div class="tab-panel" data-tab-group="6bf2661277151d6438f03d4629763434">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="configoutgoing_mailyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('f1759a790c996e1abbd615ed713b71a4','configoutgoing_mailyml')"
+      onclick="switchTab('6bf2661277151d6438f03d4629763434','configoutgoing_mailyml')"
     >
       <span class="tab-nav-text">config/outgoing_mail.yml</span>
     </button>
@@ -858,13 +861,13 @@
     </div>
   </div>
 </div><p><strong>Security Configuration</strong></p>
-<div class="tab-panel" data-tab-group="f86f5fe2abfab4723bc8985e7bb14fcf">
+<div class="tab-panel" data-tab-group="bdf691de8c7bace37e8940b9f684aad2">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="configsecurityyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('f86f5fe2abfab4723bc8985e7bb14fcf','configsecurityyml')"
+      onclick="switchTab('bdf691de8c7bace37e8940b9f684aad2','configsecurityyml')"
     >
       <span class="tab-nav-text">config/security.yml</span>
     </button>
@@ -890,13 +893,13 @@
 <li>Enable Mailcatcher</li>
 </ol>
 <p>Enable the Mailcatcher service by adding it to the .env file:</p>
-<div class="tab-panel" data-tab-group="f990d89a32add9df3067050dbc9cef68">
+<div class="tab-panel" data-tab-group="d6ac42c3e574b2ff96cb08f5d9031193">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="env"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('f990d89a32add9df3067050dbc9cef68','env')"
+      onclick="switchTab('d6ac42c3e574b2ff96cb08f5d9031193','env')"
     >
       <span class="tab-nav-text">.env</span>
     </button>
@@ -919,13 +922,13 @@
 </ol>
 <p>This will set the Traefik tags for each container and other options.</p>
 <p><strong>Main Docker Compose</strong></p>
-<div class="tab-panel" data-tab-group="bab6527a3bc0790fbd7dac1b050e0a89">
+<div class="tab-panel" data-tab-group="d04993faee187cce51e157e0518b3860">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="docker-composeoverrideyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('bab6527a3bc0790fbd7dac1b050e0a89','docker-composeoverrideyml')"
+      onclick="switchTab('d04993faee187cce51e157e0518b3860','docker-composeoverrideyml')"
     >
       <span class="tab-nav-text">docker-compose.override.yml</span>
     </button>
@@ -976,13 +979,13 @@
     </div>
   </div>
 </div><p><strong>Mailcatcher Docker Compose</strong></p>
-<div class="tab-panel" data-tab-group="f876dc47cfd261c9d7467a7ad7e9eb1d">
+<div class="tab-panel" data-tab-group="d4b635106bfff2e7fa13fe19b0cb069f">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="docker-composemailcatcheroverrideyml"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('f876dc47cfd261c9d7467a7ad7e9eb1d','docker-composemailcatcheroverrideyml')"
+      onclick="switchTab('d4b635106bfff2e7fa13fe19b0cb069f','docker-composemailcatcheroverrideyml')"
     >
       <span class="tab-nav-text">docker-compose/mailcatcher.override.yml</span>
     </button>
@@ -1037,13 +1040,13 @@
 </div><ol start="10">
 <li>Start the Server</li>
 </ol>
-<div class="tab-panel" data-tab-group="3962a7cef6ddf45ae0749d0110c56be9">
+<div class="tab-panel" data-tab-group="9d65369e964c783263639be01280ca80">
   <div class="tab-nav">
     <div class="tab-nav-title">&#8203;</div>
     <button
       data-tab-item="terminal"
       class="tab-nav-button tab-panel-style cstyle initial active" tabindex="-1"
-      onclick="switchTab('3962a7cef6ddf45ae0749d0110c56be9','terminal')"
+      onclick="switchTab('9d65369e964c783263639be01280ca80','terminal')"
     >
       <span class="tab-nav-text">terminal</span>
     </button>
@@ -1068,9 +1071,13 @@
       
       
     </div>
-    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1786024871" defer></script>
-    <script src="/lti-toolkit/js/theme.min.js?1786024871" defer></script>
-  <script src="/lti-toolkit/js/embed-iframe.min.js?1786024871" defer></script>
+    <script src="/lti-toolkit/js/clipboard/clipboard.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/perfect-scrollbar/perfect-scrollbar.min.js?1786215006" defer></script>
+    <script src="/lti-toolkit/js/theme.min.js?1786215006" defer></script>
+      
+      
+      
+    </div> 
+  <script src="/lti-toolkit/js/tele-scroll.min.js?1786215006" defer></script>
   </body>
 </html>
